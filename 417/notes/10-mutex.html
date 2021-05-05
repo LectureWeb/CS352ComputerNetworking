@@ -1,0 +1,686 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Process Synchroniztion </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 417 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/10-mutex.html"> Process Synchroniztion </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="downloadmsg"> <a href="10-mutex.pdf">Download PDF <img src="images/pdf.png" width="24" height="24"/></a> </div>
+<div id="headline">
+<h1> Process Synchroniztion </h1>
+<h2> Mutual Exclusion & Election Algorithms </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> October 31, 2018 </p>
+</div>
+<h1 id="introduction">Introduction</h1>
+
+<p>Process synchronization is the set of techniques that are used to
+coordinate execution among processes. For example, a process may
+need to run to a certain point, at which point it will stop and wait
+for another process to finish certain actions. A shared resource,
+such as a file or fields in a database, may require exclusive
+access and processes have to coordinate among themselves to ensure
+that access to the resource is fair and exclusive. </p>
+
+<p>The modification of a resource may be implemented as an atomic operation. That is,
+there might be a single remote procedure call or web service that performs
+an operation on the resource. In this case, the server may be able to handle
+access to the resource on its own. In many cases, however,
+there might be concurrent requets on different servers that are
+competing for the same resource. There are also frequently situations
+where resource access is not inherently atomic and a client will
+need to request a <em>lock</em> on the resource and release it at a later
+time when all modifications are complete. Distributed transactions are
+an example of a framework that relies on this.</p>
+
+<p>In centralized systems, it was
+common to enforce exclusive access to shared code. Mutual exclusion
+was accomplished through mechanisms such as test and set locks in
+hardware and semaphores, messages, and condition variables in
+software.</p>
+
+<p>We will now visit the topic of mutual exclusion in
+distributed systems. We assume that there is group agreement on how
+a resource or critical section is identified (e.g., a name or
+number) and that this identifier is passed as a parameter with any
+requests. We also assume that processes can be uniquely identified
+throughout the system (e.g., using a combination of machine ID and
+process ID). The goal is to get a <strong>lock</strong> on a resource: permission
+to access the resource exclusively. When a process is finished
+using the resource, it releases the lock, allowing another process
+to get the lock and access the resource.</p>
+
+<p>Any viable mutual exclusion algorithm must satisfy three properties:</p>
+<dl>
+<dt><strong>Safety</strong></dt>
+<dd>This means the algorithm does indeed provide mutual exclusion. At any instant, only one process may hold the resource.</dd>
+
+<dt><strong>Liveness</strong></dt>
+<dd>The algorithm should make progress. Processes should not wait forever for messages that will never arrive.</dd>
+
+<dt><strong>Fairness</strong></dt>
+<dd>Each process should a fair chance to hold the resource. This means that a process that asks for a critical section should not wait forever to get it. No process should experience <em>starvation</em>. For example, two processes cannot transfer their lock on a resource back and forth to each other while a third process that wants the resource is denied from grabbing a lock.</dd>
+</dl>
+
+
+<p>There are three categories of mutual exclusion algorithms:</p>
+
+<ol>
+<li><p><strong>Centralized</strong> algorithms use a central coordinator.
+A process can access a resource because a central coordinator allowed
+it to do so.</p></li>
+<li><p><strong>Token-based</strong> algorithms move a token around.
+A process can access a resource if it is holding a token permitting
+it to do so.</p></li>
+<li><p><strong>Contention-based</strong> algorithms
+use a distributed algorithm that sorts out points of
+conflict (contention) where two or more processes may want
+access to the same resource.</p></li>
+</ol>
+
+<h2 id="centralserveralgorithm">Central server algorithm</h2>
+
+<figure>
+<img src="images/mutex-centralized.png" alt="Figure 1. Centralized mutual exclusion" id="mutex-centralized" title="Centralized mutual exclusion" style="width:150px;" />
+<figcaption>Figure 1. Centralized mutual exclusion</figcaption></figure>
+
+
+
+<p>The <strong>central server algorithm</strong> simulates a single processor system.
+One process in the distributed system is elected as the coordinator
+(Figure 1). When a process wants to enter a resource, it
+sends a <strong>request</strong> message (Figure 1a)
+identifying the resource, if there
+are more than one, to the coordinator.</p>
+
+<p>If nobody is currently in the section, the coordinator sends back
+a <strong>grant</strong> message (Figure 1b) and marks that process
+as using the resource.
+If, however, another process has previously claimed the resource,
+the server simply does not reply, so the requesting process
+is blocked. The coordinator keeps state on which process
+is currently granted the resource and a which processes are
+requesting the resource. The list of requestors is a first-come,
+first-served queue per resource. If some process has been
+granted access to the resource but has not released it,
+any incoming <em>grant</em> requests are queued on the coordinator.
+When a coordinator receives a <em>release(R)</em> message, it sends a
+<em>grant</em> message to the next process in the queue for resource <em>R</em>.</p>
+
+<p>When a process is done with its resource, it sends a <strong>release</strong>
+message (Figure 1c) to the coordinator. The coordinator then can send a grant
+message to the next process in its queue of processes requesting a
+resource (if any).</p>
+
+<p>This algorithm is easy to implement and verify. It is fair in that
+all requests are processed in order. Unfortunately, it suffers from
+having a single point of failure. Another issue is
+that a process cannot distinguish
+between being blocked (not receiving a grant because someone else
+is in the resource) and not getting a response because the
+coordinator is down. From the coordinator&#8217;s side, the coordinator
+does not know if a process using a resource has died, is in
+an infinite loop, or is simply taking a longer time to release
+a resource.
+Moreover, a centralized server can be a potential
+bottleneck in systems with a huge number of processes.</p>
+
+<h2 id="tokenringalgorithm">Token Ring algorithm</h2>
+
+<p>For this algorithm, we assume that there is a group of processes
+with no inherent ordering of processes, but that some ordering can
+be imposed on the group. For example, we can identify each process
+by its machine address and process ID to obtain an ordering. Using
+this imposed ordering, a logical ring is constructed in software.
+Each process is assigned a position in the ring and each process
+must know who is next to it in the ring (Figure 2). Here is
+how the algorithm works:</p>
+
+<figure>
+<img src="images/mutex-token.png" alt="Figure 2. Token Ring algorithm" id="mutex-token" title="Token Ring algorithm" style="width:200px;" />
+<figcaption>Figure 2. Token Ring algorithm</figcaption></figure>
+
+
+
+<ol>
+<li><p>The ring is initialized by giving a token to process 0. The token
+circulates around the ring: process <em>n</em> passes it to process
+<em>(n+1) mod ringsize</em>.</p></li>
+<li><p>When a process acquires the token, it checks to see if it is
+is waiting to use the resource. If so, it uses it and does
+its work. On exit, it passes the token to its neighboring process.
+In Figure 2, Process 1 had the token, completed its access to
+the resource, and is sending the token to its neighbor, process 2.</p></li>
+<li><p>If a process is not interested in grabbing the lock on the resource,
+it simply passes the token along to its neighbor.</p></li>
+</ol>
+
+<p>Only one process has the token, and hence the lock on the resource,
+at a time.
+Therefore, mutual exclusion is guaranteed.
+Order is also well-defined, so starvation cannot occur. The biggest
+drawback of this algorithm is that if a token is lost, it will have
+to be generated. Determining that a token is lost can be difficult.</p>
+
+<h2 id="lamportsmutualexclusionalgorithm">Lamport&#8217;s mutual exclusion algorithm</h2>
+
+<p><strong>Lamport&#8217;s mutual exclusion algorithm</strong>
+is the first of two contention-based mutual exclusion algorithms that
+we will examine. In this algorithm, every
+process in the group maintains a request queue. These is
+a list of processes that want to access a resource.</p>
+
+<p>All messages are sent reliably and in FIFO order and
+each message is time stamped with unique Lamport timestamps.
+All items in the request queues are sorted by message timestamps.</p>
+
+<p>The basic mechanism of this algorithm is that a process that wants
+to use the resource sends a timestamped <em>request</em> for the
+resource to all group members as well as to itself. Every
+recipient adds the received request to its request queue, which
+is sorted in timestamp order.
+Because all processes get all
+request messages, all timestamps are unique, and all queues
+are sorted, every process has the exact same items on its queue.
+If a process sees itself at the head of the queue, it knows
+that it can access the resource: no other process will be
+at the head of the queue. When it is done, it sends a
+<em>release</em> message to all group members and removes its ID from
+its local queue. Each group member, upon receiving a <em>release</em>
+message, removes that process ID from the request queue
+and checks to see whether it is at the head of the queue
+and can access the resource.</p>
+
+<p>To summarize:</p>
+<dl>
+<dt>To request a resource (ask for a lock)</dt>
+<dd>A process P<sub>i</sub> sends a
+<em>request(R, i, T<sub>i</sub>)</em>
+to all group members and places the same request on its own queue
+for resource <em>R</em>.
+When a process P<sub>j</sub> receives a <em>request</em> message,
+it returns a timestamped acknowledgement (<em>ack</em>)
+and places the request on its request queue.</dd>
+
+<dt>To get the lock on the resource</dt>
+<dd>A process P<sub>i</sub> must have received <em>ack</em> messages
+from everyone and its request must have the earliest
+timestamp in its request queue for resource <em>R</em>. If not, it waits.</dd>
+
+<dt>To release the resource lock</dt>
+<dd>A process P<sub>i</sub> removes its own request from
+the head its queue for resource <em>R</em> and sends a
+<em>release(R, i, T<sub>i</sub>)</em>
+message to all nodes. When each process receives
+the <em>release</em> message, it removes the entry for
+process <em>i</em> from its queue for resource <em>R</em>.
+The process then checks to see whether its own request
+is now the earliest one in (at the head of) its request
+queue. If it is, then the process now has the resource lock.
+If not, it has to wait.</dd>
+</dl>
+
+
+<p>Lamport&#8217;s algorithm is not a great one. We replaced
+the single point of failure of the centralized algorithm
+with an algorithm that has <em>N</em> points of failure. In
+addition, there is a lot of messaging traffic.
+Each request requires sending <em>N&#8211;1</em> messages (one to
+each group member) and getting <em>N&#8211;1</em> acknowledgements.
+Finally, when a resource lock is released, a process
+must send <em>N&#8211;1</em> release messages.</p>
+
+<h2 id="ricartagrawaladistributedmutualexclusionalgorithm">Ricart &amp; Agrawala distributed mutual exclusion algorithm</h2>
+
+<p>Ricart &amp; Agrawala put forth a fully distributed mutual exclusion
+algorithm in 1981. It requires the following:</p>
+
+<ul>
+<li><p>total ordering of all events in a system (e.g. Lamport&#8217;s timestamp
+algorithm with unique timestamps)</p></li>
+<li><p>messages are reliable (the delivery of every message is acknowledged).</p></li>
+</ul>
+
+<p>When a process wants to get a lock for a resource, it: </p>
+
+<ol>
+<li><p>Composes a message containing
+<em>{ message identifier(machine ID, process ID),
+name of the resource, timestamp)</em>.</p></li>
+<li><p>Sends a <em>request</em> message to all other processes in the group
+(using reliable messaging).</p></li>
+<li><p>Wait until <em>everyone</em> in the group has given permission.</p></li>
+<li><p>Access the resource; it now has the lock.</p></li>
+</ol>
+
+<p>When a process receives a request message, it may be in one of three states:</p>
+<dl>
+<dt>Case 1</dt>
+<dd>The receiver is not interested in the resource, send a reply
+(<em>OK</em>) to the sender.</dd>
+
+<dt>Case 2</dt>
+<dd>The receiver is in the resource. Do not reply but add the
+request to a local queue of requests.</dd>
+
+<dt>Case 3</dt>
+<dd>The receiver also wants the lock on the resource and has
+sent its request. In this case, the receiver compares the timestamp
+in the received message with the one in the message
+that it has sent out. The earliest timestamp wins.
+If the receiver is the loser, it sends a
+reply (<em>OK</em>) to sender. If the receiver has the earlier timestamp,
+then it is the winner and does not reply (and will
+get an <em>OK</em> from the other process). Instead, it adds the
+request to its queue and will send the <em>OK</em> only when it
+is done with its use of the resource.</dd>
+</dl>
+
+
+<figure>
+<img src="images/mutex-ricart.png" alt="Figure 3. Ricart & Agrawala mutual exclusion" id="mutex-ricart" title="Ricart &amp; Agrawala mutual exclusion" style="width:400px;" />
+<figcaption>Figure 3. Ricart &amp; Agrawala mutual exclusion</figcaption></figure>
+
+
+
+<p>Figure 3 illustrates how the algorithm deals with
+contention. It shows a system of three
+processes. Processes 0 and 2 want the same resource
+at approximately the same time. Process 0 sends a request
+with a Lamport timestamp of 4. Process 2 sends a request
+with a timestamp of 8 (Figure 3a).</p>
+
+<p>Process 1 is not interested
+in the resource, so it simply responds to both messages
+(Figure 3b).</p>
+
+<p>When Process 0 receives the <em>Request</em> message
+from Process 2, it compares the timestamp on that message (8)
+with the timestamp in the message it sent (4). Since the
+timestamp in its message is earlier (it is immaterial whether
+P0 really did send the message earlier), it will <em>not</em> send
+a response to Process 2. Instead it adds Process 2 to a queue
+where it will hold all request messages until it is done
+with the resource. Meanwhile, when Process 2
+compares timestamps, it finds that the timestamp on the message
+from Process 0 is less than the timestamp on its own process,
+so it is obligated to send a response to Process 0 and
+just wait to get all responses before it can get the lock and use
+the resource. Process 0 now gets responses from
+all processes and can use the resouce (Figure 3c).</p>
+
+<p>When Process 0 is done with the resource, it sends
+a <em>response</em> to every process in its queue for that resource.
+In this case, only Process 2 is in the queue, so Process 2
+gets a response. Now Process 2 has received responses from
+all processes and can use the resource (Figure 3d).</p>
+
+<p>One problem with this algorithm is that a single point of failure
+has been replaced with <em>n</em> points of failure. A poor algorithm
+has been replaced with one that is essentially <em>n</em> times less
+reliable. All
+is not lost. We can patch this omission up by having the sender
+always send a reply to a message: either an OK or a NO. When the
+request or the reply is lost, the sender will time out and retry.
+Still, it is not a great algorithm and involves quite a bit of
+message traffic.</p>
+
+<p>Both the Ricart &amp; Agrawala and Lamport algorithms are contention-based
+algorithms. With Lamport&#8217;s algorithm, everyone immediately responds
+to a mutual exclusion request message whereas with the Ricart &amp; Agrawala,
+a process that is using the resource will delay its response
+until it is done. This avoids the need to send <em>release</em> messages
+and reduces messaging traffic. The Ricart &amp; Agrawala algorithm requires
+<em>2(N&#8211;1)</em> messages while the Lamport algorithm requires <em>3(N&#8211;1)</em> messages.
+The decision of whether a process has the lock on the resource is also
+different. The Lamport algorithm causes every process to have
+a replicated request queue and the decision of whether one has a
+lock is based on whether one is first (earliest) in that
+queue. With Ricart &amp; Agrawala, the decision of whether one
+has a lock is based on whether acknowledgements have
+been received from everyone else in the group.</p>
+
+<h1 id="electionalgorithms">Election algorithms</h1>
+
+<p>We often need one process to act as a coordinator. It may not matter
+which process does this, but there should be group agreement on
+only one. An assumption in election algorithms is that all processes
+are exactly the same with no distinguishing characteristics. Each
+process can obtain a unique identifier (for example, a machine
+address and process ID) and each process knows of every other process
+but does not know which is up and which is down.</p>
+
+<h2 id="bullyalgorithm">Bully algorithm</h2>
+
+<p>The bully algorithm selects the process with the largest identifier
+as the coordinator. It works as follows:</p>
+
+<ol>
+<li><p>When a process <em>p</em> detects that the coordinator is not responding
+to requests, it initiates an election:</p>
+
+<p>a. <em>p</em> sends an election message to all processes with higher numbers.</p>
+
+<p>b. If nobody responds, then p wins and takes over.</p>
+
+<p>c. If one of the processes answers, then p&#8217;s job is done.</p></li>
+<li><p>If a process receives an election message from a lower-numbered
+process at any time, it:</p>
+
+<p>a. sends an OK message back.</p>
+
+<p>b. holds an election (unless its already holding one).</p></li>
+<li><p>A process announces its victory by sending all processes a message
+telling them that it is the new coordinator.</p></li>
+<li><p>If a process that has been down recovers, it holds an election.</p></li>
+</ol>
+
+<h2 id="ringalgorithm">Ring algorithm</h2>
+
+<p>The ring algorithm uses the same ring arrangement as in the token
+ring mutual exclusion algorithm, but does not employ a token this
+time.
+Processes are physically or logically ordered so that each knows
+its successor.</p>
+
+<p>If any process detects failure, it constructs an <strong>election message</strong>
+with its process ID (e.g., its network address and local process ID)
+and sends it to its neighbor.</p>
+
+<p>If the neighbor is down, the process skips over it and sends the message
+to the next process in the ring.
+This process is repeated until a running process
+is located.</p>
+
+<p>At each step, the process adds its own process ID to the list in
+the message and sends the message to its living neighbor.</p>
+
+<p>Eventually, the <em>election</em> message comes back to the process that started it.
+The process realizes this because it gets an <em>election</em> message
+with its own process ID at the head of the list.
+The list of processes in the message represents the list
+of all live processes in the system.
+The process then picks either the highest or lowest process ID
+in the list and sends out a message to the group informing
+them of the new coordinator. The method for picking the leader
+has to be consistent so that even if multiple election messages circulated,
+each process that started an election will come to the same decision
+on who the coordinator is.</p>
+
+<figure>
+<img src="images/mutex-ring.png" alt="Figure 4. Ring election algorithm" id="mutex-ring" title="Ring election algorithm" style="width:550px;" />
+<figcaption>Figure 4. Ring election algorithm</figcaption></figure>
+
+
+
+<p>Figure 4 shows a ring of six processes (0&#8211;5). Process 1 detects that
+the coordinator, Process 5, is dead. It starts an election by
+sending an <em>election</em> message containing its
+process ID to its neighbor, Process 2
+(Figure 4a).</p>
+
+<p>Process 2 receives an <em>election</em> message and sends an
+<em>election</em> message to
+its neighbor with the ID of Process 2 suffixed to the list (Figure 4b).</p>
+
+<p>The same sequence of events occurs with Process 3, which adds
+its ID to the list it received from Process 2 and sends
+an <em>election</em> message to process 4.
+Process 4 then tries to send an <em>election</em> message to
+Process 5 (Figure 4c).</p>
+
+<p>Since process 5 is dead and the message is not
+delivered, Process 4 tries again to its neighbor once removed:
+Process 0 (Figure 4d).</p>
+
+<p>Because Process 5 never received the <em>election</em> message, its
+ID does not appear in the list that Process 0 receives.
+Eventually, the message is received by Process 1, the originator
+of the election (Firgure 4e). Process 1 recognizes that it is
+the initiator of the election because its ID is the first in
+the list of processes.</p>
+
+<p>It then picks a leader. In this implementation,
+it chooses the highest-numbered process ID in the list, which is that of
+process 4. It then informs the rest of the group of the
+new coordinator (Figure 4f).</p>
+
+<h2 id="changandrobertsringalgorithm">Chang and Roberts Ring Algorithm</h2>
+
+<p>One inefficiency with the ring algorithm is that if multiple
+processes all discover a dead coordinator and start an
+election, multiple <em>election</em> messages will circulate
+concurrently. The <strong>Chang &amp; Roberts Ring Algorithm</strong>
+optimizes the Ring algorithm to kill off <em>election</em>
+messages when it is safe to do so. That is, a process can
+kill (not forward) an <em>election</em> message if it knows
+that another message is circulating that will <em>not</em>
+be killed off by any other process. </p>
+
+<p>With the Chang &amp; Roberts algorithm, the coordinator
+selection is performed dynamically as the message
+circulates, so the <em>election</em> message contains only
+one process ID in it - the highest numbered one
+found so far. Think about the ring algorithm:
+if our goal is to pick the largest process ID to be
+the coordinator, there is no point in ever affixing
+smaller process IDs to the list in the message.</p>
+
+<p>Every <em>election</em> message starts with the process
+ID of the process that started the message.
+If a process sends an <em>election</em> message,
+it identifies itself as a <strong>participant</strong> in the election
+regardless of whether it
+initiated the election or forwarded a received <em>election</em> message,</p>
+
+<p>To pick the surviving process with the highest-numbered process ID,
+any process that detects the death of the current leader
+creates an <em>election</em> message containing its process ID and sends
+it to its neighbor, as was done in the ring algorithm.
+Upon receiving an <em>election</em> message, a process makes
+the following decision:</p>
+
+<ul>
+<li><p>If the process ID of the message is greater than the process ID
+of the process, forward the message to the neighbor as in the ring
+algorithm. The current process is not a contender to become
+the coordinator since the <em>election</em> message tells us
+that a process ID with a higher number exists.</p></li>
+<li><p>If the process ID of the message is less than the process ID of
+the process then replace the process ID of the message with the
+process ID of the process. Then forward the message to the neighbor
+as in the ring algorithm. This is the opposite of the previous
+decision. The current process has a higher process ID than
+any other process that encountered this <em>election</em> message,
+so it has a chance of becoming named coordinator. </p></li>
+<li><p>If the process ID of the message is less than the process
+ID of the process <em>and</em> the process is already a
+participant, then discard the message. If the process
+is a participant, that means it already sent an <em>election</em>
+message to its neighbor with either itself or a higher-numbered
+process ID. Forwarding this message on would be redundant.</p></li>
+<li><p>If the process ID of the message is the same as the
+process ID of the process, that means that the message
+has circulated completely around and no higher-numbered
+process encountered the message since it would have
+replaced the message&#8217;s ID with its process ID. The process
+therefore knows it is the coordinator and can inform the
+rest of the group.</p></li>
+</ul>
+
+<h1 id="networkpartitioning">Network partitioning</h1>
+
+<p>One thing to watch out for with election algorithms
+is <strong>network partitioning</strong>: the case where processes
+and machines do not die but a network of
+machines is segmented into two or more sub-networks
+that cannot communicate with each other. For example,
+a machine might become disconnected from the network
+or a connection between two switches or routers may
+break. In this case, the machines in each segment of
+the network will elect their own coordinator.
+This can lead to the launch of replicated processes,
+one for each network segment and a lack of any coordination
+between segments. Detecting whether a machine is dead
+or whether it is on a partitioned network requires
+using an alternate communication mechanism, such
+as a redundant network or some shared resource to which
+all group members can read and write.</p>
+
+<h1 id="referencespartial">References (partial)</h1>
+
+<ul>
+<li><p>Distributed Systems: Concepts and Design, G. Coulouris, J. Dollimore, T. Kindberg, (c) 1996 Addison Wesley Longman, Ltd., pp. 300&#8211;309 (section 10.4)</p></li>
+<li><p>Distributed Operating Systems, Andrew Tanenbaum, (c) 1995 Prentice Hall.</p></li>
+</ul>
+
+<p>This is an updated version of a document originally created on November 4, 2012.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2018 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: November  1, 2018 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/9cbf3407-e64c-4dd9-b644-238d707b91b3"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

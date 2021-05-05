@@ -1,0 +1,304 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Virtual Synchrony</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Virtual Synchrony</h1>
+								<h2></h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>February 22, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Atomic multicast with group management</p>
+</blockquote>
+
+<h2 id="faulttolerance">Fault tolerance</h2>
+
+<p>We often deploy distributed systems in an attempt to achieve both high availability and high scalability. High availability refers to the fraction of time that the system is up and running and capable of doing whatever it is supposed to do. High scalability refers to the ability to expand the system to handle higher amounts of traffic.
+Both of these goals are often achieved via <strong>redundancy</strong>: adding replicated components to the system. Redundant components can step in when some components break, thus helping with availability. <strong>Active-passive</strong> replication means that the redundant components are generally not servicing requests but are ready to take over for a failed component. They will get updates, possibly asynchronously, but will not handle client requests. <strong>Active-active</strong> replication means that the workload is distributed among all components, thus helping with scalability as well as availability. Each component only handles a fraction of the workload.</p>
+
+<p>We examined fault tolerance previously but understanding the nature of certain faults is crucial to designing robust communication mechanisms.
+Faults may be either <strong>fail-silent</strong> or <strong>Byzantine</strong>. With fail-silent faults, the failed system is effectively dead: it takes no input and produces no output. With Byzantine faults, the system continues to run but runs in a faulty manner, producing incorrect output. With a fail-silent system, the system can remain silent. This is called <strong>fail-stop</strong> operation. A process that exited or a computer that was shut off are examples of a <strong>fail-stop</strong> system. Alternatively, we may have an environment where the system comes back online. For example, the failed computer may restarted or the dead process may be relaunched. This is called <strong>fail-restart</strong> (or <strong>fail-recover</strong>) operation. The consideration with fail-restart, as we&#8217;ll shorty see, is that the recovered process may be unaware of what transpired in the overall system during the time it was dead.</p>
+
+<p>Communication systems may be <strong>synchronous</strong> or <strong>asynchronous</strong>. A synchronous system is one where there is a known time limit to delivering, receiving, and processing a message. A USB link is an example of a synchronous system. An asynchronous system, on the other hand, is one where there is no time bound on when a message arrives and gets processed. The IP network is an example of an asynchronous communication system. Arbitrary routes and queueing delays destroy any assurance of fixed time limits. Moreover, process and kernel thread scheduling provides another level of uncertainty for when the packet will make its way through the network protocol stack and to the application.</p>
+
+<p>In designing distributed systems, we generally assume that processes are <strong>concurrent</strong>, <strong>asynchronous</strong>, and <strong>failure prone</strong>. In this environment, we assume we have &#8220;correct&#8221; processes. If the processes are working, they are working correctly and produce good data. If they fail, they exhibit fail-silent behavior. We use mechanisms such as error-detecting codes to detect possible network-based corruption and assume that we have fail-silent, asynchronous communications.</p>
+
+<p>We have a fundamental problem in detecting failure in this environment. The <strong>two armies problem</strong> provides an illustration.</p>
+
+<div class="box">
+Suppose there are two divisions, _A_ and _B_, of allied forces that plan to attack the enemy. Both must attack in order to win; if only one division attacks it will be vanquished. The divisions are far apart and communication is via messenger (this story is set in ancient days before radio communication).
+
+<p>Division A sends a messenger to B to say &#8220;let&#8217;s attack at dawn.&#8221; The communication line is faulty as the messenger may be killed or captured along the route. Therefore, the A&#8217;s general requests that the messenger return to ensure that the message was delivered (this is a message acknowledgement). The messenger does indeed return. Can the divisions attack with confidence that both Have the message? Not really.</p>
+
+<p>The general of A knows that division B received the message. However. The general of B does not know if the messenger returned successfully to A. If the messenger didn&#8217;t make it back to A then A will not attack and B, fighting on its own, will lose. To fix this issue, B requests the messenger return back to B (acknowledging the acknowledgement). Now B knows that A received the acknowledgement. Are we good?</p>
+
+<p>Unfortunately, not. Now A does not know if the messenger made the trip back to B. If B does not receive the message that A got the acknowledgement, it will not attack. We can continue this process indefinitely, sending more and more levels of acknowledgements. Although, we may have a high level of confidence that the messages are being received, we will never know for sure.</p>
+
+</div>
+
+<p>The two-armies problem demonstrates that it is impossible to achieve consensus with asynchronous faulty processes. We have no foolproof way of determining whether a process has truly failed or whether it is alive but either not communicating or not communicating quickly enough. This becomes a fact of life in distributed systems.</p>
+
+<h2 id="statemachinereplication">State machine replication</h2>
+
+<p>It is usually not sufficient to replicate systems by simply having extra hardware with installed software. We need the <em>state</em> of the software to be <em>synchronized</em> among all the replicas. For example, if a database field, file, or setting is modified on one system, it should be modified on all the replicas. This will ensure that client requests can be processed identically regardless of which server the client contacts.</p>
+
+<p>The set of modifications that take place on any system can be viewed as a <strong>state machine</strong>. A state machine refers to any program that takes inputs, produces outputs, and maintains internal state (which may affect the outputs it yields). A <strong>replicated state machine</strong> is a set of identical state machines (programs) that are currently running on several servers. If each one of them is fed the same set of inputs in the same sequence, each will update its internal data (e.g., file changes or variables) in the same way and produce the same outputs.</p>
+
+<p>We refer to the set of replicated processes running on a set of servers as a <strong>process group</strong>. The process group enables load balancing as queries can be sent to any server. Modifications will, of course, have to be sent to all replicas but read operations far outnumber writes in many applications. The process group also enables fault tolerance since it is acceptable for some replicas to die as long as others are still running and can handle incoming requests.</p>
+
+<p>For the process group to function correctly, it is important for all the replicas to keep the same state. To do this, each of the processes in the process group needs to receive inputs in the same order. More precisely, <em>causally-related</em> messages should be processed in the same order. Ordering of messages among concurrent client processes should not affect the state of outputs produced by the replicas.</p>
+
+<p>We achieve fault tolerance because we have replicated systems &#8211; all processing the same inputs and making the same set of changes. However, if one of the replica processes is dead, it will not receive any updates. When it restarts (for example, the system reboots), its data (state) will not be up to date; the system will be in a state <em>prior</em> to the updates. It has <strong>stale state</strong> (meaning it has old data).</p>
+
+<p>The two-army problem and our environment of asynchronous, faulty processes gives us the situation where we cannot reliably detect a failed process. For instance, the process may be alive but it might be slow to respond and we may time out waiting for a response and thus assume it is dead. Even if the process is dead, it may recover (i.e., be restarted) at a later time and have stale state.</p>
+
+<p>We can deal with this problem by propagating to the entire group the knowledge that we <em>think</em> a process failed. If we suspect that a process is dead, we will simply take it out of the group. If it recovers (or was just slow to respond earlier), it will have to re-join the group.</p>
+
+<h2 id="virtualsynchrony">Virtual synchrony</h2>
+
+<p>Virtual synchrony gives us a model for managing a group of replicated processes (aka state machines) and coordinating communication with that group. With virtual synchrony, a process can join or leave a group (one of the replicated servers) &#8211; or be evicted from the group.</p>
+
+<p>Any process can send a message to the group and the virtual synchrony software will implement an <strong>atomic multicast</strong> to the group. Recall that an atomic multicast is the strongest form of reliable delivery, ensuring that a message must either delivered to <em>all</em> processes in the group or else <em>none</em> of them can process the message. This all-or-nothing property is central to keeping all members of the group synchronized. Message ordering requirements can often be specified by the programmer &#8211; libraries provide different options &#8211; but we nominally expect causal ordering of any messages that effect changes so that we can ensure consistency among the replicas.</p>
+
+<h2 id="views">Views</h2>
+
+<p>Virtual synchrony defines a <strong>group view</strong> as the set of processes that are currently in the group. These are live processes that are capable of communication. Each group multicast message is associated with a group view and every process in the system has the same group view. There will never be the case where one process will see a different set of group members than another process.</p>
+
+<figure>
+<img src="images/vc-400.png" alt="Group membership and view changes" id="view_changes" title="Group membership and view changes" width="400" />
+<figcaption>Group membership and view changes</figcaption>
+</figure>
+
+<p>Whenever a process joins or leaves a group &#8211; or is forced out of a group, the group view changes. This change information will be propagated to all group members. After all, we need to ensure that everyone has the same group view. Group view information is shared with a <strong>view change</strong> message. This is a multicast message that announces a process joining or leaving a group.</p>
+
+<p>Since we cannot reliably detect process failure, we rely on timeouts to <em>assume</em> that a process is dead. If any process times out waiting for a response from a process, a group membership change will take place and that non-responding process will be removed from the group. Since it is no longer in the group, it will not receive any messages sent to the group.</p>
+
+<h2 id="groupmembershipevents">Group membership events</h2>
+
+<p>Group members may receive any of three types of events:</p>
+
+<ol>
+<li><p><strong>Regular message</strong>. This message is simply treated as an input to the program (the state machine), although its delivery to the application may be delayed based on message ordering policy and our ability to be sure that other group members have received the message.</p></li>
+<li><p><strong>View change</strong>. A view change is a special message that informs the process of a group membership change. This will affect any multicasts that are generated by the process from this point forward. We will discuss the view change in more detail shortly.</p></li>
+<li><p><strong>Checkpoint request</strong>. If a process joins a group, it needs to bring its state (internal state as well as stored data) up to date so that it contains the latest version and is synchronized with the other replicas. To do this, a process may send a <em>checkpoint request</em> message to any other process in the group. That process will send its current state to the requesting process.</p></li>
+</ol>
+
+<h2 id="viewchanges">View changes</h2>
+
+<p>A view change is a bit more complex than simply informing a process that there are more or fewer members in the group. Suppose we have a view change because a new process is joining the group. At the same time, we have some regular messages being multicast to the group. We cannot allow the condition where some messages may be delivered to the old group and some other messages may be delivered to the new group because the sender received the <em>view change</em> message.</p>
+
+<p>We need to guarantee atomicity: <em>all or nothing</em> behavior. A message <em>m</em> must be delivered to <em>all</em> processes in a group view <em>G</em> before any of the processes in the group will apply the <em>view change</em> message or else it must be delivered to every process in the new group view <em>G'</em>. Reliable processes with this property are <strong>virtually synchronous</strong>. Any multicast must take place within a specific group view and cannot straddle two views. Hence, a view change acts as a <strong>barrier</strong>.</p>
+
+<div class="box">
+Recall the distinction between <em>receiving</em> a message and <em>delivering</em> the message to the application. A system cannot control when a message is received: that’s up the whims of the network. However, the network stack or messaging API in the application can control when any message is presented, or <em>delivered</em>, to the application. 
+</div>
+
+<h2 id="isistoolkit">Isis toolkit</h2>
+
+<p>The <a href="http://www.cs.cornell.edu/info/projects/isis/">Isis toolkit</a>, created at Cornell University, is an example of a fault-tolerant distributed system that provides virtual synchrony. It is designed to provide high membership update rates and demonstrated an ability to handle hundreds of thousands of events per second on commodity hardware back in 2009.</p>
+
+<p>Isis provides distributed consistency. Applications can create and join groups and send multicasts to group members. All applications see the same events in an equivalent order (“equivalent order” generally means a causal order, although that can be configured in the toolkit API). New group members can update their group state to that of an existing group member. <em>View change</em> operations are processed in a sequential and fault tolerant manner. That is, a view change cannot take place if a previous view change is in progress.</p>
+
+<p>Isis has been used by the New York Stock Exchange, the Swiss Exchange, the U.S. Navy Aegis Weapon System, and many other environments. Systems that are conceptually similar to Isis include Microsoft’s scalable cluster service, IBM’s Distribution and Consistency Services (DCS), CORBA (Common Object Request Broker Architecture; a feature-rich RPC framework), and Apache Zookeeper (a configuration, synchronization, and naming service).</p>
+
+<h2 id="isisimplementation">Isis implementation</h2>
+
+<p>The Isis toolkit is designed to work with commodity hardware and commodity networks. Message transmission is assumed to be asynchronous (for example, IP). Messages may also be received in a different order than they were sent.</p>
+
+<p>To achieve virtual synchrony, the toolkit must preserve the illusion that events take place in the same order at all replicas. Isis uses TCP to achieve reliable point-to-point delivery. Multicasting is implemented through multiple unicasts: a sender sends a message to each group member. Even though TCP provides reliable delivery thanks to retransmitting lost or damaged packets, we still do not have assure that <em>all</em> group members will receive a multicast message since there is a chance that the sender may fail before the multicast send has completed.</p>
+
+<h3 id="groupmembershipservice">Group Membership Service</h3>
+
+<p>A central component of the Isis toolkit is the <strong>Group Membership Service</strong> (<strong>GMS</strong>). This is a network service that maintains the systemwide view of group members. Whenever any process <em>p</em> suspects a failed process <em>q</em>, it reports it to the GMS. The GMS reports the view change to every process that had a connection with <em>q</em> and removes <em>q</em> from the process group. If <em>q</em> is alive (or restarts), it will need to rejoin the group. The GMS maintains the master view of group memberships and propagates that information to all the members so everyone has the same knowledge of group members.</p>
+
+<h3 id="statetransferandviewchange">State transfer and view change</h3>
+
+<p>When a new or restarted member joins a group, it will need to update itself to get the current state of the system for that group. It does this by sending a <strong>checkpoint request</strong> message to any existing member of the group. This initiates a state transfer where the group member sends a dump of its state to the new member.</p>
+
+<p>A state transfer is part of a group-wide view change. Even though the state transfer may take some time to complete, it — as well as the overall view change — has to be treated as an <em>instantaneous event</em> by the system. We have to ensure that any messages not yet delivered to any non-faulty processes get delivered before the view change is complete since those earlier messages were sent to members in the previous group. More formally, we have to guarantee that all messages sent to view G<sub>i</sub> are delivered to all non-faulty processes in G<sub>i</sub> before the view change to G<sub>i+1</sub>.</p>
+
+<h3 id="messagedelivery">Message delivery</h3>
+
+<p>A process will loop through its list of group members and send a message to each member reliably using TCP. However, these received messages cannot be delivered to the application unless the process is certain that <em>every</em> group member has received the message.</p>
+
+<p>In cases where the sending process does not fail (most of the time!), a subsequent message, in addition to carrying the message payload, also indicates that the previous message has been successfully transmitted to all recipients (this is a form of <em>piggyback acknowledgements</em>, where we avoid sending a separate acknowledgement message but rather include the acknowledgement in the next message that we transmit). At that time, a process can deliver the received message so it can be processed by the application. If a process has a received message and has been told that all other group members have also received the message, that message is considered to be <strong>stable</strong>. Until that time, the received message is considered to be <strong>unstable</strong>. Stable messages can be delivered to applications; unstable messages cannot be delivered and sit in a hold-back queue.</p>
+
+<h3 id="messagedeliveryandsenderfailure">Message delivery and sender failure</h3>
+
+<p>If a process died either partway through multicasting a message (so that only some group members received it) or before it was able to inform the group members that the message was successfully received by every group member, we may have unstable messages sitting in the holdback queue at some processes in the group.</p>
+
+<p>When the death of the sender is detected, the process is removed from the group and a view change will take place. However, we have the situation where messages were sent to some, but possibly not all, group members before the sender died. We need to handle this situation during a view change and figure out how to turn unstable messages into stable messages.</p>
+
+<p>Upon receiving a <em>view change</em> message, a process receives will multicast all unstable messages to the entire group (the group prior to the new group defined by the view change). Effectively, each process takes over the delivery from the original, failed, sender. Note that we may have a flurry of activity with several processes sending identical messages to all group members. Each message must be uniquely identified (e.g., a unique sequence number, such as a totally-ordered Lamport timestamp) and each process must discard duplicate messages.</p>
+
+<p>When each process is done transmitting its unstable messages, it sends a <strong>flush</strong> message to each group member and waits for an acknowledgement. An acknowledgement means that the receiver has delivered all messages to the application. The view change is complete when the <em>flush</em> messages from all group members have been acknowledged. At this time we know that there are no undelivered messages in any process' hold-back queue that were sent during the previous group view. Any messages sent from this point onward will be sent to the new group view.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>Virtual synchrony provides a highly efficient way to send group messages with atomic delivery, ensuring that all group members are consistently replicated. It is not a transactional system, which would require resource locking and one-message-at-a-time processing. Message ordering policies can be configured in the framework and are generally causal within a view, thus ensuring that related events are consistently ordered at all replicas. A view change acts as a barrier so that all messages that were sent in an earlier view will be delivered within that view.</p>
+
+<p>A group membership service (GMS) provides a consistent view of group membership. If any process suspects a failed process (e.g., because of a timeout to a message), it informs the GMS, which removes it from the group. If any process wants to join a group, it contacts the GMS service as well. Whenever the group membership changes, the GMS initiates a <em>view change</em>.</p>
+
+<p>Every process sends messages to all group members via a reliable multicast (using TCP and looping through a list of group members). Receiving processes can acknowledge these messages asynchronously. When the sender has confirmation that every group member has received a specific message, that message is considered <em>stable</em> and can be delivered to the application. The sender will send messages to the group members informing them which messages are stable. These messages are often piggybacked together with other data that is being sent to the group.</p>
+
+<p>If a sending process dies partway through a multicast, any messages that it has sent and not acknowledged are <em>unstable</em> and may not have arrived at all processes in the group. The dead sender is removed from the group, forcing a view change to take place.</p>
+
+<p>During a view change, each process sends all its unstable messages to all group members and waits for acknowledgements. Any messages that a process receives that are not duplicates are considered stable and are delivered to the application. Finally, each process sends a <em>flush</em> message to the group. A group member acknowledges every <em>flush</em> message it received after it has delivered all of its now-stable messages to the application. When all flushes are acknowledged, the view change is complete.</p>
+
+<p>The biggest deficiency in the virtual synchrony model is its inability to deal with network partitions. Quite simply, the framework assumes that they do not occur.
+If one group of processes becomes segmented from another, each subgroup will assume that the other subgroup is dead. Each subgroup can then continue operating on its own but will get differing inputs and the state of both subgroups will diverge. We will later remedy the partition problem with consensus protocols.</p>
+
+<p>The software for virtual synchrony must also be designed to support the failure of the group management service. Fortunately, it does not contain any information that group members do not have - group view membership is propagated to all live processes. Hence, any live process can function as a Group Management Service and, if it dies, surviving members can elect another process to take on that role (we will look at elections in the next lecture).</p>
+
+<hr />
+
+<style>
+span.small {
+font-size: 50%;
+}
+</style>
+<span class="small"> This is a 2021 modification of an original document written in October 2016. </span>
+
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

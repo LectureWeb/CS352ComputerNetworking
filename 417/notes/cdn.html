@@ -1,0 +1,298 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Content Delivery</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Content Delivery</h1>
+								<h2>Content Delivery Networks - Akamai</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>April 14, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal:</strong>
+Provide a highly-scalable infrastructure for caching and serving content from
+multiple sources.</p>
+</blockquote>
+
+<p>Various approaches have been used to making a site more scalable and available:</p>
+
+<dl>
+<dt><strong>Proxy</strong> servers</dt>
+<dd> Organizations can pass web requests to caching proxies set up inside their network. Clients contact the proxy for a copy of the content. If it does not have it, then it makes a request to the server that hosts it. After that, users who need the content can get it directly &#8211; and quickly &#8211;from the proxy server. This can help a small set of users but you’re out of luck if you are not in that organization.</dd>
+
+<dt><strong>Clustering within a datacenter with a load balancer</strong></dt>
+<dd> Multiple servers within a datacenter can be load-balanced. Incoming requests will be distributed among a set of replicated servers. However, they all fail if the datacenter loses power or internet connectivity.</dd>
+
+<dt><strong>Multihoming</strong></dt>
+<dd> Machines can be connected with links to multiple networks served by multiple ISPs
+to guard against ISP failure. However, protocols that drive dynamic
+routing of IP packets (BGP) are often not quick enough to find new
+routes, resulting in service disruption.</dd>
+
+<dt><strong>Mirroring at multiple sites</strong></dt>
+<dd> The data can be served at multiple sites, with each machine&#8217;s content synchronized
+with the others. However, synchronization can be difficult.</dd>
+</dl>
+
+<p>All these solutions require additional capital costs. You&#8217;re building
+the capability to handle excess capacity and improved availability even
+if the traffic never comes and the faults never happen.</p>
+
+<p>A <strong>content delivery network</strong> (<strong>CDN</strong>) is a service deployed across a large
+set of servers that caches content and distributes it to users.
+These servers that are placed at various points at the edges of the Internet, at various ISPs,
+so they can be located close to the users who access that content.</p>
+
+<p>By serving content that is replicated on a collection of servers,
+traffic from the main (master) server is reduced. Because some of the caching
+servers are likely to be closer to the requesting users, network latency is reduced.
+Because there are multiple servers, traffic is distributed among them. Because
+all of the servers are unlikely to be down at the same time, availability is increased.
+Hence, a CDN can provide highly increased performance, scalability, and availability for content.</p>
+
+<h2 id="akamai">Akamai</h2>
+
+<p>We will look at some parts of a CDN that&#8217;s operated by Akamai.
+The company was born from research at MIT that focused on
+&#8220;inventing a better way to deliver Internet content.&#8221;
+A key issue was the <strong>flash crowd</strong> problem: what if your
+web site becomes <em>really</em> popular all of a sudden? Chances are,
+your servers and/or ISP will be saturated and a vast number of people
+will not be able to access your content. This became known as
+the <a href="http://en.wikipedia.org/wiki/Slashdot_effect">slashdot effect</a>.</p>
+
+<p>In 2021, Akamai ran on approximately 325,000 servers in around 1,400 networks distibuted across approximately 130 countries.
+Akamai&#8217;s traffic reaches volumes of over 30 terabits per second.
+Akamai&#8217;s features expanded and evolved over time. We will not attempt
+to cover their service. Instead, we will look at some core mechanisms as an example of
+how a CDN can be architected. These mechanisms are shared by CDNs from other companies as well.</p>
+
+<p>Akamai tries to serve clients from <strong>nearest</strong>, <strong>available</strong> servers
+that are <strong>likely</strong> to have requested content. According to the company&#8217;s statistics,
+85% percent of the world&#8217;s Internet users are within a single network hop of an Akamai CDN server.</p>
+
+<p>To access a web site, the user’s computer first looks up a domain name via DNS.
+A <strong>mapping system</strong> collects information about the state of the Akamai network and locates the caching server that can serve the content.
+Akamai deploys custom <strong>dynamic DNS</strong> servers and customers who use Akamai’s services
+configure their DNS server with an alias that points to an Akamai domain name that has the company&#8217;s domain encoded within it.
+Akamai&#8217;s dynamic DNS servers use the requestor’s address to find the <strong>nearest</strong>
+edge server that is likely to hold the cached content for the requested site.</p>
+
+<p>When an Akamai DNS server gets a request to resolve a host name, it chooses the
+IP address to return based on:</p>
+
+<ul>
+<li>domain name being requested</li>
+<li>server health</li>
+<li>server load</li>
+<li>user location</li>
+<li>network status</li>
+<li>load balancing</li>
+</ul>
+
+<p>Akamai monitors the performance of their edge servers and can perform <strong>load shedding</strong> on specific content servers;
+if servers get too loaded, the DNS server will not respond with those addresses.</p>
+
+<p>Now that the client has an IP address of an edge content server, it sends a request for content.
+That edge server may already have the
+content and be able to serve it directly.
+Otherwise, the edge server needs to get the content.
+Edge servers are organized into regions; a set of servers in the same data center at an ISP are know about each
+other and share the region. A server that needs content will first send a broadcast request to its peers within
+the same region. If they have the content, they can send it quickly. This is a low-overhead request with a short timeout.
+Akamai organizes its servers into a <strong>tiered hierarchy</strong>. If the edge server cannot find the content in its region,
+it will send a request to its <strong>parent server</strong>. If the parent does not have the content, it will also broadcast
+a request to a group of other parent servers.
+If the content is not found, the parent will need to
+contact the <strong>origin server</strong> (the server at the company that hosts the content)
+via its <strong>transport system</strong>.</p>
+
+<p>To do this efficiently, Akamai manages an <strong>overlay network</strong>: the
+collection of its thousands of servers and statistics about their availability
+and connectivity. Akamai generates its own map of overall IP network topology
+based on BGP (Border Gateway Protocol) and traceroute data from various points on the network as
+well as probe messages between various content servers and between various Akamai content servers and origins.</p>
+
+<p>Content servers report their load along with bandwidth and latency measurements to a monitoring application.
+The monitoring application publishes load reports to a local Akamai DNS server, which
+then determines which IP addresses to return when resolving names.</p>
+
+<h2 id="cdnbenefits">CDN benefits</h2>
+
+<p>A CDN, serving as a <strong>caching overlay</strong>, provides three distinct benefits:</p>
+
+<ol>
+<li><p><strong>Caching</strong>: static content can be served from caches, thus reducing the
+load on origin servers.</p></li>
+<li><p><strong>Routing</strong>: by measuring latency, packet loss, and bandwidth throughout
+its collection of servers, The CDN can find the best route to an origin server,
+even if that requires forwarding the request through several of its servers
+instead of relying on IP routers to make the decision. These servers keep open TCP
+connections to avoid the overhead of setting up new connections for each request.</p></li>
+<li><p><strong>Security</strong>: Because all requests go to the CDN, which can handle a
+high <strong>capacity</strong> of requests, it absorbs any
+Distributed Denial-of-Service attacks (DDoS) rather than overwhelming the
+origin server. Moreover, any penetration attacks target the machines in the
+CDN rather than the origin servers. Companies (or a group within a company) that
+runs the CDN service is singularly focused on the IT infrastructure of the service
+and is likely to have the expertise to ensure that systems are properly maintained, updated,
+and are running the best security software. These aspects may be neglected by
+companies that need to focus on other services.</p></li>
+<li><p><strong>Analytics</strong>: CDNs monitor virtually every aspect of their operation, providing
+their customers with detailed reports on the quality of service, network latency, and information
+on where the clients are located.</p></li>
+<li><p><strong>Cost</strong>: CDNs cost money, which is a disadvantage. However, CDNs are an <strong>elastic service</strong>, which is one that can adapt to changing workloads by using more or fewer computing and storage resources. CDNs provide the ability to scale instantly to surges of demand practically anywhere in the world. They absorb all the traffic so you don&#8217;t have to scale up.</p></li>
+</ol>
+
+<h2 id="video">Video</h2>
+
+<p>Video is the most bandwidth-intensiver service on the Internet and has been a huge source of growth for CDNs. As an example, Netflix operates a global CDN called OpenConnect, which contains up to 80 percent of its entire media catalog. Stored (e.g., on-demand) video is, in some ways, just like any other content that can be distributed and cached. The difference is that, for use cases that require video streaming rather than downloading (i.e., video on demand services), the video stream may be reprocessed, or transcoded, to lower bitrates to support smaller devices or lower-bandwidth connections.</p>
+
+<p>Live video cannot be cached. We have seen the benefits of the fanout that CDNs offer by having many servers at the edge; a video stream can be replicated onto multiple edge servers so it doesn&#8217;t have to be sourced from the origin. CDNs can also help with progressive downloads, which is there the user can start watching content while it is still being downloaded.</p>
+
+<p>Today, <strong>HTTP Live Streaming</strong>, or <strong>HLS</strong>, is the most popular protocol for streaming video.
+It allows the use of standard HTTP to deliver content and uses a technique called <strong>Adaptive Bitrate Coding</strong> (<strong>ABR</strong>) to deliver video. ABR support playback on various devices in different formats &amp; bitrates.
+The CDN takes on the responsibility of taking the video stream and converting it into to a sequence of chunks. Each chunk represents between 2 and 10 seconds of video. The CDN then encodes each chunk at various bitrates, with can affect the quality &amp; resolution of that chunk of video. For content delivery, the HLS protocol uses feedback from the user’s client to select the optimal chunk.
+It revises this constantly throughout playback since network conditions can change.</p>
+
+							</section>
+							<footer class="main">
+								Last modified April 16, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

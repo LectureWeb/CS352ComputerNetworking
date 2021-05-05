@@ -1,0 +1,2656 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 416 Exam 3 Study Guide </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+.rqbox {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+        position: relative;
+	width: 15em;
+        background-color: #FDF5B6;
+        border-style: double; border-width: 3px;
+        padding: 0.5em 0.5em 0.5em 0.5em;
+}
+</style>
+</head>
+
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems: Final Exam Study Guide </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<P>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a>  </li>
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a>  </li>
+ 	<li> <a href="../index.html"> CS 416 </a>  </li>
+ 	<li> <a href="../exam/index.html"> Exam info </a>  </li>
+ 	<li> <a href="../exam/study-guide-final.html"> Exam 3 study guide </a>  </li>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main"> <div id="headline">
+<h1> Final Exam study guide </h1>
+<h2> The three-hour study guide for the final exam </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> Latest update: Sun Feb 22 11:43:07 EST 2015
+ </p>
+</div>
+
+<p>
+
+<em>Disclaimer: </em>
+This study guide attempts to touch upon the most
+important topics that may be covered on the exam but does not claim to
+necessarily cover everything that one needs to know for the exam.
+Don't take the <em>three hour</em> time window in the title literally.</p>
+
+<h1>Introduction</h1>
+<p class="nospace">
+Some introductory terms:
+</p>
+<ul>
+<li> <strong>Batch systems</strong>: operating systems that would run a program to completion and then load and run the next program. </li>
+<li> <strong>Multiprogramming</strong>: keep several programs in memory at once and switch between them. </li>
+<li> <strong>Time-sharing</strong>: multiprogramming with preemption, where the system may stop one process from executing and starts another. </li>
+<li> <strong>Portable operating system</strong>: an operating system that is not tied to a specific hardware platform. UNIX was
+one of the early portable operating systems. Windows NT was also written to be architecture-independent. </li>
+<li> <strong>Microkernel operating system</strong>: an operating system that provides just the bare essential mechanisms that are necessary to interact with the hardware and manage threads and memory. Higher-level operating system functions, such as managing file systems, the network stack, or scheduling
+policies, are delegated to user-level processes that communicate with the microkernel via interprocess communication mechanisms (usually messages).
+</li>
+</ul>
+<p>
+A <strong>mechanism</strong> is the presentation of a software abstraction: the functional interface. 
+It defines how to do something.
+A <strong>policy</strong> defines how that mechanism behaves (e.g., enforce permissions, time limits, or goals).
+Good design dictates that we keep mechanisms and policies separate.
+</p>
+
+<h1> Booting an operating system </h1>
+
+<p>
+The <strong>boot loader</strong> is a small program that is run at boot time that loads the operating system.
+Boot loaders are sometimes broken into several stages. A <strong>multi-stage boot loader</strong> starts off
+with a simple boot loader that then loads a more sophisticated boot loader that then loads the operating system.
+This cascaded boot sequence is called <strong>chain loading</strong>.
+</p>
+<p>
+On a classic PC architecture, the computer starts running code in the system's BIOS on startup. This BIOS code performs
+a power-on test, identifies and initializes some hardware, and then loads the first block of the disk, which is
+known as the <strong>master boot record</strong>, or <strong>MBR</strong>. The MBR contains a table identifying
+disk partitions and code that will load the <strong>Volume Boot Record</strong> (<strong>VBR</strong>), which
+is the first disk block of the designated boot partition. This contains code to read successive consecutive blocks to load
+additional blocks that comprise the second stage boot loader. This boot loader may present the user with a 
+choice of operating systems to load and will have the intelligence to read those files from the file system.
+The <strong>Universal Extensible Firmware Interface</strong>, <strong>EFI</strong>, is a successor to the BIOS and contains
+a boot manager that can directly boot files that are placed into an EFI boot partition. It has the intelligence to
+parse several file system types so that it can load a file that does not necessarily occupy consecutive disk blocks.
+The files that are loaded from the EFI partition are often boot loaders for individual operating systems that then load in the file or files that comprise
+the operating system. 
+</p>
+
+<h1> Operating Systems: essential concepts </h1>
+<p>
+An <strong>operating system</strong> does a number of things. It is a program that loads and runs other programs. It 
+provides programs with a level of abstraction so they don't have to deal with the details 
+of accessing hardware. It also manages access to resource, including the CPU (via the scheduler), memory
+(via the memory management unit), persistent files (via the file system), a communications network (via sockets and
+IP drivers), and devices (via device drivers). 
+</p>
+
+<p>
+The operating system runs with the processor in
+<strong>kernel mode</strong> (also called <strong>privileged</strong>, <strong>supervisor</strong>,
+or <strong>system mode</strong>). In this mode, the processor can execute privileged instructions 
+that define interrupt vectors, enable or disable system interrupts, interact with I/O ports, set
+timers and manipulate memory mappings. Programs other than the kernel run with the processor in <strong>user mode</strong>
+and do not have privileges to execute these instructions. A processor running in user mode
+can switch to kernel mode by executing a <strong>trap</strong> instruction, also known as a
+<strong>software interrupt</strong>. Some processors also offer explicit <em>syscall</em> instructions,
+which is a faster mechanism since it does not need to read the branch address
+from a <strong>interrupt vector table</strong> that is stored in memory but keeps the
+address in a CPU register.
+Either of these approaches switches the processor to kernel mode, saves the current
+program counter on the stack, and transfers execution to a predefined address for that trap. Control
+is switched back to user mode and the location right after the trap by executing a <strong>return from exception</strong>
+instruction.
+</p>
+<p>
+Programs interact with operating systems via <strong>system calls</strong>. A system call uses
+the <strong>trap</strong> mechanism to switch control to operating system code running in kernel mode. 
+The operating system can either service the request immediately or may need to put the process
+in a waiting state because it requires data that isn't ready (such as a disk block or network message). 
+If an operating system decides that a process
+has been executing long enough, it may <strong>preempt</strong> that process to let another process run.
+</p>
+
+<p>
+To allow the operating system to get control at regular intervals, a <strong>programmable interval timer</strong>
+can be configured to generate periodic hardware interrupts, for example every 10 milliseconds.
+When the timer generates the interrupt, control is
+transferred to an interrupt handler in the kernel and
+the processor is switched to kernel mode. When the operating system is ready
+to return back, it issues a <em>return from exception</em> instruction. 
+An interrupt or trap results in a <strong>mode switch</strong>, where execution is transferred from user
+mode to kernel mode. If the operating system decides it is time to replace the currently
+executing processes with another process, it will save
+the current process' <strong>context</strong> and restore the saved context of another process. The context includes
+the values of a processor's registers, program counter, stack pointer, and memory mappings. Saving the context
+of one process and restoring that of another is called a <strong>context switch</strong>.
+</p>
+<p>
+The operating system is responsible for managing system devices. The three categories of devices are:
+</p>
+<ul>
+<li> <strong>character devices</strong>: any device whose data that can be thought of as a byte stream. This includes
+keyboard input, mouse movements, printer output, camera inputs, etc.
+</li>
+<li> <strong>block devices</strong>: any device that has persistent storage that is randomly addressable and read or
+written in fixed-size chunks (blocks). These devices include disks and
+flash memory. Because the data is persistent and addressable, it can be cached by the operating system so that future
+requests for cached content may be satisfied from system memory instead of accessing the device again. This cache of 
+frequently-used blocks of data is called the <strong>buffer cache</strong>. Basically, any device that can be used to hold a file system is a block device.
+</li>
+<li> <strong>network devices</strong>: packet-based communications networks.
+</ul>
+<p>
+Devices can be controlled by mapping their control and data registers onto memory. This is called <strong>memory-mapped I/O</strong>.
+The processor can get device status notifications (e.g., data is ready) either via a hardware interrupt or 
+by periodically polling the hardware (e.g., when the interval timer goes off).
+Data can be transferred between the device and system via software that reads/writes the device's memory. This
+is called <strong>programmed I/O</strong> (PIO). Alternatively, the device may have access to the system's memory bus and can
+use <strong>direct memory access</strong> (<strong>DMA</strong>) to transfer data to/from system memory without using
+the processor.
+</p>
+
+<h1> Processes </h1>
+<p>
+A <strong>process</strong> is a program in execution. It comprises the state of the processor's registers and the <strong>memory map</strong> for
+the program. The memory map contains several regions that the operating system allocated and initialized when the process was
+first created. These regions are:
+</p>
+<ul>
+<li> text: the machine instructions </li> 
+<li> data: initialized static and global data </li>
+<li> bss: uninitialized static data that was defined in the program (e.g., global uninitialized strings, numbers, structures) </li>
+<li> heap: dynamically allocated memory (obtained through memory allocation requests) </li>
+<li> stack: the call stack, which holds not just return addresses but also local variables, temporary data, and saved registers</li>
+</ul>
+<p>
+Text and data are present in the stored program. The size of the bss segment is also fixed and known in the
+stored program. The heap and stack are dynamically allocated. A process may be in one of three states: 
+</p>
+<ul>
+<li> <strong>running</strong>: the process is currently executing code on the CPU </li>
+<li> <strong>ready</strong>: the process is not currently executing code but is ready to do so if the operating system would give it the chance </li>
+<li> <strong>blocked</strong> (or <strong>waiting</strong>): the process is waiting for some event to occur (such as a requested I/O operation to complete) and will 
+not ready to execute instructions until this event is ready.</li>
+</ul>
+<p>
+The operating system's <strong>process scheduler</strong> is responsible for moving processes between the <em>ready</em> and <em>running</em> states.
+A system where the operating system can save the context of a running program and restore the context of a ready program to give it a chance
+to run is called a <strong>preemptive multitasking</strong> system. Just about every operating system uses this today. Systems that allow
+program to run until it terminates or blocks on I/O are called <strong>non-preemptive</strong> or <strong>cooperative</strong> systems.
+</p>
+<p>
+The operating system keeps track of all processes via a list. Each element in that list is a pointer to a data structure that contains
+information about one process. This data structure is called a <strong>process control block</strong> (<strong>PCB</strong>). The process
+control block stores all pertinent information about the process, including its state, saved registers, memory map, owner ID, parent process,
+child processes, and open files. Each process is uniquely identified with a <strong>process ID</strong> (<strong>PID</strong>).
+</p>
+<p>
+The basic process manipulation capabilities that POSIX systems (Unix, OS X, Linux, *BSD, etc.) offer include:
+</p>
+<dl>
+<dt> fork </dt>
+<dd> <em>fork</em> creates a new process. The new process is a copy of the parent. It's running the same program and has the same
+open files. It is, however, a copy and not a reference to the parent. Any memory modifications or changes to open file status
+will be invisible to the parent and vice versa.
+</dd>
+
+<dt> execve 
+</dt><dd> <em>execve</em> does not create a new process. It loads
+a new program from the file system to overwrite the current process, reinitializing the
+process' memory map. It is often used immediately after <em>fork</em> to allow have the
+child process created by <em>fork</em> to load and run a new program.
+</dd>
+
+<dt>exit
+</dt><dd> <em>exit</em> tells the operating system to terminate the current process.
+</dd>
+
+<dt> wait
+</dt><dd> <em>wait</em> allows a parent to wait for and detect the termination of child processes. 
+</dd>
+
+<dt> signal
+</dt><dd> <em>signal</em> allows a process to detect signals, which include software exceptions, user-defined signals, and death of child signals.
+</dd>
+
+<dt> kill
+</dt><dd> <em>kill</em> sends a signal to a specified process. The signal can usually be detected with <em>signal</em>. It does not kill the
+process unless the signal is a kill (or terminate) signal.
+</dd>
+</dl>
+
+<h1> Threads </h1>
+<p>
+A thread can be thought of as the part of a process that is related to the execution flow. A process may have 
+one or more threads of execution. A process with more than one thread is said to be <strong>multithreaded</strong>.
+A thread-aware operating system keeps track of processes like we mentioned above: via a list of process control
+blocks. Each PCB now keeps a list of threads for that process (a process will have to have at least 
+one thread). Thread-specific information (registers, program counter, stack pointer, priority) is stored
+within a <strong>thread control block</strong> (<strong>TCB</strong>). All other information that is shared
+among threads in a process is stored within the common PCB. Note that even though each thread gets its own
+stack, the stacks all reside in memory that is accessible to all threads within the process.
+</p>
+<p>
+One advantage of threads is that creating threads and switching among threads in a process is more
+efficient than creating processes and context switching among processes. Threading also makes certain
+types of programming easier since all memory is shared among threads. Moreover, on multi-core or multiprocessor
+systems, the operating system can take advantage of the hardware architecture and schedule threads onto
+multiple processor cores to allow the threads to run in parallel. 
+</p>
+<p>
+Threads can be implemented in, and managed by, the operating system. These are known as <strong>kernel-level threads</strong>.
+It is also possible to create a thread library that will create and manage threads within a process. 
+The library will
+save and restore registers and manage switching stacks among threads. It may ask the operating system for periodic 
+software interrupts to enable it to preempt threads. To the operating system, this appears as one single-threaded process.
+These are called <strong>user-level threads</strong>.
+One caveat with user-level threads is that if one thread blocks on a system call then the entire process is blocked and
+no threads within that process get to run. Most operating systems offer non-blocking versions of system calls that a threading
+library can use to simulate blocking system calls.
+</p>
+<p>
+The advantage of user-level threads is that they can be even more efficient than kernel-level threads since there is
+no need to even do a mode switch into the kernel. The threading library can also have its own thread scheduling algorithm
+that is optimized to a specific job. A disadvantage is that user-level threads cannot take advantage of multiprocessors.
+Threading models can be combined and user-level thread libraries can be used with operating systems that offer kernel
+threads. In the general case, <strong>hybrid threading</strong> maps <em>N</em> user-level threads onto <em>M</em> kernel-level threads.
+</p>
+<p>
+The operations for creating and handling threads are conceptually similar to those for processes. Since threads share
+the same program and memory map, there is no concept of an <em>execve</em> operation. When a new thread is created,
+it starts execution at a given function in the program. When it returns from that function, the thread is destroyed.
+A thread can also exit explicitly via a system call. Instead of a <em>wait</em> operation, where a parent process waits for
+the termination of a child process, threads support a <em>join</em> operation, where any one thread within a process
+can wait for any other thread to terminate. There is no parent-child relationship in threads.
+</p>
+<p>
+Finally, because threads access the same memory, it is important to allow a thread to grab a lock so that all other threads
+that want to grab the same lock will have to wait. The basic mechanism for is a <strong>mutual exclusion lock</strong>.
+</p>
+
+
+<h1> Synchronization </h1>
+<p>
+Threads (or processes) are <strong>concurrent</strong> if they exist at the same time. They are <strong>asynchronous</strong> if
+they need to synchronize with each other occasionally. They are <strong>independent</strong> if they have no dependence on
+each other: it does not affect a thread whether another thread exists or not. Threads are <strong>synchronous</strong> if they
+synchronize frequently so that their relative order of execution is guaranteed.
+</p>
+<p>
+A <strong>race condition</strong> is a bug where the outcome of concurrent threads is dependent on the precise sequence of execution
+(particularly, the interleaving of executing two threads). A race condition typically occurs when two or more threads try to read, write,
+and possibly make decisions based on the contents of memory that they are accessing concurrently.
+The regions of a program that try to access shared resources and cause race conditions are called <strong>critical sections</strong>.
+To avoid race conditions, we want to make sure that only one thread at a time can execute within a critical section.
+Enforcing this is called <strong>mutual exclusion</strong>. <strong>Deadlock</strong> is a condition where there is a circular 
+dependency for resources among threads and each one is waiting on the other to release a lock (a simple case of deadlock is, 
+"<em>I need B before I release my lock on A</em>" while 
+"<em>you need A before you release your lock on B</em>"). <strong>Starvation</strong> is the case where the scheduler
+never gives a thread a chance to run. If a thread doesn't get to run, it may not get a chance to release any resources that
+it is holding.
+</p>
+<p>
+Mutual exclusion can be achieved in a number of was. <strong>Disabling interrupts</strong> when entering a critical section
+ensures that other threads will never get a chance to preempt you and run at all. This is a drastic solution. It also requires
+that you are running in kernel mode and have the privileges to disable interrupts. Moreover, doing so on a multiprocessor 
+system will usually disable interrupts only on a single processor, allowing threads to run on other processors and access
+the critical section. <strong>Test and set locks</strong> (<code>if (!locked) lock = 1</code>)
+implemented in software are a simple approach but a buggy one
+because they introduce a race condition: a thread can be preempted between testing the value of a lock and setting it (grabbing it).
+This can allow multiple threads to get the same lock.
+</p>
+<p>
+Processor manufacturers have introduced <strong>atomic instructions</strong> that can perform operations such as test-and-set
+as one indivisible operation, meaning that another thread cannot preempt the sequence of operations and they all execute 
+sequentially and indivisibly. Some of these instructions are:
+</p>
+<dl>
+<dt> test-and-set </dt>
+<dd>
+Set a memory location to 1 and return the previous value of the location. If the returned value is a 1 that means
+that somebody already grabbed the lock. If the value is 0 then you know that there was no lock before you executed
+the instruction and that you grabbed it while running the instruction.
+</dd>
+
+<dt> compare-and-swap</dt>
+<dd>
+Compare the value of a memory location with an old value that is passed to the instruction. If the two values match then write
+the new value into that memory location.  With this instruction, we set a memory location to a specific value
+<em>provided that</em>  that somebody did not change the contents since we last read them. If they did, our new value will not be set. 
+</dd>
+
+<dt> fetch-and-increment</dt>
+<dd>
+Increment a memory location and return the previous value of that location. This is analogous to the deli counter
+number dispensing machine that gives out incrementally increasing numbers. You grab a ticket (fetch-and-increment)
+and wait until it's your turn. When you're done, you increment turn so that the thread that grabbed the next
+ticket gets to go.
+</dd>
+</dl>
+<p>
+These atomic-instruction-based mechanisms all require looping in software to wait until the lock is released. This is called
+<strong>busy waiting</strong> or a <strong>spinlock</strong>. It is undesirable because it keeps the threads in a ready
+to run state even though they have no useful work to do except loop and wait for a value to change. Moreover, if a thread
+that is looping on a spinlock is a high priority one, it is <em>always</em> ready to run. With a priority scheduler, it
+may always get scheduled to run, starving a low priority thread that may be the one that has the lock that needs to be released.
+This situation is known as <strong>priority inversion</strong>: the low priority thread <em>needs</em> to be given
+a high priority so it can exit the critical section as quickly as possible and let the high priority thread get it.
+</p>
+<p>
+A more desirable approach than spinlocks is to have the operating system provide user processes with system calls that we can use for mutual
+exclusion and put processes that are waiting for a critical section into a waiting state. This way, a waiting process will
+not be running until it is allowed entry into the critical section.
+</p>
+<dl>
+<dt> Semaphores </dt>
+<dd>
+A semaphore counts the number of wake-ups that are saved for future use. Each time you call <em>down</em> on a semaphore, 
+you decrement its value. If the value is 0 and you call <em>down</em> then your thread goes to sleep. When a thread 
+calls <em>up</em> on a semaphore, the operating system will wake up one of the threads that is sleeping on that semaphore.
+If no threads are sleeping on a semaphore then <em>up</em> will just increment the value of the semaphore. The
+most basic use of a semaphore is to initialize it to 1. When a thread want to enter a critical section, it calls <em>down</em>
+and enters the section. When another thread tries to do the same thing, the operating system will put it to sleep because
+the value of the semaphore is already 0 due to the previous call to <em>down</em>. When the first thread is finished with
+the critical section, it calls <em>up</em>, which wakes up the other thread that's waiting to enter. In general, the
+semaphore is initialized to the number of concurrent threads that you want to enter a section before they block.
+</dd>
+
+<dt> Event counters </dt>
+<dd>
+An event counter works
+similar to the way you would use a fetch-and-increment instruction but
+without the spinlock since the thread can go to sleep waiting for
+a value.
+Three operations are permitted:
+you can read the current value of an event counter, increment it,
+and wait until the
+event counter reaches a certain value. This last operation is a
+blocking one.
+</dd>
+
+<dt> Condition variables (also known as monitors) </dt>
+<dd>
+A condition variable supports two operations: <em>wait</em> until a condition variable is signaled and <em>signal</em> 
+a condition variable. Signaling a condition variable will wake up one thread that is waiting on the condition variable.
+</dd>
+
+<dt> Message passing </dt>
+<dd>
+<p>
+Message passing supports two operations: <em>send</em> and <em>receive</em>. The most common behavior of message passing
+is where a <em>send</em> operation does not block and a <em>receive</em> operation does block. We can use the blocking
+aspect of receive to coordinate mutual exclusion by sending a null message ahead of time. The first thread that does
+a receive will get the message and then enter the critical section. The second thread will block on the <em>receive</em>.
+A message passing system where the <em>send</em> blocks until the data is received via <em>receive</em> is called <strong>rendezvous</strong>.
+Rendezvous is efficient when messaging is done within the machine (versus a network) in that it does not require the
+message to be copied to an intermediate buffer. However, it forces the senders and receivers to be tightly synchronized.
+</p>
+<p>
+Conventional message passing requires that the sender knows the identity of the thread/process that will be receiving
+the message. This is known as <strong>direct addressing</strong>.
+
+An alternate form of messaging is via
+mailboxes using <strong>indirect addressing</strong>.
+<strong>Mailboxes</strong> allow any number of
+threads to send to an intermediate queue, called a mailbox. Any number of threads can read from this queue. Hence,
+it is easy to support multiple readers and writers and nether the writers nor readers have to know how to address 
+each other.
+
+</dd>
+</dl>
+
+
+<h1> Scheduling  </h1>
+<p>
+Processes execute for a while, then block on I/O, then execute some more, then block, etc. Each period of execution is 
+called a <strong>CPU burst</strong>. Overall throughput is increased if another process can run when a process is in a
+blocked state.  A <strong>scheduler</strong> is responsible for deciding what process should get to run next
+and, if the current process did not finish its CPU burst, whether the current process has run too long and needs
+to be preempted with another process. If a scheduler can preempt a process and context switch another process in then
+it is a <strong>preemptive</strong> scheduler. Otherwise it is a <strong>non-preemptive</strong>, or <strong>cooperative</strong>
+scheduler.
+</p>
+<p>
+A <strong>time slice</strong> (also known as <strong>quantum</strong>) is the maximum time that a process will be allowed to
+run before it gets preempted and another process gets a chance to run. Short time slices are good for maximizing interactive
+performance. Long time slices reduce the overhead of context switching but reduce response time. 
+The scheduling algorithm determines whether a process should be preempted and which process gets to run next.
+The <strong>dispatcher</strong> is the component of the scheduler that is responsible for restarting the chosen
+process. It does so by restoring the process' context (loading saved registers and memory mapping) onto the CPU
+and executing a <em>return from interrupt</em> instruction that
+will cause the process to to execute from the location that was
+saved on the stack at the time that the
+program stopped running &mdash; either via an interrupt or a system call.
+</p>
+
+<h2> First-come, first served scheduling </h2>
+<p>
+This is a non-preemptive scheduler that uses a simple FIFO queue. New processes are added to the queue. When
+a process blocks on I/O, the scheduler takes the earliest (first in) process out of the queue. When a process is no longer
+blocking and is ready to run, it goes to the end of the queue. The drawback of FCFS is that it is non-preemptive and
+processes with long CPU bursts will delay other processes.
+</p>
+
+<h2> Round robin scheduling </h2>
+<p>
+This is a preemptive version of first-come, first served. When a quantum expires for a running process, the process is preempted
+and brought to the rear of the queue. The ready process at the head of the queue gets to run next.
+It's a simple scheduler but giving every process an equal share of the CPU is not necessarily a good idea since it does not
+schedule highly interactive (I/O-intensive) processes more frequently.
+</p>
+
+<h2> Shortest remaining time first scheduling </h2>
+<p>
+This scheduler picks the process with the shortest estimated CPU burst time to run next. The idea is to maximize average response
+time and let I/O bound processes run first and, hopefully, quickly issue their I/O requests and block. It also maximizes
+I/O utilization since we give priority to processes that we expect to block quickly. The trick to this scheduler is that you need to
+estimate the next CPU burst time. A weighted <strong>exponential average</strong> of previous CPU bursts is used to do this.
+The weight may be adjusted to weigh recent CPU bursts more or less than historic averages.
+</p>
+
+<h2> Priority scheduling </h2>
+<p>
+A priority scheduler requires that each process be assigned a priority. It simply picks the highest priority process from the list
+of ready processes. Priorities may be <strong>internal</strong> or <strong>external</strong>. Internal priorities are determined by
+the system. External priorities are assigned by the administrator. Priorities may also be <strong>static</strong> or
+<strong>dynamic</strong>. Dynamic priorities are priorities that are adjusted by the system as a process executes. Static priorities
+remain fixed for the duration of execution. A danger with priority scheduling is <strong>starvation</strong>. Starvation
+occurs if there is always a higher priority process that is ready to run. The lower-priority process never gets scheduled. We
+saw an example of this in synchronization when we looked at priority inversion. Starvation can be handled by using dynamic priorities
+and temporarily boosting the priority of processes that has not been scheduled in a while (this is known <strong>process aging</strong>)
+or, conversely, by penalizing processes that do get scheduled and use up their quantum.
+</p>
+
+<h2> Multilevel queues </h2>
+<p>
+Instead of a pure priority scheduler that expects processes to have unique priorities, we can set up <strong>priority classes</strong>.
+Each class has its own unique priority and within each class we have a queue of processes that are associated with
+that priority class. We may give choose to give high-priority classes short time slices to ensure good interactive performance
+and low-priority classes longer time slices to run longer but less frequently. Each priority class can have its own scheduling
+algorithm to determine how to pick processes from that class. For example, some classes may use round robin scheduling
+while others may use shortest remaining time first scheduling.
+</p>
+
+<h2> Multilevel feedback queues </h2>
+<p>
+Multilevel feedback queues are multilevel queues with dynamic priorities thrown in. High priority queues often have a short time slice
+associated with them. If a process reaches the end of its time slice rather than blocking, the scheduler demotes it to the next
+lower-priority queue. Lower priority queues are then assigned increasingly longer time slices. The process will get knocked to a lower priority
+level each time it runs for the full quantum. The goal is to keep interactive processes with short CPU bursts at high priorities 
+and lower the priorities of CPU-bound processes while giving them longer stretches of time to run (but less often). A drawback
+is that if an interactive process has a stretch of computation, it will get knocked to a low level and never get pushed up. Some systems 
+deal with this by raising a process' priority whenever it blocks on I/O. Another approach is to
+raise the priority of a process that has not had a chance to run for a while. This is called <strong>process aging</strong>.
+[ Note that Linux's approach has been to give interactive tasks a high priority and a <em>longer</em> time slice, with the
+expectation that they would block before using up the time slice. Linux, however, does not use a true multilevel feedback queue. ]
+</p>
+
+<h2> Multiprocessor scheduling </h2>
+<p>
+With multiple processors, the goals in scheduling are load balancing and processor affinity.
+<strong>Processor affinity</strong> is the desire to reschedule a process onto the same processor
+on which it was previously scheduled to take advantage of the fact that the processor may still
+have memory used by that process in its cache.
+<strong>Hard affinity</strong> is the case where
+the process will always be rescheduled onto the same processor.
+<strong>Soft affinity</strong> is the case where
+the process may be rescheduled onto another processor to keep the load balanced and ensure
+that all processors have processes to run.
+<strong>Load balancing</strong> is the process of making sure that all processes
+have processes to run. <strong>Push migration</strong> is a periodic examination of the load 
+(number of processes in the run queue) on each CPU. If one processor is more heavily loaded
+than another, some processes are moved to another CPU's queue. <strong>Pull migration</strong>
+is the case where a scheduler has no ready processes to run on a CPU and has to get get one
+from another CPU's queue. Push and pull migration are often used together.
+</p>
+<h1> Real-time scheduling  </h1>
+<p>
+Real-time processes have to deal with providing guaranteed response.
+A <strong>start time</strong> is the time at which a process must start in response to some event, such as an interrupt 
+from a sensor. A <strong>deadline</strong>, also known as <strong>stop time</strong> is the time at which the task
+must complete. A <strong>hard deadline</strong> is one in which there is no value if the deadline is missed. A <strong>soft
+deadline</strong> is one where there is decreasing value in the computation as the deadline slips. Processes may be
+<strong>terminating processes</strong>, which run and then exit. Their deadline is the maximum amount of time before
+they exit. Process may also be <strong>nonterminating processes</strong>. These run for a long time but perform
+periodic operations, such as encoding and decoding audio and video. Their deadline is not the time to exit but rather
+the time by which results have to be ready for each period of execution (e.g., decode video at 30 frames per second).
+</p>
+<p>
+Real-time systems have to be designed to be able to respond to events quickly. Systems that can guarantee response
+times are called <strong>hard real-time systems</strong>. Those that cannot are <strong>soft real-time systems</strong>.
+Real-time operating systems tend to use priority schedulers (possibly with variations), have a guaranteed maximum time to service interrupts,
+can ensure that processes are fully loaded into the system's memory, provide efficient memory allocation, and support
+multi-threaded execution or preemptable system calls. You do not want your response to an event delayed because the
+operating system is busy doing something else.
+</p>
+<h2> Earliest deadline scheduling </h2>
+<p>
+Each process has a deadline. The scheduler simply picks the process that has the nearest deadline (i.e., the process in
+greatest danger of missing its deadline).
+</p>
+
+<h2> Least slack scheduling </h2>
+<p>
+For each process, we know its deadline and required amount of compute time. Slack is determined by how free time is left:
+time to deadline minus the compute time. This is the most amount of time that we can procrastinate before we devote
+100% of our resources to running the process. Least slack scheduling picks the process with the smallest slack: the one
+we can least procrastinate with.
+</p>
+<p>
+When we compare the effects of earliest deadline with least slack, we see that all processes will complete on time if there
+is sufficient compute time available. If there isn't, earliest deadline scheduling will likely complete some processes
+on time while others may be significantly late. Least slack scheduling will have the effect of having all processes be
+late by about the same amount.
+</p>
+
+<h2> Rate monotonic analysis </h2>
+<p>
+Rate monotonic analysis is a way to assign priorities to periodic tasks. It simply gives the highest priority to the process
+with the shortest period (highest frequency). 
+</p>
+
+
+<h1> Memory Management</h1>
+<p>
+The most rudimentary approach to dealing with memory is <strong>single
+partition multiprogramming</strong>, where we allow only a single
+program to be loaded in memory at any given time. The program shares
+its memory with the operating system and nothing else. This was the
+approach adopted in early computers and early personal computers
+prior to time sharing.
+</p>
+<p>
+Since we want to be able to switch between multiple executing
+programs, we need to have those programs loaded into memory. The
+more programs are loaded in memory, the greater is the chance that
+one of them is ready to run, as opposed to being blocked waiting
+on I/O. <strong>CPU utilization</strong> is the estimated percentage
+of time that the CPU is not idle. The number of processes in memory
+at one time &ndash; and candidates for running &ndash; is known as
+<strong>the degree of multiprogramming</strong>.
+</p>
+<p>
+If multiple programs are loaded into memory at once, they will, of course, occupy different memory locations.
+<strong>Absolute code</strong> uses real memory addresses and expects to be loaded into and run from a specific memory location.
+<strong>Position independent code</strong> uses relative addresses throughout and may be loaded into any memory location. Of
+course, there's a risk that some absolute memory references may have been used. Another approach is not to rely on the compiler
+to generate position independent code but instead leave memory references blank and generate a <strong>relocation table</strong> that
+will allow those references to be filled in when the program is loaded.
+</p>
+<p>
+A completely different approach to this problem is to rely on hardware to dynamically transform address references made by the process into
+actual memory locations. This is known as <strong>logical</strong>, or <strong>virtual addressing</strong>. A
+<strong>memory management unit</strong> (<strong>MMU</strong>) performs this translation. The simplest approach to logical
+addressing is to add a <strong>base address</strong> to each memory reference made by a process. This address will be 
+different for each process and will be based on where in memory that process was loaded. The MMU can also check the 
+virtual address against a <strong>limit</strong> to ensure that the process is accessing only memory within the process.
+This is <strong>base &amp; limit addressing</strong>.
+Some hardware may support breaking up a process's memory into several
+logical segments (code, data, stack) and each such segment is 
+assigned its own register containing
+the base offset address for that segment.
+A logical address is effectively a combination of a segment identifier and an offset within
+that segment. The Intel memory model refers to the combined segment value and offset as a <strong>far pointer</strong>.
+This system is known as <strong>segmentation</strong>. 
+</p>
+<p>
+The <strong>base &amp; limit addressing</strong> approach requires each process to occupy contiguous memory.
+Segmentation allows several variable-sized chunks of contiguous memory but each segment (e.g., stack) must
+occupy a contiguous region.
+
+With <strong>multiple fixed partitions</strong>, the operating system divides memory into a bunch of partitions
+ahead of time. When a program needs to be loaded, it is loaded into an available partition that can hold it. If no
+partition is available, the loading will have to be delayed in a
+queue of requests. Unused space within a partition remains unused.
+This is <strong>internal fragmentation</strong>. If any partitions
+have no programs to run then their memory is always wasted. This
+is called <strong>external fragmentation</strong>.
+With <strong>variable partitions</strong>, the operating system creates a partition for a process on demand, using
+a block of contiguous memory that is big enough to hold it. As processes come and go, holes (unallocated regions)
+develop and there may not be new processes that fit into any available hole. <strong>Memory compaction</strong>
+can relocate processes in memory but is a time-consuming approach. If a process grows, it will need more memory and 
+the operating system will need to find a bigger unallocated block and move the process, relocate other processes,
+or save the process's memory onto disk and wait until a big block frees up. All of these hugely impact the performance
+and responsiveness of a multitasking system.
+</p>
+
+<h2> Page-based virtual memory </h2>
+<p>
+With a <strong>page-based</strong> memory management unit, physical memory is divided into equal-sized chunks
+that are multiple of a power of two (that way, we can use a fixed number of bits to address a byte offset 
+within the chunk). These chunks are called <strong>page frames</strong>. A logical memory address is divided into
+two components. The high-order bits of the address identify a <strong>page number</strong> and the low-order
+bits identify a <strong>page offset</strong>, the byte offset within a page. For example, a 32-bit address
+with 4 KB pages will use the lower 12 bits (2<sup>12</sup> = 4096) to identify the page offset and the 20 high
+bits to identify the page number.  For each memory reference made by the processor, the memory management unit 
+takes the logical address, extracts the page number, and uses that as an index into a <strong>page table</strong>.
+Each <strong>page table entry</strong> (<strong>PTE</strong>) contains a page frame number. The physical memory address
+generated by the MMU has the page number from the logical address replaced with the corresponding page frame
+number from the PTE. A <strong>direct mapping paging system</strong> contains a page table per process. When
+the operating system performs a context switch to run a specific process, it loads a <strong>page table base register</strong>
+with the address of that process' page table. Each PTE in a page table contains a <strong>page residence bit</strong>
+that indicates whether that specific page is mapped onto a page frame. If it is, then the PTE also contains the page
+frame number that corresponds to that page. If the page is not mapped onto a page frame, then a <strong>page fault</strong>
+is generated. This is an interrupt that is handled by the <strong>page fault handler</strong> of the operating system.
+The fault handler will examine the memory address of the instruction that faulted and decide whether the process needs
+to be terminated because of an invalid memory access or whether the access was indeed valid but the requested page
+was not mapped onto a page frame.
+The PTE also contains other flags, such as whether the page is writable,
+executable, and whether it has been accessed or modified.
+</p>
+<p>
+If we had to consult a memory-based table for every memory operation, the memory system would effectively be twice as slow
+since each memory access would require another memory access to look up the location of the page in the page table.
+To improve performance, the MMU employs an <strong>associative cache</strong> known as a <strong>translation lookaside
+buffer</strong> (<strong>TLB</strong>) to store recently-accessed page numbers and their corresponding PTEs. Since
+the corresponding PTE is a function of the per-process page table that we used to do the lookup, most MMUs employ an
+<strong>address space identifier</strong> (<strong>ASID</strong>) in their TLB to identify the process to whom an 
+entry belongs. During a context switch, the operating system must set the ASID so that only cached values for that
+specific ASID will be used.
+The <strong>hit ratio</strong> is the percentage of memory references that can be satisfied from the TLB without
+resorting to a page table lookup.
+</p>
+<p>
+A page table allows the process to potentially be able to address all system memory. Much of that memory will not 
+be used by the process but we still pay the penalty of having to maintain a possibly large page table
+(our earlier example of 20-bit page numbers means that we need a table with 1,048,576 entries. To save
+on memory, we can use a <strong>multilevel page table</strong>. The virtual address is split into three
+or more parts. The lowest bits still give us the offset within a page and page frame. The very highest
+bits serve an an offset into a top-level <strong>index table</strong>. Each entry here contains the 
+base address of a <strong>partial page table</strong>. The next set of bits of the virtual address
+serves as an offset into this partial page table. Entries in this table are PTEs that include the
+page frame address and various access flags.
+</p>
+<p>
+One approach to deal with very large address spaces is the <strong>inverted page table</strong>. Instead
+of having a per-process table that maps logical pages to physical page frames, we have a single table with
+one entry per page frame. For a given virtual address, we <em>search</em> this table for a page
+frame that contains that virtual address. Clearly, searching a table is not good for memory 
+access performance. We need to rely on an associative cache and the use of hashing to perform a lookup.
+</p>
+
+<p class="nospace">
+A paging system has a number of attractive features:
+</p>
+<ul>
+<li> It does not let the amount of physical memory limit the size of our process. </li>
+
+<li> It allows the process feels like it owns the entire address space of the processor. </li>
+
+<li> It allows memory allocation to be non-contiguous and has no external fragmentation problems, simplifying memory management and obviating any need for compaction. </li>
+
+<li> It lets us keep more processes in memory than the sum of their memory needs so that we can keep the CPU utilization as high as possible. </li>
+
+<li> It lets us us keep just the parts of a process that we're using in memory; the rest may be stored on a disk. </li>
+</ul>
+
+<p>
+Systems such as the Intel IA-32 architecture employ a <strong>combined segmentation and paging system</strong>. A logical address is offset by
+a segment base register. This resultant address is a <em>linear, virtual address</em> and is looked up in a two-level page table to generate
+a physical address.
+</p>
+
+<h2> Demand paging </h2>
+<p>
+<strong>Demand paging</strong> refers to the technique of allocating and loading memory pages <em>on demand</em>; that is, when
+a process makes a request for that region of memory. When a process makes a memory reference to a page that is not mapped
+onto a page frame, the MMU generates a <strong>page fault</strong>. The <strong>page fault handler</strong> checks whether
+the reference is a valid memory reference or not. If it is not valid then the process is terminated. If the address references
+executable code or static data, then those contents are present in the program file on the disk and are read from there.
+If the memory reference is to a stack or heap that grows then a new frame is allocated and initialized. Finally, if the memory reference
+refers to stack or heap data that was written out to a <strong>page file</strong> disk because the memory manager needed a free page frame,
+then a page frame is allocated, the disk read is scheduled, and the operating system context switches to some other process while
+this one waits for the memory contents it needs to be loaded into memory.
+</p>
+<p>
+<strong>Page replacement</strong> is the process of finding a page to save out onto disk to create a free page frame.
+Since it requires disk activity, which is much slower than memory, the hope of an operating system is to minimize paging &mdash;
+shuffling page contents between memory and the disk.
+Ideally, we would like to use a least recently used (LRU) algorithm to select a page for replacement. The snag
+is that there is no way to keep track of use counts in an MMU so we need to find an efficient algorithm that comes close to LRU.
+Memory management units have a "referenced" bit that tells us if a page was referenced. The <strong>clock algorithm</strong> (also
+known as the <strong>second chance algorithm</strong>)
+looks at page frames as a circular list. When a page needs to be selected for eviction, the algorithm starts at its current
+position and looks for page frames whose referenced bits are 0 (they have not been referenced in a while). As it does this, it
+sets the referenced bits of pages it skipped over to 0.
+</p>
+<p>
+The <strong>n<sup>th</sup> chance replacement </strong> algorithm is similar except that it keeps a counter per entry.
+When we search for a page, if a page frame's referenced bit is 1, we set it to 0 and clear the counter. If the page frame's referenced
+bit is 0, we increment the counter. We continue with this until we find a clear page whose counter is greater than or equal to some
+value <em>N</em>. This algorithm effectively counts the number of times that we examined this page and it has not been referenced.
+</p>
+<p>
+As a process executes, it accesses certain memory locations. Over some small interval of time, a process is unlikely to reference
+all of its memory. Instead, there's a a principle of <strong>locality</strong> at work: a process tends to reference the same
+pages over and over before moving on to a few other pages. This set of pages is known as the process' <strong>working set</strong>.
+Some processes may have bigger working sets than others. In all cases, For good performance, we want to have each process' working
+set in memory. If this is not the case then the system will exhibit <strong>thrashing</strong>: constantly paging to and from the disk.
+A process' <strong>resident set</strong> is the set of pages that is currently mapped to page frames.
+The <strong>working set model</strong> approximates the locality characteristics of a process to try to identify the set of pages
+that a process needs to have its working set in memory and avoid thrashing. One way to manage the resident set is
+by monitoring <strong>page fault frequency</strong>.
+If a process does not have its working set in memory, it will generate page faults. This is an indication that it needs more memory.
+Conversely, if a process is never generating page faults, that could
+be an indication that it has too much memory allocated to it. We can set thresholds of page faults to decide what percentage of
+available page frames should be allocated to a specific process.
+</p>
+
+
+<h1> Devices </h1>
+<p>
+A <strong>block device</strong> provides structured access to the underlying hardware.
+Block devices are devices that can host a file system. They provide addressable (block numbers)
+I/O of fixed, equal-sized chunks of bytes. Since block data is persistent, it is suitable
+for caching in memory. The <strong>buffer cache</strong> is a pool of kernel
+memory that is allocated to hold frequently used blocks from block
+devices. By using the buffer cache, we can minimizes the number of
+I/O requests that actually require a device I/O operation.
+</p>
+<p> 
+A <strong>character device</strong> provides unstructured access to the underlying hardware.
+Examples of character devices include printers, scanners, mice, and a video frame buffer.
+Unlike a block device, there is no concept of <strong>seeking</strong>: addressing
+data by its location. Whereas in a block device, we may have a concept of, say, block
+1,523 containing a chunk of data that will never change unless we change it, a 
+character device presents a continuous sequence of bytes.
+<p>
+<p>
+A <strong>network device</strong> is similar to a concept device except that instead of 
+sending and receiving a stream of bytes, it sends and receives bytes in chunks (packets).
+</p>
+
+<p>
+On POSIX systems, the kernel maintains two tables to keep track of devices:
+a <strong>block device table</strong> and a <strong>character device table</strong>.
+
+The <strong>major number</strong> is an index into either the block or character
+device table and allows the kernel to find the set of functions that are associated
+with that device: the <strong>device driver</strong>. The <strong>minor number</strong>
+is interpreted within the device driver. It usually identifies which specific instance
+of a device is being accessed. For example, SATA disks will have one functional 
+interface (driver) but multiple disks. The major number will identify the SATA driver and
+the minor number will identify a specific disk.
+</p>
+
+<p>
+Devices, particularly on POSIX-based systems, are usually presented as file names
+via the hierarchical file system name space. A device appears as a file
+within the file system.
+
+It can have an arbitrary name and there is no data associated data with this file but the
+file's metadata identifies the type of device (block or character) and the
+device's major and minor numbers, which identify the specific instance of the device.
+
+<p>
+By placing devices in the same hierarchical name space as files and  ensuring that
+each device must implement a well-defined set of I/O operations
+the operating system can
+provide a degree of transparency where applications can often be unaware of whether 
+they are interfacing with a file or a device. For example, the shell can just as
+easily read commands from a terminal window (device) as it can from a file containing 
+a script. When a file is first opened, the kernel can check the file's attributes to
+determine if it is a device file. If so, it reads the type of device (block or 
+character) and its major and minor numbers
+from the file's metadata. The kernel then sends operations to the driver for that device. 
+The underlying file system where that device file resided does not get involved.
+</p>
+
+<h2> Execution contexts</h2>
+<p class="nospace">
+Any kernel code is running in one of three contexts:
+</p>
+<ol>
+<li> <strong>interrupt context</strong>: this is invoked by the
+spontaneous change in the flow of execution when a hardware interrupt
+takes place. Any actions performed in this context <em>cannot</em> block
+because there is no process that requested the action that could
+be put to sleep and scheduled to wake up when an operation is
+complete.
+</li>
+<li> <strong>user context</strong>: this is the flow of control when a
+user process invokes a system call. The mode switch to kernel mode took place
+but the context is still that of a user process. If needed, the kernel
+may schedule an I/O operation, put the process in a <em>blocked</em>
+state, and context switch to another process.
+</li>
+<li> <strong>kernel context</strong>: the kernel itself has one or more
+worker threads that it schedules just like any other process. Even though
+these have no relation to user threads, they have a context and may block.
+Note: the kernel context is <em>not</em> the context of a process
+that has just made a system call; that is user context running in kernel
+mode.
+</li>
+</ol>
+<h2> Device drivers</h2>
+<p class="nospace">
+Device drivers are modular and can be compiled into the kernel, loaded at initialization,
+or dynamically loaded at any time in the future.
+Upon initialization, they register themselves with the kernel's interrupt
+handler. When a specific interrupt occurs, the kernel handler calls the appropriate
+interrupt handling function in the driver. To ensure that the interrupt context
+does not take too long (since it cannot block), interrupt handling is split into
+two parts:
+</p>
+<ol>
+<li>
+The <strong>top half</strong> of a driver is the interrupt service routine that
+is registered with the interrupt handler. It tries to do as little as possible &mdash;
+generally grabbing data, placing it into a <strong>work queue</strong> (a buffer),
+and scheduling <em>bottom half</em> activity.
+</li>
+<li>
+The <strong>bottom half</strong> of a driver is the part that is scheduled 
+by the top half for later execution and does much of the real work. Because
+it runs in a kernel thread (that handles work queues), it may perform blocking
+operations.
+</li>
+</ol>
+<p>
+Top half and bottom half devices communicate via <strong>I/O queues</strong>.
+A <strong>device status table</strong> keeps track of devices and the current
+status of each device. Each device has an I/O queue associated with it.
+Any received I/O (reads from the device or writes by the user) is placed
+on the work queue and scheduled by a kernel thread.
+</p>
+
+<h2> Disk scheduling </h2>
+<p>
+Even though solid state flash storage is becoming increasingly popular, spinning magnetic
+disks are still the dominant device for storing large amounts of information. Compared
+to memory, a disk is an incredibly slow device. The buffer cache helps with the performance
+of frequently-accessed blocks. Beyond that, we rely on <strong>disk scheduling algorithms</strong>
+to optimize the flow of data between memory and the disk.
+</p>
+<p>
+The simplest algorithm is <strong>First Come, First Served</strong> (<strong>FCFS</strong>),
+which processes requests in the order in which they are generated.
+The <strong>elevator algorithm</strong> (<strong>SCAN</strong>) takes the fact that a disk has a head that moves back 
+and forth on the disk. It relies on the system to keep track of the current head position and direction.
+Requests are sorted in the order in which they will be encountered as the head moves from the track 0
+to the highest track on the disk. The head movement then reverses and any outstanding requests
+are processed from highest to lowest as the head seeks back to track 0.
+</p>
+<p>
+The <strong>LOOK</strong> algorithm simply reverses the disk head's direction if there are no blocks
+scheduled beyond the current point. The <strong>Circular SCAN</strong> (<strong>C-SCAN</strong>)
+algorithm is the SCAN algorithm but schedules disk requests only when the head is moving in one direction to avoid 
+preferential treatment of blocks in the middle. The <strong>Circular LOOK</strong> (<strong>C-LOOK</strong>)
+algorithm is like LOOK but schedules requests in only one direction. In the <strong>Shortest Seek Time First</strong>
+(<strong>SSTF</strong>) algorithm, the queue of current requests
+is be sorted by cylinder numbers closest to the current head
+position and requests made in that order.
+</p>
+
+<h1> File Systems </h1>
+<p>
+File systems provide us with the abstraction of persistent and protected objects sitting in a hierarchical
+name space. The actual data resides on block devices: disks or flash memory. The specific file system
+that is used on that device defines the data structure on the disk blocks that defines how directories,
+files, free space information, and permissions are stored.
+</p>
+<p>
+Multiple individual file systems can be combined into an abstract view of a single hierarchical name space
+via a <strong>mount</strong> mechanism. By executing a <em>mount</em> system call and providing it with
+the block device, underlying file system type, and a mount point in the current file system, the operating
+system will place the root of the file system on that device right at the given <strong>mount point</strong>.
+The operating system will maintain a list of mount points so that attempts to traverse directories will
+switch to the appropriate device when a mount point is encountered.
+</p>
+<p class="nospace">
+In the past, operating systems would support a implementation of a file system. To support multiple file systems
+transparently, a layer of abstraction called the <strong>Virtual File System</strong> is used. This is an object-oriented
+approach to looking at file systems. System calls that interact with files communicate with the VFS layer. 
+This layer implements high-level operations related to managing files and directories that are common to all file systems.
+The VFS layer then interfaces with one or more <strong>file system modules</strong> that implement the
+specific underlying file system. This file system module interacts with the buffer cache and with block
+device drivers to read and write data to the device containing the file system. The layers are:
+</p>
+<ul>
+<li>
+<strong>system call interface</strong>: APIs for user programs
+</li> <li>
+<strong>virtual file system</strong>: manages the namespace, keeps track of open files, reference counts, file system types, mount points, pathname traversal.
+</li> <li>
+<strong>file system module</strong> (<strong>driver</strong>): understands how the file system is implemented on the disk. Can fetch and store metadata and data for a file, get directory contents, create and delete files and directories
+</li> <li>
+<strong>buffer cache</strong>: no understanding of the file system; takes read and write requests for blocks or parts of a block and caches frequently used blocks.
+</li> <li>
+<strong>device drivers</strong>: the components that actually know how to read and write data to the disk.
+</li>
+</ul>
+<p class="nospace">
+At the VFS layer, the crucial components are:
+</p>
+<dl>
+<dt> inode </dt>
+<dd> An <strong>inode</strong> uniquely identifies a file. In file system, it stores key information about the attributes of a file
+and the location of its data. At the VFS layer, it contains functional interfaces for creating files, directories, symbolic links,
+and reading and setting attributes. In short, it contains directory and file operations that do not relate to the file's data.
+</dd>
+
+<dt> dentry </dt>
+<dd>
+A <strong>dentry</strong>, short for <em>directory entry</em>, is an abstract representation of directory contents. It contains
+the filename as a string, its inode (so we can access its contents), and a pointer to its parent dentry. A directory file can
+be read and converted into a set of dentry structures.
+</dd>
+
+<dt> file </dt>
+<dd> The VFS interface keeps track of open files and contains a set of interfaces to open, close, read, and write files
+as well as to map them to memory or lock them. The <strong>file</strong> object represents an open file and keeps track of
+the access mode and reference counts.
+</dd>
+
+<dt> superblock </dt>
+<dd> Contains interfaces to get information about the file system, read/write/delete inodes, and lock the file system.
+</dd>
+</dl>
+
+<h2> Managing files on disks </h2>
+<p>
+The lowest level of working with file systems and storage media is managing and allocating free disk blocks to 
+files.
+For flash memory, there are no performance implications of using one block versus another one. For disks,
+however, that is not the case. Seek times greatly affect performance and the goal is to keep frequently-used or
+related blocks together. Ideally, files would use <strong>contiguous allocation</strong>. That is, if a file's data
+requires multiple disk blocks, the blocks would be contiguous. Unfortunately, as files get deleted and new
+ones get created, we'll find that we get <strong>external fragmentation</strong> as regions of free blocks too small
+for most files get scattered between existing files. Moreover, we usually don't know ahead of time how much space a 
+file needs.
+</p>
+<p>
+A compromise to contiguous allocation is to use <strong>extents</strong>. An extent is a contiguous set of blocks.
+A file will comprise one or more extents. File systems that use extents generally refer to extents (as a 
+&lt;block number, size&gt; tuple) instead of block numbers when managing a file's data. A <strong>cluster</strong>
+is a logical block used throughout the file system that is a grouping of multiple physical blocks. For example,
+many disks provide 512 byte blocks but a file system may use 4096-byte clusters as its basic allocation unit, reading
+and writing eight blocks at a time. This results in better performance but also increases the amount of internal
+fragmentation in the file system.
+</p>
+<p>
+The technique of <strong>linked allocation</strong> uses a few bytes of each block to store the block number of
+the next block in a file. An alternate implementation of this is a <strong>file allocation table</strong> (<strong>FAT</strong>).
+Here, a table of block numbers is created. The entry at <tt>table[block_num]</tt> contains the block number that follows
+the block <tt>block_num</tt> in the allocation list for a file. The directory, in addition to containing the file name,
+will also store the first block number that is allocated to the file. The entire chain of blocks can be read from the
+file allocation table.
+</p>
+<p>
+For FAT to be efficient, the entire table must be kept in memory.
+As an alternative approach, we can just read in just the list of blocks used 
+by a specific file when we open the file. What this means is that with each file we associate the entire list
+of blocks that the file uses.
+This approach is called <strong>indexed allocation</strong>
+but it isn't practical since these will be varying size lists and, for big files, may be extremely long.
+A variation
+of this, <strong>combined indexing</strong> uses fixed length structures. The information structure for a file,
+the <strong>inode</strong>, contains a list of just the first several blocks of the file.
+These are <strong>direct block</strong> pointers.
+If a file needs to use more blocks, the inode contains an <strong>indirect block</strong> pointer. This is 
+the number of a block that contains list of direct block pointers (block numbers for data).
+If a file needs even more blocks, a <strong>double indirect block</strong>
+pointer in the inode will point to a block whose contents are a list of indirect block pointers.
+This is the approach used in 
+the traditional UNIX file system as well as Berkeley's fast file system (FFS) and Linux's ext2, ext3, and ext4 file systems.
+A directory is just a data file that contains a series of names, each with their associated inode number.
+The inode number contains file permission information, creation/modification/access times,
+an identification of whether the file is a regular file or a device, and direct, indirect, double, and (in some cases)
+triple indirect block numbers.
+</p>
+
+<h2> File system implementation case studies </h2>
+
+<h3> Unix File System (UFS) </h3>
+<p>
+The Unix File System is an implementation of the inode-based just described.
+When laid out on the disk, it contains three sections: a super block, inode blocks, and data blocks.
+The super block contains information about the file system, including a pointer to an linked list of free blocks.
+Directories are files that contain a list of names and corresponding inodes. An inode identifies a file 
+as being a regular file, directory, or device file.
+</p>
+<p>
+The performance of UFS was generally quite poor (2-4% of raw disk bandwidth). Several factors contribute to
+this inefficiency. The linked list approach to free block allocation leads to a high degree of <strong>fragmentation</strong>
+over time.
+In addition to our earlier encounters with the terms
+<em>internal fragmentation</em> and <em>external fragmentation</em>,
+we have another use of the term within file systems.
+Fragmentation is when a file's data is not allocated among contiguous
+blocks.
+The small block sizes typically
+used by UFS make that degree of fragmentation even higher than it would be otherwise and necessitate the use
+of double and triple indirect blocks for even not-very-large files. Finally, the fact that inodes reside at one end of the
+disk (beginning) and much of the data resides at the other end (middle to end) leads to large disk seeks between reading
+a file's inode and that file's data.
+<p>
+
+<h3> Berkeley Fast File System (FFS) </h3>
+<p>
+The Berkeley Standard Distribution variant of UNIX redesigned the file system to improve performance in
+several areas:
+</p>
+<ol>
+<li> <strong>Larger clusters</strong>. FFS chose a larger cluster size: at least 4 KB instead of the
+512 bytes or 1K bytes of UFS. This brings about an eight-fold improvement improvement in contiguous
+allocation. Also, each block pointer in an inode or disk block now addresses much more data, so
+a file has to be far bigger before indirect, double indirect, and triple indirect blocks have to be used.
+To avoid too much internal fragmentation from large cluster sizes, FFS allowed the last cluster of
+a file to be a <strong>fragment</strong>, part of a cluster.
+</li>
+
+<li> <strong>Cylinder groups</strong>. Instead of having one region for inodes and another for data, 
+multiple such regions were created. FFS looks like lots of little file systems laid out on one disk. In most
+cases, the data that corresponds to an inode will be located in the same cylinder group, minimizing seek times.
+</li>
+
+<li> <strong>Bitmap allocation</strong>.
+Instead of using a linked list of free blocks, a bitmap is used to keep track of which blocks are in use
+within each cylinder group. This makes it easy to find contiguous or nearby clusters for a file's data rather
+than just using any available free cluster. Moreover, FFS will preallocate adjacent clusters to a file
+on the chance that the file may need them as it grows.
+</li>
+
+<li> <strong>Prefetch</strong>.
+If two or more sequential blocks are read from a file, FFS assumes that file access is sequential and
+will <strong>prefetch</strong> additional blocks from that file.
+</p>
+</ol>
+
+<p> 
+These changes resulted in a 5-10 times performance improvement over UFS.
+</p>
+
+<h3> Linux ext2 </h3>
+<p>
+Linux's ext2 file system is an adaptation of Berkeley's FFS. With bigger disks, space wasted due to internal fragmentation
+was no longer considered that precious and worth saving, so managing fragments was abandoned to simplify cluster
+allocation. Instead of cylinder groups, ext2 uses the term <strong>block group</strong> since modern disks make
+it impossible to identify cylinders; we just have the abstraction of a long linear list of blocks.
+To improve performance over FFS at the expense of possible disk corruption, ext2 caches all data aggressively in the
+buffer cache. FFS would flush metadata changes aggressively to minimize corruption of file structure even though
+the data was still at risk.
+</p>
+
+
+<h3> Journaling and Linux ext3 </h3>
+<p>
+A file system is <strong>consistent</strong> if all free block and inode bitmaps are accurate, all allocated inodes are referenced
+by files or directories, and each data blocks is either marked free or is referenced by an inode.
+Whenever a file is modified, a disk block may be allocated, free block bitmap modified, inode modified, and disk block written.
+If anything happens to the system, such as a spontaneous loss of power, only some of these changes may have
+been written out to the disk, resulting in an <strong>inconsistent</strong> state. The <strong>consistent update problem</strong>
+is the challenge of performing all updates atomically: either all of them should be applied to the file system or none
+should be, ensuring that the file system can always remain in a consistent state. <strong>Journaling</strong> is 
+a method of providing this guarantee of atomicity. All changes associated with a file modification are first written
+as a log to a journal (a dedicated area on the disk). The file system itself is not touched. When all changes are complete
+the journal log is marked with a <em>transaction-end</em>. Only when the transaction has been made permanent on the disk,
+the same sequence of changes is now applied to the file system. When complete, the transaction entry is deleted from
+the journal. Should anything happen to the system, upon restart, any transactions in the journal are applied to the
+file system to bring it to a consistent state.
+</p>
+<p>
+The downside of journaling is performance: all disk opartions are applied to the journal and then
+applied again to the file system. By giving up some integrity, there are several ways that performance
+can be improved.
+</p>
+<dl>
+<dt>
+Full data journaling</dt>
+<dd>
+As described above, all disk operations are written to the journal first and then applied to the file system.
+</dd>
+
+<dt> Ordered journaling</dt>
+<dd>
+This writes data blocks first, then journals only the metadata (inode information, bitmaps, and superblock changes),
+terminates the transaction, and then applies all the metadata that was journaled onto the file system.
+The file system is always kept in a consistent state but in some cases may lead to partially modified files if,
+for example, data was written to existing and new blocks of a file but the system died before an 
+<em>end-of-transaction</em> record was written.
+</dd>
+
+<dt>
+Writeback journaling
+</dt>
+<dd>
+This journaling does metadata journaling but without 
+writing the data blocks first. Recently modified files can be
+corrupted after a crash. It's the fastest of the journaling options and a weak
+form of journaling since it can lead to data corruption. However,
+it leads to no more corruption than with non-journaled file systems
+and can save a lot of time in file system recovery.
+</dd>
+</dl>
+
+<p>
+Linux's ext3 file system is the same as ext2 but with the addition of a journal in each block group.
+</p>
+
+
+<h3> Linux ext4 </h3>
+<p>
+The ext4 file system is an enhancement to ext3 and can support far bigger files. Two key enhancements were:
+</p>
+<ol>
+<li> Extent-based allocation. Recall that an extent is a set of contiguous
+clusters. Instead of listing block number in inodes, ext4 uses extents.
+An extent contains the starting cluster number of a group of clusters along with a cluster count.
+In cases where contiguous blocks can be allocated, this can allow much more data to be addressed from the
+list of blocks in an inode.
+Since computing the block that holds a specific byte offset within a file is difficult with extents (you have 
+to iterate through the list of extents), 
+the use of indirect blocks has been replaced with an Htree (similar to a B-tree) data structure that
+makes it easy to traverse a tree to search for a block representing a specific offset within a file.
+</li>
+
+<li> Delayed allocation of disk space. Instead of allocating data clusters as a file grows, the blocks
+are kept in the buffer cache and allocated to physical blocks only when they are ready to be flushed.
+This increases the likelihood that we can allocate contiguous blocks for a file.
+</li>
+</ol>
+
+
+<h3> Micorosft NTFS </h3>
+<p>
+NTFS was the successor to Microsoft's FAT family of file systems and has been the file system of 
+choice on every version of Windows Server and every consumers version since Windows Vista.
+NTFS allocates data in extents on top of clusters and is designed such that just about every structure in the file system
+appears as a file. Whereas Unix-derived file systems had distinct areas for inodes, journals, and bitmaps,
+under NTFS they are all just files.
+</p>
+<p>
+The <strong>MFT</strong>, or <strong>Master File Table</strong>
+is the structure that keeps track of file records (similar to an inode table).
+It is structured as a B-tree to facilitate searching for a specific file record. 
+Each file record is roughly similar to an inode in that it contains information about the file.
+A file record contains an arbitrarily long list of attributes. If the list is too long to fit
+within a single file record, additional extents are allocated, with an attribute in the record identifying
+their location. The data associated with a file record is just an attribute. Very small files or directories
+may contain all their data within a file record and not require any additional disk blocks.
+</p>
+
+<h1> Special File Systems and Files </h2>
+
+<h2> Flash memory </h2>
+<p>
+There are a couple of differences between solid state flash memory
+and magnetic disk drives. NAND flash memory presents itself as a
+block-addressable device: data is read or written a page (block) at a time
+and each page is uniquely addressed.  In this way, it is very similar
+to a magnetic disk drive. Because there is no moving disk head that must
+to seek to a specific track to read or write a block, there is no seek latency
+with NAND flash, making the use of elevator algorithms pointless.
+
+Unlike a disk, data cannot be written directly to a page
+of NAND flash: the contents of the page must be erased first, turning write
+operations into an erase-write sequence. Unlike disk drives, each
+page of NAND flash can handle only a limited number of erase-write
+cycles before it wears out. This number is typically between 100,000
+and 1,000,000. Because of this, a goal in NAND flash is <strong>wear
+leveling</strong>: distribute writes across all pages of the storage.
+</p>
+<p>
+<strong>Dynamic wear leveling</strong> monitors high and low use
+areas of flash memory and at some point swaps high-use blocks (pages)
+with low-use blocks. Unused blocks are not affected. A more aggressive
+form of wear leveling is <strong>static wear leveling</strong> where
+even unchanging (static) contents are periodically moved to other blocks
+to give all blocks a chance to wear out evenly.
+Wear leveling is implemented either in a NAND flash controller or
+in a layer of software between the flash device driver and the block device.
+This layer of software is called a <strong>Flash Translation Layer</strong>
+(<strong>FTL</strong>). The FTL maintains a <strong>block lookup table</strong>
+that maps logical to physical blocks so the block can be identified
+and located even after it is moved.
+</p>
+
+<h2> Log-structured file systems </h2>
+<p>
+To avoid reusing the same blocks over and over again, a log-structured
+file system is attractive for flash memory. This is a file system
+where each file operation is written as an entry to a transaction
+log (e.g., "new file 111: name=ABC", "new data block 0 for file
+111: ...."). One entry may obsolete an older entry. When played
+from start to end, the log allows us to construct an up-to-date
+file system.
+Unlike traditional file systems, the entire file system is stored
+simply as a sequence of log entries.
+</p>
+<p>
+<strong>YAFFS</strong> is a popular log-structured file system. All
+data is written to a log as chunks. Each chunk is either a data
+chunk or an object header, which represents file metadata or a directory.
+New chunks may cause certain old chunks to become obsolete.
+If all the chunks in a block are no longer valid, the chunk can be
+reused. <strong>Garbage collection</strong> is performed periodically
+to reclaim free blocks.  Free blocks can also be created by copying live
+(in-use) chunks from blocks that contain mostly deleted chunks onto
+other blocks.
+</p>
+<p>
+On startup, the YAFFS driver scans the log and constructs an in-memory
+view of the file system hierarchy (minus the data, which will still
+be located in flash). <strong>Checkpointing</strong> is
+the process of writing out this file system hierarchy onto the 
+file system. It speed up mounts since the file system driver
+can read the last checkpoint and no
+longer needs to reconstruct the entire file system hierarchy.
+</p>
+
+<h2> Special devices </h2>
+<p>
+The classic view of a device driver is that of software that interfaces with some physical device
+and allows user processes to read, write, and otherwise control the device. The device, however,
+need not be a real device. Drivers can be written to create data streams for various purposes.
+A few examples of this are the <strong>null device</strong> (which discards any writes and
+always returns an end-of-file on reads), <strong>zero device</strong> (similar to the null device
+but always returns bytes containing values of 0), and the <strong>random device</strong>, which
+returns random numbers.
+</p>
+<p>
+The <strong>loop device</strong> is a special device that is given a file name (via an
+<em>ioctl</em> system call) and creates a block device interface to that file. A block device
+interface is one where the system can only read and write fixed-size blocks of data.
+File systems are formatted on top of block devices (usually disk drives or NAND flash memory). Since
+a file can now present itself as a block device, one can now create a file system within that file and mount it
+just as one would a physical disk or flash memory.
+</p>
+<h2> Special file systems </h2>
+<p>
+Our classic view of a file system is that of a file system driver which lays out data structures on
+top of a block device and allows one to create, access, and delete files and directories.
+A file system driver can be more abstract, however. The <strong>process file system</strong>,
+for example, creates a file system view of processes and other aspects of the kernel.
+Each process is presented as a directory. Various aspects of the process, such as its 
+command line, open files, memory map, signals, and statistics, are presented as files and
+directories within the process directory. A <strong>device file system</strong>
+presents all the kernel's devices as device files so that one does not need to explicitly
+create and remove them from a <code>/dev</code> directory in a physical file system.
+<strong>FUSE</strong> is a kernel module that allows one to create user-level file systems.
+The VFS layer sends requests to FUSE that, in turn, sends them to a user-level process that
+interprets the requests as it sees fit.
+</p>
+
+
+
+<h1> Client-server Networking</h1>
+
+<p>
+Data goes over a network in one of two ways: <strong>baseband</strong> or <strong>broadband</strong>.
+Only one node may transmit data at a time on a <strong>baseband</strong> network
+but, for that time, it has the full bandwidth of the network. A <strong>broadband</strong>
+network, on the other hand, has its available bandwidth divided into multiple
+channels, or frequency bands. Cable TV is an example of a broadband network.
+However, data services offered by cable providers are confined to two groups of
+channels (one set for downstream traffic and another set for upstream), making IP
+access effectively baseband within broadband. Don't confuse these terms with
+the marketing community's use of <i>broadband</i> to refer to any relatively
+high-speed network to the home.
+</p>
+
+<p>
+Baseband networks have all nodes on the network share the same frequencies. Therefore,
+they cannot all talk at the same time and have to share the network. Two ways of sharing
+the network are <strong>circuit-switching</strong>
+and <strong>packet switching</strong>.
+A <strong>circuit-switched</strong> network divides the network into short, fixed-length
+time slots and each node is allowed the use of only specific time slots. This
+is called <strong>Time Division Multiplexing</strong> (<strong>TDM</strong>). With
+circuit switching, a
+dedicated path (route) is established between two endpoints. Circuit switching provides guaranteed
+bandwidth and constant latency but does not use networking resources efficiently
+since time slots may go unused if a node has nothing to transmit.
+The public telephone network is an example of circuit
+switching, providing a maximum delay of 150 milliseconds and digitizing voice to a
+constant 64 kbps data rate. <strong>Packet-switched</strong> networking uses variable-length
+time slots. Data is segmented into variable-size packets and each packet must be identified
+and addressed. This type of transmission generally cannot provide guaranteed bandwidth or
+constant latency. Ethernet is an example of a packet-switched network. 
+</p>
+
+<!-- 
+<p>Ethernet is the most widely used data network for local
+area networking. It is a baseband network that was
+designed to use a shared medium.
+To transmit a packet on a shared 
+network, ethernet used a technique called
+<strong>carrier sense multiple access with
+collision detection</strong> (<strong>CSMA/CD</strong>). 
+analogous to making a phone call when someone else may be on the line.
+The network interface card monitors the network. Only when it detects no traffic
+does it send out its packet. While doing so, it still monitors the network
+to detect a collision &ndash;
+the case where two transceivers happened to send a packet out simultaneously. If a
+collision took place, the transmission is reattempted again at a later time.
+Progressively longer back-off times are used when collisions are encountered to
+ensure that overall performance degrades gracefully.
+</p>
+-->
+
+<p>Data networking is usually implemented as layers (a <strong>stack</strong> of 
+several <strong>protocols</strong>, each responsible for a specific aspect of
+networking. The OSI reference model defines seven layers of network protocols.
+Some of the more interesting ones are: the data link, network, transport, and presentation
+layers.
+</p>
+
+<p>
+The <strong>data link layer</strong> (layer 2) transfers data within a physical local area network.
+The <strong>network layer</strong> (layer 3) manages <strong>routing</strong>:
+the journey of packets from one machine to another possibly across multiple networks.
+The <strong>transport layer</strong> (layer 4) manages
+the communication of data from one application to another rather than machine-to-machine
+delivery.
+The <strong>presentation layer </strong>(layer 6) manages
+the representation of data and handles any necessary conversion of data types
+across architectures (for example, different byte ordering in integers,
+different character representations).</p>
+
+<h2>IP Networking</h2>
+
+<p>The <strong>Internet Protocol</strong> (IP) handles the
+interconnection of multiple local and wide-area networks. It is a logical 
+packet-switched
+network whose data is transported by one or more physical networks (such as Ethernet, for
+example). In the OSI model, IP is a layer 3 (network) protocol, while 
+ethernet is a layer 2 (data link) protocol.
+Each machine on an IP network must have an IP address. As IP is 
+a logical overlay network that connects multiple physical networks together,
+the IP address is separate from, and unrelated to, the address of any
+underlying network (e.g., ethernet address).
+
+<!--
+The addressing
+scheme for IP divided an address into two segments: a <strong>network</strong> part of the
+address, which determines where to route the packet, and a <strong>host</strong>
+part, which identifies the specific host within that local area
+network.</p>
+
+<p>Instead of using a fixed network-host partition, IP was designed to use
+three distinct partitions, or <strong>classes</strong> of networks: A, B, and C. This
+allowed for a small number of huge networks and a large number of networks with
+a small number of machines. However, the allocation of machines to networks was
+still inefficient. An organization that needed addresses for 300 machines would
+be allocated a class B network, and over 65,000 addresses would go unused (a
+class C network, accommodating only 254 machines, would have been too small). <strong>Classless
+Inter-Domain Routing</strong> (CIDR) was created to alleviate this inefficiency.
+Networks could be allocated to organizations on any power of two (arbitrary
+network-host partitioning). This made routing tables a bit more complex; they
+now need to have an extra datum: the number of leading bits that constitute the
+network part of the address. Eventually, even that was not sufficient to address
+the growing needs of the Internet and for well over a decade there has been a slow transition to the
+next version of IP: IP version 6, which uses 128-bit addresses to support a far larger
+address space.
+</p>
+-->
+
+<p>Since IP is a logical network, any machine that needs to
+send out IP packets must do so via the physical network.
+Typically, this is Wi-Fi or
+Ethernet, which uses a 48-bit Ethernet address that is unrelated to a 32-bit IP
+address. To send an IP packet out, the system needs to find the <strong>physical</strong> (Ethernet)
+destination address (the MAC, or Media Access Control address) that corresponds to
+the desired IP destination. The <strong>Address Resolution Protocol</strong>, or <strong>ARP</strong>,
+accomplishes this. It works by broadcasting a request containing an IP address
+(<em>do you know the corresponding MAC address for this IP address?</em>) and then
+waiting for a response from the machine with the
+corresponding IP address. To avoid doing this for every outgoing packet, it
+maintains a cache of most recently used addresses.</p>
+
+<p>There are two transport-layer protocols on top of IP: TCP
+and UDP. <strong>TCP</strong> (<em>Transmission Control Protocol</em>)
+simulates <strong>virtual circuit</strong>
+(<strong>connection-oriented</strong>) service. This layer of software ensures that
+packets arrive in order to the application and lost or corrupt packets are
+retransmitted. The transport layer keeps track of the destination so that the
+application can have the illusion of a connected data stream. <strong>UDP</strong> (<em>User
+Datagram Protocol</em>) provides <strong>datagram</strong> (<strong>connectionless</strong>)
+service. While UDP drops packets with corrupt data, it does not ensure in-order
+delivery or reliable delivery. <strong>Port numbers</strong> in both TCP and UDP
+form the <em>transport address</em> and are used
+to allow the operating system to direct the data to the appropriate application
+endpoint (or, more precisely, to the <strong>socket</strong> that is associated with the
+communication stream).
+</p>
+<p>
+<strong>Protocol encapsulation</strong> keeps the layers of the networking stack separate. A TCP or UDP packet,
+along with associated packet data, is treated simply as data within an IP packet. 
+The IP header has a 6-bit protocol field that identifies the type of protocol that
+is encapsulated within it so that an IP driver can send the packet to the right
+transport-level protocol (e.g., to the TCP module).
+Likewise, an Ethernet packet (called a "frame") treats
+the entire IP packet as data. It has a two-byte value that identifies the type of 
+protocol that it is encapsulating so that an ethernet driver can send the data
+to the correct protocol module (e.g., to the IP driver).
+</p>
+
+<h2> Sockets </h2>
+
+<p>
+<strong>Sockets</strong> are the interface to the network that is provided to
+applications by the operating system.
+A socket is a communication endpoint that allows one application to communicate
+with another application. Writing data to a socket allows a corresponding socket
+on another application to receive that data.
+The interface is usually a data network between
+machines but doesn't have to be &mdash; sockets can also be used for interprocess
+communication within the same system. Because sockets are designed to deal with application-to-application
+communication, they almost always interact at the transport layer of the OSI
+reference model (UDP/IP and TCP/IP if IP communications is used).
+</p>
+<p>
+Sockets are created with the <strong>socket</strong>
+system call and are assigned an address and port number with the <strong>bind</strong> system
+call. For connection-oriented protocols, a socket on the server is set to
+listen for connections with the <strong>listen</strong> system call. The <strong>accept</strong>
+call blocks until a connection is received at a listening socket, at which point the server 
+process is given a new
+socket dedicated to the new connection. A client can establish a connection with
+a server socket via the <strong>connect</strong> system call. After this, sending and receiving data is
+<strong>compatible</strong> with file operations: the same <em>read/write</em> system calls can be
+used. <em>This is a key feature of sockets:</em> once the network interface has been set up,
+the application can use file system I/O to communicate and does not have to think 
+about networking.
+When communication is complete, the socket can be closed with the <strong>shutdown</strong>
+system call or the regular file system <strong>close</strong> system call.
+</p>
+<p>
+User processes interact with sockets either through socket-specific system
+calls (<em>socket</em>, <em>listen</em>, <em>connect</em>, etc.) or through
+file system calls (<em>read</em>, <em>write</em>, etc.). However, sockets are <em>not</em>
+implemented as a file system under the VFS layer of the operating system. The distinction between <em>files</em>
+and <em>sockets</em> occurs in the kernel data structure referenced by the socket's file descriptor.
+Every socket has its own <strong><code>socket</code> structure</strong> associated with it.
+This structure identifies the set of operations that can be performed on it as
+well as its data send and receive queues. The structure also identifies the networking protocol
+that is associated with it (e.g., TCP) so that it can queue outbound data for processing
+by the appropriate protocol layer.
+</p>
+<p>
+The generic networking interface provided by sockets interacts with protocol-specific
+implementations. Just like the file system and devices, network protocols are modular
+and can be installed, registered, and removed dynamically. 
+</p>
+<p>
+We love layered protocols because they nicely partition the different things
+that need to happen in a networking stack. What we don't love is moving data around. Allocating,
+copying, and freeing data as it moves between layers of the protocol stack will severely impact
+performance. Instead, a packet is placed in a <strong>socket buffer</strong> (<strong>sk_buff</strong>)
+as soon as it is created: either at the system call (for sending data) or
+at the device driver (for received data). Instead of copying
+data, a pointer to the socket buffer moves between the queues of each layer of the
+networking stack. When an application needs to transmit data, the socket layer
+allocates a socket buffer with enough extra space to hold the process' data along with 
+all the headers that will be needed as the packet goes down the protocol stack (e.g.,
+TCP, IP, and ethernet headers). The data is copied from the user's process into the 
+socket buffer in kernel space. The next time it is copied is when all protocol
+processing is complete and the data, with all of its headers, moves from the socket buffer
+out to the device.
+</p>
+<p>
+An <strong>abstract device interface</strong> sits below the networking layers and right
+above the actual device drivers. This interface contains generic functions for initializing
+devices, sending data and allocating socket buffers for received data. The <strong>network
+device driver</strong> (e.g., an Ethernet or 802.11b/g/n/ac driver) interacts with the physical
+network and is responsible for actually transmitting data out to the network and grabbing
+received data from the hardware. As with character and block device drivers,
+network device drivers are modules
+that can be inserted, registered, and deleted dynamically.
+</p>
+<p>
+With fast networks, the rate at which packets come in can generate thousands to 
+hundreds of thousands of interrupts per second. To avoid this, Linux <strong>NAPI</strong>
+("New" API) disables network device interrupts when a packet is received and
+reverts to periodic polling. If, at some time, a poll yields no data then interrupts are
+re-enabled and polling is stopped. This avoids unnecessary polling when there is no
+incoming traffic. Once a network interrupt is serviced, interrupts are again disabled
+and we repeat the same process.
+</p>
+
+<h1>Remote Procedure Calls</h1>
+
+<p>
+One problem with the interface offered by sockets was that
+it provided a <em>send-receive</em> model of interaction. However, most
+programs use a functional (procedure call) model of interaction.
+Remote procedure calls are a
+<strong>programming language construct</strong> (something provided by the compiler), as opposed
+to an <strong>operating system construct</strong>, such as sockets. They provide the illusion of
+calling a procedure on a remote machine. During this time, execution of the
+local thread stops until the results are returned. The programmer is alleviated
+from packaging data, sending and receiving messages, and parsing results.
+</p>
+
+<p>
+The illusion of a remote procedure call is accomplished by
+generating <strong>stub functions</strong>. On the client side, the 
+<strong>client stub</strong> is a function with
+the same interface as the desired remote procedure. Its function, however, is to take the
+parameters, <strong>marshal</strong> them into a network message, send them to the
+server (using sockets), await a reply, and then <em>unmarshal</em> the results and return them to
+the caller. On the server side, the <strong>server stub</strong> (sometimes known as a skeleton) is
+responsible for being the main program that registers the service and awaits
+incoming requests for running the remote procedure. It <strong>unmarshals</strong> the data in
+the request, calls the user's procedure, and marshals the results into a
+network message that is sent back to the recipient.
+</p>
+
+<!-- 
+<h3>Sun (Open Network Computing) RPC</h3>
+
+<p>Sun's RPC was one of the first RPC systems to achieve
+widespread use. It is still in use on virtually all Unix-derived systems
+(SunOS, System V, *BSD, Linux, OS X). It uses a pre-compiler called <em>rpcgen</em> that
+takes input from an <strong>interface definition language</strong> (<strong>IDL</strong>) file.
+This is a file that defines the interfaces to the remote procedures. From this,
+<em>rpcgen</em> creates client stub functions and a server stub program. These
+can be compiled and linked with the client and server functions, respectively.
+</p>
+
+<p>
+Every interface is assigned a unique 32-bit number, known
+as a program number. When the server starts up, it binds a socket to any
+available port and registers that port number and its program number with a
+name server, known as the <em>portmapper</em>, running on the same machine. A
+client, before invoking any remote procedure calls, contacts the portmapper on
+the desired server to find the port to which it needs to send its requests.</p>
+
+<p>
+Sun's RPC is a key protocol for NFS (Network File System), which contributes
+to RPC's lasting popularity. It is present on all POSIX (Unix, Linux, OS X, BSD) systems.
+It isn't without weaknesses and other RPC systems have evolved over the years.
+We won't cover them here but some include DCE RPC (distributed computing environment),
+Microsoft DCOM and Object-RPC, CORBA, Java RMI, XML-RPC, SOAP, and Microsoft .NET Remoting.
+they all employ the same model of using client and server-side stub functions.
+</p>
+-->
+
+<h1> Network file systems </h1>
+
+<p>
+There are a couple of models for implementing distributed
+file systems: the <strong>download/upload model</strong> or the <strong>remote
+access</strong> model.
+In the download/upload model, an entire file is downloaded to the local machine
+when that file is opened and, if modified, uploaded when closed.
+In the remote access model, individual requests are forwarded to the remote server as
+remote procedures.
+</p>
+
+<p>
+In a <strong>stateful</strong> file system, the server
+maintains varying amounts of state about client access to files (e.g., whether
+a file is open, whether a file has been downloaded, cached blocks, modes of
+access). In a <strong>stateless</strong> file system, the server maintains no state about
+a client's access to files. The design of a file system will influence the <em>access
+semantics</em> to files. <strong>Sequential semantics</strong> are what we commonly expect
+to see in file systems, where reads return the results of previous writes. <strong>Session
+semantics</strong> occur when an application owns the file for the entire access
+session, writing the contents of the file only upon close, thereby making the
+updates visible to others after the file is closed, and overwriting any
+modifications made by others prior to that.
+</p>
+
+<h1>Network file systems: examples </h1>
+
+<h2>NFS</h2>
+
+<p>
+NFS was originally designed as a stateless, RPC-based model implementing
+commands such as <em>read bytes</em>, <em>write bytes</em>, <em>link files</em>, <em>create
+a directory</em>, and <em>remove a file</em>. Since the server does not maintain
+any state, there is no need for remote <em>open</em> or <em>close</em> procedures:
+these are used only on the client to keep track of the state locally.
+NFS works well in faulty environments:
+there's no state to restore if a client or server crashes. To improve
+performance, regardless of how little data an application requests, a
+client requests remote data a block a <strong>large chunk</strong> at a time
+(8 KB by default, but negotiated based on network speeds) and
+performs <strong>read-ahead</strong> (fetching future blocks before they are needed).
+It also caches data for some period of time.
+NFS
+suffers from ambiguous semantics because the server, as well as other clients, has no
+idea what blocks the client has cached and the client does not know whether its
+cached blocks are still valid. The system checks modification times if there
+are file operations to the server but otherwise invalidates the blocks after a
+few seconds. File locking could not be supported because of NFS's stateless
+design but was added through a separate lock manager that maintained the state
+of locks.</p>
+
+
+<h2>AFS</h2>
+
+<p> 
+AFS was designed as an improvement over NFS to support file sharing on a
+massive scale. NFS suffered because clients would never cache data for a long
+time (not knowing if it would become obsolete) and had to frequently contact
+the server. AFS introduced the use of a partition on a client's disk to cache
+large amounts of remote files for a long time: a model of <strong>whole file caching</strong> and
+<strong>long-term
+caching</strong>. It supports a file download-upload model. The entire file is
+downloaded on first access (<strong>whole file download</strong>) and uploaded back to
+the server after a <em>close</em> only if it was modified. Because of this
+behavior, AFS provides <strong>session semantics</strong>: the last one to
+close a modified file wins and other changes (earlier closes) are lost.
+</p>
+
+<p>
+During file access, the client need never bother the
+server: it already has the file. When a client first downloads a file, the
+server makes a <strong>callback promise</strong>: it maintains a list of each client that
+has downloaded a copy of a certain file. Whenever it gets an update for that
+file, the server goes through the list and sends a <strong>callback</strong> to each client
+that may have a cached copy so that it can be invalidated on the client. The
+next time the client opens that file, it will download it from the server.
+Files under AFS are shared in units called <strong>volumes</strong>. A volume is just a
+directory (with its subdirectories and files) on a file server that is assigned
+a unique ID among the <em>cell</em> of machines.
+If an administrator decides
+to move the volume to another server, the old server can issue a <em>referral</em>
+to the new server. This allows the client to remain unaware of resource
+movement.
+</p>
+
+<h2>
+SMB/CIFS
+</h2>
+<p>
+Microsoft's <strong>Server Message Block</strong> protocol was designed as a
+proprietary connection-oriented, <strong>stateful</strong> file system with the goal
+of providing strong consistency, full support for locking as well
+as other features provided by the native file system rather than client caching and
+performance. While it does not use remote procedure calls, its
+access principle is the same: it uses a remote access model as opposed
+to whole file downloads. Requests (message blocks) are
+functional messages, providing file access commands such as open, create,
+rename, read, write, and close.
+</p>
+<!--
+<p>
+With the advent of Windows NT 4.0 and an increasing
+need to provide improved performance via caching, Microsoft introduced
+the concept of <strong>opportunistic locks</strong>
+(<strong>oplocks</strong>) into the operating
+system. An oplock tells
+the client how it may cache data. At any time, a client's oplock
+may be revoked or changed by the server. A <strong>level 1 oplock</strong> tells the
+client that it has exclusive access to the file (nobody else is
+reading or writing it), so it can cache lock information, file
+attributes, and perform read-aheads and write-behinds. A <strong>level 2
+oplock</strong> is granted if one or more clients are reading the file and
+one process is writing it. For example, a process that had a level
+1 oplock will have it revoked and replaced with a level 2 oplock
+if another process opens the file for reading. In this case, read
+operations and file attributes may be cached but everything else
+is sent to the server. If two or more processes open a file for
+writing, then the level 2 oplock will be revoked and the client
+will have to perform all operations directly against the server.
+-->
+</p>
+
+<h1> Protection &amp; Security </h1>
+<p>
+<strong>Protection</strong> is the <em>mechanism</em> that provides
+and enforces controlled access of resources to users and processes. 
+<strong>Security</strong> is the set of policies that define authorized
+access to a system.
+
+The <strong>principle of least privilege</strong> is an approach
+to security that specifies that any entity (users, processes, functions) should
+be able to access only the resources that are essential to completing
+its task and no more. <strong>Privilege separation</strong>
+is a design where we segment a process into multiple parts, each
+granted only the privileges that it needs to operate. This allows us to partition
+a component that needs administrative access or needs to access a critical
+object away from other components and hence minimize any damage if the other
+components get compromised.
+</p>
+<p>
+In the most general sense, an operating system is responsible with providing
+processes and threads with controlled and protected access to resources.
+The process scheduler is responsible for providing threads with access to the CPU; 
+the memory manager and the MMU are responsible for giving processes protected 
+access to their own memory address space; device drivers and the buffer cache
+provide access to peripheral devices; sockets provide access to the network;
+and the file system provides access to logical data on disks.
+</p>
+<p>
+An operating system is responsible for ensuring that threads can access objects
+(devices, files, networks, etc.) only in accordance with security policies.
+Every thread operates in a <strong>protection domain</strong>, which defines
+what resources it is allowed to access. We can model the full system-wide
+set of access rights as an <strong>access matrix</strong>. Rows represent
+protection domains (e.g., users or group IDs under which a thread runs)
+and columns represent objects. The <em>row, column</em> intersection 
+defines the access rights of a specific domain on a specific object.
+An access matrix is not an efficient structure to implement, so operating
+systems typically model it with access control lists.
+An <strong>access control list</strong> (<strong>ACL</strong>) is a column
+of an access matrix: a list of permissions for each domain that are assigned 
+to a specific object. For example, a file may specify different 
+<em>read</em>, <em>write</em>, or <em>execute</em> rights for different users.
+In Linux and most current operating systems, a domain is associated with a user.
+</p>
+<p>
+A challenge with access control lists is that they may potentially be long
+and hence will not fit into a fixed-length inode structure. To
+address this, UNIX-derived 
+systems provide a severely limited form of ACLs by having the inode 
+contain <em>read</em>, <em>write</em>, and <em>execute</em> permissions for the only
+the file owner's ID, file's 
+group ID, and everyone else. 
+If a full ACL is used, it is stored as an extended attribute and uses
+additional disk block(s) apart from the inode.
+</p>
+<p>
+Virtually all modern operating systems implement some form of access control lists.
+An alternate approach is a <strong>capability list</strong>, which represents
+a row of an access matrix. Each domain has a capability, which is an enumeration of
+all the objects in the system and the operations that the domain (user or group) can
+perform on them. Capabilities are typically implemented
+with items such as network services, where an authorization server may present
+a process with a  <em>capability token</em> that it can pass on to an object and
+thereby prove that it is allowed to access the object.
+<!--
+On a network, Kerberos tickets (see
+future discussion on Kerberos) can be used as a capability mechanism.
+-->
+</p>
+<p>
+The access control mechanisms available in most systems (and the ones we use most)
+follow a model called <strong>discretionary access control</strong> (<strong>DAC</strong>).
+This allows the thread to access objects to which it has permissions and also
+pass that information to other processes or write it to other objects.
+Access to objects is restricted based on the identity of users or groups. 
+A <strong>mandatory access control</strong> (<strong>MAC</strong>) model 
+is one where a <strong>centrally-controlled</strong> policy restricts the actions of domains on 
+objects. Users cannot modify the policy. MAC models typically implement a
+<strong>Multi-Level Secure</strong> (<strong>MLS</strong>) access model, of which
+the <strong>Bell-LaPadula model</strong> is the most widely used example. In this
+model, objects are classified in a security hierarchy: unclassified, confidential,
+secret, and top-secret. Users (domains) are are also assigned a security clearance.
+The overall policy is <em>no read up; no write down</em>.
+This means that a user cannot read objects that belong to a higher
+clearance level than the user is assigned. The user also cannot
+write or modify objects that belong to a lower clearance level.
+</p>
+<p>
+This model, however, has limited use outside of governments as those policies
+do not apply well to civilian life. Another form of MAC is the use of an
+application sandbox (see later discussion). This allows an administrator or
+domain owner to specify restrictions on a per-process basis regardless
+of the user ID (protection domain) under which the process is executing. The
+process cannot override these restrictions.
+</p>
+
+<h1>Cryptography</h1>
+
+<p>
+Cryptography deals with encrypting <strong>plaintext</strong> using
+a <strong>cipher</strong> (also known as an <strong>encryption algorithm</strong>
+to create <strong>ciphertext</strong>, which is unintelligible to anyone
+unless they can <strong>decrypt</strong> the message.
+</p>
+<p>
+A <strong>restricted cipher</strong> is one where the workings of the cipher
+must be kept secret. There is no reliance on a key and the secrecy of the cipher
+is crucial to the value of the algorithm. This has obvious flaws: people in the
+know leaking the secret, coming up with a poor algorithm, and reverse engineering.
+For any use of serious encryption, we use well-tested, non-secret algorithms that rely on secret keys.
+</p>
+<p>
+A <strong>symmetric encryption algorithm</strong> uses the same secret key
+for encryption and decryption. A <strong>public key algorithm</strong> uses
+one key for encryption and another for decryption. One of these
+keys is kept private (known only to the creator) and is known as
+the <strong>private key</strong>. The corresponding key is generally made
+visible to others and is known as the <strong>public key</strong>.  Anything
+encrypted with the private key can only be decrypted with the public
+key. This is the basis for digital signatures.  Anything that is
+encrypted with a public key can be encrypted only with the corresponding
+private key. This is the basis for authentication and covert
+communication.
+</p>
+
+<p>
+A <strong>one-way function</strong> is one that can be computed relatively
+easily in one direction but there is no known way of computing the
+inverse function. One-way functions are crucial in a number of
+cryptographic algorithms, including digital signatures, Diffie-Hellman
+key exchange, and RSA public key cryptography. For Diffie-Hellman
+and RSA keys, they ensure that someone cannot generate the corresponding
+private key when presented with a public key. A particularly useful
+form of a one-way function is the <strong>hash function</strong>. This is a
+one-way function whose output is always a fixed number of bits for
+any input. For good cryptographic hash functions, 
+it is highly unlikely that two messages will ever
+hash to the same value, it is extremely difficult to construct
+text that hashes to a specific value, and it is extremely difficult
+to modify the plaintext without changing its hash.
+This is called <strong>collision resistance</strong>.
+The hash function is the basis for message authentication
+codes and digital signatures. Note that when we talk about 
+cryptography and use phrases such as "<em>extremely difficult</em>", 
+we mean "<em>impossible for all practical purposes</em>," not that
+"you can do it if you spend an entire day or two working on the problem."
+</p>
+
+<!--
+<h2>DES</h2>
+<p>
+The Data Encryption Standard, DES, was standardized in 1976 and is a
+block cipher that encrypts 64-bit chunks of data at a time. It uses
+a 56-bit key and employs 16 iterations of substitutions followed by
+permutations.
+</p>
+<p>
+The only serious weakness of DES is its key 56-bit key. By the 1990s
+it was possible to build machines that can iterate through all of the
+2<sup>56</sup> permutations of keys within a few hours. Networked efforts
+can also test hundreds of billions of keys per second.
+</p>
+<p>
+To prevent against such a <strong>brute force attack</strong>, DES would
+need a longer key. <strong>Triple-DES</strong> solves this
+problem by using the standard
+56-bit DES algorithm three times:
+</p>
+<blockquote>
+	C = E<sub>K3</sub>(D<sub>K2</sub>(E<sub>K1</sub>(P)))
+</blockquote>
+<p>
+If K<sub>1</sub> = K<sub>3</sub>, then we have a "classic" Triple-DES
+mode that uses a 2*56 (112-bit) key. 
+If K<sub>1</sub> = K<sub>2</sub> = K<sub>3</sub>, then the middle 
+decryption undoes the first encryption and we have a standard 56-bit
+DES algorithm. Finally, if all three keys are different, then we have
+a 168 bit (3*56) key.
+</p>
+-->
+
+<h2>Secure communication</h2>
+
+<p>
+To communicate securely using a symmetric cipher, both parties need
+to have a shared secret key. Alice will encode a message to Bob
+using the key and Bob will use the key to decode the message. If
+Alice wants to communicate with Charles, she and Charles will also
+need a secret key. The fact that every pair of entities will need
+a secret key leads to a phenomenon known as <em>key explosion</em>.
+Overall, in a system with <em>n</em> users, there will be
+<em>O(n<sup>2</sup>)</em> keys.
+</p>
+
+<p>
+The biggest problem with symmetric cryptography is dealing with key
+distribution: how can Alice and Bob establish a key so they can
+communicate securely? The <strong>Diffie-Hellman exponential key
+exchange</strong> algorithm allows one to do this. Each party will
+generate a private key and a public key (these are <em>not</em>
+encryption keys; they are just numbers. Diffie-Hellman does
+not implement public key cryptography. It is unfortunate
+that the term "keys" was used to describe these numbers.
+It uses the one-way function <em>a<sup>b</sup>mod&nbsp;c</em> in a 
+way that allows Alice to compute a common
+key using her private key and Bob's public key. Bob can compute the
+same common key by using his private key and Alice's public key.
+</p>
+
+<p>
+Using true public key cryptography, such as the RSA algorithm, if Alice encrypts a
+message with Bob's public key, Bob will be the only one who can
+decrypt it since doing so will require Bob's private key. Likewise,
+Bob can encrypt messages with Alice's public key, knowing that only
+Alice will be able to decrypt them with her private key.
+</p>
+
+<h2>Session keys</h2>
+
+<p>
+A <strong>session key</strong> is a random key that is generated for encryption
+during a single communication session. It is useful because if the key
+is ever compromised, no lasting information is obtained: future
+communication sessions will use different keys. A <strong>hybrid
+cryptosystem</strong> uses public key cryptography to send a session key
+securely. The originator generates a random session key and encrypts
+it with the recipient's public key. The recipient decrypts the
+message with the corresponding private key to extract the session
+key. After that, symmetric cryptography is used for communication,
+with messages encrypted with the session key. This has the advantages
+of higher performance (public key cryptography is <em>much, much</em> slower than
+symmetric cryptography) and ease of communicating with multiple parties
+(just encrypt the session key with the public keys of each of the
+recipients). It also allows the bulk of data to be encrypted with
+session keys instead of the hardly-ever-changing
+public keys.
+Generating a public-private key pair is also much, much slower
+than generating a symmetric key, which is just a random number.
+</p>
+
+<h2> Digital signatures </h2>
+<p>
+With public key cryptography, a <strong>digital signature</strong> is simply the act
+of encrypting a hash of a message with the creator's private key.
+Anyone who has the public key can decrypt the hash and thus validate
+it against the message. Other parties cannot recreate the signature
+since they do not have the private key even though they can create
+the hash.
+</p>
+
+<h1> Authentication </h1>
+<p>
+The three <strong>factors</strong> of authentication are:
+<em>something you have</em> (such as a key or a card),
+<em>something you know</em> (such as a password or PIN),
+and <em>something you are</em> (biometrics).
+Combining these into a <strong>multi-factor</strong>
+authentication scheme can increase security against the chance that
+any one of the factors is compromised. For example, the use of
+a password combined with an access card is two-factor
+authentication. Using two passwords, however, is still 
+single-factor authentication because the same factor is used twice.
+</p>
+
+<h2> Password Authentication Protocol (PAP) </h2>
+<p>
+The classic authentication method is the use of reusable passwords.
+This is known as the <strong>password authentication protocol</strong>,
+or <strong>PAP</strong>. With PAP, a password is associated with
+each user and stored in a file. The
+system asks you to identify yourself (login name) and then enter a
+password. If the password matches that which is associated
+with the login name on the system then you are authenticated.
+</p>
+
+<p>
+One problem with the protocol is that if someone
+gets hold of the password file on the system, then they have all
+the passwords. The common way to thwart this is to store hashes of
+passwords instead of the passwords themselves. This takes
+advantage of one-way functions. To authenticate a user, check if
+</p>
+<pre><code>
+hash(password) == stored_hashed_password(user)
+</code></pre>
+<p>
+Even if someone gets hold of the
+password file, they won't be able to
+reconstruct the original password from the hash. They'll have to
+resort to an exhaustive search or a dictionary attack and try
+different passwords, searching for one that hashes to the value in the file.
+</p>
+
+<p>
+Hashes are vulnerable to a dictionary attack with pre-computed hashes. 
+An attacker can, ahead of time, create a table of a few 
+million passwords and their corresponding hashes. Then, when
+confronted with a hash value, one simply searches the table for a matching
+hash to find the password that created it. A similar vulnerability
+exists if Alice notices that Bob's password hash is the same as hers.
+She now knows that she and Bob share the same password.
+</p>
+<p>
+<strong>Salt</strong> is extra data that is added to the password
+prior to hashing it. 
+What salt does is change the input text and hence the resultant
+hash. When you created your password and stored its hash, the system
+generated a random salt to go along with it (and stored the value
+along with your identity and hashed password).
+Suppose your salt is "abc" and your password is "test123". We now hash
+"test123abc" (or some such combination) and get a value that is NOT
+<em>hash("test123")</em>. The attacker can see the salt value in the password file but
+there's no way to remove its effect from the hash value. Now, the
+attacker needs a much, much larger set of data to account for all
+possible salt values. This will generally not be feasible for
+decent-sized salt values. For example, Apache and BSD use a salt
+that's up to 8 characters. Even with just alphanumeric characters,
+each possible password can have over 200 trillion variations as an input to
+the hash function.
+</p>
+
+<p>
+The other problem with reusable passwords is that
+if a network is insecure,
+an eavesdropper may sniff the password from the network. A potential
+intruder may also simply observe the user typing a password. To
+thwart this, we turn to <strong>one-time passwords</strong>. If someone sees you
+type a password (or gets it from the network stream), it won't
+matter because that password will be useless for future logins.
+</p>
+
+<h2> Challenge Handshake Authentication </h2>
+<p>
+One way to avoid the hazards of reusable passwords is never to
+send data over the network that an attacker can capture and replay to 
+authenticate onto the system in the future. The 
+<strong>Challenge Handshake Authentication Protocol</strong>,
+<strong>CHAP</strong>, does this by generating and sending a "challenge",
+which is a random bunch of bits (more generally called a <strong>nonce</strong>).
+Both the client (e.g., user) and server share a secret key. The
+client generates a hash on data the includes the challenge and the
+secret key and sends the hash back to the server. The server
+can compute the same hash since it also has the challenge and
+knows the shared secret. If the computed hash matches the one
+it received, then authentication was successful. Anyone sniffing
+the network can get a challenge but will never see the shared 
+secret and hence will not be able to generate a valid response.
+</p>
+<pre>
+	challenge: nonce
+	response: hash(key, nonce)
+</pre>
+
+<!--
+<h2> S/Key Authentication </h2>
+<p>
+<strong>S/Key authentication</strong> allows the use of one-time passwords
+by generating a list via one-way functions. A one-time password is valid a
+just once. The list of passwords is created such that
+password <i>n</i> is generated as <i>f(password[n-1])</i>. The list of 
+passwords is used backwards.
+Given a password <i>p</i>, it is impossible
+for an observer to compute the next valid password because a one-way function
+<i>f</i> makes it improbably difficult to compute <i>f<sup>-1</sup>(p)</i>.
+</p>
+-->
+
+<h2> SecurID<sup>&reg;</sup> </h2>
+<p>
+RSA's SecurID is a two-factor authentication system that generates
+one-time passwords for response to a user login prompt.
+It relies on a user password
+(a PIN: Personal ID Number) and a small computing device
+called a <em>token</em> (an authenticator card, fob, or software).
+The token generates a new number every 30 seconds. The number is a function of
+the time of day and a seed: a number that is unique for each card.
+To authenticate to a server, you send a combination of your
+PIN and the number from the number from
+the token in lieu of a password. 
+A legitimate remote system will have your PIN as well as the token
+seed and will be able to compute the same value to validate your
+password. An intruder would not know both PIN and the token’s seed
+and will never see the data on the network.
+</p>
+<pre>
+	password: hash(PIN, time, seed)
+</pre>
+
+<h2> Public key authentication </h2>
+<p>
+A <strong>nonce</strong> is a random bunch of bits that is generated on the 
+fly and is usually used to present to the other party as to prove that they are
+capable of encrypting something with a specific key that they possess.
+The use of a nonce is central to <strong>public key authentication</strong>
+(e.g., the kind used in SSL, the secure sockets layer). If I send you a nonce
+and you encrypt it with your private key and give me the results,
+I can decrypt that message using your public key. If the decryption
+matches the original nonce, this will convince me that only you
+could have encrypted the message since you are the only one who has 
+access to your private key.
+</p>
+<pre>
+	challenge: nonce
+	response: E<sub>k</sub>(nonce)
+</pre>
+
+<!--
+<h2> Kerberos authentication </h2>
+<p>
+<strong>Kerberos</strong> is a trusted third party authentication and key exchange
+scheme using symmetric cryptography. When you want to access a
+service, you first need to ask Kerberos. If access is granted, you
+get two messages. One is encrypted with your secret key and contains
+the session key for your communication with the service. The other
+message is encrypted with the service's secret key. You cannot read
+or decode this message. It is known as a <strong>ticket</strong> or
+<strong>sealed envelope</strong>. It contains
+the same session key that you received but is encrypted for the
+service. When the service decrypts it, it knows that the message
+must have been generated by an entity that had its secret key:
+Kerberos.
+Now that it has the session key, the service can communicate with
+you securely by encrypting all traffic with that key.
+</p>
+-->
+
+<h2> Digital certificates </h2>
+<p>
+While public keys simplify authentication (just decrypt this with
+my public key and you know that I was the only one who could have
+encrypted it), identity binding of the public key must be preserved.
+That is, you need to be convinced that my public key really is mine
+and not an impersonator's.
+<strong>X.509 digital certificates</strong> provide a solution for this.
+A certificate
+is a data structure that contains user information and the user’s
+public key. This data structure also contains a identification of 
+the <strong>certification authority</strong> (<strong>CA</strong>) and its signature.
+The signature is a hash of the certificate data
+that is encrypted using the certification authority's private key.
+The certification authority (CA) is responsible for setting policies to validate
+identity of the person who presents the public key for encapsulation
+in a certificate.
+You can validate a user's certificate if you have the CA's public
+key.
+To validate, you generate a hash of the certificate (minus its signature).
+You then decrypt the signature on the certificate using the CA's
+public key. If the decrypted signature and your hash match, then you are
+convinced that no data in the certificate has been altered.
+
+The CA's public key is present in another certificate: the CA's certificate.
+CA certificates for several hundred well-known CAs are pre-installed
+in places such as iOS's Trust Store, OS X's keychain, and Microsoft's
+Trusted Root Certification Authorities store.
+
+</p>
+
+<!--
+<h2> Secure Sockets Layer </h2>
+<p>
+<strong>Secure Sockets Layer</strong>
+(<strong>SSL</strong>, also known as <strong>TLS</strong>, or <strong>Transport Layer
+Security</strong>) is a layer of software designed to provide authentication
+and secure communication over the abstraction of a sockets interface.
+It makes it easy to add a secure transport onto insecure TCP socket based
+protocols (e.g., HTTP and FTP). SSL uses a <strong>hybrid cryptosystem</strong> and
+relies on public keys for authentication. If both the sender and
+receiver have X.509 digital certificates, SSL can validate them and
+use nonce-based public key authentication to validate that each party has the
+corresponding private key. In some cases, it may validate the server
+only. If the server does not have a certificate, SSL will then use
+a public key simply to allow a symmetric session key to be passed
+securely from client to server.
+The client generates a session key and encrypts it with the server's public key.
+This ensures that only the server will be able to decode the message and
+get the session key.
+After that, communication takes
+place using a symmetric algorithm and the client-generated session
+key.
+</p>
+-->
+
+<h1> Security </h1>
+<p>
+Most security attacks on systems are not cryptographic: they do
+not find weaknesses in cryptographic algorithms and try to break
+ciphers. Most rely on bugs in software or the trust of individuals.
+</p>
+<p>
+For protocols with no encryption that use a public (or sniffable)
+network, one can sniff the network traffic to extract logins and passwords
+(there's a lot of software that makes this easy; <em>snort</em>, for example,
+is one of the oldest and most popular). If one cannot find a password
+for a user, one can try guessing it. If one can't do that then one
+can try all combinations. An exhaustive search through every possible
+password may be time-prohibitive. A <strong>dictionary attack</strong> is one where
+you go through a dictionary of words and names and test them
+as potential passwords, applying common tricks such as prefixing
+and suffixing digits and substituting numbers that look like letters).
+Performing this attack becomes a lot easier if you are lucky enough
+to get the hash password that you are searching for. Then you can
+perform the search on your own machine without going through the login service
+on the target system.
+</p>
+
+<p>
+A <strong>social engineering attack</strong> is one where you convince a person to
+give you the necessary credentials. You might do this by impersonating
+as a system administrator and simply asking. A <strong>Trojan horse</strong> is a
+program that masquerades as a legitimate program and tricks you
+into believing that you are interacting with the trusted program.
+A common example is a program that masquerades as a login program
+and obtains an unsuspecting user's login and password. <strong>Phishing</strong> is
+an example of email that purports to come from a trusted party (such
+as your bank) and attempts to get the user to click on a link
+that will take them to what they believe is the party's web site.
+In reality, it is an intruder's site that is designed to look like
+the legitimate one. The goal here is also to collect data such as
+your login and password or perhaps your bank account, social security,
+or credit card numbers.
+</p>
+
+<p>
+A <strong>buffer overflow</strong> bug is one where software expects
+to read a small amount of data into a fixed-size buffer but never
+checks to see whether the incoming data is bigger than the buffer.
+What ends up happening is that the software continues to append
+data to the buffer but is now writing into memory beyond that which
+is allocated to the buffer. If the buffer was declared as a local variable within a
+function, then its memory resides on the stack. At some point,
+the overflow data will clobber the return address for that
+function. A carefully crafted data stream can ensure that the return
+address gets modified with the address of other code in this same
+stream, which will get executed as soon as the function attempts
+to return. This technique is known as <strong>stack smashing</strong>.
+</p>
+<p>
+The first approach to guard against stack smashing was to turn off 
+execute permission in the memory management unit for memory pages
+that are allocated for the stack.
+In the past, this was not possible since neither AMD nor Intel
+architectures had MMUs that permitted this. With this in place, an
+attacker cannot inject executable code.
+</p>
+<p>
+This defense was not sufficient, however. Since the return address can
+still be overwritten with a buffer overflow attack, an
+attacker can find some code within the program
+or any shared libraries that the program uses that performs
+a desired task and place that address as the return address
+on the stack. It is unlikely that there is a segment of 
+code that will do everything the attacker needs.
+A clever enhancement of this technique led to
+<strong>return oriented programming</strong>, or <strong>ROP</strong>.
+Here, the attacker finds a sequence of useful bits of code in various
+libraries. All of the code must be at the tail end of functions
+with a a <em>return</em> instruction at the end. Once the 
+function returns, it "returns" to an address that is read from the stack and
+is under control of the attacker. The return address can then
+take the program to another snippet of code. All together, the
+attacker adds a sequence of return addresses on the stack
+to get each block of code to execute in the desired order.
+</p>
+<p>
+Two additional defenses make this technique more difficult:
+</p>
+<ul>
+<li> <strong>stack canaries</strong>:
+The compiler places a random value (called a <strong>canary</strong>)
+on the stack just before the
+the region of data that is allocated to local variables, including
+buffers. A buffer overflow attack will overwrite this value before it overwrites
+the return value on the stack. Before returning from the function, the 
+compiler adds code to check the value of the canary. If it is corrupt, the
+function will abort the program instead of return.
+</li>
+
+<li> <strong>address space layout randomization</strong> (<strong>ASLR</strong>):
+The compiler randomly arranges the exact addresses where it places the stack, heap,
+or libraries. This makes it impossible for the attacker to jump to a known
+address in a library. However, this requires that all libraries are compiled
+to generate position independent code.
+</li>
+</ul>
+</p>
+
+<!--
+<p>
+A <strong>SYN flooding attack</strong> is a form of a denial of
+service attack where an intruder attempts to render a machine unable
+to accept any TCP/IP connections. Every TCP/IP session consumes a
+certain number of system resources, which are allocated when the
+first connection request is made (via a SYN packet). The intruder
+creates requests that come from unreachable hosts. If enough of
+these are sent to a host, the computer will reach a point where the
+operating system will not accept any more connections. There is a
+window of time before the machine will decide to give up on these
+pending connections. BSD systems typically allot 7.5 seconds for
+this period. Microsoft Windows Server 2003 advised using a value
+of two minute.
+<p>
+-->
+
+<p>
+A <strong>rootkit</strong> is code that hides the presence of users
+or additional software from the user. Sometimes, this is done by
+replacing commands that would present this data (e.g., <em>ps</em>,
+<em>ls</em>, <em>who</em>, ... on UNIX/Linux systems). In more
+sophisticated implementations, the rootkit modifies the operating
+system to intercept system calls.
+</p>
+
+<p>
+The four A's of security are:
+</p>
+<ol class="separated">
+<li>
+<strong>Authentication</strong>: the process of binding an identity
+to the user. Note the distinction between authentication and
+identification. <strong>Identification</strong> is simply the process of asking you
+to identify yourself (for example, ask for a login name). Authentication
+is the process of proving that the identification is correct.
+</li>
+<li>
+<strong>Authorization</strong>: given an identity, making a decision
+on what access the user is permitted. Authentication is responsible
+for access control.
+</li>
+<li>
+<strong>Accounting</strong>: logging system activity so that any
+breaches can be identified (intrusion detection) or a post facto
+analysis can be performed.
+<li>
+<strong>Auditing</strong>: inspecting the software and system configuration for security flaws. 
+</li>
+</ol>
+
+<h2> Signed Software </h2>
+<p>
+The idea of signing software is to ensure that it has not been
+tampered (for example, a virus is not attached to it). The most
+basic form of signing software is to do the same as we would for
+signing any other digital data: generate a hash of the entire package,
+encrypt it with the software publisher's private key, and attach it to the
+software as a signature. To validate the signature, you would compute
+the hash of the program and compare it with the decrypted signature. You would
+use the using the software publisher’s public key to decrypt the signature.
+This key would be present in a digital certificate that is
+obtained from that publisher.
+</p>
+<p>
+Computing a hash for software before we run it would involve scanning
+through the entire code base. Demand-paged virtual memory systems
+load pages of the program as needed, so this would greatly increase
+the startup time of the software. Instead, signed software will
+often contain a signature <em>for every memory page</em>. When a particular
+page is loaded, the operating system would check the signature for
+that page.
+</p>
+
+<h2> Sandboxes</h2>
+<p>
+A <strong>sandbox</strong> is an environment designed for running
+programs while restricting their access to certain resources, such
+as disk space, file access, amount of memory, and network connections.
+It allows users to set restriction policies so that 
+they can run untrusted code with minimal risk
+of harming their system. It is a form of mandatory access control
+in that the process, even though it runs under the protection
+domain of the user, loses specific privileges and cannot regain them. 
+</p>
+<p>
+The simplest approach to sandboxing is the use of the
+<strong>chroot</strong> system call on Unix systems. This changes
+the root directory of the file system for a process from the real root
+to one that is specified by the parameter to chroot. For example, the call
+</p>
+<pre>
+	chroot("/var/spool/postfix");
+</pre>
+<p>
+will set the root directory of
+the process to <code>/var/spool/postfix</code>. No files outside 
+of this directory will be visible.  This form of sandbox
+is known as a <strong>chroot jail</strong>. Even if an attacker 
+compromises the application, she will not be able to access any files
+or run any programs outside the jail. One weakness is that if the
+attacker gets administrative privileges, she can use the <em>mknod</em>
+system call to create a device file for the disk that holds the root
+file system and re-mount the file system. This approach also does
+not restrict network operations.
+</p>
+<p>
+A <strong>rule-based sandbox</strong> provides the ability to set finer-grain policies 
+on what an application cannot do. For example, an application may be
+disallowed from reading the file <code>/etc/passwd</code>; or be disallowed from writing
+any files; or not be allowed to establish a TCP/IP connection.
+Sandboxing is currently supported on a wide variety of platforms at 
+either the kernel or application level.
+One example is the Apple Sandbox on OS X. It allows a detailed set of policies
+to be enumerated that govern networking and file system reads and writes.
+These policies can include patterns to allow one to restrict file operations
+to specific directories or to files matching certain names.
+These policies are parsed and loaded into the kernel. The kernel runs the
+TurstedBSD subsystem. This subsystem was originally designed to enforce
+mandatory access control policies but in this case passes requests to
+a kernel extension that goes through the list of rules to determine whether
+a specific instance of a system call should be allowed or not.
+</p>
+<p>
+The popular example of a sandbox
+is the Java Virtual Machine, initially designed for running Java
+applets, which were compiled Java programs would be loaded and run dynamically upon fetching a web
+page. The Java sandbox has three parts to it:
+</p>
+
+<ol>
+<li> The <strong>byte-code verifier</strong> tries to
+ensure that the code looks like valid Java byte
+code with no attempts to circumvent access restrictions, convert
+data illegally, or forge pointers.
+</li>
+
+<li> The <strong>class loader</strong> enforces
+restrictions on whether a program is allowed to load additional
+applets and that an applet is not allowed to access classes belonging
+to other applets.
+</li>
+
+<li> The <strong>security manager</strong> is invoked to provide
+run-time verification of whether a program has rights to invoke
+certain methods, such as file I/O or network access.
+</li>
+</ol>
+
+
+<h1> Virtualization</h1>
+<p>
+As a general concept, virtualization is the addition of a layer of abstraction 
+to physical devices. With <strong>virtual memory</strong>,
+a process has the impression that it owns the entire memory address
+space. Different processes can all access the same virtual memory
+location and the memory management unit (MMU) on the processor maps
+each access to the unique physical memory locations that are assigned
+to the process.
+</p>
+<p>
+With <strong>storage virtualization</strong>, a computer gets a
+logical view of disks connected to a machine. In reality, those
+disks may be networked to a computer via a fibre channel switch
+or ethernet interface and may be parts of physical disks or collections
+of disks that appear to the computer as one disk.
+</p>
+<p>
+<strong>CPU virtualization</strong> allows programs to execute on
+a machine that does not really exist. The instructions are interpreted
+by a program that simulates the architecture of the pseudo machine.
+Early pseudo-machines included o-code for BCPL and P-code for Pascal.
+The most popular pseudo-machine today is the Java virtual machine.
+</p>
+<p>
+<strong>Machine virtualization</strong> allows a physical computer
+to act like several real machines with each machine running its own
+operating system (on a virtual machine) and applications that
+interact with that operating system. The key to machine virtualization
+is to not allow each guest operating system to have direct access
+to certain privileged instructions in the processor. These instructions
+would allow an operating system to directly access I/O ports, MMU
+settings, the task register, the halt instruction and other parts
+of the processor that could interfere with the processor's behavior
+and with other operating systems. Instead, such instructions as
+well as system interrupts are intercepted by the <strong>Virtual
+Machine Monitor</strong> (<strong>VMM</strong>), also known as a
+<strong>hypervisor</strong>. The hypervisor arbitrates access to
+physical resources and presents a set of virtual device interfaces
+to each guest operating system (including the memory management
+unit, I/O ports, disks, and network interfaces).
+</p>
+<p>
+Two configurations of virtual machines are <strong>hosted virtual
+machines</strong> and <strong>native virtual machines</strong>.
+With a hosted virtual machine, the computer has a primary
+operating system installed that has access to the raw machine (all devices,
+memory, and file system). One or more <strong>guest operating
+systems</strong> can be run on virtual machines. The VMM serves as
+a proxy, converting requests from the virtual machine into operations
+that get executed on the <strong>host operating system</strong>. A
+<strong>native virtual machine</strong> is one where there is no
+"primary" operating system that owns the system hardware. The
+hypervisor is in charge of access to the devices and provides each
+operating system drivers for an abstract view of all the devices.
+</p>
+<p>
+The latest processors
+from Intel and AMD support the concept of a virtual machine layer
+and the ability to intercept privileged instructions.
+Prior to that, one of two approaches was used to implement
+virtualization.
+
+<strong>Binary translation</strong> pre-scans the instruction
+stream of any code that has to run in privileged mode and
+replaces all privileged instructions with interrupts to the 
+VMM.
+<strong>Paravirtualization</strong> requires modifying the
+operating system to replace privileged instructions with
+calls to a VMM API. This, of course, requires access to the
+source code of the operating system.
+</p>
+
+</div>
+
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2014 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 22, 2015
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> Exam Info </h2>
+	<ul>
+	<li> <a href="../exam/index.html#list">List of topics</a>
+	<li> <a href="../exam/old/index.html"> Old Exams </a> </li>
+	<li> <a href="../exam/study-guide-1.html"> Exam 1 Study Guide </a> </li>
+	<li> <a href="../exam/study-guide-2.html"> Exam 2 Study Guide </a> </li>
+	<li> <a href="../exam/study-guide-3.html"> Exam 3 Study Guide </a> </li>
+	<li> <a href="../exam/study-guide-final.html"> Final Study Guide </a> </li>
+	</ul>
+	
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> BigTable </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../index.html"> Rutgers CS 417 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/bigtable.html"> BigTable </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> BigTable </h1>
+<h2> A NoSQL massively parallel table </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> November 2011 </p>
+</div>
+
+<h1> Introduction </h1>
+<p class="first">
+Traditional relational databases present a view that is composed of multiple tables, each with rows and named columns.
+Queries, mostly performed in SQL (Structured Query Language) allow one to extract specific columns from a
+row where certain conditions are met (e.g., a column has a specific value). Moreover, one can perform
+queries across multiple tables (this is the "relational" part of a relational database). For example
+a table of students may include a student's name, ID number, and contact information. A table of grades
+may include a student's ID number, course number, and grade. We can construct a query that extracts a grades
+by name by searching for the ID number in the student table and then matching that ID number in the
+grade table. Moreover, with traditional databases, we expect ACID guarantees: that transactions will be
+atomic, consistent, isolated, and durable. As we saw when we studied distributed transactions, it is
+impossible to guarantee consistency while providing high availability and network partition tolerance.
+This makes ACID databases unattractive for highly distributed environments and led to the emergence of
+alternate data stores that are target to high availability and high performance.
+Here, we will look at the structure and capabilities of BigTable.
+</p>
+
+<h1> BigTable </h1>
+<p>
+<strong>BigTable</strong> is a distributed storage system that is structured as a large table: one
+that may be petabytes in size and distributed among tens of thousands of machines. It is designed
+for storing items such as billions of URLs, with many versions per page; over 100 TB of satellite
+image data; hundreds of millions of users; and performing thousands of queries a second.
+BigTable was developed at Google in has been in use since 2005 in dozens of Google services.
+An open source version, HBase, was created by the Apache project on top of the Hadoop core.
+Apache Cassandra, first developed at Facebook to power their search engine, is similar
+to BigTable with a tunable consistency model and no master (central server).
+</p>
+<p>
+BigTable is designed with semi-structured data storage in mind. It is a large map that is indexed by a row
+key, column key, and a timestamp. Each value within the map is an array of bytes that is 
+interpreted by the application. Every read or write of data to a row is atomic, regardless
+of how many diferent columns are read or written within that row.
+</p>
+<p>
+It is easy enough to picture a simple table. Let's look at a few characteristics of BigTable:
+</p>
+<dl>
+<dt> map </dt>
+<dd>
+A <strong>map</strong> is an associative array; a data structure that allows one to look up 
+a value to a corresponding key quickly. BigTable is a collection of (key, value) pairs where
+the key identifies a row and the value is the set of columns. 
+</dd>
+
+<dt> persistant </dt>
+<dd>
+The data is stored peristantly on disk.
+</dd>
+
+<dt> distributed </dt>
+<dd>
+BigTable's data is distributed among many independent machines. At Google, BigTable is
+built on top of GFS (Google File System). The Apache open source version of BigTable,
+HBase, is built on top of HDFS (Hadoop Distributed File System) or Amazon S3.
+The table is broken up among rows, with groups of adjacent rows managed by a server.
+A row itself is never distributed.
+</dd>
+
+<dt> sparse </dt>
+<dd>
+The table is sparse, meaning that different rows in a table
+may use different columns, with many of the columns empty for a particular row. 
+</dd>
+
+<dt> sorted </dt>
+<dd>
+<p>
+Most associative arrays are not sorted. A key is hashed to a position in a table.
+BigTable sorts its data by keys. This helps keep related data close together,
+usually on the same machine &mdash; assuming that one structures keys in such
+a way that sorting brings the data together. For example, if domain names are
+used as keys in a BigTable, it makes sense to store them in reverse order to
+ensure that related domains are close together. For example:
+</p>
+<div class="codeblock">
+edu.rutgers.cs
+edu.rutgers.nb
+edu.rutgers.www
+</div>
+</dd>
+
+<dt> multidimensional </dt>
+<dd>
+<p>
+A table is indexed by rows. Each row contains one or more 
+named <strong>column families</strong>. Column families are
+defined when the table is first created. Within a column family, one
+may have one or more named columns. All data within a column family is
+usually of the same type. The implementation of BigTable usually
+compresses all the columns within a column family together. Columns within
+a column family can be created on the fly. 
+Rows, column families and columns provide a three-level naming hierarchy in
+identifying data. For example:
+</p>
+<div class="codeblock">
+	edu.rutgers.cs" : {		// row
+		"users" : {		// column family
+			"watrous": "Donald",		// column
+			"hedrick": "Charles",		// column
+			"pxk" : "Paul"			// column
+		}
+		"sysinfo" : {			// another column family
+			"" : "SunOS 5.8"		// column (null name)
+		}
+	}
+</div>
+<p>
+To get data from BigTable, you need to provide a fully-qualified name in
+the form <em>column-family:column</em>. For example, 
+<span class="code">users:pxk</span> or
+<span class="code">sysinfo:</span>. The latter shows an null column name.
+</dd>
+
+<dt> time-based </dt>
+<dd>
+Time is another dimension in BigTable data. Every column family may keep multiple
+versions of column family data. If an application does not specify a timestamp, it
+will retrieve the latest version of the column family. Alternatively, it
+can specify a timestamp and get the latest version that is earlier than or equal
+to that timestamp.
+</dd>
+</dl>
+
+<h1> Columns and column families</h1>
+
+<div class="figure width550">
+<img src="images/bt-columns-x.png" width=526 height="178">
+Figure 1. BigTable column families and columns
+</div>
+<p>
+Let's look at a sample slice of a table that stores web pages (this example is from
+Google's paper on BigTable). The row key is the page URL. For example, "<span class="code">com.cnn.www</span>".
+various attributes of the page are stored in column families. A <span class="code">contents</span>
+column family contains page contents (there are no columns within this column family). 
+A <span class="code">language</span> column family contains the language identifier for the page.
+Finally, an <span class="code">anchor</span> column family contains the text of various anchors from
+other web pages. The column name is the URL of the page making the reference. These three
+column families underscore a few points. A column may be a single short value, as seen in the
+<span class="code">language</span> column family. This is our classic database view of columns.
+In BigTable, however, there is no type associated with the column. It is just a bunch of bytes.
+The data in a column family may also be large, as in the <span class="code">contents</span> column
+family. The <span class="code">anchor</span> column family illustrates the extra hierarchy created
+by having columns within a column family. It also illustrates the fact that columns can be
+created dynamically (one for each external anchor), unlike column families. Finally, it illustrates
+the sparse aspect of BigTable. In this example, the list of columns within the 
+<span class="code">anchor</span> column family will likely vary tremendously for each URL.
+In all, we may have a huge number (e.g., hundreds of thousands or millions) of columns but the
+column family for each row will have only a tiny fraction of them populated. While the number
+of column families will typically be small in a table (at most hundreds), the number of columns
+is unlimited.
+</p>
+
+<h1> Rows and partitioning </h1>
+<p>
+A table is logically split among rows into multiple subtables called <strong>tablets</strong>.
+A tablet is a set of consecutive rows of a table and is the unit of distribution and load balancing
+within BigTable. Because the table is always sorted by row, reads of short ranges of rows are
+efficient: one typically communicates with a small number of machines. Hence, a key to ensuring a
+high degree of locality is to select row keys properly (as in the earlier example of using
+domain names in reverse order). 
+</p>
+
+<h1> Timestamps </h1>
+<p>
+Each column family cell can contain multiple versions of content. For example,
+in the earlier example, we may have several timestamped versions of page contents
+associated with a URL. Each version is identified by a 64-bit timestamp that either
+represents real time or is a value assigned by the client. Reading column data
+retrieves the most recent version if no timestamp is specified
+or the latest version that is earlier than a specified timestamp.
+timestamp. 
+</p>
+<p>
+A table is configured with per-column-family settings for garbage collection
+of old versions. A column family can be defined to keep only the latest
+<em>n</em> versions or to keep only the versions written since some time <em>t</em>.
+</p>
+
+<h1> Implementation </h1>
+<p>
+BigTable comprises a client library (linked with the user's code), a master
+server that coordinates activity, and many tablet servers. Tablet servers can be
+added or removed dynamically.
+</p>
+<p>
+The master assigns tablets to tablet servers and balances tablet server load.
+It is also responsible for garbage collection of files in GFS and
+managing schema changes (table and column family creation).
+</p>
+<p>
+Each tablet server manages a set of tablets (typically 10-1,000 tablets per server).
+It handles read/write requests to the tablets it manages and
+splits tablets when a tablet gets too large.
+Client data does not move through the master; clients communicate directly with tablet servers
+for reads/writes.
+The internal file format for storing data is Google's SSTable, which is a 
+persistent, ordered, immutable map from keys to values.
+</p>
+<p>
+BigTable uses the Google File System (GFS) for storing both data files and logs.
+A cluster management system contains software for scheduling jobs, monitoring health,
+and dealing with failures.
+</p>
+
+<h2> Chubby </h2>
+<p>
+<strong>Chubby</strong> is a highly available and persistent distributed lock service
+that manages leases for resources and stores configuration information. The service runs with
+five active replicas, one of which is elected as the master to serve requests.
+A majority must be running for the service to work.
+Paxos is used to keep the replicas consistent.
+Chubby provides a namespace of files & directories. Each file or directory can be used as a lock.
+</p>
+<p>
+In BigTable, Chubby is used to:
+</p>
+<ul>
+	<li> ensure there is only one active master </li>
+	<li> store the bootstrap location of BigTable data </li>
+	<li> discover tablet servers  </li>
+	<li> store BigTable schema information </li>
+	<li> store access control lists </li>
+</ul>
+
+<h2> Startup and growth </h2>
+<div class="figure width550">
+<img src="images/bt-hierarchy-x.png" width=528 height="230">
+Figure 1. BigTable indexing hierarchy
+</div>
+<p>
+A table starts off with just one tablet. As the table grows, it is split into multiple tablets. By
+default, a table is split at around 100 to 200 MB.
+</p>
+<p>
+Locating rows within a BigTable is managed in a three-level hierarchy.
+The root (top-level) tablet stores the location of all <strong>Metadata tablets</strong>
+in a special <strong>Metadata tablet</strong>.
+Each Metadata table contains the location of user data tablets. This table
+is keyed by node IDs and each row identifies a tablet's table ID and end row.
+For efficiency, the client library caches tablet locations.
+</p>
+<p>
+A tablet is assigned to one tablet server at a time.
+Chubby keeps track of tablet servers.
+When a tablet server starts, it creates and acquires an exclusive lock on a
+uniquely-named file in a Chubby <em>servers</em> directory.
+The master monitors this directory to discover new tablet servers.
+When the master starts, it:
+</p>
+<ul>
+	<li> grabs a unique master lock in Chubby (to prevent multiple masters from starting) </li>
+	<li> scans the servers directory in Chubby to find live tablet servers </li>
+	<li> communicates with each tablet server to discover what tablets are assigned to each server </li>
+	<li> scans the Metadata table to learn the full set of tablets </li>
+	<li> builds a set of unassigned tablet servers, which are eligible for tablet assignment </li>
+</ul>
+
+<h2> Replication</h2>
+A BigTable can be configured for replicaiton to multiple BigTable clusters in different data
+centers to ensure availability. Data propagation is asynchronous and results an eventually consistent model.
+
+<h1> References </h1>
+<dl>
+<dt>
+Fay Chang, Jeffrey Dean, Sanjay Ghemawat, Wilson C. Hsieh, Deborah A. Wallach Mike Burrows, Tushar Chandra, Andrew Fikes, Robert E. Gruber,
+<em><a href="http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/en/us/archive/bigtable-osdi06.pdf">
+Bigtable: A Distributed Storage System for Structured Data</a></em>,
+Google, Inc. OSDI 2006
+</dt>
+<dd> The definitive paper on BigTable </dd>
+
+<dt>
+Robin Harris,
+<em><a href="http://storagemojo.com/2006/09/07/googles-bigtable-distributed-storage-system-pt-i/"
+"> Google’s Bigtable Distributed Storage System </a></em>, 
+StorageMojo.com
+</dt>
+<dd>  </dd>
+
+<dt>
+<em><a href="http://jimbojw.com/wiki/index.php?title=Understanding_Hbase_and_BigTable">Understanding HBase and BigTable</a></em>, Jumoojw.com
+</dt>
+<dd>  </dd>
+
+</dl>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/6f683a17-68f7-4cb4-ad35-6c245c3f4682"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

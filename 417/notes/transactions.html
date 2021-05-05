@@ -1,0 +1,440 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Distributed Transactions</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Distributed Transactions</h1>
+								<h2>ACID, two-phase commit, three-phase commit, and CAP</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>March 24, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Create a fault tolerant algorithm that ensures that <em>all</em> participants in a transaction agree to <em>commit</em> (make their actions permanent). If agreement is not reached, then all group members must agree to <em>abort</em> (undo any changes).</p>
+</blockquote>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>A transaction is a set of operations that operates on, and often modifies, data.
+Transactons have been typically associated with databases and the data they operate on: tables, rows
+within a table, and fields within a row. While they are used extensively in database systems,
+the principles of transactions and commit protocols can apply to any software systems.</p>
+
+<p>A key facet of a transaction is that it keeps data consistent even in case of system
+failures.
+Transactions are <strong>atomic</strong> &#8212;
+all results must be made permanent (<strong>commit</strong>) and appear to anyone outside
+the transaction as an indivisible action.
+If a transaction cannot complete, it must <strong>abort</strong>,
+reverting the state of the system to that before it ran. If several
+transactions run concurrently, the end result must be the same as
+if those transactions ran in some (any) serial order; transactions
+cannot interfere with each other&#8217;s data. The specific order in which transactions
+execute is known as a <strong>schedule</strong>.</p>
+
+<p>A transaction-based model guarantees a set of properties known as <strong>ACID</strong>:</p>
+
+<dl>
+<dt><strong>Atomic</strong></dt>
+<dd> The transaction happens as a single indivisible action. The entire
+transaction
+succeeds (and the transaction <em>commits</em>)
+or else the entire transaction is rolled back (the transaction <em>aborts</em>).
+It is not acceptable for a transaction to complete only partially.</dd>
+
+<dt><strong>Consistent</strong></dt>
+<dd> A transaction cannot leave the data in an inconsistent state.
+If the system has invariants, they must hold after the transaction.
+For example, the total amount of money in all accounts must be the
+same before and after a “transfer funds” transaction. This also affects
+replicated data. If distributed copies of replicated data must be identical
+then they must remain identical after a transaction.</dd>
+
+<dt><strong>Isolated</strong> (<strong>Serializable</strong>)</dt>
+<dd> Transactions cannot interfere with each other.
+If transactions run at the same time, the final result must be the
+same as if they executed in some serial order. One transaction cannot
+access intermediate results of another.</dd>
+
+<dt><strong>Durable</strong></dt>
+<dd> Once a transaction commits, the results are made permanent. No
+system or software failures after a commit will cause the results to revert.
+Conversely, until the transaction commits, its results should
+be revertible. If the transaction must abort, it must return any modified data to
+its state before the transaction.</dd>
+</dl>
+
+<p>A <strong>write-ahead log</strong> (or transaction log) is used to enable
+<strong>rollback</strong>:
+reverting to the previous state when aborting a transaction. It
+is also crucial in maintaining the state of the transaction.
+The system will be able to read the log and recover to where it
+was in the transaction commit protocol. Write-ahead logs must be
+in stable storage (e.g., disk or flash memory) so the data and
+transaction state could be recovered if the system dies and recovers.</p>
+
+<p>In a distributed transaction environment, multiple processes participate
+in a transaction, each executing its own sub-transaction that can commit
+<em>only</em> if there is unanimous consensus by all participants to
+do so. Each system runs a <strong>transaction manager</strong>, a
+process that is responsible for participating in the commit algorithm
+algorithm to decide whether to commit or abort its sub-transaction.
+One of these transaction managers may be elected as the <strong>coordinator</strong> and
+initiates and runs the commit algorithm. Alternatively, the coordinator
+could be a separate process from any of the transaction participants.</p>
+
+<h2 id="two-phasecommitprotocol">Two-phase commit protocol</h2>
+
+<p>The <strong>two-phase commit protocol</strong> uses atomic multicasts to
+reach a consensus among the group on whether to commit or abort.
+It uses a coordinator to send a request
+(<em>&#8220;can you commit?&#8221;</em>) to every member of the group (reliably,
+retransmitting as often as needed until all replies are received).
+<strong>Phase 1</strong> is complete when every member of the group (each <strong>participant</strong>)
+responds. If the coordinator gets even a single <em>abort</em> response
+from a participant, it must tell
+all participants to abort the entire transaction. Otherwise, it
+will tell all participants to commit it. In <strong>phase 2</strong>, the coordinator sends
+the
+<em>commit</em> or <em>abort</em> order and waits for a response from everyone.
+In summary, in phase 1, the coordinator gets everyone&#8217;s agreement and in
+phase 2, the coordinator sends the directive to commit or abort.</p>
+
+<p>The write-ahead log in stable storage is crucial for ensuring atomic multicasts
+(the write-ahead log is also important for transaction rollback, which is used for aborts).
+For example, if a participant sent the coordinator a <em>commit</em> response for phase 1
+and then died, it must be able to reboot and reconstruct the
+transaction state from the log; it cannot change its mind after rebooting.
+The two-phase commit protocol cannot proceed until each participant
+acknowledges each message.</p>
+
+<p>The two phase commit stalls if any member &#8211; the coordinator or any participant &#8211; dies.
+It has to wait for the recovery of that member before proceeding with the
+protocol. A <strong>recovery coordinator</strong> can step in in certain circumstances.
+If the coordinator died and a recovery coordinator took over, it
+queries the participants. If at least one participant has received a
+<em>commit</em> message then the new coordinator knows that the vote to commit
+must have been unanimous and it can tell the others to commit. If no participants
+received a <em>commit</em> message then the new coordinator can restart the protocol.
+However, if one of the participants died along with the coordinator, confusion
+may arise. If all the live participants state that they have not received a
+<em>commit</em> message, the coordinator does not know whether there was a consensus
+and the dead participant may have been the only one to receive the <em>commit</em>
+message (which it will process when it recovers). As such, the coordinator
+cannot tell the other participants to make any progress; it must wait for
+the dead participant to come back.</p>
+
+<h2 id="three-phasecommitprotocol">Three-phase commit protocol</h2>
+
+<p>The two-phase commit protocol is a blocking protocol that relies
+on a fail-restart failure model.
+If the coordinator or any participant crashes, the entire
+protocol stalls until the failed process is restarted.
+The <strong>three-phase commit protocol</strong> is similar to
+the two-phase commit protocol but allows entities to time out in
+certain cases to avoid indefinite waits.
+the role of the coordinator.</p>
+
+<p>The protocol also enables the use of a <strong>recovery coordinator</strong>
+by introducing an extra phase where all participants are informed of the
+decision to commit before any participant can commit.
+This way, any participant could inform a standby coordinator whether
+there was a unanimous decision to commit and some commits may have taken place.
+The three-phase commit protocol
+propagates the knowledge of the outcome of the election to all participants
+before starting the commit phase.</p>
+
+<!--
+Consider this case in the two-phase commit protocol. All participants
+agree to commit (phase 1 ends). The coordinator starts to send out
+_commit_ commands but dies after sending the first one. The participant
+			backup coordinator takes over, there is no way it can find the state
+of the protocol. It cannot tell everyone to abort because it does
+not know what the dead participant did.
+-->
+
+<p>In phase 1 of the three-phase commit protocol, the coordinator sends a <strong>query to commit</strong> request
+(<em>&#8220;can you commit?&#8221;</em>) to every member of the group (reliably,
+retransmitting as often as needed until all replies are received over
+a period of time).
+If any of the participants respond with a <em>no</em> or if any
+participants failed to respond within a defined time, then the coordinator sends an <em>abort</em>
+to every participant.</p>
+
+<p>In phase 2, the coordinator sends a <strong>prepare-to-commit</strong>
+message to all participants and gets acknowledgements from everyone.
+When this message is received, a participant knows that the unanimous
+decision was to commit. If a participant fails to receive this
+message in time, then it aborts. At this point, the participants
+do not commit. However, if a participant receives an <em>abort</em> message then
+it can immediately abort the transaction. Each of these messages
+must be acknowledged by all participants before the coordinator proceeds to phase 3.</p>
+
+<p>In phase 3, the coordinator sends a <em>commit</em> message
+to all participants telling them to commit. If a participant fails to
+receive this message, it commits anyway since it knows from phase 2 that
+there was a unanimous decision to commit.
+If a coordinator crashes during this protocol, another
+one can step in and query the participants for the commit decision.
+If every participant received the <em>prepare-to-commit</em>
+message then the coordinator can issue the commit directives.
+If only some participants received
+the message, the coordinator now knows that the unanimous
+decision was to commit and can re-issue the <em>prepare-to-commit</em>
+request followed by a <em>commit</em>. If
+no participant received the message, the coordinator can
+restart to protocol or, if necessary, restart the transaction.</p>
+
+<p>The three-phase commit protocol accomplishes two things:</p>
+
+<ol>
+<li><p>Enables use of a recovery coordinator.
+If a coordinator died, a recovery coordinator can query a participant.</p>
+
+<ul>
+<li><p>If the participant is found to be in phase 2, that means that <em>every</em>
+participant has completed phase 1 and voted on the outcome. The
+completion of phase 1 is guaranteed. It is possible that some
+participants may have received commit requests (phase 3). The
+recovery coordinator can safely resume at phase 2.</p></li>
+<li><p>If the participant was in phase 1, that means NO participant has
+started commits or aborts. The protocol can start at the beginning</p></li>
+<li><p>If the participant was in phase 3, the coordinator can continue in
+phase 3 – and make sure everyone gets the commit/abort request</p></li>
+</ul></li>
+<li><p>Every phase can now time out &#8211; there is no indefinite wait as in the two-phase commit protocol.</p>
+
+<dl>
+<dt>Phase 1:</dt>
+<dd> Participant aborts if it doesn’t hear from a coordinator in time</dd>
+
+<dd> Coordinator sends aborts to all if it doesn’t hear from any participant</dd>
+
+<dt>Phase 2:</dt>
+<dd> If coordinator times out waiting for a participant &#8211; assume it crashed, tell everyone to abort</dd>
+
+<dd> If participant times out waiting for a coordinator, elect a new coordinator</dd>
+
+<dt>Phase 3:</dt>
+<dd> If a participant fails to hear from a coordinator, it can contact any other participant for results</dd>
+</dl>
+</li>
+</ol>
+
+<p>The three-phase commit protocol suffers from two problems. First, a partitioned network may
+cause a subset of participants to elect a new coordinator and vote on a different transaction outcome.
+Secondly, it does not handle fail-recover well.
+If a coordinator that died recovers, it may read its write-ahead log and resume
+the protocol at what is now an obsolete state, possibly issuing conflicting directives to
+what already took place. The protocol does not work well with fail-recover systems.</p>
+
+<!-- 
+
+##  Consensus-based commit 
+
+The two-phase commit protocol requires all processes in the group
+to be available to complete the transaction. The three-phase
+commit introduces timeouts but does not work correctly
+in all situations.
+If the two-phase or three-phase protocols
+are enhanced for fault tolerance to elect an alternate
+coordinator, one runs into problems where different participants may have
+received messages from different coordinators.
+
+Using Paxos for distributed commit enables us to have
+a fault-tolerant infrastructure that reaches agreement on
+_commit_ or _abort_ decisions.
+Multiple systems run the 
+Paxos algorithm for fault tolerance. Together, these act as a coordinator.
+Each participant
+contacts _its own instance of 
+the Paxos algorithm_ on these systems to ensure that Paxos agrees on 
+just that participant's _commit_ or _abort_ decision.
+Paxos then forwards that decision to learner processes, which
+decide on the overall _commit_ or _abort_
+based on whether **all** participants sent a _commit_ message
+(each learner gets the same data and hence reaches the same decision;
+the multiple learners are there for fault tolerance). They then
+notify each of the participants with the _commit_/_abort_
+decision.
+
+-->
+
+<h2 id="brewerscaptheorem">Brewer&#8217;s CAP Theorem</h2>
+
+<p>Ideally, we would like to have three properties in a replicated data distributed system:</p>
+
+<dl>
+<dt>Consistency</dt>
+<dd> The data retrieved from the system should be the same regardless of which
+server is contacted.</dd>
+
+<dt>Availability</dt>
+<dd> The system should always be available to handle requests.</dd>
+
+<dt>Partition tolerance</dt>
+<dd> The system should continue to function even if some network links do
+not work and one group of computers cannot talk to another. For example,
+a link between two data centers may go down.</dd>
+</dl>
+
+<p>Eric Brewer&#8217;s <strong>CAP Theorem</strong> states that <em>you can have either consistency
+or availability in the presence of partitions but not both</em>. Quite often,
+the theorem is summarized as:
+<em>if you want consistency,
+availability, and partition tolerance, you have to settle for at most two
+out of three of these</em>. However, we expect real-world distributed systems to be at
+risk of network partitions, so the choice is really between consistency and availability.</p>
+
+<p>With distributed architectures, we generally strive for high availability
+and the ability to withstand partitions (occasional breaks in the ability
+of nodes to communicate). Hence, we will have to give up on consistency and
+break the guarantees of ACID.
+An alternative to the requirements of ACID is <strong>BASE</strong>.</p>
+
+<p>BASE stands for Basic Availability, Soft-state, <strong>Eventual consistency</strong>.
+Instead of requiring consistency after every transaction, it is
+enough for the data to <em>eventually</em> get updated to a consistent state.
+The downside is that some processes may access stale data which
+has not yet been brought into a consistent state.</p>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

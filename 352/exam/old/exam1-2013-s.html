@@ -1,0 +1,370 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 352 old exams: Exam 1 Spring 2013 </title>
+
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+#main ol h1 {
+	font-size: 140%;
+	margin-left: -1.3em;
+}
+#main ol li {
+	margin-bottom: 1em;
+}
+</style>
+</head>
+
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> 352 </a> 
+ 	<li> <a href="../../exam/index.html"> Exam info </a> 
+ 	<li> <a href="../../exam/old/index.html"> Old exams </a> 
+ 	<li> <a href="../../exam/old/exam1-2013-s.html"> Exam 1 Spring 2013 </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> CS 352 Exam 1 </h1>
+<h2>Spring 2013</h2>
+</div>
+
+<ol>
+<h1>Part I &ndash; 12 Points</h1>
+
+<li> 4 points<br/>
+A circuit switched network does not need to use store and forward
+delivery when going through routers. Assume that processing delays
+are negligible and queuing delays nonexistent. The propagation time
+per link is <i>P</i>. The transmission rate is <i>R</i> bits per second and the
+average packet size is <i>L</i> bits. What is the end-to-end delay of a
+circuit-switched communication link where the packet has to pass
+through <i>N</i> network links?
+</li>
+
+<li> 4 points <br/>
+Can packet loss occur on a packet-switched network where every single link ensures reliable data transmission? Explain. 
+</li>
+
+<li> 4 points <br/>
+What information does a root DNS name server provide?
+</li>
+
+<h1>
+PART II &ndash; 78 points &ndash; 3 points each </h1>
+<p>
+For each statement, select the most appropriate answer.
+</p>
+
+<li> A unicast message is a message that
+<br/>(a) Must be acknowledged upon receipt.
+<br/>(b) Is delivered to multiple destinations.
+<br/>(c) Is delivered reliably with no retransmissions.
+<br/>(d) Is delivered to a single destination.
+
+</li><li> One design for a reliable, in-order packet delivery system is to ensure that a sender does not transmit the next packet until it receives an acknowledgement that the previous packet has been received at the destination. Assume the sender transmits lots of small packets and that an acknowledgement message is approximately the same size as a data packet. Also assume a packet-based network with packets flowing through three routers. This technique will make communications slower by approximately a factor of:
+<br/>(a) 2
+<br/>(b) 3
+<br/>(c) 6
+<br/>(d) 8
+
+</li><li> Which of the following is not a core design principle of the Internet?
+<br/>(a) Support the interconnection of multiple networks.
+<br/>(b) Design the system with the assumption that the network is not reliable.
+<br/>(c) Routers can be stateless; they should not have to retain information on the flow of previous packets.
+<br/>(d) The entire network should be centrally administered for full end-to-end control.
+
+</li><li> A peering agreement among two Internet Service Providers (ISPs) means
+<br/>(a) One ISP can take over for another ISP in case of failure.
+<br/>(b) The ISPs share the same set of customers.
+<br/>(c) One ISP routes all its data through the other ISP.
+<br/>(d) The ISPs route data between their networks without charging each other.
+
+</li><li> Frequency Division Multiplexing (FDM) means that a communication channel
+<br/>(a) Is assigned one specific frequency band.
+<br/>(b) Shares a frequency band with other channels and takes turns using it.
+<br/>(c) Hops between multiple frequency bands during the course of communication.
+<br/>(d) Has full use of the total bandwidth available in the communication medium.
+
+</li><li> Circuit switching is more efficient than packet switching because
+<br/>(a) All participating routers figure out the route just once at the start of a communication session.
+<br/>(b) It uses the bandwidth of the network more efficiently.
+<br/>(c) It is done in hardware instead of software.
+<br/>(d) It is a data link versus a network layer protocol.
+
+</li><li> Packet switching is more efficient than circuit switching because
+<br/>(a) All participating routers figure out the route just once at the start of a communication session.
+<br/>(b) It uses the bandwidth of the network more efficiently.
+<br/>(c) It is done in hardware instead of software.
+<br/>(d) It uses store-and-forward packet delivery through routers.
+
+</li><li> Packet switching shares the network by having each transmitter
+<br/>(a) Take turns and use variable-size time slots.
+<br/>(b) Take turns and use fixed-size time slots.
+<br/>(c) Transmit on a specific frequency.
+<br/>(d) Split its transmission onto a range of frequencies.
+
+</li><li> Assume that a satellite in geostationary orbit is approximately 40,000 km away. A signal travels at 3&times;10<sup>8</sup> m/s. The latency of a packet that has to be routed through a geostationary satellite is approximately
+<br/>(a) 133 ms
+<br/>(b) 267 ms
+<br/>(c) 133 &micro;s
+<br/>(d) 267 &micro;s
+
+</li><li> Propagation delay is
+<br/>(a) The time it takes to transmit a packet out onto the communication link.
+<br/>(b) The time it takes a signal to flow from one end of the communication link to the other.
+<br/>(c) The delay that is incurred when a packet has to wait for the communication link to be available.
+<br/>(d) The delay of moving a packet from the input port of a router to the outbound link.
+
+</li><li> A sustained traffic intensity greater than 1 means
+<br/>(a) Some packets may need to be queued for transmission.
+<br/>(b) The queue on a router will grow without bound and packet loss will occur.
+<br/>(c) Packets are capable of going out faster than they are coming in.
+<br/>(d) Transmission delay will dominate over queuing delay when measuring overall latency.
+
+</li><li> An IP router operates at the
+<br/>(a) Transport layer.
+<br/>(b) Network layer.
+<br/>(c) Physical layer.
+<br/>(d) Data Link layer.
+
+</li><li> Which protocol layer is not implemented in the IP protocol stack and must be handled at the application layer?
+<br/>(a) Transport.
+<br/>(b) Session.
+<br/>(c) Data link.
+<br/>(d) Network.
+
+</li><li> A peer-to-peer application architecture is one that
+<br/>(a) Does not use a central server.
+<br/>(b) Allows multiple clients to connect to a server at the same time.
+<br/>(c) Supports loss-tolerant applications.
+<br/>(d) Relies on computers instead of routers to relay messages.
+
+</li><li> A TCP connection means that
+<br/>(a) The application sees a bidirectional communication channel.
+<br/>(b) Routers commit to bandwidth guarantees for the connection.
+<br/>(c) All packets take the same route to their destination.
+<br/>(d) The network will ensure that all data flowing on the connection has a constant latency.
+
+</li><li> Which system call waits for an incoming TCP connection?
+<br/>(a) accept
+<br/>(b) listen
+<br/>(c) bind
+<br/>(d) wait
+
+</li><li> Which of the following is not an advantage of a multithreaded program?
+<br/>(a) Threads have their own protected memory but can send messages to each other.
+<br/>(b) Threads take advantage of multicore processors.
+<br/>(c) Threads process multiple requests concurrently.
+<br/>(d) Threads make data sharing easy.
+
+</li><li> A race condition occurs when
+<br/>(a) The outcome of a program is based on the exact order in which concurrent events execute.
+<br/>(b) One tread is blocked by another thread.
+<br/>(c) One thread is always scheduled at a higher priority than another thread.
+<br/>(d) Two or more threads compete for exclusive access to the same data.
+
+</li><li> A Regional Internet Registry (RIR)
+<br/>(a) Keeps track of the database of domain names for a geographic region.
+<br/>(b) Allocates IP addresses within a geographic region.
+<br/>(c) Provides Internet service to ISPs within a geographic region.
+<br/>(d) Is a database of all ISPs in a geographic region.
+
+</li><li> Iterative name resolution means that a name server will 
+<br/>(a) Contact a top-level name server, which will then contact a lower-level name server; that one will then query one further down the tree.
+<br/>(b) Contact a top-level name server, get a referral to a lower-level name server, query that one, get a referral for an even lower-level name server, and continue the process.
+<br/>(c) Iterate through a known list of name servers until it finds one that can resolve the name.
+<br/>(d) Start at the bottom of the domain tree and work its way up instead of starting at the top.
+
+</li><li> Which protocol does not use a line-oriented, text-based protocol?
+<br/>(a) DNS
+<br/>(b) FTP
+<br/>(c) HTTP
+<br/>(d) SMTP
+
+</li><li> How does a DNS resolver decide how long to cache the result of a DNS query?
+<br/>(a) The query returns an expiration time, from which the current time is subtracted to get the remaining time to cache.
+<br/>(b) The query returns a time to live value, which is the amount of time that the result can be cached.
+<br/>(c) The configuration of the DNS resolver defines cache sizes and duration.
+<br/>(d) The DNS resolver will never cache the result of a DNS query.
+
+</li><li> An HTTP persistent connection is useful for
+<br/>(a) Not having to authenticate a user each time a new page is visited.
+<br/>(b) Downloading a page that has other content associated with it that needs to be downloaded.
+<br/>(c) Enabling access to cached copies of a page.
+<br/>(d) Allowing cookies to persist from page to page.
+
+</li><li> Which of the following is a push protocol?
+<br/>(a) HTTP
+<br/>(b) SMTP
+<br/>(c) IMAP
+<br/>(d) POP3
+
+</li><li> Which protocol sends commands and data over two separate communication channels?
+<br/>(a) IMAP
+<br/>(b) FTP
+<br/>(c) SMTP
+<br/>(d) HTTP
+
+</li><li> Which operation is not supported in IMAP?
+<br/>(a) List messages.
+<br/>(b) Send a message.
+<br/>(c) Download a message.
+<br/>(d) Move a message to a folder. 
+</li>
+
+<h1>
+PART III &ndash; 10 points &ndash; 2 points each </h1>
+
+For each statement, specify whether it is true or false by circling the correct choice.
+
+<li> To send an IP packet on an Ethernet link, the IP message has to be encapsulated in an Ethernet packet.
+<br/> [True]    [False]
+
+</li><li> A generic top-level domain (gTLD) is beneath a country code top-level domain (ccTLD) in the DNS hierarchy.
+<br/> [True]    [False]
+
+</li><li> When you register a .com domain name with GoDaddy, it has to first check with every other other .com domain registrar to see if the domain name is already registered.
+<br/> [True]    [False]
+
+</li><li> A DNS resolver has to be able to accept a recursive query request from a client
+<br/> [True]    [False]
+
+</li><li> Passive mode FTP avoids the problem of a server having to connect to the client.
+<br/> [True]    [False]
+</li>
+
+</ol>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: March 18, 2016
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+		<h2> Old exams </h2>
+	<ul>
+	<li> <a href="exam1-2013-s.html"> Spring 2013 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2013-s.html"> Spring 2013 &ndash; Exam 2</a> </li>
+	<hr/>
+
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

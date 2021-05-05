@@ -1,0 +1,300 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 416 Documents </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> CS 416 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/c-tutorials/index.html"> Tutorials </a> 
+ 	<li> <a href="../../notes/c-tutorials/strtok.html"> strtok Tutorial </a> 
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> C Tutorial: Playing with strings </h1>
+</div>
+
+<h1> Paring tokens with strtok </h1>
+<p>
+The <em>strtok</em> function provides a convenient way of 
+splitting a string into a number of substrings (tokens) that are all
+separated from each other with some set of characters that cannot be part of the string.
+For example, let's say that you want to extract words that are separated by "-" or "+" characters, such
+as:
+</p>
+<div class="codeblock">
+Cut-down---a----tree++with-a-herring
+</div>
+<p>
+We can use the following code to break it into the component tokens:
+</p>
+<div class="codeblock-box"><span class="comment">/* strtok example */</span>
+<span class="comment">/* Paul Krzyzanowski */</span>
+
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;	<span class="comment">/* needed for strtok */</span>
+
+int
+main(int argc, char **argv) {
+	char text[] = "Cut-down---a----tree++with-a-herring";
+	char *t;
+	int i;
+
+	t = strtok(text, "-+");
+	for (i=0; t != NULL; i++) {
+		printf("token %d is \"%s\"\n", i, t);
+		t = strtok(NULL, "-+");
+	}
+}
+</div>
+<p><a href="files/strtok1.c">Download this file</a></p>
+<p> Save this file by control-clicking or right clicking the download link and then saving it as <tt>strtok1.c</tt>.</p>
+<p> Compile this program via:</p>
+<div class="codeblock">
+gcc -o strtok1 strtok1.c
+</div>
+<p>If you don't have gcc, You may need to substitute the gcc command with cc or another name of your compiler.</p>
+<p>Run the program:</p>
+<div class="codeblock">
+./strtok1
+</div>
+<p>
+Note that the first call to <em>strtok</em> contains the string that we want to tokenize as the first
+parameter and a string containing a set of characters that are considered token separators as the second
+parameter. Any character that is in the second string will never be part of the token.
+<strong>There is no provision for quoting or escaping a separator character so that it can be part of the token</strong>.
+</p>
+<p>
+Running this program gives us the following output:
+</p>
+<div class="codeblock">
+token 0 is "Cut"
+token 1 is "down"
+token 2 is "a"
+token 3 is "tree"
+token 4 is "with"
+token 5 is "a"
+token 6 is "herring"
+</div>
+<p>
+It is important to not that <em>strtok</em> does not allocate memory and create new strings for
+each of the tokens it finds. All the data still resides in the original string. Whenever <em>strtok</em> is
+called, it continues from where it left off and skips separators until it gets a valid character. This
+becomes the start of the next token and will be the return value from <em>strtok</em>. It then skips
+over the valid characters until it gets to the next separator character. That location in memory is
+overwritten with a 0, which is the C convention for the
+end of a string.
+The next time you call <em>strtok</em>, if the first parameter is a NULL (0), it knows to continue
+from where it left off last time. Hence, <em>strtok</em> mangles the original string. If you need it
+then you should be sure to make a copy of it (see <em>strdup</em>).
+</p>
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: March 28, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+        <h2> Tutorials </h2>
+        <ul>
+        <li> <a href="../../notes/c-tutorials/index.html"> C/Unix tutorials </a> </li>
+        <li> <a href="../../notes/make/index.html"> Makefile tutorial </a> </li>
+        <li> <a href="../../notes/sockets/index.html"> TCP/IP Sockets </a> </li>
+        <li> <a href="../../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+<!--
+        <li> <a href="../../notes/clocks/index.html"> Clocks demo </a> </li>
+-->
+        </ul>
+
+	
+        <h2> <a href="index.html">C Tutorials</a> </h2>
+	<h3> Processes </h3>
+        <ul>
+        <li> <a href="../../notes/c-tutorials/getpid.html"> getpid </a> </li>
+        <li> <a href="../../notes/c-tutorials/getppid.html"> getppid </a> </li>
+        <li> <a href="../../notes/c-tutorials/fork.html"> fork </a> </li>
+        <li> <a href="../../notes/c-tutorials/exec.html"> exec </a> </li>
+        <li> <a href="../../notes/c-tutorials/forkexec.html"> fork&amp;exec </a> </li>
+        <li> <a href="../../notes/c-tutorials/wait.html"> wait </a> </li>
+        <li> <a href="../../notes/c-tutorials/signal.html"> signal </a> </li>
+	</ul>
+	<h3> I/O and IPC </h3>
+	<ul>
+        <li> <a href="../../notes/c-tutorials/dup2.html"> dup2 </a> </li>
+        <li> <a href="../../notes/c-tutorials/pipe.html"> pipe and dup2 </a> </li>
+        <li> <a href="../../notes/c-tutorials/isatty.html"> isatty </a> </li>
+	<ul>
+	</ul>
+	<h3> Timing </h3>
+        <li> <a href="../../notes/c-tutorials/times.html"> times </a> </li>
+        <li> <a href="../../notes/c-tutorials/gettime.html"> clock_gettime </a> </li>
+	<ul>
+	<h3> Basics </h3>
+	<ul>
+        <li> <a href="../../notes/c-tutorials/getopt.html"> Command options </a> </li>
+        <li> <a href="../../notes/c-tutorials/strtok.html"> Parsing tokens </a> </li>
+<!--
+        <li> <a href="../../notes/c-tutorials/fpointer.html"> Pointers to functions </a> </li>
+-->
+        <li> <a href="../../notes/c-tutorials/list.html"> Linked list </a> </li>
+<!--
+        <li> <a href="../../notes/c-tutorials/hash.html"> Hash tables </a> </li>
+-->
+        </ul>
+
+</div>
+
+<div id="sidebar2">
+<h1 class="first"> Recommended </h1>
+<p>
+</p>
+<p>
+<a href="http://www.amazon.com/exec/obidos/ASIN/020161586X/pkorg/">
+<img align="left" width="100" height="138" src="images/practice-of-programming.jpg"
+alt="The Practice of Programming"/>
+</a>
+</p>
+<p>
+&nbsp;
+</p>
+
+<p>
+<a href="http://www.amazon.com/exec/obidos/ASIN/0131103628/pkorg/">
+<img align="left" width="100" height="132" src="images/c-programming-language.jpg"
+alt="The C Programming Language"/>
+</a>
+</p>
+<p>
+&nbsp;
+</p>
+
+<p>
+<a href="http://www.amazon.com/dp/013937681X/pkorg/">
+<img align="left" width="100" height="132" src="images/unix-programming-environment.jpg"
+alt="The UNIX Programming Environment"/>
+</a>
+</p>
+</div>
+
+</div>
+</div>
+</body>
+</html>

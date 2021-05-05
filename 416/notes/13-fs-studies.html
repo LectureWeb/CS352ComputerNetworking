@@ -1,0 +1,1108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> File System Design Case Studies </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 416 </a> 
+ 	<li> <a href="../notes/index.html"> Documents </a> 
+ 	<li> <a href="../notes/13-fs-studies.html"> File System Design Case Studies </a> 
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> File system design case studies </h1>
+
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> last update: March 23, 2012 </p>
+</div>
+
+<blockquote>
+<em>
+You can tune a file system, but you can't tune a fish.
+<br/>
+&mdash; tunefs(8) man page
+</em>
+</blockquote>
+
+
+<h1> Introduction </h1>
+<p>
+We've studied various approaches to file system design.
+Now we'll look at some real file systems to explore the approaches
+that were taken in designing them. The goal here is not to look at the
+details of each file system but rather to get an understanding of how
+each design tried to introduce specific improvements. 
+</p>
+
+<h2> Unix File System (UFS) </h2>
+<div class="figure width500"> <img width="500" height="271" src="images/13-ufs.png"/>
+<p> Figure 1. UFS inode block pointers </p>
+</div>
+<p>
+We examined the Unix File System's approach to managing inode and file blocks
+in the previous section as an example of indexed allocation. UFS introduced
+the inode-based file system. Each inode is a fixed size and the entire set
+of inodes is preallocated when the file system is first initialized. This
+makes it easy to locate any specific inode. An inode
+contains the file's metadata as well as 10 block pointers
+and one each of an indirect, double indirect, and triple indirect block.
+The fields within a UFS inode include:
+</p>
+<ul>
+<li> file owner, group owner </li>
+<li> file type (regular file, directory, character device, block device, FIFO) </li>
+<li> access permissions </li>
+<li> times: create, last access, and last modification </li>
+<li> number of links to the file, which is the number of file names in the directory that refer to this inode </li>
+<li> file size or major/minor numbers if the file is a device </li>
+<li> file data location: ten direct blocks, one indirect block, one double indirect block, and one trible indirect block </li>
+</ul>
+
+<div class="figure width400"> <img width="400" height="26" src="images/12-ufs-layout.png"/>
+<p> Figure 2. UFS Disk Layout </p>
+</div>
+
+<p>
+Like most file systems, UFS starts off with a superblock. The superblock contains:
+</p>
+<ul>
+	<li> Size of file system </li>
+	<li> Number of free blocks </li>
+	<li> list of free blocks (including a pointer to free block lists) </li>
+	<li> index of the next free block in the free block list </li>
+	<li> Size of the inode list </li>
+	<li> Number of free inodes in the file system </li>
+	<li> Index of the next free inode in the free inode list </li>
+	<li> Modified flag (clean/dirty) </li>
+</ul>
+<p>
+Directories are files that contain a simple linear array 
+of 16-byte structures. Each structure contains 
+12 bytes for a file name and four bytes for an inode number.
+</p>
+
+<p>
+Free space is managed as a linked list of blocks.
+The superblock contains an array of a few free disk blocks as well as
+a pointer to a block that that contains a sequence of block numbers representing
+free blocks in the file system.
+The start of this block has a block pointer to the next block of free
+block numbers (which, in turn, has a link to the following block of free block 
+numbers). This the <em>linked allocation</em> structure that we saw earlier.
+While it didn't make sense for managing file blocks because seeks become
+prohibitively costly, the free block list does not require seeks. The superblock
+contains an index to the first unused element in the first free block.
+When a block is allocated, the block number is read and the index is advanced.
+</p>
+<p>
+The problem with this approach is that, as files come and go (and their blocks
+are allocated and released), eventually the list becomes a mostly random collection of blocks.
+When a new file is allocated with a random set of blocks, reading each successive 
+block of a file will most likely require a seek on the disk.
+This is known as <strong>file fragmentation</strong>. Instead of having a file's
+blocks allocated contiguously (or generally close to each other), they
+are scattered throughout the file system.
+Since most files are read sequentially (from the beginning of a file to the end),
+fragmentation has a huge impact on performance in disk-based file systems.
+Disk seeks, which require the head to move from one track to another, take considerable
+time. Reading adjacent blocks is much, much faster than seeking to another part of
+the disk to read a block.
+Typical performance of UFS was often only 2–4% of the raw disk bandwidth!
+</p>
+<p>
+UFS was not, by any measure, a high-performance file system. Its main virtue
+is its simplicity. It introduced the ability to store devices within the
+file system. A device is an inode that contains <em>no data blocks</em> and
+no file size. A mode
+bit in the inode identifies the file as a device special file and the inode
+stores the major and minor numbers that identify the device to the kernel.
+</p>
+<p>
+The lasting legacy of UFS is the inode and the structure of direct and
+varying levels of indirect blocks.
+</p>
+<p>
+Incidentally, fragmentation was a significant problem with FAT-based file systems 
+as well. Microsoft includes a disk defragmentation utility that shuffles file data
+among disk blocks to try to get as much contiguous allocation as possible.
+</p>
+
+<h1> BSD Fast File System (FFS) </h1>
+<p>
+BSD (Berkeley Standard Distribution) is the derivative of Unix from the University of 
+California at Berkeley. They looked at the shortcomings of UFS and created a new
+file system, called the <strong>Fast File System</strong>
+(<strong>FFS</strong>), to address what they saw were the biggest faults of the file system.
+</p>
+<h2> Larger blocks </h2>
+<p>
+The first are they addressed was the block size. Instead of using UFS's
+512-byte blocks (or, later, 1024-byte clusters), they clustered blocks and picked
+a logical block size of 4096 bytes or larger. The cluster size is recorded in the
+file system's superblock.
+Just doubling the block size resulted in over a twofold performance gain! The
+benefit is that direct blocks in an inode now address twice the storage before
+you need to read an indirect block (which also addresses twice the storage).
+A 4 KB block allows one to have 4 GB files with only two levels of indirection.
+Because contiguous allocation within the cluster is guaranteed, even if the poor
+block allocation strategy of UFS is employed, the amount of fragmentation in a 
+file is now reduced by a factor of two.
+</p>
+<p>
+The problem with bigger blocks was that internal fragmentation increased.
+A lot of files were extremely small and many blocks were allocated because
+they were part of the cluster but remained unused.
+When this file system was designed, this was a significant side effect that 
+contributed to a lot of wasted disk space.
+</p>
+<p>
+BSD's solution to this was to manage fragments within a block down to the native
+block size of 512 bytes. Free space on the disk is kept track of via a bitmap, 
+which tracks individual blocks rather than clusters. A small file may have 
+just one fragment, a partial cluster, allocated to it. As the file grows and
+exceeds its fragment size, a larger fragment is allocated and the file's data 
+is copied over to that larger fragment. Eventually the fragment is copied over to
+a full block. Hence, a file contains zero or more full blocks and possibly
+one fragmented block.
+Of course one wants to avoid having copying fragments into larger fragments 
+as a file grows. BSD allowed user programs to find the optimal block size 
+(cluster size) so they can use it to optimize their I/O. The standard I/O
+library (libc, which contains functions such as <em>fopen</em>, <em>fread</em>,
+<em>fwrite</em>, <em>fgets</em>, etc.) takes advantage of this. Also, extra
+writes are avoided by caching data in the buffer cache. Even if a process does
+single-byte writes, their result will usually be cached until entire clusters are ready
+to be written to the disk.
+</p>
+
+<h2> Cylinder groups: minimize head movement </h2>
+<p>
+The second effort to improve performance was to minimize disk head movement.
+Since disk seek time is high compared to reading blocks that do not require
+a seek, the goal is to keep files close to their inodes.
+With UFS, all inodes were lumped at the very beginning of the file system.
+Blocks for data files and directories were allocated essentially randomly from
+the pool of free blocks (from the free block list, but the list eventually
+got randomly scrambled). With the FFS, the goal is to keep related files, directories,
+and their inodes close together.
+</p>
+
+<div class="figure width400"> <img width="400" height="85" src="images/12-ffs.png"/>
+<p> Figure 3. FFS Disk Layout </p>
+</div>
+
+<p>
+As we saw earlier, a <em>cylinder</em> is a collection of all the blocks that
+share the same track number on all the heads of a disk. These are all the blocks
+that could be read with no disk seeking (hence, quickly).
+The FFS defined a <strong>cylinder group</strong> as a collection of nearby cylinders.
+A cylinder group is the group of all blocks where successive blocks in the
+same cylinder group can be accessed very efficiently.
+</p>
+<p>
+Instead of lumping all the inodes together at the start of the file system,
+the BSD FFS replicates the file system structure for each cylinder group (figure 3).
+Unless it's absolutely not possible, the file system allocates data blocks to inodes
+within the same cylinder group. A bitmap within each cylinder group
+keeps track of free disk blocks within the cylinder group. Another bitmap
+keeps track of free inodes within the group.
+</p>
+<p>
+Splitting the file system into multiple chunks makes locating inodes a little bit
+more difficult. We can no longer compute the block containing the inode directly
+from the inode number. Instead, we need to know how many inodes each cylinder
+group has. To handle this efficiently, the file system module needs to keep a 
+table of cylinder groups.
+</p>
+<h2> Optimized sequential access </h2>
+<p>
+Bringing all the related blocks of a file into close proximity with each other
+as well as well as the file's inode improves both sequential as well as
+random access. Since the bulk of file accesses are sequential, FFS adds
+extra optimizations for sequential access.
+</p>
+<p>
+The FFS block allocator tries to allocate adjacent blocks where
+possible [<a href="#footnote-01">1</a>]. When the file system needs to allocate
+a block for a file, it will try to pre-allocate eight adjacent blocks. This 
+achieves good performance under heavy loads since it makes the allocator 
+run faster and improves sequential read/write performance on files.
+</p>
+<p>
+Finally, the file system tries to deduce whether a file is being accessed
+sequentially and do either a <strong>large read</strong> or a <strong>prefetch</strong>.
+If two or more logically sequential blocks are read from
+a file, the FFS module assumes that a sequential read is taking place and will 
+request one large I/O on the entire range of sequentially-allocated blocks in the file.
+Otherwise, if there are no more sequential blocks then the module will schedule
+a <strong>read-ahead</strong>, a request for the next disk block in the file. A
+<em>read-ahead</em> is an anticipatory request for a disk block. We don't know
+whether we'll need it but believe there's a good chance that it will be needed.
+By the time we do need it, the hope is that the data has already arrived or is
+being read into memory.
+</p>
+
+<h2> Improved fault tolerance </h2>
+<p>
+Notice in firgure 2 that the superblock is present in each cylinder group. The is done
+for redundancy. Since the superblock is so crucial to defining the core
+operational parameters of the file system, it is replicated in each cylinder group.
+</p>
+<p>
+Because each cylinder group is essentially self-sufficient, containing free block
+maps, inodes, and blocks, even if a large section of the disk loses data,
+all data in the file system is not lost. Undamaged cylinder groups should still
+have their full structure.
+</p>
+<p>
+FFS tries to further improve fault tolerance by imposing strict, synchronous
+(immediate) writes of file system metadata. Because a file's metadata (inode)
+is so crucial to the integrity of a file, changes to metadata are not buffered
+but immediately written to the disk. This limits I/O throughput somewhat
+but was deemed desirable to help preserve file system integrity.
+</p>
+<p>
+FFS, however, is by no means a fault-tolerant file system. It still requires
+up to five complete passes over file system structures to verify the integrity
+of the file system and attempt to repair any inconsistencies.
+</p>
+
+<h2> Directories and inodes </h2>
+<p>
+Directory files still contained a linear list of filenames. Unlike
+UFS, each entry is no longer a fixed length. Instead each entry
+contains a length field and file names can be up to 255 bytes long.
+</p>
+<p>
+The inode structure is largely the same as with UFS, except that the number 
+of direct blocks has been increased from 10 entries to 12.
+</p>
+
+<h2> Symbolic links </h2>
+<p>
+FFS introduced the concept of <strong>symbolic links</strong>. Symbolic
+links are allocated and structured just like regular files but have
+a flag set in the inode that identifies them as symbolic links (much
+like directories are just regular files but have a flag that identifies
+the inode as being a directory). The motivation behind symbolic links
+was that hard links could not be used for directories (for fear of loops
+developing in the file system hierarchy) and they could not be created
+for files that reside on another file system (a hard link is just 
+another name that points to an inode; there's no way for a directory entry
+to identify that the inode is on a different file system).
+</p>
+<h2> Performance </h2>
+<p>
+Overall, the Fast File System's uses about 14-47% of the raw disk
+bandwidth. While this may not seem like much, it is a huge improvement
+over the 2-5% disk bandwidth utilization of UFS.
+</p>
+
+<h1> Linux ext2 </h1>
+<p>
+Linux's ext2 file system is an adaptation of the BSD Fast File System 
+but with three basic changes.
+</p>
+<dl>
+<dt> <strong>No support for fragments </strong> </dt>
+<dd>
+Fragments made a lot of sense in the 1980s when both average file sizes and
+disk space were smaller. The percentage of files that that occupy less
+space than a cluster is much smaller. Moreover, wasted space is not as 
+precious a commodity. Writing to files is faster if one does not have to
+worry about allocating fragments and then copying the data to bigger fragments
+and then to blocks. The ext2 file system uses a single cluster size for
+all allocations.
+</dd>
+
+<dt> <strong> Block groups instead of cylinder groups </strong> </dt>
+
+<div class="figure width500"> <img width="500" height="77" src="images/12-ext2.png"/>
+<p> Figure 4. ext2 Disk Layout </p>
+</div>
+
+<dd>
+<p>
+Instead of dividing the partition (or disk) into cylinder groups,
+ext2 divides the partition into fixed-size block groups. This is essentially
+the same as cylinder groups except that cylinders no longer have a
+useful meaning in modern disks (figure 4). 
+</p>
+</dd>
+
+<dt> <strong> Aggressive caching </strong> </dt>
+<dd>
+FFS tried to make the file system more resilient to failure by writing out
+any metadata immediately instead of caching it in the buffer cache and doing a delayed write.
+The approach of ext2 is to cache aggressively, perform all operations in
+memory, and leave them in memory until the buffer cache gets flushed.
+This increases the chances of file system inconsistencies arising if the
+file system is not cleanly unmounted but the rationale was that this hardly
+ever happens and the file system should be performance-optimized for the
+more common case of no spontaneous shut-downs.
+</dd>
+</dl>
+<p>
+The inode and directory structure is essentially unchanged from FFS.
+</p>
+<p>
+In summary, ext2 is a minor change over FFS. However, because of
+aggressive caching and the lack of fragment managing, ext2 is usually
+considerably faster than FFS, even if it's largely the same.
+</p>
+
+
+<h1> Linux ext3: journaling</h1>
+<p>
+The ext3 file system is essentially the same as the ext2 file system but with 
+support for <strong>journaling </strong>
+The goal of journaling is to improve the reliability of and the time spent in
+verifying and repairing the consistency of a file system. With large file systems,
+such as multi-terabyte ones, it can take hours to validate the integrity of a file
+system after an abnormal unmount (such as after a system crash or a spontaneous
+loss of power).
+</p>
+<p>
+To understand the goal of journaling, let's consider the operations that
+take place when, for example, we write to a file and add a new data block.
+The bitmap of free data blocks gets updated (the block is no longer free);
+The data block contents are written; and the inode gets updated with a new
+block pointer and file size. For larger files, both an inode and indirect 
+block will get updated.
+</p>
+<p>
+Before we start these operations, our file system is in a consistent state.
+After these operations are performed, the file system is also in a consistent
+state. This means that bitmaps truly represent unused blocks, files
+point to valid inodes, each inode has at least one reference to it, disk
+block pointers are valid, etc.
+If <em>every single one</em> of these operations does not complete, however,
+the file system will be left in an inconsistent state:
+</p>
+<ul>
+<li> If the inode is not updated with the new data block then the new data does not become part of the file. </li>
+<li> If the inode is not updated with the new file length then the new data will be ignored. </li>
+<li> If the free data block bitmap does not get updated then the block can be re-allocated to another file.</li>
+<li> If the data is not written to the data block then the file will contain garbage. </li>
+</ul>
+<p>
+The <strong>consistent update problem</strong> is the challenge of performing all
+these related operations <em>atomically</em>. For the file system to be consistent, either
+all of the operations have to take place or none of them should take place.
+</p>
+<h2> Journaling </h2>
+<p>
+<strong>Journaling</strong> is also known as <strong>write-ahead logging</strong> and
+originates with databases. With journaling, we keep a transaction-oriented journal of changes.
+We record the start of a transaction, the actions involved in that transaction (along
+with the data that goes along with the actions), the end of a transaction, and commit all that to disk.
+For example:
+</p>
+<div class="box">
+<ol>
+<li> Transaction-begin </li>
+<li> New inode 779 [<em>inode contents</em>] </li>
+<li> New block bitmap, group 4 [<em>bitmap block contents </em>] </li>
+<li> New data block 24120 [<em>data block contents </em>] </li>
+<li> Transaction-end </li>
+</ol>
+</div>
+<p>
+
+Once this journal is written to the disk, we send the same operations again onto the actual file system.
+If all goes well and the system is not shut down abnormally, then we don't need this transaction
+entry any more. However, if a crash (or spontaneous removal of the file system) happens at
+any time <em>after</em> the log was committed to the
+journal, the crash recovery process will <strong>replay</strong> the log prior to mounting the
+file system. This is called <strong>redo logging</strong>. The log contains all the data
+that we need so we have no information loss and can reconstruct the data. Moreover, the log
+tells us which disk blocks may have been affected (modified or not) so we don't have to search
+the whole file system looking for inconsistencies.
+If the system died before the journal transaction was written, the recovery process
+will see that there is no "transaction end" marker written to the log and will ignore
+the partial transaction. Since the transaction was not fully logged, we know that no
+modifications took place to the file system yet, so the file system is still in a consistent
+state.
+</p>
+<p>
+We have to be careful with how we write the journal. It's tempting to schedule a number of disk
+writes but we don't know what order the disk controller will schedule the actual block writes.
+We have to ensure that we account for the fact that the system can be shut down at any point 
+in time. If a "transaction-end" marker is written prior to the logs of the data that's related
+to that transaction, the recovery process may think a transaction is fully logged, not realizing
+that the data is garbage.
+</p>
+<p>
+A safer approach is to write all the journal blocks except the "transaction-end" marker.
+When the disk has acknowledged those writes, then we write the "transaction-end" marker.
+After that, we start writing the file data.
+</p>
+<h2> Cost of journaling </h2>
+<p>
+It's pretty obvious that there's a significant cost to journaling. Every disk block 
+gets written twice: once as a journal log and again to the actual disk block. Moreover,
+since the journal will be a circular buffer of blocks in one area of the disk, we also
+incur a disk seek to do the write.
+</p>
+<p>
+One optimization is to avoid not write the file data to the journal but still
+log metadata and bitmap data. Our log may now look like this:
+</p>
+<div class="box">
+<ol>
+<li> Transaction-begin </li>
+<li> New inode 779 [<em>inode contents</em>] </li>
+<li> New block bitmap, group 4 [<em>bitmap block contents </em>] </li>
+<li> Transaction-end </li>
+</ol>
+</div>
+<p>
+What happens to the data? To preserve data integrity, we sequence our 
+operations and write the data block(s) first. Then we write the transaction
+record as before, waiting for all outstanding data and journal operations to commit before
+writing the "transaction-end" marker. Then we modify the metadata.
+If the data was just a modification of a block already in the file, then the
+change will be in the file system whether or not the log is complete. If the
+data was an additional block to the file (as in our example), and the transaction
+is fully recorded, the file's data has already been written and the log replay
+will set the metadata to their proper values. If the transaction was not fully
+recorded than the data block with updated contents is still marked as free and
+the file system remains consistent. The only snag with this approach is if we're
+modifying existing data rather than adding new data to the end of a file.
+If the system dies before the transaction log is written, you will not know whether
+the data modifications are in place in the file or not.
+The file system will remain
+consistent but the file contents may be unexpected in this case.
+This type of optimized journaling is called <strong>ordered journaling</strong>
+and is considerably faster than the <strong>full data journaling</strong> that
+we described earlier.
+</p>
+<h2> ext3 journaling options </h2>
+<p>
+The ext3 file system offers one of three types of journaling if journaling is 
+enabled:
+</p>
+<ul>
+<li> <strong>journal</strong>: 
+This is full data journaling. It's the most reliable but slowest since we are
+writing out over twice the data to the disk.
+</li>
+
+<li> <strong>ordered</strong>: 
+This writes data blocks first, then journals the metadata, terminates the transaction, and then writes the metadata.
+It will keep the file system in a consistent state but in some cases may lead
+to partially modified files.
+</li>
+
+<li> <strong>writeback</strong>: 
+This journaling does metadata journaling but with no strict sequencing of writing 
+the data blocks first. Recently modified files <em>can</em> be corrupted after
+a crash. It's the fastest of the options and a weak form of journaling since
+it can lead to data corruption. However, it leads to no more corruption than 
+with non-journaled file systems and saves on recovery time.
+</li>
+</ul>
+
+<div class="figure width500"> <img width="500" height="77" src="images/12-ext3.png"/>
+<p> Figure 5. ext3 Disk Layout </p>
+</div>
+
+
+<p>
+Figure 5 shows the layout of the ext3 file system. You'll notice that it looks just
+like the ext2 file system except that every block group gets a journal file (circular buffer).
+</p>
+
+<p>
+The only other significant change in ext3 over ext2 was better support for huge directories.
+Instead of an FFS-style linear list, ext3 offers the option of using a data structure 
+called an HTree, which is a wide, balanced tree structure similar to a B-tree. The system
+supports 32,000 entries per directory and it's far more efficient to create, delete, and
+search directories.
+</p>
+
+<h1> Linux ext4 </h1>
+<p>
+The ext4 file system is a successor to ext3. The basic structure is the same in many ways: inodes,
+journaling area, block groups, etc.
+The key differences are:
+<dl>
+<dt>
+Large file system support.
+</dt><dd>
+The file system can now support disks up to 
+1 exabyte (10<sup>18</sup> bytes), with file sizes up to 16 TB.
+In contrast, ext3 supported file systems up to 32 TB and files up to 2 TB.
+</dd>
+<dt>
+Extents
+</dt><dd>
+Extents are used instead of block maps.
+This is significant. Instead of block numbers in the
+inode, ext4 uses extents. An extent is a starting block number along with a count of contiguous blocks.
+A big advantage of extents is that a lot of blocks will be allocated contiguously (especially on new
+or not-very-full disks) and they can be represented with a smaller amount of extents than than block 
+numbers. Block numbers will, of course, require a block number entry per allocated block.
+One extent can map up to 12 MB of space, using a 4 KB block size.
+An inode contains 4 extents per inode. Instead of indirect and double indirect blocks, 
+additional extents ones are stored in an <a href="http://en.wikipedia.org/wiki/Htree">Htree</a>
+(a constant-depth tree similar to a B-tree).
+The reason for using an Htree instead of a linear list as block (cluster) numbers in inodes is to make
+the search for block numbers quick for random seeks into a file. Block numbers refer to a fixed
+amount of file space, so finding the byte offset for byte <em>n</em> means finding the 
+[<em>n/(cluster_size)</em>]<sup>th</sup> block number. Each extent, on the other hand, refers
+to a varying number of blocks.
+</dd><dt>
+Preallocation of empty space in a file
+</dt> <dd>
+If an application allocates unused disk space (e.g., seeking to some position in a file and then 
+writing), ext4 can handle the preallocation of disk space without actually writing 0's into the file.
+</dd><dt>
+Delayed allocation of disk space
+</dt><dd>
+The ext4 file system can also delay allocating disk space
+until the last moment, which can improve performance.
+The allocation takes place when the buffers for the file are flushed to the disk.
+Delayed allocation increases the chance that more contiguous blocks will be allocated.
+</dd><dt>
+Even larger directories
+</dt><dd>
+Ext4 supports over 64,000 entries per directory versus 32,000 in ext3.
+</dd><dt>
+Journal checksums
+</dt><dd>
+In addition to ext3-style journaling, ext4 adds journal checksums, which allows the operating
+system to ensure that journal data is not corrupt.
+</dd><dt>
+Faster checking
+</dt><dd>
+Ext4 provides Faster file system checking by skipping unallocated block groups.
+</dd><dt>
+Nanosecond timestamps
+</dt><dd>
+Timestamps in an inode (last modified time, last accessed time, created time) were stored to
+a one-second granularity in ext3 and previous file systems. In ext4, they are stored to
+within one nanosecond.
+</dd>
+</dl>
+
+<h1> NTFS </h1>
+<p>
+N.B.: This coverage of NTFS is somewhat brief and only covers some of the major points rather than
+discussing the full architecture.
+</p>
+<p>
+NTFS was designed by Microsoft as a successor to FAT-32 and was introduced with the Windows NT operating system (hence the name NTFS).
+The file system supports 64-bit volume sizes. 
+All disk space is allocated in <em>extents</em> on top of <em>clusters</em>. The size of a cluster is a multiple of the
+disk's block size (usually <em>n</em>&times;512 bytes; 4KB is a common cluster size in NTFS for today's disks). 
+It provides journaling for reliability
+and file-based data compression to reduce the space a file uses on the disk.
+</p>
+<p>
+The analogy to inodes is the <strong>Master File Table</strong> (<strong>MFT</strong>).
+This contains <strong>file records</strong> (Microsoft's term for an inode)
+for all files in the system. It is organized in a B-Tree strucure as opposed to the
+linear array used by most Unix-derived file systems (UFS, FFS, ext2, ext3, ...).
+Unlike the inode area in Unix-derived file systems, which is a bunch of pre-allocated
+clusters that are separate from file data, The MFT itself is a file and can grow like
+any other file (it's a special file and is called a <em>metafile</em>, but is allocated and
+managed like any other file).
+
+Other metafiles, special files that are handled just like other files, include:
+</p>
+<ul>
+<li> Log file</li>
+<li> Volume file</li>
+<li> Attribute definition file</li>
+<li> Bitmap file (free blocks)</li>
+<li> Boot file (located in low-numbered consecutive blocks so the boot loader can read them)</li>
+<li> Bad cluster file</li>
+<li> Root directory</li>
+</ul>
+<p>
+Because the volume bitmap, which identifies free space within the volume, is a file and can grow
+dynamically, it allows the size of a volume to be expanded dynamically.
+</p>
+
+<p>
+Each file record (MFT entry) contains a set of typed attributes, including the
+file name, creation date, and permissions.
+Some attributes may have multiple instances.
+For example, a file name may also have an alternate MS-DOS-compatible 8.3-character name.
+</p>
+<p>
+A file usually needs just one record. If it needs more, the first record for the file
+will store the location of other file records. 
+An "attribute list" attribute
+is added that identifies the location of all other attribute records for the file.
+</p>
+<p>
+Unlike most other file system, 
+small files and directories (typically 1,500 bytes or smaller)
+are entirely contained within the file's MFT record. This means that, for
+small files and directories, no
+additional data blocks need to be allocated or read to access the file's
+contents. This is extremely efficient.
+
+If the file is larger then no data is stored within the
+file record and the file record Data attribute contains pointers to the file data.
+This set of points is a list of <em>extents</em>. Each pointer contains:
+</p>
+<ol>
+	<li> starting cluster number in the file (cluster offset in the file) </li>
+	<li> cluster number on the disk where this extent is located </li>
+	<li> cluster count: number of clusters in this extent </li>
+</ol>
+<p>
+As a file grows, additional extents are allocated if the last extent cannot be expanded.
+If the file record (MFT entry) runs out of space, another MFT entry is allocated.
+NTFS ends up with a list of extents rather than ext4's tree of extents, making seeking
+into a very large file less efficient.
+</p>
+<p>
+A file under NTFS may have multiple data streams associated with it. A stream is selected
+when the file is opened with a specific stream name (e.g., "<tt>filename:streamname</tt>").
+Fenerally, this is not specified and the main (default) stream is used. Additional streams
+will usually get lost when the file is copied to other file system types, such as FAT-32
+on a USB flash drive.
+</p>
+<p>
+An NTFS directory is just a file that contains file names and a reference to the file.
+The reference identifies the file's location in the MFT table.
+If the directory is small (that is, it does not contain a lot of files), it is stored
+in the MFT entry. If it is longer, then it is stored in other clusters, as are
+files that are too large to fit into an MFT entry.
+</p>
+<p>
+To facilitate searching through large directories, the directory file is organized as a
+sorted B+ tree.
+The MFT entry in this case contains the top node
+of the B+ tree and identifies the extents and offsets where the directory entries live.
+Directories also contain data such as the file size, last access time
+and last modification time. This data is redundant since it is present in the MFT entry.
+This is done to optimize some directory listings. Presenting the user with these
+common attributes does not require reading the file record for each file in the directory.
+</p>
+<p>
+NTFS allows files to be compressed. Either individual files may be selected, files within
+a directory (folder), or all files within the volume. Compression is handled within the
+file system, allowing higher levels of the operating system to be unaware that it is happening.
+When a file is read, NTFS reads that portion into memory and decompresses it.
+Files are compressed in 64 KB chunks. If the compression results in a size of 60 KB or less
+then the file system has saved at least one 4 KB cluster. 
+results 
+</p>
+
+<h1> File systems for flash memory </h1>
+
+<p>
+Flash memory is non-volatile memory, meaning that its contents are preserved even when the chip
+is not powered. Its contents can also be modified.
+There are two technologies for flash memory: NOR flash and NAND flash.
+</p>
+<p>
+<strong>NOR flash</strong> is fully addressable: each byte can be accessed individually and it can 
+interface to a system's memory bus.
+It is generally used to hold system firmware such as a PC's BIOS
+or EFI firmware or the entire software of an embedded system. It is considerably slower than
+regular dynamic memory (RAM) and computers often copy the contents of NOR flash into RAM when
+they boot to allow faster code execution. It also has extremely long write times and requires
+rwrites to be done on an entire block at a time.
+</p>
+<p>
+The second type of flash memory, <strong>NAND flash</strong>, is much cheaper and denser than NOR flash.
+Unlike NOR, which can be read randomly, NAND flash requires content to be read a chunk (called a <strong>page</strong>)
+at a time. Modifications are erase-write cycles and must also be done a page at a time. The size of a page
+depends on the vendor and are typically 512, 2K, or 4K bytes long. Because of this property, NAND flash
+is treated as a block device and mimics a magnetic disk. Data can only be read or written a page at a time 
+(actually, a block at a time, where the controller defines a block as one or more pages). We will only focus
+on NAND flash in this discussion.
+</p>
+<p>
+Flash memory suffers from limited erase-write cycles. It eventually wears out. Typically, today's NAND 
+flash can handle from 100,000 to 1,000,000 erase-write cycles before a block wears out. At that point,
+software must map it as a damaged block and "retire" it from the pool of allocatable blocks.
+A key goal with flash memory is to employ <strong>wear leveling</strong>: use blocks in such a way
+that writes are distributed among all (or most) of the blocks in the flash memory.
+Some NAND controllers implement wear leveling and bad block mapping. Flash memory that has this logic
+integrated within it is called <strong>managed NAND</strong>. External controllers, such as those on
+Secure Digital (SD, SDHC, SDXC) cards sometimes also perform wear leveling.
+There are two forms of wear leveling.
+<strong>Dynamic wear leveling</strong> monitors high-use and low-use areas of flash memory. At a 
+certain threshold, it will swap high-use blocks with low-use blocks. In doing this kind of swapping,
+the controller needs to maintain a mapping of logical block addresses to actual flash memory block addresses.
+Whenever a block of data is written to flash memory, instead of overwriting the requested block (and wearing
+it out more), the data is written to a new block and the block map is updated. However, blocks that 
+do not get modified will never get reused. Their content will remain as is. With <strong>static wear leveling</strong>,
+we do the same actions but also periodically move static data to other blocks to ensure that all blocks
+get a chance to be rewritten and hence wear out evenly.
+</p>
+<p>
+Most cell phones,
+tablet computers, and other embedded devices do not use controllers that perform wear leveling
+and hence need to have a file system
+that works well with the characteristics of flash memory.
+</p>
+<p>
+Conventional file systems are not well-suited to flash file systems:
+</p>
+<ul>
+<li>
+They tend to modify the same blocks over and over. Structures like the superblock get updated constantly 
+and blocks that are freed from deleted files tend to get reallocated quickly. This is at odds with the
+goal of wear leveling, which is to avoid reusing blocks.
+</li>
+<li>
+File systems are optimized to reduce disk seeking. Starting with FFS, we created block (cylinder) groups to hold
+file data close to the inodes that define the files that contain that data. We strive to allocate contiguous
+groups of blocks whenever possible. None of this helps performance in a NAND file system. There is no concept
+of seek time or a current disk head position. Reading one block is as fast as reading any other block. 
+</li>
+<li>
+Disk scheduling algorithms (elevator algorithms) are also pointless as they try to resequence blocks to minimize
+the overhead of seek delays. 
+</li>
+</ul>
+
+
+<h2> Log-Structured file systems </h2>
+<p>
+Two common file systems that are designed with wear-leveling in mind are 
+<a href="http://www.yaffs.net/">YAFFS</a> (Yet Another Flash File System)
+and <a href="http://developer.axis.com/old/software/jffs/">JFFS</a>
+(Journaling Flash File System). Both of these belong to a category of
+file systems known as <strong>log-structured file systems</strong>,
+pioneered by Mendel Rosenblum and John Ousterhout at the University of California at Berkeley in
+the early 1990s. Don't be confused by JFFS' use of the word <em>journaling</em>
+in its name&mdash;it's not the same as the file system journaling we discussed earlier
+that was used to assure coherency.
+</p>
+<p>
+YAFFS and JFFS are currently both in version 2 of their designs and are often
+referred to as YAFFS2 and JFFS2. We will dispense with the numeric suffix.
+YAFFS is typically favored for larger disks, those over 64 MB, and is the default
+file system for the Android operating system. JFFS is typically favored for 
+smaller disks and is used in many embedded systems. Both of these file systems
+are roughly similar in principle. Both address only dynamic wear leveling.
+</p>
+<h2> YAFFS </h2>
+<p>
+We will only take a look at YAFFS in this discussion.
+</p>
+<p>
+The basic unit of allocation under YAFFS is called a <strong>chunk</strong>.
+Several (anywhere from 32 to 128 or more) chunks make up one block. A 
+block is the unit of erasure for YAFFS.
+</p>
+<p>
+YAFFS maintains a <strong>log structure</strong>. This means that all updates
+to the file system are written sequentially. Instead of overwriting different
+data structures (inodes, data blocks, etc.) at various locations, the file system
+is simply a linear list of logs &mdash; operations that take place on the file system.
+There is no underlying storage structure that resembles a hash of directory entries
+or an inode table. 
+</p>
+<p>
+Each log entry is one chunk in size and is either a <strong>data chunk</strong>
+or an <strong>object header</strong>. A data chunk represents a file's data.
+An object header describes a directory, a file, a link, or other object.
+Sequence numbers are used to organize this log chronologically.
+Each chunk (log entry) includes:
+</p>
+<dl>
+<dt>
+Object ID
+</dt> <dd>
+identifies the object to which the chunk belongs. Every file, for example,
+will have a unique object ID and any chunk with a matching object ID
+will belong to that file. AN object header for the file will contain
+information about the file: permissions, file length, and other attributes
+that would typically be found in an inode.
+</dd>
+<dt>
+Chunk ID
+</dt> <dd>
+identifies where the chunk belongs in the object. A file may be made up of
+zero or more data chunks. The chunk ID identifies the sequencing of these
+chunks so that the file could be reconstructed. If multiple Chunk IDs 
+are present, the newest one wins over any older ones.
+</dd>
+<dt>
+Byte count </dt>
+<dd> 
+Number of bytes of valid data in the file
+</dd>
+</dl>
+<p>
+When we first create a file, we might see something like this:
+</p>
+<table>
+<tr> <th> Block </th> <th> Chunk </th> <th>ObjectID</th> <th> ChunkID</th> <th>Status</th> <th> Content </th> </tr>
+<tr> <td> 0 </td><td> 0 </td><td> 500 </td><td> 0 </td><td> Live </td><td> Object header for file (length=0) </td> </tr>
+<tr> <td> 0 </td><td> 1 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+<tr> <td> 0 </td><td> 2 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+<tr> <td> 0 </td><td> 3 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+</table>
+<p>
+At this time, we have an empty file with no data. Now our process will write some data to it. All write operations
+will be written out to the log as chunks of data with object IDs that match that of the object header.
+</p>
+<table>
+<tr> <th> Block </th> <th> Chunk </th> <th>ObjectID</th> <th> ChunkID</th> <th>Status</th> <th> Content </th> </tr>
+<tr> <td> 0 </td><td> 0 </td><td> 500 </td><td> 0 </td><td> Live </td><td> Object header for file (length=0) </td> </tr>
+<tr> <td> 0 </td><td> 1 </td><td> 500 </td><td> 1 </td><td> Live </td><td> First chunk of data </td> </tr>
+<tr> <td> 0 </td><td> 2 </td><td> 500 </td><td> 2 </td><td> Live </td><td> Second chunk of data </td> </tr>
+<tr> <td> 0 </td><td> 3 </td><td> 500 </td><td> 3 </td><td> Live </td><td> Third chunk of data </td> </tr>
+</table>
+<p>
+Note that the object header still refers to a zero-length file. When our process closes the file, the YAFFS driver
+will write the new object header, obsoleting the old one. In this example, we've run out of chunks in our first block
+and continue writing chunks to the second block.
+</p>
+<table>
+<tr> <th> Block </th> <th> Chunk </th> <th>ObjectID</th> <th> ChunkID</th> <th>Status</th> <th> Content </th> </tr>
+<tr> <td> 0 </td><td> 0 </td><td> 500 </td><td> 0 </td><td> Deleted </td><td> Object header for file (length=0) </td> </tr>
+<tr> <td> 0 </td><td> 1 </td><td> 500 </td><td> 1 </td><td> Live </td><td> First chunk of data </td> </tr>
+<tr> <td> 0 </td><td> 2 </td><td> 500 </td><td> 2 </td><td> Live </td><td> Second chunk of data </td> </tr>
+<tr> <td> 0 </td><td> 3 </td><td> 500 </td><td> 3 </td><td> Live </td><td> Third chunk of data </td> </tr>
+<tr> <td> 1 </td><td> 0 </td><td> 500 </td><td> 0 </td><td> Live </td><td> Object header for file (length=<em>n</em>) </td> </tr>
+<tr> <td> 1 </td><td> 1 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+<tr> <td> 1 </td><td> 2 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+<tr> <td> 1 </td><td> 3 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+</table>
+<p>
+If we now reopen the file, modify the first chunk of data in the file, and close the file again, the new contents of
+the first chunk of data will be written to the log (obsoleting the previous data for object 500/chunk 1) followed by
+a new object header that will contain a new modification time and any other file attributes that may have changed. This
+obsoletes the previous two object headers for Object 500.
+</p>
+<table>
+<tr> <th> Block </th> <th> Chunk </th> <th>ObjectID</th> <th> ChunkID</th> <th>Status</th> <th> Content </th> </tr>
+<tr> <td> 0 </td><td> 0 </td><td> 500 </td><td> 0 </td><td> Deleted </td><td> Object header for file (length=0) </td> </tr>
+<tr> <td> 0 </td><td> 1 </td><td> 500 </td><td> 1 </td><td> Deleted </td><td> First chunk of data </td> </tr>
+<tr> <td> 0 </td><td> 2 </td><td> 500 </td><td> 2 </td><td> Live </td><td> Second chunk of data </td> </tr>
+<tr> <td> 0 </td><td> 3 </td><td> 500 </td><td> 3 </td><td> Live </td><td> Third chunk of data </td> </tr>
+<tr> <td> 1 </td><td> 0 </td><td> 500 </td><td> 0 </td><td> Deleted </td><td> Object header for file (length=<em>n</em>) </td> </tr>
+<tr> <td> 1 </td><td> 1 </td><td> 500 </td><td> 1 </td><td> Live </td><td> New first chunk of data </td> </tr>
+<tr> <td> 1 </td><td> 2 </td><td> 500 </td><td> 0 </td><td> Live </td><td> Object header for file (length=<em>n</em>) </td> </tr>
+<tr> <td> 1 </td><td> 3 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+</table>
+<h3> Garbage collection </h3>
+<p>
+As modifications to existing files take place, the affected data and header chunks become obsolete because updated entries
+are written to the log. These chunks are <strong>garbage</strong>; they're useless. If all the chunks in a block are 
+obsoleted (deleted), then that entire block can be erased and reused.
+Beyond that, 
+<strong>garbage collection</strong> will be performed periodically to create free blocks by copying live chunks from
+blocks that have with just a few live chunks and mostly deleted ones. This is known in YAFFS as
+<strong>passive garbage collection</strong>. If the file system is desperate for free space, then 
+<strong>aggressive garbage collection</strong> takes place, which will consolidate chunks even from blocks that have
+few deleted chunks.
+</p>
+<h3> In-memory reconstruction </h3>
+<p>
+One thing that should be clear by now is that the log-based structure
+of YAFFS is not an efficient one for finding either files
+or their data. One has to search linearly through the logs, finding
+the items of interest, and discarding any chunks that have more
+recent updates.
+</p>
+<p>
+To avoid doing this over and over again, YAFFS scans the event log and
+constructs the file system state in memory (RAM). It creates an in-memory object
+state for each object and a file tree (directory) structure to locate 
+files and directories. File data still resides in flash memory, but by
+having all file and directory information in RAM, we can quickly find out
+which blocks to read to get that data without having to scan the log.
+</p>
+<p>
+YAFFS saves these reconstructed data structures in flash memory when the
+file system is unmounted so that the scan need not take place when it is
+mounted the next time. This is known as <strong>checkpointing</strong>.
+With checkpointing, the logs will have to be scanned only if the file system
+has not been unmounted cleanly.
+
+
+
+<h1> Footnotes </h1>
+<p id="footnote-01">[1] The FFS file system driver was concerned about
+rotational latency and did not allocate adjacent sectors consecutively
+since there would be a rotational delay between accessing one sector and
+dispatching a request for the next sector. This is interesting for 
+historic purposes but many early disks staggered their sector numbers
+within a track to account for this and modern disks have the ability to
+buffer and reschedule their I/O requests.
+</p>
+
+<h1> References </h1>
+
+<ul>
+<li> <a href="http://tldp.org/LDP/tlk/fs/filesystem.html"> The File System </a>, Linux Documentation Project </li>
+<li> <a href="http://www.h-online.com/open/features/Tuning-the-Linux-file-system-Ext3-746480.html">Tuning the Linux file system Ext3</a>,
+Oliver Diedrich, The H, Heise Media UK Ltd., October 27, 2008.
+<li> <a href="http://www.win.tue.nl/~aeb/linux/lk/lk-8.html"> The Linux Virtual File System </a>, The Linux Kernel, Andries Brouwer </li>
+<li> <a href="http://technet.microsoft.com/en-us/library/cc781134(WS.10).aspx"> How NTFS Works </a>, Microsoft TechNet </li>
+<li> <a href="http://technet.microsoft.com/en-us/library/cc976808.aspx"> The NTFS File System</a>, Microsoft TechNet </li>
+<li> <a href="http://technet.microsoft.com/en-us/library/cc778410(v=WS.10).aspx"> What Is NTFS? </a>, Microsoft TechNet </li>
+<li> <a href="http://www.stanford.edu/~ouster/cgi-bin/papers/lfs.pdf">The Design and Implementation of a Log-Structured File System</a>,
+Mendel Rosenblum and John K. Ousterhout, University of California at Berkeley, ACM Transactions on Computer Systems,
+Volume 10, No. 1, February 1992, Pages 26-52.</li>
+<li> <a href="http://www.yaffs.net/">YAFFS</a>, Project page.  </li>
+<li> <a href="http://www.yaffs.net/files/yaffs.net/HowYaffsWorks.pdf">How YAFFS Works</a>, Charles Manning, 2007-2010.  </li>
+<li> <a href="http://developer.axis.com/old/software/jffs/">JFFS Home Page</a>, Axis Communications. </li>
+<li> <a href="http://sourceware.org/jffs2/jffs2-html/">JFFS: The Journalling Flash File System</a>, David Woodhouse, Red Hat, Inc.</li>
+
+<li> <a href="http://oss.sgi.com/projects/xfs/papers/hellwig.pdf">XFS: the big storage file system for Linux</a>, Christoph Hellwig, ;LOGIN: vOL. 34, NO. 5. October 2009
+</li>
+</ul>
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

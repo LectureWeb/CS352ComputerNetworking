@@ -1,0 +1,215 @@
+/* fonts for layout.css */
+
+
+
+
+
+
+
+
+
+
+
+/* default font, navbar  */
+
+
+/* left sidebar (sidebar1) default font */
+
+
+/* sidebar1 heading 2 */
+
+
+/* sidebar1 content list (ul) */
+
+
+/* right sidebar (sidebar2) default font */
+
+
+
+
+
+
+
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+@page {
+  size: 8.5in 11in;
+  margin: 1.25in 0.25in 1.25in 1.25in;
+  orphans:4; widows:2;
+}
+h1, h2, h3, h4, h5 {
+	page-break-after: avoid;
+}
+table, figure {
+  page-break-inside: avoid;
+}
+
+
+/* ----------------------- basic ----------------------- */
+/* clear browser defaults */
+html, body, ul, ol, li, p, h1, h2, h3, h4, h5 , h6, form, fieldset, a {
+	margin:0;
+	padding: 0;
+	border: 0;
+}
+body {
+	font-size: 85%;
+	font-family: Palatino, "Palatino Linotype", Georgia, Times, "Times New Roman", serif;
+	margin: 0.25in 1.5in 1in 1.25in;
+	text-align: center;	/* center the page */
+	background: white;
+}
+
+h1, h2, h3, p, ul {
+	padding: 0;
+	margin: 0;
+}
+
+/* ----------------------- banner ----------------------- */
+#banner {
+	display: none;
+}
+
+#banner #logo {
+	display: none;
+}
+#banner #title {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	bottom: 0;
+	font-size: 36pt;
+	font-weight: bold;
+	font-family: "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+	color: #5B7BAB;
+	text-align: left;
+}
+#banner {
+	position: relative;
+	background: #fff;
+}
+#banner ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+#banner li {
+	display: none;
+}
+.separator {
+	display: none;
+}
+#banner ul {
+	display: none;
+}
+#banner #title {
+	font-size: 16pt;
+	font-weight: bold;
+	font-family: "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+}
+
+/* ----------------------- navBar ----------------------- */
+#navbar {
+	display: none;
+}
+
+/* ----------------------- "you are here" list under nav bar ----------------------- */
+#subnav {
+	display: none;
+}
+
+/* ----------------------- wrapper ----------------------- */
+/* wraps entire contents of page */
+#wrapper {
+	margin: 0 auto;		/* auto margins left & right */
+	text-align: left;	/* undoes centering of body */
+	background-color: white;
+	border: none;
+	clear: both;
+	position: relative;
+	width: 100%;
+}
+
+/* ----------------------- sidebar1 ----------------------- */
+#sidebar1 {
+	display: none;
+}
+
+/* ----------------------- sidebar2 ----------------------- */
+#sidebar2 {
+	display: none;
+}
+
+/* ------------ footer -------------- */
+
+#footer {
+	margin-left: 0;
+	margin-right: 0;
+	margin-top: 10pt;
+	margin-bottom: 10pt;
+	padding: 0.5em;
+	font-family: helvetica, arial, sans-serif;
+	color: #555;
+	border: none;
+	border-top: 1px solid #999;
+	line-height: 1.2em;
+}
+
+#footer hr {
+	border: none;
+}
+#footer img {
+	display: none;
+}
+#footer p {
+	font-size: 0.8em;
+	text-indent: 0;
+	line-height: 1.2em;
+	margin-bottom: 0.5em;
+	margin-right: 0;
+}
+#tear {
+	display: none;
+	margin-right: 0;
+}
+
+
+/* ----------------------- main content ----------------------- */
+
+#main {
+	margin: 0;
+	padding: 0;
+	margin-right: 10em;
+	border: none;
+}

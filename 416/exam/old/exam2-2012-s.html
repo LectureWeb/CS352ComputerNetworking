@@ -1,0 +1,450 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 old exams: Exam 2 Spring 2012 </title>
+
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+#main ol h1 {
+	font-size: 140%;
+	margin-left: -1.3em;
+}
+#main ol li {
+	margin-bottom: 1em;
+}
+</style>
+</head>
+
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> 416 </a> 
+ 	<li> <a href="../../exam/index.html"> Exam info </a> 
+ 	<li> <a href="../../exam/old/index.html"> Old exams </a> 
+ 	<li> <a href="../../exam/old/exam2-2012-s.html"> Exam 2 Spring 2012 </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> CS 416 Exam 2 </h1>
+<h2>Spring 2012</h2>
+</div>
+
+<p>
+See the <a href="exam2-review-2012-s.pdf">solutions</a> (<a href="exam2-review-2012-s-6.pdf">6 per page</a>).
+</p>
+
+<ol>
+<h1>Part I &ndash; 10 Points</h1>
+
+<li> 4 points<br/>
+Under what conditions will you reach a point of diminishing returns where adding more memory may improve performance only a little?
+</li>
+
+<li> 6 points <br/>
+<ol class="alphalist">
+<li>
+One of the ways that Berkeley improved performance in their design
+of the Fast File System was to use larger clusters. Assume that an
+inode has a small number of direct blocks, 1 indirect block, 1
+double indirect block, and 1 triple indirect block. Further, assume
+that each disk cluster holds <em>b</em> block (cluster) pointers. Approximately
+how much bigger a file can the file system support if the cluster
+size is doubled? Show your work and approximate your answer as a
+single number.
+</li>
+
+<li>
+You have the option of doubling the cluster size or adding two
+additional triple indirect blocks to the inode. Completely ignoring
+the performance implications of using triple indirect blocks, which
+file system will support a larger file size? Show your work and
+explain why.
+</li>
+</ol>
+</li>
+
+<h1>
+PART II &ndash; 81 points &ndash; 27 questions &ndash; 3 points each </h1>
+<p>
+For each statement, select the most appropriate answer. You may omit one question per page.
+</p>
+
+<li> Dynamic linking:
+<br/>(a) Brings in libraries as needed to create the final executable file that can then be loaded and run.
+<br/>(b) Links libraries to create the final executable file without having the user identify them.
+<br/>(c) Loads libraries when the executable file first references those libraries.
+<br/>(d) Is a technique for re-linking an executable file with newer versions of libraries.
+	
+</li><li> Running multiple processes in a single partition monoprogramming environment requires:
+<br/>(a) Swapping the memory image of a process to disk at each context switch.
+<br/>(b) Ensuring that each process uses the same amount of memory.
+<br/>(c) Having each program compiled to start at the address of one of several partitions.  
+<br/>(d) That multiple processes can coexist within a single partition.
+	
+</li><li> By adding <em>base and limit addressing</em> to multiple partitions, we can now use:
+<br/>(a) Absolute code.
+<br/>(b) Position independent code.
+<br/>(c) Statically linked code.
+<br/>(d) Dynamically relocatable code.
+	
+</li><li> One advantage of multiple fixed partitions (MFP) over variable partitions is:
+<br/>(a) MFP never leads to unusably small holes due to external fragmentation.
+<br/>(b) There is no need to pre-allocate partitions.
+<br/>(c) Sharing memory is much easier.
+<br/>(d) MFP will usually result in much more efficient use of system memory.
+	
+</li><li> In a conventional paging system, a page table entry (PTE) will not contain:
+<br/>(a) A logical page number.
+<br/>(b) A physical page frame number.
+<br/>(c) A page residence bit.
+<br/>(d) Page permissions.
+	
+</li><li> A system with 32-bit addresses, 1 GB (2<sup>30</sup>) main memory, and a
+1 megabyte (20-bit) page size will have a page table that contains:
+<br/>(a) 4,096 (4K, 2<sup>12</sup>) entries.
+<br/>(b) 4,294,967,296 (4G, 2<sup>30</sup>) entries.
+<br/>(c) 1,048,576 (1M, 2<sup>20</sup>) entries.
+<br/>(d) 1,024 (1K, 2<sup>10</sup>) entries.
+
+</li><li> The Linux slab allocator is <em>NOT</em> designed to:
+<br/>(a) Provide an interface for memory allocation for kernel structures.
+<br/>(b) Avoid external fragmentation by allocating same-size objects per cache.
+<br/>(c) Replace the buddy algorithm for allocating pages as well as objects.
+<br/>(d) Be able to increase the amount of memory it uses by requesting more pages.
+
+</li><li> Segmentation is a form of:
+<br/>(a) Base & limit addressing.
+<br/>(b) Direct-mapped paging.
+<br/>(c) Multi-level page tables.
+<br/>(d) Base & limit addressing followed by a page table lookup.
+
+</li><li> Assume that a main memory access takes 100 ns. If we are using a two-level page table and have a 50% TLB hit ratio, the effective memory access time is (assume no memory cache and no page faults):
+<br/>(a) 100 ns.
+<br/>(b) 200 ns. 
+<br/>(c) 300 ns.
+<br/>(d) 400 ns.
+
+</li><li> A system with 32-bit addresses, 1 GB (2<sup>30</sup>) main memory, and a 1 megabyte (20-bit) page size will have an inverted page table that contains:
+<br/>(a) 1,024 (1K, 2<sup>10</sup>) entries 
+<br/>(b) 4,096 (4K, 2<sup>12</sup>) entries.
+<br/>(c) 1,048,576 (1M, 2<sup>20</sup>) entries.
+<br/>(d) 4,294,967,296 (4G, 2<sup>30</sup>) entries.     
+
+</li><li> You are using a buddy algorithm that allocates storage from 16-byte blocks up to 1024-byte blocks. What percentage of allocated memory is wasted due to internal fragmentation when satisfying requests for allocating 130-byte chunks? 
+<br/>(a) Approximately 0%.
+<br/>(b) Approximately 25%.
+<br/>(c) Approximately 50%.
+<br/>(d) Approximately 100%.
+
+</li><li> You are using a buddy algorithm for allocating chunks of memory in the same configuration as in the previous question. You make a sequence of 256-byte allocations as follows:
+		<em>a=alloc(256),   b=alloc(256),   c=alloc(256),   d=alloc(256)</em>
+Which sequence of deallocations will result in having the largest chunk of memory available for a future allocation?
+<br/>(a) <em>free(a), free(d). </em>
+<br/>(b) <em>free(c), free(d). </em>
+<br/>(c) <em>free(b), free(c). </em>
+<br/>(d) <em>free(b), free(d). </em>
+
+</li><li> Memory compaction refers to:
+<br/>(a) Moving regions of memory to get rid of external fragmentation. 
+<br/>(b) Compressing a region of memory to have it consume less space.
+<br/>(c) Getting rid of large empty (zero) sections within a region of memory.
+<br/>(d) Configuring a system to run in less memory than is actually available
+
+</li><li> The page number in the 24-bit address 0x123456 with an 256-byte page size is:
+<br/>(a) 0x56
+<br/>(b) 0x12
+<br/>(c) 0x1234 
+<br/>(d) 0x3456
+
+</li><li> Which cannot be a valid page size?
+<br/>(a) 32 bytes.
+<br/>(b) 1,024 bytes.
+<br/>(c) 3,072 bytes.
+<br/>(d) 1,048,576 bytes.
+
+</li><li> The reason for using a multilevel page table is to:
+<br/>(a) Reduce the amount of memory used for storing page tables.
+<br/>(b) Make table lookups more efficient than using a single-level table.
+<br/>(c) Make it easier to find unused page frames in the system.
+<br/>(d) Provide a hierarchy to manage different sections of a program.
+
+</li><li> Monitoring page fault frequency of a process allows us to:
+<br/>(a) Manage page frame allocation per process. 
+<br/>(b) Adjust the size of the TLB for optimum performance.
+<br/>(c) Determine if the process is I/O bound or CPU intensive.
+<br/>(d) Identify the number of illegal instructions and invalid memory accesses within a program.
+
+</li><li> A buffer cache is useful only for:
+<br/>(a) Block devices. 
+<br/>(b) Character devices.
+<br/>(c) Network devices.
+<br/>(d) Block and network devices.
+
+</li><li> The following is not an example of a character device:
+<br/>(a) Mouse.
+<br/>(b) Sound card.
+<br/>(c) USB-connected printer.
+<br/>(d) Flash memory.
+
+</li><li> The minor number of a device identifies:
+<br/>(a) The version number of a device driver.
+<br/>(b) Whether a device is a block, character, or network device.
+<br/>(c) The specific driver used by a block, character, or network device.
+<br/>(d) The instance of a specific device among devices sharing the same driver.
+
+</li><li> The top half of a device driver runs in:
+<br/>(a) Driver context.
+<br/>(b) User context.
+<br/>(c) Kernel context.
+<br/>(d) Interrupt context.
+
+</li><li> A disk drive using the Circular LOOK (C-LOOK) algorithm just wrote block 1203 and then read block 1204. The following blocks are queued for I/O: 900, 1200, 1800, 2500. In what order will they be scheduled?
+<br/>(a) 1200, 900, 1800, 2500
+<br/>(b) 1200, 900, 2500, 1800
+<br/>(c) 1800, 2500, 1200, 900
+<br/>(d) 1800, 2500, 900, 1200 
+
+</li><li> Which scheduling algorithm makes the most sense for flash memory?
+<br/>(a) Shortest seek time first (SSTF).   
+<br/>(b) SCAN.
+<br/>(c) LOOK.  
+<br/>(d) First come, first served (FCFS).    
+
+</li><li> The VFS inode interface does NOT allow you to:
+<br/>(a) Create a file.
+<br/>(b) Read file data.
+<br/>(c) Write a file's attributes.
+<br/>(d) Delete a directory.
+
+</li><li> The use of clusters in a file system does NOT:
+<br/>(a) Reduce internal fragmentation in a file. 
+<br/>(b) Increase the amount of contiguous blocks in a file.
+<br/>(c) Reduce the number of blocks we need to keep track of per file.
+<br/>(d) Improve file data access performance.
+
+</li><li> A File Allocation Table:
+<br/>(a) Stores a list of blocks used by every single file in the file system.
+<br/>(b) Stores file names and the blocks of data that each file in the file system uses.
+<br/>(c) Is a table-driven way to store file data.
+<br/>(d) Is a bitmap identifying unused blocks that can be used for file data.
+
+</li><li> The Berkeley Fast File System did NOT improve the Unix File System by adding:
+<br/>(a) Cylinder groups.
+<br/>(b) Bitmap allocation for keeping track of free and used blocks.
+<br/>(c) Extent-based allocation.
+<br/>(d) Prefetching of blocks.
+
+</li><li> Unlike full data journaling, ordered journaling:
+<br/>(a) Improves performance by not writing file data into the journal. 
+<br/>(b) Makes sure that all that all journal entries are written in a consistent sequence.
+<br/>(c) Provides improved consistency by writing the data before any metadata is written.
+<br/>(d) Imposes no order between writing data blocks and writing metadata journal entries.
+
+</li><li> With NTFS:
+<br/>(a) File data may be present within the file record along with file attributes.
+<br/>(b) The main structure guiding the location of files is the File Allocation Table.
+<br/>(c) Journals, free bitmaps, file records, and file data are kept in distinct sections of the disk.
+<br/>(d) All data blocks are compressed to maximize available disk space.
+
+</li><li> Which structure of ext3 is least useful for a flash-based storage device?
+<br/>(a) inode table.
+<br/>(b) Block groups.
+<br/>(c) Journal.
+<br/>(d) Free block bitmap.
+
+</li><li> The Linux ext4 file system differs from ext3 in that it uses:
+<br/>(a) Cluster-based allocation.
+<br/>(b) Extent-based allocation.
+<br/>(c) Block groups.
+<br/>(d) Journaling.
+</li>
+
+
+
+<h1>
+PART III &ndash; 9 questions &ndash; 9 points &ndash; 1 point each </h1>
+<p>
+For each statement, specify whether it is true or false by circling the correct choice. 
+You may omit one question.
+</p>
+
+<li> A log structured file system is the same as an inode-based file system with journaling added.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> YAFFS uses a separate area in the file system for storing directories and metadata.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> Because of page-based virtual memory, operating systems never need to worry about allocating contiguous pages.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> Each page table needs to have within it a reference to each page frame in the system.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> A partial page table contains page table entries for all pages in the system but not all page frames.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> YAFFS2 implements dynamic wear leveling, not static.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> A clock page replacement algorithm tries to approximate a Least Recently Used (LRU) algorithm.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> The Shortest Seek Time First (SSTF) algorithm has a danger of starving some requests.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> The order that disk blocks are scheduled in flash memory is not critical.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> The loop device converts a regular file into a block device.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+</li>
+
+</ol>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> Exam Info </h2>
+	<ul>
+	<li> <a href="../index.html#list">List of topics</a>
+	<li> <a href="../study-guide-1.html">Exam 1 Study Guide</a> </li>
+	<li> <a href="../study-guide-2.html">Exam 2 Study Guide</a> </li>
+	<li> <a href="../study-guide-3.html">Exam 3 Study Guide</a> </li>
+	</ul>
+		<h2> Old exams </h2>
+	<ul>
+	<li> <a href="exam1-2012-s.html"> Spring 2012 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2012-s.html"> Spring 2012 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2012-s.html"> Spring 2012 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2011-s.html"> Spring 2011 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2011-s.html"> Spring 2011 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2011-s.html"> Spring 2011 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2010-f.html"> Fall 2010 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2010-f.html"> Fall 2010 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2010-f.html"> Fall 2010 &ndash; Exam 3</a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

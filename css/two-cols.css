@@ -1,0 +1,9 @@
+#wrapper {
+        min-width: 700px;
+}
+#sidebar2 {
+        display: none;
+}
+#main, #footer, #tear {
+        margin-right: 15px;
+}

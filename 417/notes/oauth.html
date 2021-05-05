@@ -1,0 +1,301 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Distributed Systems Security</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css?v=1.1"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Distributed Systems Security</h1>
+								<h2>Serive authorization with OAuth</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>April 20, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal:</strong> Enable users to provide limited permissions for one service to access another service.</p>
+</blockquote>
+
+<p>Suppose that you want an app (or some network service) to access your Google calendar.
+One way to do this is to provide the app with the ID and password of your Google account.
+Unfortunately, this gives the app full control of the entire account and is something you
+may not feel comfortable granting.</p>
+
+<p>OAuth is designed to allow users to control what data or services one service can access from
+another service.</p>
+
+<p>For example, if you want a photo printing service to access photos from your
+flickr account, you don&#8217;t want to provide it with your flickr username and password for unrestricted access.
+Instead, OAuth allows you to specify what access you allow the photo printing service to have to
+flicker and for how long.
+Token credentials (a bunch of bits as far as your app or website is concerned) are
+used in place of the resource owner’s username and password for gaining access
+to the service. These token credentials include a token identifier and a secret.
+This writeup provides only a very high-level overview of OAuth.</p>
+
+<p>There are three entities involved in OAuth:</p>
+
+<ol>
+<li><p><strong>User</strong>: the user and the user&#8217;s browser.</p></li>
+<li><p><strong>Client</strong> (application): this is the service that the user is accessing. For example,
+the <em>moo.com</em> photo printing service</p></li>
+<li><p><strong>Authorization Server</strong>, acting as the <strong>Service Provider</strong> (server): this is the service that the consumer needs to access. For example,
+<em>flicker.com</em> to get the photos</p></li>
+</ol>
+
+<p>We&#8217;ll use the moo.com photo printing and the flickr.com photo serving service as an example.</p>
+
+<ol>
+<li><p>Alice wants to order some prints and logs into moo.com. Moo knows about flickr and allows her to select
+select flickr as the source of her photos. When Moo built its service, its developers registered the service with
+flickr and obtained OAuth client credentials (client ID and secret).</p></li>
+<li><p>When Alice selects flickr, moo.com needs to contact flickr.com for an <strong>authorization code</strong>, which is a temporary credential.
+The application, moo.com, creates a request that contains a <strong>scope</strong>: a list of requested services that it needs from flickr
+(for example, <em>get photos from your account</em>). The application then redirects Alice to
+to the flicker OAuth page (that could be a separate server at flickr) with
+a directive to redirect her back to Moo when she&#8217;s done. The request
+contains the app&#8217;s ID, the app&#8217;s secret, and the scope.</p></li>
+<li><p>At the flicker OAuth page, she authenticates (using login/password or perhaps via OpenID, which may cause another
+level of redirection) and is presented with
+a description of what moo.com is requesting to do (e.g., access to download photos for the next 10 minutes).
+She can approve or reject the request.</p></li>
+<li><p>When Alice approves the request, she is redirected back to moo.com.
+The redirect contains the <strong>authorization code</strong>.</p></li>
+<li><p>Moo now contacts flickr.com <em>directly</em> and exchanges the authorization code for an <strong>access token</strong>.
+Authorization codes are used to obtain a user&#8217;s approval. Access tokens are used to access resources on the provider (server);
+that is, to call APIs.
+Moo now sends API requests to flicker containing the access token to flickr to download the requested photos.</p></li>
+</ol>
+
+<h2 id="distributedauthenticationviaopenidconnect">Distributed Authentication via OpenID Connect</h2>
+
+<blockquote>
+<p>Goal: Allow services to use a third-party user identity manager and authentication service to authenticate a user.</p>
+</blockquote>
+
+<p><strong>OpenID Connect</strong> was created to solve the problem of alleviating a user from managing multiple identities
+(logins and passwords) at many different services (web sites).</p>
+
+<p>It is <em>not</em> an authentication protocol.
+Rather, it&#8217;s a technique for a service to redirect
+authentication to a specific OpenID Connect authentication server and have that server
+be responsible for authentication.</p>
+
+<p>OpenID Connect is an identity layer on top of the <strong>OAuth 2.0 protocol</strong>. It uses the
+basic protocol of OAuth and the same communication mechanisms: HTTPS with JSON messages.</p>
+
+<p>There are three entities involved:</p>
+
+<ol>
+<li><p><strong>Client</strong>: this is the application that the user is accessing. It is often a web site but may be a dedicated app.
+(In OAuth, we think of this as the consumer).</p></li>
+<li><p><strong>User</strong>: this is the user&#8217;s browser. In the case of a dedicated app, the app will take this role.</p></li>
+<li><p><strong>Authorization Server</strong>, acting as the <strong>Identity Provider</strong>. This is the server that is responsible for managing
+your ID and authenticating you. It is called the Authorization Server because OpenID Connect is built on top
+of OAuth 2.0, a service authorization framework. For OAuth, we this of this as a <strong>Service Provider</strong> instead of
+Identity Provider.</p></li>
+</ol>
+
+<p>OpenID Connect allows the client to answer the question, <em>what is the identity of the person using this browser or app?</em></p>
+
+<p>The protocol contacts an authorization server to get an access token and then uses that
+access token at the client.</p>
+
+<p>Here&#8217;s the basic flow:</p>
+
+<ol>
+<li><p>Before OpenID Connect is used, a client may <strong>pre-register</strong> its service with an Authorization
+Server. This can allow a server administrator to control restrictions on policies for
+accessing user information. It also allows a client and server to agree upon a <strong>shared secret</strong>
+that will be used to sign future messages. If this is not done, public key cryptography can be
+used.</p></li>
+<li><p>The user is presented with a request to log in. The client may choose to support the use
+of multiple identity providers. In this case, the user identifies the identity provider in
+the user name. For example, joe@example.com. The protocol then knows that the authorization server
+is at example.com. Alternatively, the provider may force the use of a specific provider (e.g., Google).
+The client <strong>redirects</strong> the user to the <strong>authorization server</strong>. This is done via an HTTP
+REDIRECT message.</p></li>
+<li><p>The redirect results in the client sending an <strong>Authentication Request</strong> to the
+authorization server. This is an OAuth message with a scope (access request) that
+requests &quot;openid'. The scope can also include other identifying data, such as user
+profile, email, postal address, and phone number.</p></li>
+<li><p>The authorization server <strong>authenticates</strong> the user using whatever protocol it wants to use.</p></li>
+<li><p>After authenticating the user, the authorization server requests the users permission
+for all requests listed in the scope.
+For example, <em>SomeApp requests permission for: signing you in, your profile, your email address, your address, your phone number</em>.
+This is the same as any OAuth request for services.</p></li>
+<li><p>If the user approves, the authorization server sends a <strong>redirect</strong> to switch the user back to the <strong>client</strong>.
+This redirect message contains an <strong>authorization code</strong> created by the authorization server that is now given to the client.
+The authorization code looks like a large bunch of random text and is of no use to the user.</p></li>
+<li><p>The client now sends a <strong>token request</strong> <em>directly</em> to the authorization server. The request
+includes the authorization code that it received. All traffic is encrypted via HTTPS to guard
+agains eavesdroppers. If the client pre-registered,
+the request will contain a pre-established secret so that the authorization server can validate the client.</p></li>
+<li><p>The server returns an <strong>access token</strong> and an <strong>ID token</strong> to the client. Note that the user is not involved
+in this flow.</p></li>
+</ol>
+
+<p>The <strong>ID token</strong> asserts the user&#8217;s identity. It is a JSON object that:</p>
+
+<ul>
+<li>identifies the Identity Provider (authorization server)</li>
+<li>has an issue and expiration date</li>
+<li>may contain additional details about the user or service</li>
+<li>is digitally signed by the identity provider using either the provider&#8217;s private key or a shared secred that was set up during registration.</li>
+</ul>
+
+<p>By getting this ID token, the client knows that, as far as the authorization server is concerned,
+the user has successfully authenticated. At this point, the client does not need to contact the authorization server anymore.</p>
+
+<p>The <strong>access token</strong> is the same access token that OAuth provides clients so that they can request services.
+It has an expiration date associated with it and may be passed to the authorization server to request
+access to detailed information about the user or get other protected resources. What the client can request
+is limited by the <strong>scope</strong> of the Authentication Request in step 2.</p>
+
+<p>OpenID and OAuth were separate protocols until 2014. They were merged such that OpenID Connect
+is a special mode of OAuth that requests authentication and provides the client with an ID token.
+However, the purpose of OAuth and OpennID are fundamentally different.
+OpenID is designed to allow a third party to manage user identities and <strong>authentication</strong>.
+That is, it provides single <strong>sign-on</strong>: allowing a user to use the same
+login and a third party (OpenID) authentication service for many web sites.
+OAuth, on the other hand, is designed for service <strong>authorization</strong>. It is up to the remote
+service that you are accessing to decide if and how to authenticate you before allowing you
+to authorize access to that service.</p>
+
+							</section>
+							<footer class="main">
+								Last modified April 21, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

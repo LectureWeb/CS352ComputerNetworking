@@ -1,0 +1,527 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Homework 13 (Project 4)</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css?v=1.1"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Homework 13 (Project 4)</h1>
+								<h2></h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>November 8, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<div class="boldbox"> Deadline: Sunday, November 22 11:59pm EST </div>
+
+								<p>&rarr; <a href="files/Project-4-overview.pdf">Recitation notes</a>.<br/>
+&rarr; <a href="../notes/videos/Project-4-overview-video.mp4">Recitation video</a><br/>
+&rarr; <a href="files/hw13-samples.zip">Sample output</a></p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>Proof-of-work was created as a mechanism to demonstrate that the creator of the proof-of-work had to put in a substantial amount of computing effort while making it efficient for a recipient to validate this.</p>
+
+<p>In Bitcoin, proof of work serves two functions:</p>
+
+<ol>
+<li><p>It makes creating a block with a valid block hash so difficult that it is extremely unlikely that two bitcoin nodes would propose a block at the same time. </p></li>
+<li><p>It takes so much computation to compute the proof of work to create a valid hash for one block that the amount of computing power an attacker would need to modify a sequence of hash pointers for many blocks to change an old transaction is not feasible.</p></li>
+</ol>
+
+<p>This assignment contains two parts:</p>
+
+<ol>
+<li><p>In part 1, you will implement a program that computes a proof of work for a file. You will specify a difficulty level on the command line and the program prints a set of headers as output. </p></li>
+<li><p>In part 2, you will implement a program that validates the headers produced in part 1. If the proof of work is incorrect or the hash is incorrect then the validation will fail.</p></li>
+</ol>
+
+<h1 id="environment">Environment</h1>
+
+<p>This is an individual project. All work should be your own except for the referenced code for the hash function.</p>
+
+<p>You may use Go, Python, Java, C, or C++ in your implementation.</p>
+
+<p>You should be able to implement this on any platform but you are responsible to make sure that the program runs on Rutgers iLab systems with no extra software.</p>
+
+<h1 id="background">Background</h1>
+
+<p><em>Hashcash</em> was an idea to reduce the amount of email spam. It would do this by requiring the sender to solve a difficult puzzle before sending a message.</p>
+
+<p>The sender would then provide proof that this puzzle was solved and messages would be rejected if such a proof was missing or in valid. The proof was provided as a header, called a <em>stamp</em>_, in the mail message.</p>
+
+<p>Someone using hashcash might spend several seconds creating the stamp. That&#8217;s not disruptive for someone who is sending a few messages but essentially impossible for a spammer who needs to generate stamps for millions of messages. Because the puzzle uses the content of the mail message and the recipient’s address, the spammer would need to spend many years of computing time to send a million messages. </p>
+
+<p>The solution to the puzzle needs to be verified efficiently by receivers, so we need a puzzle that’s difficult to solve but easy to verify.</p>
+
+<p>The idea of hashcash was adopted by Bitcoin and many other cryptocurrencies to enable participating systems provide evidence of Proof of Work when adding a new block to the bitcoin blockchain.</p>
+
+<h2 id="thepuzzle">The puzzle</h2>
+
+<p>Hashcash had to create a puzzle that was a function of the message, was sufficiently difficult to compute, but was efficient to verify. This aligns closely with properties of one-way functions. Cryptographic hashes are one-way functions that provide fixed-length output.</p>
+
+<p>For example, here’s a SHA&#8211;256 hash of the text ‘The grass is green’:</p>
+
+<pre><code>f3ccca8f3852f5e2932d75db5675d59de30d9fa10530dd9855bd4a6cd0661d8e
+</code></pre>
+
+<p>It takes only a few milliseconds to compute this. The inverse function, finding the text that would produce this has, requires a brute-force search. You would need to try hashing a huge amount of different messages to find one the produces the same hash. </p>
+
+<p>For example, Google attacked the SHA&#8211;1 hash but only by trying over 9&times;10^18 hashes. The attack required 12,000,000 GPU years of computing power. A stronger hash function, such as SHA&#8211;2, would take far longer. Clearly, reversing a hash is far too difficult a problem.</p>
+
+<h2 id="aneasierpuzzle">An easier puzzle</h2>
+
+<p>We can make the puzzle easier. Suppose we each for some text <em>W</em> that we concatenate with the message <em>M</em>. When <em>W||M</em> is hashed, the resulting hash value will have a certain property.</p>
+
+<p>For example, this was our SHA&#8211;256 hash of ‘The grass is green’:
+f3ccca8f3852f5e2932d75db5675d59de30d9fa10530dd9855bd4a6cd0661d8e</p>
+
+<p>If we look at the first bytes in binary, we see the bits are 1111 0011 1100 &#8230; . Suppose we want to modify the message in a way that its SHA&#8211;256 hash will be a value whose first 6 bits are 0.</p>
+
+<p>There is no way to predict how to create a message that will create such a hash. The only thing we can do is try different combinations, prefixing the message with different values of <em>W</em>.</p>
+
+<p>This particular challenge turns out not to relatively easy and we can solve it in a few milliseconds. For example, if we prefix the letter ‘f’ to the text, we get this hash with the hex value that starts with <code>01891</code>:</p>
+
+<pre><code>0189108649ff4cd02c8af4e099c8d719ec54eff327df14a89305932926f4bd93
+</code></pre>
+
+<p>The binary value starts with 7 zeros:</p>
+
+<pre><code>0000 0001 1000 1001 ...
+</code></pre>
+
+<h2 id="adaptivecomplexity">Adaptive complexity</h2>
+
+<p>We can change the difficulty of the puzzle by altering the number of leading 0 bits that we need to find. This difficulty will be an average. Sometimes we might get lucky and find a prefix that produces the desired result quickly. Other times it will take longer.</p>
+
+<p>Here’s a table of some of the prefixes I came up with for the text ‘The grass is green’. </p>
+
+<table>
+<colgroup>
+<col style="text-align:right;"/>
+<col style="text-align:left;"/>
+<col style="text-align:right;"/>
+<col style="text-align:right;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:right;">Difficulty, d</th>
+	<th style="text-align:left;">Prefix, W</th>
+	<th style="text-align:right;">Iterations</th>
+	<th style="text-align:right;">Time (s)</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:right;">9</td>
+	<td style="text-align:left;"><code>JQ</code></td>
+	<td style="text-align:right;">1,891</td>
+	<td style="text-align:right;">0.002491</td>
+</tr>
+<tr>
+	<td style="text-align:right;">17</td>
+	<td style="text-align:left;"><code>d$3</code></td>
+	<td style="text-align:right;">20,271</td>
+	<td style="text-align:right;">0.02586</td>
+</tr>
+<tr>
+	<td style="text-align:right;">23</td>
+	<td style="text-align:left;"><code>et*2</code></td>
+	<td style="text-align:right;">1,108,192</td>
+	<td style="text-align:right;">1.4</td>
+</tr>
+<tr>
+	<td style="text-align:right;">27</td>
+	<td style="text-align:left;"><code>3O941</code></td>
+	<td style="text-align:right;">28,415,235</td>
+	<td style="text-align:right;">36.59</td>
+</tr>
+<tr>
+	<td style="text-align:right;">28</td>
+	<td style="text-align:left;"><code>VaKH9</code></td>
+	<td style="text-align:right;">248,316,223</td>
+	<td style="text-align:right;">323.5</td>
+</tr>
+<tr>
+	<td style="text-align:right;">30</td>
+	<td style="text-align:left;"><code>)FT5D</code></td>
+	<td style="text-align:right;">351,377,855</td>
+	<td style="text-align:right;">453.1</td>
+</tr>
+<tr>
+	<td style="text-align:right;">31</td>
+	<td style="text-align:left;"><code>8(i6N2</code></td>
+	<td style="text-align:right;">4,490,406,584</td>
+	<td style="text-align:right;">5063.6</td>
+</tr>
+<tr>
+	<td style="text-align:right;">32</td>
+	<td style="text-align:left;"><code>tJ2IRB</code></td>
+	<td style="text-align:right;">22,016,518,319</td>
+	<td style="text-align:right;">12,270</td>
+</tr>
+</tbody>
+</table>
+<p>The difficulty is the number of leading zero bits.
+In this example, I found a string prefix that results in a hash with 23 leading 0 bits by testing a little over a million variations of prefixes in 1.4 seconds. However, finding a prefix that results in a hash value with 27 leading 0 bits took testing 28 million prefixes and took over 36 seconds.</p>
+
+<p>The puzzle gets difficult quickly. Finding text that would produce a hash with 30 zero bits required testing over 350 million different prefixes and took 453 seconds – a bit over 7 minutes. To get 31 zeros, I had to test over 4 billion prefixes and that took 1.4 hours on my old iMac. Producing a hash with 32 leading zeros required testing over 22 billion prefixes and over 3 hours of time.</p>
+
+<h2 id="size-invariantdifficulty">Size-invariant difficulty</h2>
+
+<p>The time to compute a hash is longer for large messages; weened to iterate over more bytes. To make the difficulty not be a function of the message length, we can modify the puzzle to one where we add prefixes to a hash of the message and then hash the resulting message to see what we get.</p>
+
+<p>The average difficulty of the problem now is simply the value <em>d</em>, which defines the number of leading 0 bits in the hash result. The actual time it takes to find the right prefix W will depend on:
+- Luck: we might get lucky and test some strings early on that will provide the hash result we want. We may get lucky occasionally but not most of the time. The law of averages will play out.
+- The speed of your computer and the quality of your code. We can speed up hashes greatly by using GPUs or custom processors as people do with bitcoin mining, but we won’t do that in this assignment.
+- Mostly, the difficulty depends on the value of <em>d</em>, the number of leading zero bits we want in the resulting hash.</p>
+
+<h2 id="proofofwork">Proof of Work</h2>
+
+<p>The prefix that was found &#8212; the string <em>W</em> &#8212; that, when concatenated with the message, produces the desired hash output, is called the Proof of Work.</p>
+
+<p>IT is a short string that we can provide to prove that we did the work to find this value that produces the desired hash.</p>
+
+<p>The proof of work is very efficient to test. For instance, it took my program over four billion hashes to find a prefix for the text <code>The grass is green</code> that will result in a hash where the first 31 bits are all 0.</p>
+
+<p>This prefix is the proof of work. It’s the string <code>8(i6N2</code>.
+You can verify the proof of work with one hash and look at the resulting value. It will take you only a millisecond.</p>
+
+<h1 id="yourassignment:part1">Your assignment: part 1</h1>
+
+<p>Your assignment is to write a program called <code>pow-create</code> that creates a proof of work string for a given file:</p>
+
+<pre><code>pow-create nbits file
+</code></pre>
+
+<p>The work is the search for a string that, when prefixed to a hash of the given file (<em>file</em>), will result in a SHA&#8211;256 hash that contains a certain number (<em>nbits</em>) of leading 0s.</p>
+
+<p>For example, suppose we have the following text in a file called walrus.txt:</p>
+
+<pre><code>The time has come, the Walrus said,
+To talk of many things:
+Of shoes — and ships — and sealing-wax —
+Of cabbages — and kings —
+And why the sea is boiling hot —
+And whether pigs have wings.
+</code></pre>
+
+<p>We can use the <em>openssl</em> command on a macOS or Linux system to find its SHA256 hash:</p>
+
+<pre><code>$ openssl sha256 &lt; walrus.txt
+66efa274991ef4ab1ed1b89c06c2c8270bb73ffdc28a9002a334ec3023039945
+</code></pre>
+
+<p>The hash starts with <code>66ef</code>. The hex digit 6 is <code>0101</code> in binary, so we have one leading zero bit in this message.</p>
+
+<p>To create a proof of work string with a difficulty of 20 (at least 20 leading zero bits), we run the command:</p>
+
+<pre><code>$ pow-create 20 walrus.txt
+File: walrus.txt
+Initial-hash: 66efa274991ef4ab1ed1b8...28a9002a334ec3023039945
+Proof-of-work: hl04
+Hash: 000002b2311ce58427ab7c1bfd0cb1...3d948c1c603a524dc11fb28
+Leading-bits: 22
+Iterations: 1496419
+Compute-time: 1.75376
+</code></pre>
+
+<p>Your <strong>pow-create</strong> command will:</p>
+
+<ol>
+<li>Create a SHA&#8211;256 hash of the data.</li>
+<li>Convert it to a printable string (matching the string produced by the <em>openssl</em> command).</li>
+<li>Pick a string that&#8217;s a potential proof of work value.</li>
+<li>Create a hash of the string in (3) concatenated with the string representation of the hash in (2).</li>
+<li>If the hash doesn’t start with at least <em>nbits</em> zero bits (the number supplied by the first argument of the command line) then go back to step (3) and try a different prefix.</li>
+</ol>
+
+<p>For this example, it took almost 1.5 million hashes with different variations of prefixes to find a hash that starts with 20 zero bits.</p>
+
+<p>The string that we came up with is <code>hl04</code>. This is presented as the proof of work.</p>
+
+<h2 id="output">Output</h2>
+
+<p>Your program will print results to the standard output (stdout) in a standard header format as used by mail headers or HTTP. This is one name-value item per line with each line containing the header name, a colon, one or more spaces, and the value.</p>
+
+<p>The headers are:</p>
+<dl>
+<dt>File:</dt>
+<dd>The name of the file.</dd>
+
+<dt>Initial-hash:</dt>
+<dd>The SHA&#8211;256 hash of the file.</dd>
+
+<dt>Proof-of-work:</dt>
+<dd>The printable string that is your proof of work.</dd>
+
+<dt>Hash:</dt>
+<dd>The SHA&#8211;256 hash of the proof of work concatenated with the original hash string.</dd>
+
+<dt>Leading-bits:</dt>
+<dd>The number of leading 0 bits in the hash you computed. It should be greater than or equal to the number requested.</dd>
+
+<dt>Iterations</dt>
+<dd>The number of different proof-of-work prefixes you had to try before you found one that works.</dd>
+
+<dt>Compute time:</dt>
+<dd>How long this process took, in seconds (including decimal seconds if appropriate).</dd>
+</dl>
+
+
+<h2 id="testingyourproofofwork">Testing your proof of work</h2>
+
+<p>You can easily test your program&#8217;s result against the data produced by the <em>openssl</em> command</p>
+
+<p>Run your pow-create command:</p>
+
+<pre><code>$ ./pow-create 20 walrus.txt
+Initial-hash: 66efa274991ef4ab1ed1b8...28a9002a334ec3023039945
+Proof-of-work: hl04
+Hash: 000002b2311ce58427ab7c1bfd0cb1...3d948c1c603a524dc11fb28
+Leading-bits: 22
+Compute-time: 1.75376
+</code></pre>
+
+<p>The above output is trimmed a bit. The only header we care about here is the <code>Proof-of-work</code> value, <code>hl04</code>.</p>
+
+<p>We can check our hash with the one <em>openssl</em> produces by running the <em>openssl</em> command with the <code>sha256</code> argument. This value should match the <code>Initial-hash</code> header:</p>
+
+<pre><code>$ openssl sha256 &lt;walrus.txt
+66efa274991ef4ab1ed1b89c06c2c8270bb73ffdc28a9002a334ec3023039945
+</code></pre>
+
+<p>Then we prefix the proof of work to that hash string and find the sha&#8211;256 hash of this proof of work string concatenated with the hex string output of the original hash:</p>
+
+<pre><code>$ echo -n 'hl0466efa27499...9002a334ec3023039945'|openssl sha256
+000002b2311ce58427ab7c1bfd0cb1679906b24343d948c1c603a524dc11fb28
+</code></pre>
+
+<p>We can see that the resulting hash starts with five zeros followed by a 2. We have a hash that has 22 leading zero bits, which is at least as good as the 20 we wanted, so the proof of work is valid.</p>
+
+<h2 id="hints">Hints</h2>
+
+<p>This is a super-short assignment. You won’t write a SHA&#8211;256 hash function. In python, I’m guessing you can use <code>hashlib</code>. In other languages, you may need to find source code that computes a hash. </p>
+
+<p>If you’re using source code for a SHA&#8211;256 function, do NOT submit multiple files for an entire crypto library package. The code for computing a SHA&#8211;256 hash is small. Submit only the source file you need for that function and cite your where you got the source in your comments.</p>
+
+<p>If you are using a hash function that needs to be compiled, your Makefile needs to have instructions on how to build all the code.</p>
+
+<p>Make sure your hash function works on the iLab systems.</p>
+
+<p>Test that your hash function produces the same results as openssl. You need this for testing prefixes. As with writing cryptography functions, the recipient needs to be able to verify your work with their own code.</p>
+
+<p>I’m not telling you how to find prefixes. There are various ways you can do this and you should figure this out.
+Keep your prefixes as <strong>printable 7-bit ASCII text</strong> (e.g., no extended characters such as ü, ñ, or é) so they can be presented in the headers. This means no whitespace characters. To make testing easier, do not use quote characters as part of the string either.</p>
+
+<h2 id="watchyourworkload">Watch your workload</h2>
+
+<p>As shown in the table above, finding long prefixes of zeros can take an extremely long time &#8211; it gets exponentially more difficult. That is why bitcoin miners use data centers filled with custom ASIC processors that try trillions of hashes per second. </p>
+
+<p>You might want to set a threshold on the number of prefixes you try so your program won’t run for an unbounded time. For example, you might set it to a billion or so, especially on a Rutgers system. For your PC, you can set it to a few tens of billions.</p>
+
+<p>Test your code with small difficulty levels. If you can generate proof of work strings ranging to a difficulty of, say, 20 bits, then your code will likely work fine for longer amounts of leading zeros.</p>
+
+<p>You don’t want to cause a strain on computers if you’re using shared Rutgers systems &#8230; or get your account locked because you used up your CPU quota.</p>
+
+<h2 id="makingitreal">Making it real</h2>
+
+<p>If you were going to use this type of proof of work system for real, you might make a few changes. You would not bother turning the hash into a text string but rather hash the 256-bit binary hash. Bitcoin hashes the block header, which includes the proof of work value, the Merkle tree hash for transactions in the block, and a few other fields.</p>
+
+<p>We’re using the text representation of the hash only to make testing and printing more convenient. It does not diminish the complexity of the work and, in fact, makes the hashing somewhat longer since we are hashing strings that are 64 bytes (512 bits) plus a short but variable-size proof-of-work prefix string.</p>
+
+<p>The header for the assignment prints data that is not necessary. You will not care about the hash values since anyone can recompute them. The only important fields are the proof of work value and the number of leading zero bits that that the result promises to have (and even this latter value can be made optional since you can compute the hash and reject shorter results).</p>
+
+<p>Depending on the application, you would likely use longer difficulty values that would make it not feasible for an attacker to recompute. If this is used for an application such as email (e.g., hashcash), a value that can be computed within a few seconds is fine to discourage spammers). If this is used for a blockchain to support distributed logging, for instance, you&#8217;d use a much longer value. Bitcoin, for instance, typically requires around 74 leading zeros in its hash.</p>
+
+<h1 id="yourassignment:part2">Your assignment: part 2</h1>
+
+<p>The second part of the assignment is a verifier. It is called <strong>pow-check</strong>:</p>
+
+<pre><code>pow-check powheader file
+</code></pre>
+
+<p>The command is provided a file the headers (generated by the <strong>pow-create</strong> command and a file with the original message. It validates the headers against the file.</p>
+
+<p>These are the tests it performs:</p>
+
+<ul>
+<li><p>It checks the value of the <code>Initial-hash</code> in the header. This is the SHA&#8211;256 hash of the message. </p></li>
+<li><p>It computes the hash of the <code>Proof-of-work</code> string in the header concatenated with that initial hash string. This value should match the <code>Hash</code> header</p></li>
+<li><p>Finally, it checks that the number in the <code>Leading-bits</code> header <strong>exactly matches</strong> the number of leading 0 bits in that hash header.</p></li>
+</ul>
+
+<p>The result of pow-check will be a pass or a fail.
+If passed, simply print a <code>pass</code> message. If any tests failed, specify which of these tests failed.</p>
+
+<h1 id="sampleoutput">Sample output</h1>
+
+<p>You can easily do your own tests using <strong>openssl</strong> but I&#8217;ve supplied you with <a href="hw13-samples.zip">sample files</a> that contain header output for various input files. You should produce headers similar to these and your <strong>pow-check</strong> program should successfully validate all these headers.</p>
+
+<h1 id="whattosubmit">What to submit</h1>
+
+<p>Place your source code into a single zip file. If code needs to be compiled, please include a Makefile that will create the necessary executables.</p>
+
+<p>We don&#8217;t want to figure out how to run your program.</p>
+
+<p>We expect to:</p>
+
+<ol>
+<li><p>unzip your submission</p></li>
+<li><p>run <code>make</code> if there&#8217;s a <code>Makefile</code></p></li>
+<li><p>Set the mode of the programs to executable: <code>chmod u+x pow-create pow-check</code></p></li>
+<li><p>Run the commands as:<br/></p>
+
+<p>./pow-create #bits samplefile &gt;sampleheader <br/>
+./pow-check sampleheader samplefile</p></li>
+</ol>
+
+<p>As with the previous assignment, if you are using python, you can submit either:</p>
+
+<p>A. <code>pow-create</code> and <code>pow-check</code> scripts that run the program or</p>
+
+<p>B. (preferably) programs named <code>pow-create</code> and <code>pow-check</code> that that starts like:</p>
+
+<pre><code>#!/usr/bin/python3   
+print('Hello, world!') ...
+</code></pre>
+
+<p>If you are using java, you will have a makefile that compiles the class files and the <code>pow-create</code> and <code>pow-check</code> programs will be scripts that runs the appropriate java command with the arguments. The file <code>pow-create</code> will contain something like this:</p>
+
+<pre><code>#!/bin/bash
+CLASSPATH=. java PowCreate &quot;$@&quot;
+</code></pre>
+
+<p>Test your scripts on an iLab machine to make sure they work prior to submitting.</p>
+
+<p>Also test that your programs gracefully handle any invalid input thrown at them. They should not crash under any circumstaces.</p>
+
+							</section>
+							<footer class="main">
+								Last modified December  8, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:pxk@cs@@rutgers@@edu" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>
+	</body>
+</html>

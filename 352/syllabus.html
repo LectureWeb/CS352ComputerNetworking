@@ -1,0 +1,483 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Internet Technology Syllabus </title>
+
+<link href="../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+#main .schedule {
+	border: 1px solid #888;
+	text-align: left;
+}
+#main .schedule .name, #main .schedule .value {
+	vertical-align: baseline; /* for opera */
+}
+#main .schedule tr {
+	vertical-align: baseline;
+	border-bottom: 1px #888 solid;
+}
+#main .schedule tr.lecture {
+	vertical-align: baseline;
+	/* background: url(images/green-gradient.jpg) repeat-x left top; */
+	background-color: #f4f2f1;
+}
+#main .schedule tr.recitation {
+	vertical-align: baseline;
+	/* background: url(images/pink-gradient.jpg) repeat-x left top; */
+	background-color: #e0d8d8;
+}
+#main .schedule th.week {
+	text-align: right;
+	color: #008080;
+}
+#main .schedule th.week, #main .schedule th.date, #main .schedule th.topic {
+	text-align: left;
+	color: #008080;
+}
+#main td.date {
+	white-space:nowrap;
+	border-left: 1px #888 solid;
+        border-right: 1px #888 solid;
+        white-space:nowrap;
+}
+#main .schedule td.week {
+	text-align: right;
+}
+#main .schedule td.date, #main .schedule td.topic {
+	text-align: left;
+}
+#main .schedule td.topic a {
+	background: transparent url(images/link.gif) center left no-repeat; 
+	padding-left: 14px;
+}
+#main .schedule td strong {
+	font-weight: bold;
+}
+#main .schedule td a {
+	color: black;
+}
+#main .schedule td a:hover {
+	color: green;
+}
+#main .schedule .week, #main .schedule .date, #main .schedule .topic{
+	vertical-align: baseline; /* for opera */
+}
+</style>
+</head>
+
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../about/index.html">About</a></li>
+    <li class="separator"><a href="../about/contact.html">Contact</a></li>
+    <li><a href="../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="../index.html"> Home </a> 
+ 	<li> <a href="../rutgers/index.html"> Rutgers </a>
+ 	<li> <a href="352/index.html"> CS 352 </a> 
+ 	<li> <a href="syllabus.html"> Syllabus </a> 
+</ul>
+</p>
+</div>
+<!-- --------------------------------------- CONTENT WRAPPER --------------------------------------- -->
+<div id="content-wrapper">
+<!-- --------------------------------------- MAIN --------------------------------------- -->
+<div id="main">
+<div id="headline">
+<h1> Internet Technology: Course Syllabus </h1>
+<h2> Spring 2016 </h2>
+</div>
+
+<table class="schedule">
+<tr>
+	<th class="week"> week  </th>
+	<th class="date"> date </th>
+	<th class="topic"> topic<sup>*</sup> </th>
+</tr>
+
+<tr class="recitation"><td class="week"> 0 </td>
+	<td class="date"> Jan 20 </td><td class="topic">
+	<strong>Recitation canceled</strong>
+	</td> </tr>
+
+<tr class="lecture"><td class="week"> 1 </td>
+	<td class="date"> Jan 25 </td><td class="topic">
+	<a href="./lectures/l-intro.html">Introduction</a>:
+	History of data networking, evolution of the Internet,
+	terminology, circuit vs. packet switching, delays
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 1.5 </td>
+	<td class="date"> Jan 27 </td><td class="topic">
+	<a href="./lectures/l-intro.html">Lecture 1 review: key terms and concepts</a>
+	</td> </tr>
+
+<tr class="lecture"><td class="week"> 2 </td>
+	<td class="date"> Feb 1 </td><td class="topic">
+	<a href="./lectures/l-sockets.html">
+	Network protocol stack, sockets, network programming,
+	threads &amp; concurrency, mutual exclusion
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 2.5 </td>
+	<td class="date"> Feb 3 </td><td class="topic">
+	Assignment review
+	<br/>
+	<a href="lectures/l-sockets.html">Java sockets and multithreading programming walkthrough</a>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 3 </td>
+	<td class="date"> Feb 8 </td><td class="topic">
+	<a href="lectures/l-app_protocols.html">
+	Application layer: principles of network applications
+	<br/>
+	Domain Name System, 
+	HTTP, and FTP
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 3.5 </td>
+	<td class="date"> Feb 10 </td><td class="topic">
+	Assignment review
+	<br/>
+	<a href="lectures/l-app_protocols.html">
+	Application layer: email protocols: SMTP, POP3, IMAP
+	</a>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 4 </td>
+	<td class="date"> Feb 15 </td><td class="topic">
+	<a href="lectures/l-p2p.html">
+	Peer-to-peer networking:
+	Napster, Gnutella, Kazaa, BitTorrent
+	<br/>
+	Peer-to-peer lookup: distributed hash tables</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 4.5 </td>
+	<td class="date"> Feb 17 </td><td class="topic">
+	Review
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 5 </td>
+	<td class="date"> Feb 22 </td><td class="topic">
+	<a href="lectures/l-transport.html">
+	Transport layer: multiplexing/demultiplexing, UDP, reliable data transfer
+	</a>
+	<br/>
+	<strong>Exam 1</strong>
+	</td></tr>
+	
+<tr class="recitation"><td class="week"> 5.5 </td>
+	<td class="date"> Feb 24 </td><td class="topic">
+	No recitation
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 6 </td>
+	<td class="date"> Feb 29 </td><td class="topic">
+	<a href="lectures/l-tcp.html">
+	TCP
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 6.5 </td>
+	<td class="date"> Mar 2 </td><td class="topic">
+	Assignment review and TCP congestion control
+	</td></tr>
+
+
+<tr class="lecture"><td class="week"> 7 </td>
+	<td class="date"> Mar 7 </td><td class="topic">
+	<a href="lectures/l-network.html">
+	Network layer: virtual circuit &amp; datagram networks,
+	forwarding, route aggregation, subnetting, CIDR, fragmentation
+	<br/>
+	Router architecture, 
+	IP datagram format, DHCP, ICMP, Ping, Traceroute, NAT/PAT
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 7.5 </td>
+	<td class="date"> Mar 9 </td><td class="topic">
+	Assignment review and IPv6 addressing
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 8 </td>
+	<td class="date"> Mar 14 </td><td class="topic">
+	<strong> Spring break </strong>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 9 </td>
+	<td class="date"> Mar 21 </td><td class="topic">
+	<a href="lectures/l-routing.html">
+	Routing protocols: shortest path, Dijkstra's algorithm (
+	link state routing), distance vector routing
+	</a>
+	<br/>
+	<a href="lectures/l-routing2.html">
+	Internet routing: autonomous systems,RIP, OSPF, BGP
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 9.5 </td>
+	<td class="date"> Mar 23 </td><td class="topic">
+	Pre-exam Review
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 10 </td>
+	<td class="date"> Mar 28 </td><td class="topic"> 
+	<a href="lectures/l-multicast.html">
+	Broadcast routing, Internet multicast
+	</a>
+	<br/>
+	<strong> Exam 2 </strong>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 10.5 </td>
+	<td class="date"> Mar 30 </td><td class="topic">
+	No recitation
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 11 </td>
+	<td class="date"> Apr 4 </td><td class="topic"> 
+	<a href="lectures/l-link.html">
+	Datalink layer: link-layer services, error detection and correction,
+	medium access control, ethernet, ARP
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 11.5 </td>
+	<td class="date"> Apr 6 </td><td class="topic"> 
+	No recitation
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 12 </td>
+	<td class="date"> Apr 11 </td><td class="topic"> 
+	Ethernet switches, VLANs
+	<br/>
+	<a href="lectures/l-wireless.html">
+	Wireless networking
+	</a>
+	<br/>
+	<a href="lectures/l-QoS.html">
+	Network quality of service
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 12.5 </td>
+	<td class="date"> Apr 13 </td><td class="topic"> 
+	Assignment review
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 13 </td>
+	<td class="date"> Apr 18 </td><td class="topic">
+	<a href="lectures/l-security.html">
+	Firewalls, VPNs
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 13.5 </td>
+	<td class="date"> Apr 20 </td><td class="topic">
+	Pre-exam review
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 14 </td>
+	<td class="date"> Apr 25 </td><td class="topic">
+	<a href="lectures/l-voip.html">
+	Session Initiation Protocol, NAT traversal
+	</a>
+	<br/>
+	<strong> Exam 3 </strong>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 14.5 </td>
+	<td class="date"> Apr 27 </td><td class="topic">
+	No recitation
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 15 </td>
+	<td class="date"> May 2 </td><td class="topic">
+	Exam review,
+	<br/>
+	Software Defined Networks
+	</a>
+	</td></tr>
+
+<tr><td class="week"> 16 </td>
+	<td class="date"> May 9 </td><td class="topic">
+	<strong>FINAL EXAM: 8:00-10:00pm TIL-257</strong>
+	</td></tr>
+</table>
+<p>
+Go
+<a href="./notes/index.html">here</a>
+to get lecture notes and other course documentation.
+</p>
+<div id="footnotes">
+<sup>*</sup>Subject to change without notice.
+</div>
+
+</div> <!-- main -->
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="index.html"> Main course page </a> </li>
+	<li> <a href="news.html"> News </a> </li>
+	<li> <a href="syllabus.html"> Syllabus </a> </li>
+	<li> <a href="hw/index.html"> Homework </a> </li>
+	<li> <a href="notes/index.html"> Documents </a> </li>
+	<li> <a href="exam/index.html"> Exam info </a> </li>
+	<li> <a href="grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/6f683a17-68f7-4cb4-ad35-6c245c3f4682"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="about.html"> About the course </a> </li>
+	<li> <a href="prereq.html"> Prerequisites </a> </li>
+	<li> <a href="things.html"> Things you need </a> </li>
+	<li> <a href="policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

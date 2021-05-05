@@ -1,0 +1,338 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Distributed Hash Tables </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/small-logo.png" alt="pk.org" name="logo" width="97" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru416"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../index.html"> Rutgers CS 417 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/dht.html"> Distributed Hash Tables </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Distributed Lookup Services </h1>
+<h2> Locating objects in a distributed setting </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> March 2009 </p>
+</div>
+
+<h1> Introduction </h1>
+
+<p>
+<strong>Distributed Lookup Services</strong> deal with the problem of
+locating data that is distributed among a collection of machines. In the 
+general case, the machines are all peers (no dedicated servers) and there
+is no central state that needs to be maintained. The challenge is to
+locate a host that satisfies some property (contains some data, based
+on a search key) in a scalable, distributed manner.
+</p>
+<p>
+We limit the problem to locating a node that contains information that
+corresponds to some <i>search key</i>, such as a file name rather than
+something more general, such as locating nodes whose content contains
+some property (e.g., locate all files that contain the word <i>polypeptide</i>).
+The key will serve as a search index.
+</p>
+
+<p>
+There are three basic approaches we can take to locating such data:
+<ol>
+<li> centralized server </li>
+<li> flooding </li>
+<li> distributed hash tables </li>
+</ol>
+
+<h2> Centralized server </h2>
+<p>
+A central server used to store the database of <i>key &rarr; node</i>
+mappings. The original Napster service is an example of this model. 
+The central server holds the entire database of attributes and points
+to content on other servers. In Napster's case, a server held an index
+of all music with the machines that were hosting the content.
+</p>
+<p>
+This is a simple model but does not scale well because the central
+server can become a bottleneck. The central server can also be a
+problem if it is not reliable since the entire service is dead if the
+server cannot be contacted.
+</p>
+
+<h2> Flooding </h2>
+<p>
+With the flooding approach, a node that needs to find the content
+corresponding to a certain key will contact peers when looking for content.
+If a peer node has the needed content, it can respond to the requestor. If not,
+it will forward the request to its peers. If one of those peers has the needed
+content, it will respond to whoever sent the request (the chain of requests is
+followed back). Otherwise, it too can forward the request.
+ A time-to-live count  that is decremented with each hop can limit the flood
+of queries through the network.
+</p>
+<p>
+This flooding approach was the model gnutella used for distributed file sharing.
+The problem with the system was that peers were not always reliably up or fast
+(especially those connected to slow modems).
+</p>
+
+<h2> Distributed Hash Table </h2>
+
+<p>
+In self-contained systems, a hash function maps a key (the thing you are searching for) to a 
+number in the range <i>0&nbsp;...&nbsp;n-1</i>. The content is then accessed by indexing into a hash table,
+looking up look up value at table[hash(key)].
+</p>
+
+<p>
+In a distributed implementation, known as a 
+<strong>distributed hash table</strong>, or <strong>DHT</strong>,
+the hash table is distributed among a set of nodes.
+Nodes all use the same hash function. Looking up a key gives you a node ID that 
+holds the data.
+
+The entire goal of a DHT is to allow anyone to find the node that corresponds
+to a given key. That node will be responsible for holding the information
+associated with that key. A key difference between the DHT approach and the
+centralized or flooding approaches is that a specific node is responsible for
+holding information relating to they key (even if it just sends a link to the
+content).
+</p>
+<p>
+We'll now take a <i>briefly, cursory</i> look at two approaches to DHTs:
+<ol>
+<li>
+<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.105.3673&rep=rep1&type=pdf">
+Chord<a>
+</li>
+
+<li>
+<a href="http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=807FDD6A5A1551F829812465EA967485?doi=10.1.1.19.8434&rep=rep1&type=pdf">CAN, a Content-Addressable Network</a>
+</li>
+</ol>
+
+<h2> Chord </h2>
+<p>
+Think of a sequence of numbers arranged in a logical ring, 0, 1, 2 ... <i>n</i>, and looping back to 0.
+Each node in the system occupies a position in this ring that is the number you'd get by
+hashing its IP address and taking the value modulo the size of the ring [hash(IP)mod <i>n</i>].
+</p>
+
+<p>
+A (key, value) would be stored at a node that matches hash(key). If there is no node at that
+position, the next node ahead of that number is responsible for storing the data. This is
+the next node you hit if you traverse the ring clockwise starting from that hash(key) position.
+This node is called the <strong>successor</strong> node.
+</p>
+
+<p>
+When a node joins a network at some position <i>j</i>, where <i>j</i>=hash(node's&nbsp;IP),
+some (key,value) data
+has to migrate from the successor's node to this new node. 
+</p>
+
+<p>
+For routing queries, a node only needs to know of its successor node. Queries can be
+forwarded through successors until a node that holds the value is found. To increase
+performance and avoid the worst case of traversing the entire circle, nodes may
+maintain a table containing additional routing information about other nearby nodes. 
+When a node needs to locate one that's farther away, it contacts the furthest node that it
+knows about whose ID is less than the hash(key) and asks it to locate the node for
+hash(key). The process can be repeated recursively to locate the node.
+</p>
+
+<h2>CAN (Content-Addressable Network) design </h2>
+
+<p>
+Think of a grid and two separate hash functions h<sub>x</sub>(key) and h<sub>y</sub>(key).
+The key is hashed with both of them. <i>a</i>=h<sub>x</sub>(key) gives you the x
+coordinate and <i>b</i>=h<sub>y</sub>(key) produces the y coordinate. The node responsible
+for the location
+<i>(a,&nbsp;b)</i> stores <i>(key,&nbsp;V)</i>: the key and its value.
+</p>
+<p>
+Each node is also mapped onto this logical grid and is responsible for managing
+values within a rectangular sub-grid: that is, some range (x<sub>0</sub>..x<sub>11</sub>,
+y<sub>0</sub>..y<sub>1</sub>).
+</p>
+<p>
+A node only knows about its immediate nodes. For looking up and routing messages to the node that holds the data it needs, it will use neighbors that
+minimize the distance to the destination.
+</p>
+<p>
+A new node is inserted by the following proces:
+<ul>
+	<li>
+	pick a random pair of values in the grid: <i>(p,q)</i>.
+	</li>
+
+	<li>
+	contact some node in the system and ask it to look up the node
+	that is responsible for <i>(p,q)</i>.
+	</li>
+
+	<li>
+	Now negotiate with that node to split its zone in half.
+	The new node will own half of the area.
+	</li>
+</ul>
+</p>
+<p>
+The advantage of this approach is that it has been shown to be highly scalable.
+With a uniform distribution of nodes, the number neighbors per node is 2<i>d</i>, where
+<i>d</i> is the number of dimensions. 
+</p>
+
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2010 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.
+</p>
+<p> Last updated: August 23, 2010
+</p>
+<img class="stamp" src="../../../css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../../416/index.html"> Main course page </a> </li>
+	<li> <a href="../../../416/news.html"> News </a> </li>
+	<li> <a href="../../../416/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../../416/hw/index.html"> Homework </a> </li>
+	<li> <a href="../../../416/notes/index.html"> Documents </a> </li>
+	<li> <a href="../../../416/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../../416/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../../../416/about.html"> About the course </a> </li>
+	<li> <a href="../../../416/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../../416/things.html"> Things you need </a> </li>
+	<li> <a href="../../../416/policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../../../416/../417/index.html"> Main course page </a> </li>
+	<li> <a href="../../../416/../417/news.html"> News </a> </li>
+	<li> <a href="../../../416/../417/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../../416/../417/hw/index.html"> Homework </a> </li>
+	<li> <a href="../../../416/../417/notes/index.html"> Documents </a> </li>
+	<li> <a href="../../../416/../417/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../../416/../417/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../../416/../417/about.html"> About the course </a> </li>
+	<li> <a href="../../../416/../417/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../../416/../417/things.html"> Things you need </a> </li>
+	<li> <a href="../../../416/../417/policy.html"> Policy  </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> Belkin F1B0280-V Slimswitch data switch. This is a manual (knob) switch that switches among four DB25 connectors. I can't imagine why anyone would need this; perhaps for switching old printers. I never used it and can't remember how it ended up in my pile of junk.
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

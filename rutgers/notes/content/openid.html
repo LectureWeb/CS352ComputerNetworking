@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> OpenID </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/small-logo.png" alt="pk.org" name="logo" width="97" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru416"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../index.html"> Rutgers CS 417 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/openid.html"> OpenID </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> OpenID </h1>
+<h2> Distributed Authentication Framework </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> March 27, 2009 </p>
+</div>
+
+<h1> Introduction </h1>
+
+<p>
+OpenID is a decentralized framework for user authentication and
+access control.  It was created to solve the problem of how a user
+can manage multiple identities at many different web sites. The
+traditional solution is to create a separate account with each site,
+along with a user name and password that will be managed by that
+specific web site.
+</p>
+
+<p>
+With OpenID, users can access different services (sites) using the
+same digital identity.  It replaces the traditional login/password
+per site scheme and allows an OpenID Identity Provider to manage and
+authenticate your identity instead of leaving the task to each individual
+site.  The OpenID framework itself does not provide any specific
+form of authentication &ndash; that's up to the OpenID provider.
+</p>
+
+<p>
+Because the user remains in control via the OpenID provider, he can choose
+what information gets presented to a specific web site or application that is requesting
+authentication.
+</p>
+
+<p>
+OpenID has become popular quite quickly. Since its beginnings in 2005,
+according to wikipedia, about 27,000 sites have integrated OpenID and there
+are over 500 million OpenIDs on the Internet.
+</p>
+
+<h1> How it works </h1>
+
+<p>
+Under OpenID, your authentication credentials (typically a password associated with your login name)
+are stored at an OpenID provider, such as Verisign Labs'
+<a href="https://pip.verisignlabs.com/">Personal Identity Portal</a>.
+Organizations such as AOL, BBC, Google (Blogger), IBM, Microsoft, MySpace, Orange, PayPal, VeriSign, Yandex, Ustream, Wordpress, and Yahoo! (Flickr) act as OpenID providers. Users can choose an OpenID provider that best meets their needs.
+
+The web sites that you access will never see your password.
+
+Instead, to log in to these sites, you will give them your identity
+URL, such as pxk.pip.verisignlabs.com, which identifies both the
+provider and your login name.
+</p>
+
+<p>
+There are two modes of operation, called <em>smart mode</em>
+and <em>dumb mode</em>. The only difference is that in smart mode
+the site (relying party) pre-establishes and caches a shared secret key
+with the Identity Provider. It will be able to use the key to
+verify that the assertion data provided by the Identity Provider
+has not been tampered. With dumb mode, the site will have
+to connect to the Identity Provider and validate the user's
+credentials.
+
+<h2> Step 1. Create an ID with an OpenID provider </h2>
+
+<p>
+The first step in using OpenID is to register with an OpenID provider (such as
+<a href="https://pip.verisignlabs.com/">pip.verisignlabs.com</a>
+and create an account. This will
+set up the user's name and password with the provider. Optionally, the user may be allowed to choose
+other authentication methods, depending on the provider.
+</p>
+
+<h2> Step 2. Visit a service (web site) </h2>
+
+<p>
+Now the user visits an OpenID-enabled web site, known as the <em>relying party</em>. Instead of asking for a user name and password,
+the site requests an OpenID identifier. The user types in his identifier (e.g., pxk.pip.verisignlabs.com)
+and submits the form.
+</p>
+
+<p>
+The web server now knows that it needs to contact that user's OpenID Identity Provider, pip.verisignlabs.com, to authenticate the user.
+It will convert the OpenID identifier that the user entered into a URL and redirect the user's
+browser to the provider's web site.
+</p>
+
+<p>
+What happens behind the scenes is that the web site converts the identifier to a URL
+and fetches the page to find the actual URL of the identity provider.
+</p>
+
+<p>
+In smart mode, the relying party (site) may send an association request to the Identity Provider
+and exchange a shared secret key. It will cache this key.
+</p>
+
+<h2> Step 3. Authenticate with the Identity Provider </h2>
+<p>
+Now that the web server (relying party) redirected the authentication request to the Identity Provider,
+the user is at the OpenID provider's authentication page.
+The provider will now typically ask the user for a password or an InfoCard
+(<a href="http://en.wikipedia.org/wiki/Windows_CardSpace">Microsoft Windows CardSpace</a>).
+It will offer the user a choice of whether to authenticate forever,
+for a limited time, or for one time. Finally, it asks the user whether to trust the relying party
+web site.
+</p>
+
+<h2> Step 4. Return to the service </h2>
+<p>
+If the user authenticates successfully and accepts the request from the Identity Provider,
+the browser is then sent a redirect to a return
+page on the relying party's web site. The redirect
+contains the user's credentials (assertion) with 
+a digital signature by the Identity Provider. 
+</p>
+
+<h2> Step 5. Service validates the user's login </h2>
+<p>
+The relying party
+now needs needs to check the validity of the user's identity 
+what was returned from the user's browser 
+via the redirect from the Identity Provider.
+</p>
+
+<p>
+In smart mode, the site already established and cached
+a shared sectret key. It uses this key to decode
+the signature in the message, thus validating that
+it has not been tampered. 
+</p>
+
+<p>
+In dumb mode, the site
+establishes a secure session with the Identity Provider 
+(preferably via SSL) 
+and requests authentication information
+about the user to compare it with the assertion that
+was received via the browser redirect. If they match
+then the site is convinced that they user has successfully
+authenticated with the Identity Provider.
+</p>
+
+<p>
+Once the OpenID identifier has been verified, the authentication is considered successful and the user is logged in.
+</p>
+
+<h2> Transparent login </h2>
+<p>
+An OpenID site may not even prompt the user for a login or the 
+Identity Provider may not have to interact with the user if browser
+sessions and cookies are used.
+If the relying party has already cached the shared secret key
+for communicating with the Identity
+Provider and knows a user login (either via the user typing it
+or via a cookie), it can send a redirect to take the user's browser
+to the Identity Provider. The Identity Provider can then directly
+send a redirect back to the relying party with the 
+digitally-signed assertion information.
+Using the shared key, the relying party can validate this
+information.
+</p>
+
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2010 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.
+</p>
+<p> Last updated: August 23, 2010
+</p>
+<img class="stamp" src="../../../css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../../416/index.html"> Main course page </a> </li>
+	<li> <a href="../../../416/news.html"> News </a> </li>
+	<li> <a href="../../../416/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../../416/hw/index.html"> Homework </a> </li>
+	<li> <a href="../../../416/notes/index.html"> Documents </a> </li>
+	<li> <a href="../../../416/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../../416/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../../../416/about.html"> About the course </a> </li>
+	<li> <a href="../../../416/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../../416/things.html"> Things you need </a> </li>
+	<li> <a href="../../../416/policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../../../416/../417/index.html"> Main course page </a> </li>
+	<li> <a href="../../../416/../417/news.html"> News </a> </li>
+	<li> <a href="../../../416/../417/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../../416/../417/hw/index.html"> Homework </a> </li>
+	<li> <a href="../../../416/../417/notes/index.html"> Documents </a> </li>
+	<li> <a href="../../../416/../417/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../../416/../417/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../../416/../417/about.html"> About the course </a> </li>
+	<li> <a href="../../../416/../417/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../../416/../417/things.html"> Things you need </a> </li>
+	<li> <a href="../../../416/../417/policy.html"> Policy  </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> Belkin F1B0280-V Slimswitch data switch. This is a manual (knob) switch that switches among four DB25 connectors. I can't imagine why anyone would need this; perhaps for switching old printers. I never used it and can't remember how it ended up in my pile of junk.
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

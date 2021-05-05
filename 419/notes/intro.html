@@ -1,0 +1,1005 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Introduction to Computer Security</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Introduction to Computer Security</h1>
+								<h2>Thinking about Security</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>September 8, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<h1 id="computersecurity">Computer Security</h1>
+
+<p>Computer security addresses three areas: <strong>confidentiality</strong>, <strong>integrity</strong>, and <strong>availability</strong>. These are known as the <strong>CIA triad</strong> (sometimes called the <em>AIC triad</em> to avoid confusion with the U.S. Central Intelligence Agency).</p>
+
+<h3 id="confidentiality">Confidentiality</h3>
+
+<p><strong>Confidentiality</strong> refers to keeping data hidden from those who should not have access to it. It can refer to an application or operating system disallowing you from reading the contents of a file or it may refer to data that is encrypted so that you can read it but cannot make sense of it. In some cases, confidentiality can also deal with hiding the very existence of data, computers, or transmitters. Simply knowing that two parties are communicating may be useful information for an adversary. <a href="https://tools.ietf.org/html/rfc4949">RFC 4949</a>, the Internet Security Glossary, defines data confidentiality as:</p>
+
+<blockquote>
+<p>“The property that information is not made available or disclosed to unauthorized individuals, entities, or processes [i.e., to any unauthorized system entity].” </p>
+</blockquote>
+
+<p>Confidentiality is the traditional focus of computer security and is usually the first thing that comes to mind when people think about the subject.</p>
+
+<p>Confidentiality is often confused with privacy. <strong>Privacy</strong> limits what information you permit to be shared with others while confidentiality provides the ability to to conceal messages or to exchange messages without others who do not have authorization being able to see them. Privacy controls <em>how</em> others can use information about you. </p>
+
+<p>Privacy may also enable one to send messages anonymously. In this case, you are not sharing your identity. For instance, you may want to keep your identity hidden when contacting a crisis or crime reporting center. Privacy focuses on personal information and protecting personally-identifiable information (PII). It may include <strong>anonymity</strong>, which may strip off personally-identifiable information from data or communications sessions.</p>
+
+<p><a href="https://tools.ietf.org/html/rfc4949">RFC 4949</a>, the Internet Security Glossary, citing the
+U.S. HIPAA Privacy Act of 1964,
+defines privacy as:</p>
+
+<blockquote>
+<p>The right of an entity (normally a person), acting in its
+own behalf, to determine the degree to which it will interact with
+its environment, including the degree to which the entity is
+willing to share its personal information with others.</p>
+</blockquote>
+
+<p>The differences among <em>confidentiality</em>, <em>privacy</em>, and <em>secrecy</em> are difficult to remember since we use often use these terms interchangeably when speaking colloquially. Also, note that the terms &#8220;secret&#8221; and &#8220;confidential&#8221; may simply refer to different security clearance classification levels, which often used in government work<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a>. The distinctions, particularly between confidentiality and secrecy, can be fluid. Let&#8217;s use some working definitions:</p>
+<dl>
+<dt>Secrecy</dt>
+<dd>refers to information where there is no intention of ever disclosing it outside of the individual or the organization. For example, a company may have trade secrets. Secrecy is about hiding the very existence of information.</dd>
+
+<dt>Privacy</dt>
+<dd>refers to private matters for real people. This includes our medical records and financial data. The data is not secret but we want it to be shared only with appropriate entities &#8211; ideally in ways we understand and can revoke if necessary.</dd>
+
+<dt>Confidentiality</dt>
+<dd>refers to the rules for handling trusted data. Confidentiality can be thought of as systems-level solutions (policies and mechanisms) to ensure that privacy is preserved.</dd>
+</dl>
+
+
+<p>The need for privacy is a reason for implementing confidentiality.</p>
+
+<h3 id="integrity">Integrity</h3>
+
+<p>Integrity is ensuring that data and all system resources
+are trustworthy. This means that they are not maliciously or accidentally modified. There are
+three categories of integrity:</p>
+
+<ol>
+<li><p><strong>Data integrity</strong> is the property that data has not been modified or destroyed in an unauthorized or accidental manner. Someone cannot override or delete your files.</p></li>
+<li><p><strong>Origin integrity</strong> is the property that a message has been created by its author and not modified since then. It includes <strong>authentication</strong>: a person
+or program proving their identity.</p></li>
+<li><p><strong>System integrity</strong> is the property that the entire system is working as designed, without any deliberate or accidental modification of data or manipulation of processing that data.</p></li>
+</ol>
+
+<p>In many cases, integrity is of greater value than confidentiality. I might not care if you see me transfer money between two of my bank accounts but I want the system to ensure that you cannot impersonate me and do the same &#8230; or transfer my money to your account.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Availability deals with systems and data being available for use. We want a system to operate correctly on the right data (integrity) but we also want that system to be accessible and capable of performing to its designed specifications. For example, a <strong>denial of service</strong> (<strong>DoS</strong>) or a <strong>distributed denial of service</strong> (<strong>DDoS</strong>) attack is an attack on availability. The attack does not access any data or modify the function of any processes. However, it either dramatically slows down or completely disallows access to the system, hurting availability. </p>
+
+<p>We want all three of these properties &#8211; confidentiality, integrity, and availability &#8211; in a secure system. For example, we can get confidentiality and integrity simply by turning off a computer but then we lose availability. Integrity on its own is useful, but does not provide the confidentiality that is needed to ensure privacy. Confidentiality without integrity is generally useless since you may access data that was modified without your knowledge or use a program that is manipulating the data in a manner that you did not intend.</p>
+
+<h2 id="thinkingaboutsecurity">Thinking about security</h2>
+
+<p>Algorithms, cryptography, and math on their own do not provide security.
+Security is not about simply adding encryption to a program, enforcing the
+use of complex passwords, or placing your systems behind a network firewall.
+Security is a <strong>systems issue</strong> and is based on all the components of the system:
+the hardware, firmware, operating systems, application software, networking components,
+and the people. </p>
+
+<p>Consider the problems that arose from the <a href="https://en.wikipedia.org/wiki/Spectre_(security_vulnerability)">Spectre vulnerability</a> that was discovered in 2018 and affected the security of practically every modern microprocessor designed over the past several decades. A low-level side-effect in a processor could lead to a JavaScript exploit that allows a website to read a browser&#8217;s memory, including data stored from visits to other websites.</p>
+
+<p>Security needs are based on people, their relationships with each other, and their interactions with machines.
+Hence, security also includes processes, procedures and policies.
+Security also has to address detection of intruders and the ability
+to perform forensics: that is, figure out what damage was done and how.</p>
+
+<blockquote>
+<p>“Security is a chain: it’s only as secure as the weakest link”
+&#8212; Bruce Schneier</p>
+</blockquote>
+
+<p>Security is difficult. If it was not, we would not see near-daily occurrences of
+successful attacks on systems, including high-value systems such as banks<a href="#fn:2" id="fnref:2" title="see footnote" class="footnote">[2]</a>,
+governments<a href="#fn:3" id="fnref:3" title="see footnote" class="footnote">[3]</a>, hospitals<a href="#fn:4" id="fnref:4" title="see footnote" class="footnote">[4]</a>, large retailers<a href="#fn:5" id="fnref:5" title="see footnote" class="footnote">[5]</a>, and high-profile websites<a href="#fn:6" id="fnref:6" title="see footnote" class="footnote">[6]</a>. Unfortunately, security is often an afterthought, something that is added onto a system after it is developed. </p>
+
+<p>A few recent high-profile examples where computer security was an issue include:</p>
+
+<ul>
+<li><p>In 2018, the city of Atlanta, Georgia, had its computers frozen by ransomware. New Haven, Connecticut was attacked by ransomware in October of that year. In March 2019, municipal computer systems in Jackson County, Georgia were rendered inoperable by ransomware. Georgia paid $400,000 in ransom. This was followed by a ransomware attack on Albany, New York. The ransomware attacks continued: Augusta, Maine, Greenville, North Carolina, and Imperial County, California were all hit in April. Baltimore, Maryland was hit by ransomware in May of 2019 and Riviera Beach, Florida was attacked in June, paying the attackers $600,000 in Bitcoin. </p></li>
+<li><p>Unreleased episodes of the <em>Orange Is The New Black</em> Netflix TV series <a href="https://variety.com/2017/digital/news/dark-overlord-ransom-payment-confirmation-1202473108/">were posted online by <em>The Dark Overlord</em> hacking group</a> even after Netflix paid a $50,000 ransom. Serbian police later <a href="https://www.vice.com/en_us/article/mbkex8/dark-overlord-arrest-serbia-netflix-hackers">arrested</a> a suspected member of the group but the group continued to assert its existence. </p></li>
+<li><p>In 2016, ransomware spread through email attachments targeted Microsoft Windows systems. It infected the master boot record of the file system and encrypted the file system, preventing Windows from booting and users from recovering files on the computer. It installed a boot-level program that would demand payment in Bitcoin. </p></li>
+<li><p>In June 2017, a variation of Petya malware surfaced and attacked banks, newspapers, companies, and government offices in Ukraine. These infections spread to Australia, France, Germany, Italy, Poland, Russia, the United Kingdom, and the US. Even through the malware purported to be ransomware, it actually destroyed files. Damage from the malware was estimated to be in excess of $10 billion. The virus propagated through an exploit called EternalBlue, that was developed by the U.S. National Security Agency (NSA). The CIA attributed the creation and deployment of NotPetya to Russia&#8217;s GRU spy agency but the actual authors are unknown.</p></li>
+<li><p>2016 U.S. Elections, which included infiltrating Democratic National Committee servers, private email hacking, and alleged voting machine hacking.</p></li>
+<li><p>77 million Sony PlayStation Network accounts were hacked, causing the site to go down for 1 month and resulting in a $171 million loss. Twelve million of those accounts had unencrypted credit card numbers</p></li>
+<li><p>Iranian nuclear power plants, which were attacked in 2010 by Stuxnet, a computer worm that targeted Windows systems running Siemens software and compromised connected programmable logic controllers (PLCs) to destroy centrifuges.</p></li>
+<li><p>In 2011, RSA Security was breached. This is a company that was created by the creators of the first public key encryption algorithm, sold security products, including SecurID authentication tokens, and hosts security conferences. Data on around 40 million users was compromised. The attacker sent two different targeted phishing emails over a two day period and attack used a Flash object embedded in an Excel file. We do not know exactly what data was stolen, although RSA warned customers that stolen data could be potentially used to reduce the effectiveness of their authentication product.</p></li>
+<li><p>Yahoo, who in 2016 announced that over a billion accounts were compromised in 2013 and 2014, revealing names, telephone numbers, dates of birth, encrypted passwords and unencrypted security questions that could be used to reset a password. </p></li>
+<li><p>TJX, the parent company of TJ Maxx, announced in March 2007 that it had 45.6 million credit cards stolen over a period of 18 months. Court filings later revealed that at least 94 million customers were affected. The incident cost the company $256 million.</p></li>
+<li><p>Sony Pictures was hacked in 2014 and personal information about employees, their families, salaries, email, and unreleased films was disclosed.</p></li>
+<li><p>744,408 BTC ($350 million at the time) was stolen in 2010 from one of the first and largest Bitcoin exchanges, Japan’s Mt. Gox. In 2016, more than $60M worth of bitcoin (119,756 BTC) was stolen from Bitfinex.</p></li>
+<li><p>The October 2016 distributed denial of service (DDoS) attack on NDS provider Dyn was the largest of its type in history and made a vast number of sites unreachable.</p></li>
+<li><p>In 2016, MedSec, a vulnerability research company focused on medical technology, claimed it found serious vulnerabilities in implantable pacemakers and defibrillators.</p></li>
+<li><p>Equifax, the credit reporting agency, had an application vulnerability that enabled hackers to steal names, addresses, social security numbers, and other authenticating information of 143 million customers.</p></li>
+<li><p>In 2018, Marriott reported that contact information, passport numbers, travel information, and credit cards of 100 million customers were stolen over the past four years. Marriott reported that credit card data was encrypted but it is possible that the decryption keys were stolen as well.</p></li>
+</ul>
+
+<p>At a software level, security is difficult because so much of the software we use is incredibly complex. Microsoft Windows 10 has been estimated to comprise approximately 50 million lines of code. A full Linux Fedora distribution comprises around 200 million lines of code, and all Google services have been
+counted as taking up around two billion lines of code. It is not feasible to audit all this code and there is no doubt that there are many bugs lurking in it, many of which may have an impact on security. In 2018, over two million lines of code have been added to the Linux kernel (and over two million lines deleted, for a net increase of over 200,000 lines of code)[^footnote_linux]]. Even if you could audit the code, the code base would be different by the time you are done. Contributions to the kernel came from over 3,000 authors. How do you have confidence that none of them are malicious?</p>
+
+<p>But security is about systems, not a single program.
+Systems themselves are complex with many components
+ranging from firmware on various pieces of hardware to servers, load balancers, networks, clients, and other components. Systems often interact with cloud services and programs often make use of third-party libraries (you didn’t write your own compiler or JSON parser). There are complex interaction models that make it essentially impossible to test every possible permutation of inputs to a system. Moreover, all components are often not under the control of one administrator. A corporate administrator may have little or no control of the software employees put on their phones or laptops or the security in place at various cloud services that might be employed by the organization (e.g., Slack, Dropbox, Office365).
+Security must permeate the system &#8212; all of its components: hardware, software, networking, and people.</p>
+
+<p>People themselves are a huge — and dominant &#8211; problem in building a secure system.
+They can be careless, unpredictable, overly-trusting, bribable, and malicious. Most security problems are not based
+in algorithms but in the underlying system and people that use it.
+The human factor, and social engineering in particular, is the biggest problem and top threat to systems.
+<strong>Social engineering</strong> is a set of techniques aimed at deceiving humans to obtain needed information.
+It often relies on <strong>pretexting</strong>, where a person or a program pretends to be someone else to
+obtain the needed data.</p>
+
+<h1 id="securitysystemgoals">Security System Goals</h1>
+
+<p>We saw that computer security addressed three areas of concern: confidentiality, integrity, and availability.
+The design of security systems also has three goals.</p>
+
+<ol>
+<li><p><strong>Prevention</strong>. Prevention aims at preventing attackers from violating your security policy. Implementing this requires creating mechanisms that users cannot override. A simple example of prevention requiring software to accept and validate a password. Without the correct password, an intruder cannot proceed.</p></li>
+<li><p><strong>Detection</strong>. Detection attempts to detect and report security attacks. It is particularly important as a safeguard when prevention fails. Detection will allow us to find where the weaknesses were in the mechanism that was supposed to enforce prevention. Detection is also useful in detecting active attacks even if the prevention mechanisms are working properly. It allows us to know that an attack is being attempted, identify where it is originating from, and what it is trying to do.</p></li>
+<li><p><strong>Recovery</strong>. Recovery has the goals of stopping any active attack and repairing any damage that was done by an attack. A simple but common example of recovery is restoring a system from a backup. Recovery includes <strong>forensics</strong>, which is the gathering of evidence to understand exactly what happened and what was damaged.</p></li>
+</ol>
+
+<h2 id="policiesmechanisms">Policies &amp; Mechanisms</h2>
+
+<p>Policies and mechanisms are at the core of designing secure systems. A <strong>policy</strong> specifies what is or is not allowed. For example, only people
+the human resources department have access to certain files or only people in the IT group can reboot a system. Policies can be expressed in
+natural language, such as a policy document. Policies can be defined more precisely in mathematical notation but that is rarely useful for most
+humans or software. Policies are often described in a <strong>policy language</strong> for specific components of the system. This language
+provides a high degree of precision along with the ability of being readable by humans. <a href="http://specs.xmlsoap.org/ws/2005/07/securitypolicy/ws-securitypolicy.pdf">Web Service Security Policy Language</a> is an example of a security policy language that defines constraints and requirements for SOAP-based web services.</p>
+
+<p>A <strong>mechanism</strong> refers to the components that implement and enforce policies. For example, a policy might dictate that users have names and passwords.
+A mechanism will implement the interface for asking for a password and authenticating it. </p>
+
+<h2 id="securityengineering">Security Engineering</h2>
+
+<p>We are interested in examining computer security from an <em>engineering</em> point of view. At the core, we have
+to address <strong>security architecture</strong>: how do we design a secure system and identify potential
+weaknesses in that system? <strong>Security engineering</strong> is the task of implementing the necessary mechanisms and defining
+policies across all the components of the system. At a high level, the architecture specififies <em>what</em> needs
+to be built and the engineering determines <em>how</em> it will be built.</p>
+
+<p>An important aspect of any form of engineering is
+understanding risks and making compromises. For example, a structural engineer does not
+set out to build the ultimate earthquake-proof and storm-proof building when designing a skyscraper
+in New York City but instead follows the wind load recommendations set forth in the
+<a href="http://thermallybrokensteelusa.com/wp-content/uploads/2015/09/NYC-Building-Code-2014-Structural-Design-Thermally-Broken-Steel-USA.pdf">New York City Building Code</a>.
+Similarly, there is no such thing as an unbreakable or fireproof vault or safe. <a href="https://en.wikipedia.org/wiki/Safe">Safes are rated</a>
+by how much fire or attack they can sustain. For instance, a class 150 safe can sustain an internal temperature
+of less than 150&deg; F (66&deg; C) and 85% humidity for a specific amount of time (e.g., 1 hour).
+A class TL&#8211;30 combination safe will resist abuse from mechanical and electrical tools for 30 minutes. Watches
+are another example. No watch is truly waterproof. Instead, they are rated for water resistance at a specific depth (pressure), although watches such as the
+<a href="https://www.rolex.com/science-and-exploration/exploration-underwater/rolex-deepsea-challenge.html">Rolex Deepsea</a>
+are waterproof for all practical purposes &#8212; but even the Deapsea is rated not to infinite depth but to 3,900 meters (12,800 feet). </p>
+
+<p>Engineering tradeoffs relate to economic needs. Do you need to spend $10,150 on the Rolex Deepsea or will
+the Sea-Dweller, which is rated for only 1,200 meters and costs around $1,000 less, be good enough?
+All safes can be opened. A safe with a rating of TL&#8211;15 from Underwriters Laboratories has a door that successfully resists entry for a working time of 15 minutes while a safe rated TL&#8211;30 resists entry for 30 minutes when attacked with various hand tools, lock picking tools, portable electric tools, cutting wheels, power saws, grinders, and carbide drills.
+Do you buy an
+<a href="https://www.deansafe.com/amsec-cf-2518-amvault-high-security-safe.html">Amvault CF&#8211;2518</a>
+safe for $3,338, which is rated TL&#8211;30, or spend over $400 less
+and get the identical-looking
+<a href="https://www.deansafe.com/amsec-tl-15-ce-2518-safes.html">Amvault CE&#8211;2518</a>
+that is only rated TL&#8211;15?</p>
+
+<p>The same applies to computer security. No system is 100% secure against all attackers for all time. If someone is determined enough and smart enough, they will get in. The engineering challenge is to understand the tradeoffs and balance security vs. cost, performance, acceptability, and usability.
+It may be cheaper to recover from certain attacks than to prevent the attack.</p>
+
+<p>We want to secure our systems … but what do we secure them against or from whom?
+There is a wide range of possible attackers that you may want to guard against.
+For example, you may want to secure yourself against:</p>
+
+<ul>
+<li><p>Yourself accidentally deleting important system files.</p></li>
+<li><p>Your colleagues, so they not being able to look at your files on a file server.</p></li>
+<li><p>An adversary trying to find out about you and get personal data.</p></li>
+<li><p>A phone carrier tracking your movements.</p></li>
+<li><p>An enemy who plans to throw a grenade on your computer.</p></li>
+<li><p>The <a href="https://www.nsa.gov">NSA</a>?</p></li>
+</ul>
+
+<p>Protecting yourself from accidentally destroying critical system files is a far easier task than defending your system from the NSA if the agency is determined to look for something there. Assessing a threat is called <strong>risk analysis</strong>. We want to determine what parts of the system need to be protected, to what degree, and how much effort (and expense) we should expand into protecting them. </p>
+
+<p>As part of risk analysis, we may need to consider laws to assess whether any types of security measures are illegal. That can restrict how we design our system. For example, certain forms of cryptography were illegal to export outside the U.S. and <a href="https://en.wikipedia.org/wiki/Export_of_cryptography_from_the_United_States#U.S._export_rules">some restrictions</a> still exist. </p>
+
+<p>We also need to consider user acceptability, or customs. Will people put up with the security measures, try to bypass them, or revolt altogether? For instance, we may decide to authenticate a user by performing a retina scan (which requires looking into an eyepiece of a scanner) along with a DNA test, which requires swabbing the mouth and waiting 90 minutes when using the a solid-state DNA testing chip. While these mechanisms are proven techniques for authentication, few people would be willing to put up with the inconvenience. On the systems side, one would also need to consider need for and the expense of any special equipment needed. We thus need to balance security with effort, convenience, and cost.</p>
+
+<h2 id="economicincentives">Economic incentives</h2>
+
+<p>Securing systems has a cost: it requires time and effort. Organizations may not be willing to spend the money for extreme security measures because it simply does not make economic sense for them.</p>
+
+<p>Stores rarely suffer any financial consequences if customer credit card data is stolen, so why spend the money to secure the information better?</p>
+
+<p>In some cases, security is important but employee incentives are not aligned with the needs of the organization. An example is the U.S. Central Intelligence Agency (CIA), which created a &#8220;workplace culture in which the agency’s elite computer hackers &#8216;prioritized building cyber weapons at the expense of securing their own systems&#8217;&#8221;](https://www.washingtonpost.com/national-security/elite-cia-unit-that-developed-hacking-tools-failed-to-secure-its-own-systems-allowing-massive-leak-an-internal-report-found/2020/06/15/502e3456-ae9d&#8211;11ea&#8211;8f56&#8211;63f38c990077_story.html). This led to the theft, and subsequent Wikileaks publication, of the CIA&#8217;s hacking tools, called <a href="https://wikileaks.org/ciav7p1/">Vault 7</a>. It was the biggest unauthorized disclosure of classified information in the history of the CIA.</p>
+
+<h1 id="attacksandthreats">Attacks and threats</h1>
+
+<p>When our security systems are compromised, it is because of a vulnerability.
+A <strong>vulnerability</strong> is a weakness in the security system. It could be a poorly
+defined policy, a bribed individual, or a flaw in the underlying mechanism that enforces security. Vulnerabilities tend to be a big focus in computer security classes. Examples of vulnerabilities include:</p>
+<dl>
+<dt>Lack of input buffer size checks</dt>
+<dd>Enables entered data to corrupt other parts of the program, sometimes permitting code injection</dd>
+
+<dt>Input validation bugs</dt>
+<dd>Poor input validation may allow attackers to enter data that will be treated as commands or database queries</dd>
+
+<dt>Protocol bugs</dt>
+<dd>Exploiting buggy protocols may enable an attacker to redirect traffic or disable encryption</dd>
+
+<dt>Unprotected files</dt>
+<dd>Unprotected configuration files in a system can allow an attacker to change them to alter network routes, start malicious programs when the system boots up, or change search paths for programs.</dd>
+</dl>
+
+
+<p>The term <strong>attack vector</strong> refers to the specific <em>technique</em> that an attacker uses to exploit the vulnerability and compromise the security of a system. It is the <em>way</em> in which an <strong>attack</strong> is carried out. Common attack vectors include:</p>
+<dl>
+<dt>Phishing</dt>
+<dd>sending email that is disguised as a legitimate message, causing the recipient to take action.</dd>
+
+<dt>Keylogging</dt>
+<dd>Installed hardware or software that collects everything a user types</dd>
+
+<dt>Modification of data</dt>
+<dd>Modifying routing tables, configuration files, or anything that may cause messages to be rerouted.</dd>
+
+<dt>DDoS (Distributed Denial of Service)</dt>
+<dd>Disrupt a server&#8217;s ability to process requests</dd>
+
+<dt>Buffer overflow</dt>
+<dd>Exploit an input buffer size validation vulnerability to overflow a buffer and cause a program to behave differently.</dd>
+</dl>
+
+
+<p>An <strong>exploit</strong> is the specific software, input data, or instructions that take advantage of a vulnerability. For example, suppose you have a PC that runs Microsoft Word. Let’s assume that an attacker can send you email with an attachment. That attachment contains a Word document with a malicious script in it that will exploit a bug in Word.</p>
+
+<p>An <strong>attack</strong> (sometimes called a <strong>cyber-attack</strong>) is the active use of an exploit to get around the security policies and mechanisms that are in place and steal data, run code on a computer, snoop on network traffic, or disable the system. For example, trying common passwords to log into a system is an attack. </p>
+
+<p>An <strong>attack surface</strong> refers to sum of possible attack vectors in a system. It is the total number of places in a system that an attacker <em>might</em> use to try to get into the system. It does not mean that these are vulnerabilities. In building secure systems, our goal is to be aware of the attack surface of our environment so we can assess the likelihood of various attacks and build defenses. We would also, if possible, like to reduce the size of the attack surface. The smaller the attack surface, the fewer places there are for an attacker to strike, and the fewer areas there are for us to defeat.</p>
+
+<p>A <strong>threat</strong> is how we refer to the <em>potential</em>_ adversary (person or thing) who has the potential to attack the system. A threat may lead to an attack. The key point is that a threat refers to the possibility of an attack rather than the attack itself. An attacker was a threat. A threat will not necessarily attack. </p>
+
+<p>Threats fall into four broad categories <a href="#fn:7" id="fnref:7" title="see footnote" class="footnote">[7]</a>:</p>
+
+<ul>
+<li><p><strong>Disclosure</strong>: Unauthorized access to data, which covers <strong>exposure</strong>,
+<strong>interception</strong>, <strong>interference</strong>, and <strong>intrusion</strong>. This includes stealing data,
+improperly making data available to others, or snooping on the flow of data.</p></li>
+<li><p><strong>Deception</strong>: Accepting false data as true. This includes <strong>masquerading</strong>,
+which is posing as an authorized entity; <strong>substitution</strong> or <strong>insertion</strong> of
+includes the injection of false data or modification of existing data;
+<strong>repudiation</strong>, where someone falsely denies receiving or originating data.</p></li>
+<li><p><strong>Disruption</strong>: Some change that interrupts or prevents the correct operation
+of the system. This can include maliciously changing the logic of a program, a human
+error that disables a system, an electrical outage, or a failure in the system
+due to a bug. It can also refer to any obstruction that hinders the functioning
+of the system.</p></li>
+<li><p><strong>Usurpation</strong>: Unauthorized control of some part of a system. This includes
+<strong>theft of service</strong> or <strong>theft of data</strong> as well as any misuse of the system
+such as tampering or actions that result in the violation of system privileges.</p></li>
+</ul>
+
+<p>Many attacks are combinations of these threat categories. For example, </p>
+<dl>
+<dt><em>Snooping</em>, or <em>eavesdropping</em>, is the unauthorized interception of information</dt>
+<dd>It is a form of disclosure and is countered with confidentiality mechanisms.</dd>
+
+<dt><em>Modification</em> or <em>alteration</em>, is the making of unauthorized changes to information</dt>
+<dd>This is a form of deception, disruption or usurpation and is countered with integrity mechanisms.</dd>
+
+<dt><em>Masquerading</em>, or <em>spoofing</em>, is the impersonation of one entity by another</dt>
+<dd>It is a form of deception and usurpation and is countered with integrity mechanisms.</dd>
+
+<dt><em>Repudiation of origin</em> is the false denial that an entity sent or created something.</dt>
+<dd>It is a form of deception and may be a form of usurpation and is countered with integrity mechanisms.</dd>
+
+<dt><em>Denial of receipt</em> is the false denial that an entity received data or a message</dt>
+<dd>It is a form of deception and is countered with integrity and availability mechanisms.</dd>
+
+<dt><em>Delay</em> is the temporary inhibition of a service</dt>
+<dd>It is a form of disruption and may be a form of usurpation. It is countered with availability mechanisms.</dd>
+
+<dt><em>Denial of service</em> is the long-term inhibition of a service</dt>
+<dd>It is a form of disruption and may be a form of usurpation. It is countered with availability mechanisms.</dd>
+</dl>
+
+
+<h2 id="risksintroducedbytheinternet">Risks introduced by the Internet</h2>
+
+<blockquote>
+<p>“The internet was designed to be open, transparent, and interoperable. Security and identity management were secondary objectives in system design. This lower emphasis on security in the internet’s initial design not only gives attackers a built-in advantage. It can also make intrusions difficult to attribute, especially in real time. This structural property of the current architecture of cyberspace means that we cannot rely on the threat of retaliation alone to deter potential attackers. Some adversaries might gamble that they could attack us and escape detection.”<br/>
+&#8212; <em>William J. Lynn III, Deputy Defense Secretary, 2010</em></p>
+</blockquote>
+
+<p>The Internet provides us with a powerful mechanism for communicating with practically any other computer in the world. It also provides a way for attackers to target systems from practically any other computer in the world. Even though the Internet was a direct descendent of the ARPANET, a project funded by the U.S. Defense Advanced Research Projects Agency (DARPA), its design priority was to interconnect multiple disparate networks and create a decentralized architecture. Security was not a design consideration of the Internet.</p>
+
+<p>The network itself is &#8220;dumb&#8221;; it is responsible for routing packets from one system to another. As we&#8217;ll see later, even this is problematic since no one entity owns the Internet or is responsible for defining the routing rules. The intelligence of the Internet is at the endpoints. Protocols such as TCP run on endpoint computers to provide the in-order reliable delivery of messages. Any system can join the Internet and start sending and receiving messages. Systems can even offer routing services, allowing new networks to extend the Internet. This provides opportunities for redirecting messages and impersonating other systems. </p>
+
+<p>The Internet also makes it easy for bad actors to hide: they can be anywhere in the world and they have no obligation to announce their presence or register themselves in any way. For example, in November 2008, a computer worm named <a href="https://en.wikipedia.org/wiki/Conficker">Conflicker</a> was detected on Microsoft Windows systems. This was malicious software that propagated to other systems by taking advantage of bugs in Microsoft Windows and testing common passwords using a dictionary attack<a href="#fn:8" id="fnref:8" title="see footnote" class="footnote">[8]</a>. Each system that was successfully targeted by Conflicker became part of a huge <strong>botnet</strong>, where it would get instructions from a remote command and control server. Conflicker infected millions of computers in over 190 countries, including those at the United Kingdom Ministry of Defence, the Bundeswehr (German armed forces), the French Navy, and the Manchester Police Network. It was one of the largest infections of software in the world and, amazingly, even over ten years later, we do not know who created it. It appears to have originated in Ukraine but the author or authors are unknown.</p>
+
+<h2 id="advantagesoftheinternetforbadactors">Advantages of the Internet for bad actors</h2>
+
+<h3 id="computerversusreal-wordrisks">Computer versus real-word risks</h3>
+
+<p>Computer threats mimic rear-world threats. Systems are subject to
+theft, vandalism, extortion, fraud, coercion, and con games.
+The motivations are the same but the mechanisms are different.</p>
+
+<p>In the physical world, for most people and companies, security risks are usually low.
+Most people are not attacked and most companies are not victims of espionage. It is statistically unlikely that you will be mugged or that your house or car will be broken into. The number of bad actors in the world, thankfully, is a tiny percentage of the population. They need to have a reason to target you or, if they are acting randomly, there are only so many people, houses, and cars that they can attack over a period of time. With each attack, there is a significant risk of getting caught, which provides a certain degree of disincentive for such malicious actions. There is also no guarantee that the perpetrator will steal anything of value. The risk-reward ratio for physical crimes is uncomfortably high.</p>
+
+<p>In the computer world, however, attacking is often much easier, far less
+risky, and hence much more appealing. The risks of getting attacked are therefore much higher. Since the Internet was designed with open connectivity as a goal and not security, it offers some unique opportunities for bad actors:</p>
+
+<ul>
+<li><p><strong>Data access</strong>. Privacy rules may be the same in the computer world but accessing data is easier. For example, collecting data on recent real estate sales can be done automatically. This can help in social engineering. Access to data &amp; storage is cheap and easy. Networking is cheap. Robocalls are cheap. It is easy to collect, search, sort, and use data. By mining and correlating marketing data, we can target potential targets (&#8220;customers&#8221;) better. For example, one can buy data from credit databases such as Experian or Equifax.</p></li>
+<li><p><strong>Attacks from a distance</strong> are possible. You do not need to be physically present. Hence there is less physical danger, which allows cowards to attack. You can also be in a different state or even a different country. Networking and communications enables knowledge sharing. Only the first attacker needs to be skilled; others can use the same tools. Prosecution is difficult. Usually there’s a high degree of anonymity. Attackers who can propagate their software onto innocent computers have the ability to create a <strong>botnet</strong> and launch a <strong>Distributed Denial of Service</strong> (<strong>DDoS</strong>) attack. An organization has only so many servers and only so much network capacity. A coordinated flood of requests from hundreds of thousands or millions of computers can completely overwhelm a company&#8217;s servers and disrupt availability to those who need to use the service legitimately.</p></li>
+<li><p><strong>Asymmetric power</strong>. Actors can project or harness significant force for attack. This differs dramatically from the physical world where, for example, a small nation would not risk attacking a large one that could easily overpower it. Offense can be much more effective than defense. The person or people who started Conflicker were able to harness the power of millions of computers worldwide that they could use to launch attacks or crack passwords. A <strong>Distributed Denial of Service</strong> (<strong>DDoS</strong>) attack is an example of the use of asymmetric force. A company has only so many servers on the network. If an attacker can harness a large number of computers to send requests to the company&#8217;s servers, the servers will get overloaded and be unable to process legitimate requests. With a DDoS attack, the attacker will assemble a <strong>botnet</strong> by attacking a large set of computers and infectious them with malicious software (<strong>malware</strong>). These computers, owned by innocent people, will periodically contact a <strong>command &amp; control server</strong> to receive directions on what attack to carry out.</p></li>
+<li><p><strong>Automation</strong> enables attacks on a large scale. It is easy to cast a wide net via scripting. You can try thousands or millions of potential targets and see if any of them have security weaknesses that can you exploit. Attacks that have even minuscule rates of return or small chances of success are now profitable. This includes email scams, transferring fractional cents from bank accounts, and attempts to exploit known weaknesses.</p></li>
+<li><p><strong>Anonymity</strong>. Actors can act anonymously and tracking them down can be extremely difficult, if not impossible. Even today, nobody knows who launched <a href="https://en.wikipedia.org/wiki/Conficker">Conflicker</a>. One can attack with impunity. Trust also becomes a challenge. Do you know if you are really communicating with your bank or with an imposter? </p></li>
+<li><p><strong>No borders</strong>. Unlike nations, countries do not control the data flow into and out of their countries. The only exceptions to this may be China, North Korea, and, perhaps soon, <a href="https://bgr.com/2019/02/12/russia-internet-disconnect-test-all-traffic-to-run-on-its-own-runet/">Russia</a>.</p></li>
+<li><p><strong>Indistinctive data</strong>. It is difficult to distinguish valid data from malicious attacks. A malicious user logging in may look the same as a legitimate user. Code is a bunch of bits and it is not always possible to tell whether it is harmful until it is executed. The network will just route packets to their desired destination. </p></li>
+</ul>
+
+<h2 id="areasofattack">Areas of Attack</h2>
+
+<p>We have looked at the consequences of threats. Let us consider
+some of the motivations of attackers. These mirror real-word threats.</p>
+
+<h3 id="criminalattacks">Criminal attacks</h3>
+<dl>
+<dt>Fraud</dt>
+<dd>Attacks that involve deception or a breach of confidence, usually involving money but may also be used to discredit an opponent.</dd>
+
+<dt>Scams</dt>
+<dd>A scam is a type of fraud that usually involves money and a business
+transaction. The victim often pay for something and gets little or nothing
+in return. Pyramid schemes and fake auctions are examples of scams.</dd>
+
+<dt>Destruction</dt>
+<dd>Destruction is often instigated as revenge by [ex-] employees,
+disgruntled customers, or political adversaries.
+It can include disruption rather than destruction, such as
+Distributed Denial of Service (DDoS) attacks to
+make services unreachable or outright destruction
+of files, computers, or websites.</dd>
+
+<dt>Intellectual property theft</dt>
+<dd>This includes theft of an owner’s intellectual property,
+which can include software, product designs, unlicensed
+use of patents, marketing plans, business plans, etc.
+This includes not just theft through hacking but also
+the distribution of copies
+and unauthorized use of software, music, movies, photos, and books.
+A goal in security is to keep private data private.
+However, we sometimes want to make data publicly accessible while
+keeping control of how it is redistributed.</dd>
+
+<dt>Identity theft</dt>
+<dd>If someone can impersonate you, they can access whatever
+you are allowed to access: withdraw money, sell your car, log into your work account, etc.</dd>
+
+<dt>Brand theft</dt>
+<dd>Companies spend a lot of money building up their brand and reputation.
+Someone can steal the brand outright (e.g., sell an Apple phone
+that’s not made by apple, or a Rolex watch) or make minor modifications
+to product design, packaging, or presentation <a href="#fn:9" id="fnref:9" title="see footnote" class="footnote">[9]</a>.
+The goal may be to confuse customers (e.g.,
+the <a href="http://www.forbes.com/pictures/ekhf45eimle/this-is-not-a-real-apple-store-3/">fake Apple store in Kunming</a>)
+or to boost the perception of the adversary’s reputation.
+For example, a web site can advertise that it is “Norton secured” when it has not
+obtained a Symantec SSL Certificate or advertise itself as
+a Microsoft Partner (or even a Gold Certified Partner) when it is not.</dd>
+</dl>
+
+
+<h3 id="privacyviolations">Privacy Violations</h3>
+
+<p>Some attacks result in privacy violation. They may not be destructive or even detected
+by the entity that is attacked but can provide valuable
+data for future scams or deceptions.</p>
+<dl>
+<dt>Surveillance</dt>
+<dd>Surveillance attacks include various forms of snooping on users.
+They can include the use of directional microphones,
+<a href="https://en.wikipedia.org/wiki/Laser_microphone">lasers to detect glass vibration</a>,
+<a href="http://amzn.to/2jBK6wV">hidden cameras</a>
+and <a href="http://amzn.to/2kFkYTD">microphones</a>,
+<a href="http://amzn.to/2jhk1ob">keyloggers</a>,
+<a href="http://amzn.to/2jIBYbA">GPS trackers</a>,
+<a href="http://www.nydailynews.com/opinion/bryan-schonfeld-expand-nyc-surveillance-camera-network-article-1.2117122">wide-area video surveillance</a>,
+and <a href="https://tech.slashdot.org/story/13/09/13/1547218/nyc-is-tracking-rfid-toll-collection-tags-all-over-the-city">toll collection systems</a>.</dd>
+
+<dt>Databases</dt>
+<dd>Mining data is easy if it is computer-accessible. The data is useful for social engineering
+attacks and determining where users have presence.
+Free and paid databases include credit databases, health databases, political donor lists, real estate transfer, death, birth, and marriage records.
+Additional corporate databases contain Amazon shopping history, Netflix movies, and Facebook posts.
+The company Cambridge Analytica built a vast database on
+<a href="https://www.nytimes.com/2016/11/20/opinion/the-secret-agenda-of-a-facebook-quiz.html">psychological profiles of 230 million adult Americans</a>
+via Facebook quizzes.</dd>
+
+<dt>Traffic analysis</dt>
+<dd>You may not see the message or be able to decrypt its contents but you can see communication patterns: who is talking to whom.
+This allows you to identify social circles. Governments used this to identify groups of subversives. If you
+were tagged as a subversive, the people with whom you communicate would, at the least, be suspicious.
+In Secrets and Lies<a href="#fn:10" id="fnref:10" title="see footnote" class="footnote">[10]</a>, Bruce Schneier points out that
+“in the hours preceding the U.S. bombing of Iraq in 1991, pizza deliveries to the pentagon increased 100-fold.”</dd>
+</dl>
+
+<dl>
+<dt>Large-scale surveillance</dt>
+<dd><a href="https://en.wikipedia.org/wiki/ECHELON">ECHELON</a> is a massive surveillance program
+led by the NSA and operated
+by intelligence agencies in the U.S., UK, Canada, Australia, and New Zealand.
+It intercepts phone calls, email, Internet downloads, and satellite transmissions.
+The wide scope of communication mechanisms it monitors gives it
+an incredible ability to identify social networks.
+However, the challenge with massive data gathering operations is
+information overload. How do you identify critical events from noise?
+For instance, how do you distinguish a real threat to kill the president
+or detonate a bomb from someone’s wishful thinking?</dd>
+
+<dt>Publicity attacks</dt>
+<dd>Publicity attacks were popular in the early days of
+the web. Hackers took pride in showing off their
+exploits: &#8220;Look, I ‘hacked’ into the CIA<a href="#fn:11" id="fnref:11" title="see footnote" class="footnote">[11]</a>!&#8221;
+These attacks still exist but lost much of their luster.</dd>
+</dl>
+
+<dl>
+<dt>Service attacks</dt>
+<dd>Denial of Service (DoS) attacks take systems out of service,
+often by saturating them with requests to render them effectively
+inoperative. Since it can be difficult for one machine on one
+network to do this, this is often done on a large scale by many
+widely distributed computers, leading to something known as a Distributed Denial of
+Service (DDoS) attack. Denial of service can also be the process of getting
+the target to disable the defenses they have set up. For example, if your
+car alarm goes off every night for apparently no good reason, you are likely
+to disable it, giving the attacker unfettered access.</dd>
+</dl>
+
+
+<h2 id="attacktechniques">Attack techniques</h2>
+
+<p>Attackers use a variety of techniques for getting their software onto target systems or for logging into those systems. <strong>Malware</strong> is an umbrella term for any form of malicious software. It includes keystroke logging, camera monitoring, content upload, and ransomware. A few of these techniques are listed below:</p>
+<dl>
+<dt>Social engineering</dt>
+<dd>Social engineering is as useful in the cyberworld as it is in the real world. It covers techniques of manipulating, influencing, or deceiving targets to get them to take some type of action that is not in their best interest. For example, they may inadvertently download software, plug in an infected USB device that they found on the street, or open a malicious attachment in a mail message from a &#8220;friend&#8221;. Phishing and spear phishing, described below, are two forms of social engineering that use email as a distribution medium.</dd>
+
+<dt>Phishing</dt>
+<dd>With phishing, an attacker sends email that looks like it comes from a reputable organization to a broad group of people. The sender often appears to be a bank or shipping company asking you to click on a link and fill out a web form, or has a malicious attachment (e.g., one masquerading as an invoice).</dd>
+
+<dt>Spear Phishing</dt>
+<dd>Unlike phishing, spear phishing is a focused attack via email on a particular person or organization. It often contains some highly specific information known to the target, such as an account number or name of a friend or colleague. It might appear to be a request from a supervisor, for example.</dd>
+
+<dt>File types</dt>
+<dd>Certain file types (e.g., a Microsoft Word document) cause an application to open and read the file. Malicious files can open an app and exploit vulnerabilities in the application. For example, document files or spreadsheets may execute Visual Basic programs from Microsoft Office programs.</dd>
+
+<dt>Web sites</dt>
+<dd>This is often a form of social engineering where a site may offer free downloads of software, books, or movies but the downloaded content may be malicious software or the site may exploit vulnerabilities in the web browser to either extract information from the client or credentials from the user. Additionally, reputable web sites can get infected.</dd>
+
+<dt>Code/command injection</dt>
+<dd>Web sites and other services may have coding errors that enable an attacker to provide input that will either yield more information than the program should provide or execute arbitrary commands on the server.</dd>
+
+<dt>Social Media</dt>
+<dd>The use of social media is not an attack but can serve as a great source of information for hackers. For example, if you post when you’re going on vacation or going on a conference, an adversary can use this data for impersonation or spear phishing attacks.</dd>
+</dl>
+
+
+<h1 id="adversaries:knowthineenemy">Adversaries: Know Thine Enemy</h1>
+
+<blockquote>
+<p>“If you know the enemy and know yourself, you need not fear the result of a hundred battles. If you know yourself but not the enemy, for every victory gained you will also suffer a defeat. If you know neither the enemy nor yourself, you will succumb in every battle.”<br/>
+&#8212; <em>Sun Tzu, The Art of War</em></p>
+</blockquote>
+
+<h2 id="characteristics">Characteristics</h2>
+
+<p>We have seen that motives in computer attacks are generally
+similar to those in the physical world.
+Adversaries in the digital world also mimic those of the physical world.
+People are people, after all. Various factors determine what kind of
+person may attack a specific system. We need to know our attackers, their motivation,
+and their skill level to determine what kind of defense we need to mount.</p>
+
+<h3 id="goals">Goals</h3>
+
+<p>There can be a wide variety of goals that cause an attacker to
+target a system. These mirror the attack types we just examined.
+The goals of an attack may be to inflict damage, financial gain,
+or simply get information on someone for future attacks. It is
+important to understand goals to know what countermeasures will
+be effective. Inflicting damage on a system (e.g., throw a grenade)
+is a totally different goal than trying to steal someone’s credit card number.</p>
+
+<h3 id="levelsofaccess">Levels of access</h3>
+
+<p>Insiders have access and tend to be trusted.
+They also have an intimate knowledge of the systems and
+software and tend to have a good level of expertise in navigating
+the systems, although generally not in attacking those systems.</p>
+
+<h3 id="risktolerance">Risk tolerance</h3>
+
+<p>Terrorists are willing to die for their cause. Career criminals
+will risk jail time. Publicity seekers, on the other hand, do
+not want to risk getting jailed.</p>
+
+<h3 id="resources">Resources</h3>
+
+<p>Some adversaries operate on a tiny budget while others are
+extremely well-funded. With funding, one can buy computing
+resources, social resources (e.g., bribe someone), and
+expertise. Time is also a resource and some adversaries might
+have all the time in the world to attack a system while others
+either have a deadline or a time limit where it no longer makes
+economic sense to attack.</p>
+
+<h3 id="expertise">Expertise</h3>
+
+<p>Some adversaries are highly skilled while others are just poking
+around or using somebody else’s software to see if they can attack a system. The best adversaries are well-funded, highly-focused teams of experts in cybersecurity and penetration techniques.</p>
+
+<h3 id="economics">Economics</h3>
+
+<p>All these goals distill into economics (engineering trade-offs), where a rational
+adversary will balance time, money, skills, risk, and likelihood
+of success to make a decision of whether it is worthwhile to attack a target.</p>
+
+<h2 id="whoaretheadversaries">Who are the adversaries?</h2>
+
+<h3 id="hackers">Hackers</h3>
+
+<p>Hackers experiment with limitations of systems and may be good or
+evil. Their ultimate goal is to get to know a system better than
+the designers. Classic examples include phone hackers whose goal
+was to get free phone calls and
+lock pickers<a href="#fn:12" id="fnref:12" title="see footnote" class="footnote">[12]</a>, who work on developing
+skills in picking locks even if they never plan to steal anything
+locked by one of those locks. They hack for the thrill of breaking into systems.</p>
+
+<p>Only a small percentage of hackers are truly smart and innovative.
+Most just follow instructions or use programs created by those
+smart hackers. This broader set of hackers are often referred
+to as “script kiddies”. The trading of hacking tools and
+techniques enables a large community to get a powerful arsenal
+for hacking. Hackers often organize into groups with distinct
+cultures among the various groups. Typical hackers have a lot
+of time but not much money. Personalities vary, of course.
+Some hackers are extremely risk averse while others are not.
+Regardless of intent, the activity is generally criminal.
+Hackers, through their discovery and sharing of techniques,
+often enable other adversaries to get their job done.</p>
+
+<p>At the other end of the skill spectrum, hackers can also include security researchers and dedicated bug hunters. <strong>Bug hunters</strong> find bugs in systems. <strong>Exploit coders</strong> look at these bugs and try find ways to exploit them to compromise security. The goals can be academic or malicious. </p>
+
+<p><strong>White hat hackers</strong> do not intend to cause damage and instead focus on finding exploits and notifying the authors so they can make their systems more secure. This might be done for profit (e.g., via bug bounty programs offered by Google, Apple, and others), for recognition, or simply with the goal of trying to create a more secure world.</p>
+
+<p><strong>Black hat hackers</strong> do exactly the same work as white hat hackers: search for bugs and find ways of exploiting them. However, their goal is to profit from these exploits either directly, by hacking into the systems, or indirectly, by selling their services. Whether the end purpose is good or evil is largely immaterial. The highest bidder might be a national intelligence agency or a criminal organization.</p>
+
+<p>To defend from hackers, one must <em>look at the system from
+the outside as an attacker, not from the inside as a designer.</em></p>
+
+<h3 id="criminals">Criminals</h3>
+
+<p>Individuals or small groups with criminal intent form
+the largest group of adversaries. They are the ones who
+set up ATM skimmers and cameras to replicate ARM cards
+… or any number of other schemes. They often do not
+reap huge money but can be creative. The skills of this group can vary greatly, from people who send emails with malicious links or deceptive information (e.g., spam) to those with highly-targeted goals.</p>
+
+<h3 id="maliciousinsiders">Malicious insiders</h3>
+
+<p>Insiders are among the most insidious of adversaries
+because they are indistinguishable from legitimate,
+trusted insiders. Perimeter defenses don’t work on them:
+they have clearance to get into the physical premises
+and can authenticate themselves to servers. They often
+have a high level of access and are trusted by the very
+systems that they are attacking. For example, an insider
+may program a payroll system to give herself a raise,
+turn off an alarm at a specific time, create back-door
+access to bypass authentication, implement a key generator
+for software installations, or delete log files.</p>
+
+<p>Insiders are difficult to identify and stop since they
+have been cleared for access and, effectively, belong
+there. Most security defenses are designed to deal with
+external attackers, not internal ones. Their goals are
+varied. They might be seeking revenge, exposing corruption,
+or trying to get money or services.</p>
+
+<h3 id="industrialspies">Industrial spies</h3>
+
+<p>Industrial espionage involves getting confidential
+information about a company. This can include finding
+out about new product designs, trade secrets, bids made
+on a project, or corporate finances. Industrial espionage
+may include hiring and bribing employees to reveal trade
+secrets, eavesdropping, or dumpster diving.</p>
+
+<p>If the adversary is a competing company or a country,
+it may be extremely well-funded. For example, a country
+may want to ensure that its aerospace company wins a
+bid on a large aircraft contract and will try to find
+information about the competition. While well-funded,
+industrial spies are often risk-averse since the attacker’s
+company’s (or country’s) reputation can be damaged if it
+is caught spying.</p>
+
+<h3 id="press">Press</h3>
+
+<p>Reporters have a lot of incentive to be the first to get
+the scoop on a news item: it can drive up circulation,
+boost their credibility, and boost their salary. To do
+this may involve identifying several targets (government
+agencies, celebrities, companies) and spying on them in
+a variety of ways: social engineering, bribing, dumpster
+diving<a href="#fn:13" id="fnref:13" title="see footnote" class="footnote">[13]</a>, tracking movements, eavesdropping,
+or breaking in.
+As with industrial spies, the press is generally risk
+averse as well for fear of losing one’s reputation.</p>
+
+<h3 id="organizedcrime">Organized crime</h3>
+
+<p>The digital landscape offered organized crime more opportunities
+to make money. One can steal cell phone IDs, credit card numbers,
+ATM information, or bank accounts to get cash. Money laundering
+is a lot easier with electronic funds transfers (EFTs) and
+anonymous currency systems such as bitcoin.</p>
+
+<p>Organized crime can spend good money — if the rewords are
+worth it — and can purchase expertise and access. They also have
+higher risk tolerance than most individuals.</p>
+
+<h3 id="police">Police</h3>
+
+<p>Police are risk averse but have the law on their side.
+For example, they can get search warrants and take evidence.
+They also are not above breaking the law via illegal wiretaps,
+destruction of evidence, disabling body cameras, or illegal search and seizure.</p>
+
+<h3 id="terroristsfreedomfightersfreedomfighterorterroristitdependswhosesideyouareon.ref_terrorist">Terrorists (freedom fighters<a href="#fn:14" id="fnref:14" title="see footnote" class="footnote">[14]</a>)</h3>
+
+<p>Terrorists, and terrorist-like organizations, are motivated by
+geopolitics, religion, or their set of ethics. Example
+organizations include Earth First, Hezbollah, ISIS, Aryan Nations,
+Greenpeace, and PETA. Terrorists are usually more concerned with
+causing harm than with getting specific information. Although highly
+publicized, there are very few terrorists in the world and,
+statistically, terrorist activity is scant. Terrorists usually
+(not always) have relatively low budgets and low skill levels. </p>
+
+<h3 id="nationalintelligenceorganizations">National intelligence organizations</h3>
+
+<p>This includes groups such as North Korea&#8217;s General Bureau of Reconnaissance, Iran&#8217;s Cyber Defense Command, the Canadian Security Intelligence Service, Federal Security Service of the Russian Federation (FSB), UK Security Service (MI5), and Mossad. Within the U.S., there are 17 intelligence agencies, including the Central Intelligence Agency (CIA), National Security Agency (NSA), National Reconnaissance Office (NRO), Defense Intelligence Agency (DIA), Federal Bureau of Investigation (FBI). Look <a href="https://en.wikipedia.org/wiki/List_of_intelligence_agencies">here</a> for a lengthy list.</p>
+
+<p>These groups have large (almost unlimited, in some cases) amounts of money, large staffs, and long-term goals: maintaining a watch on activities essentially forever. They are somewhat risk averse for fear of bad public relations. More importantly, they do not want any leaks or government actions to reveal their attack techniques. For example, as soon as the Soviet Union deduced that the U.S. press was reporting information that could have only been obtained from eavesdropping on cell phone calls, all government cell phone communication became encrypted. Even through the allies were able to break German cryptography during World War II, using too much information from cryptographic communication would have told the Germans that their messages were no longer secret. Intelligence agencies may also work with companies to ensure that the nation’s companies can underbid competitors or have every competitive technology advantage. </p>
+
+<p>Due to their wealth and influence, they often have the ability to influence standards In the U.S., for example, the NSA was instrumental in the adoption of 56-bit keys for DES or the Dual_EC_DRBG (Dual Elliptic Curve Deterministic Random Bit Generator). Lenovo computers, owned partially by the Chinese government’s Academy of Sciences has been banned by US, Britain, Canada, Australia, and New Zealand intelligence agencies because of “malicious circuits” built into the computers. Edward Snowden revealed that the NSA planted backdoors into Cisco routers built for export that allows the NSA to intercept any communications through those routers. In 2019, Huawei was accused of having backdoors in its telecom equipment and routers.</p>
+
+<h3 id="infowarriors-cyberwarfare">Infowarriors - cyber warfare</h3>
+
+<p>In time of war, nothing is safe and it has long been speculated that warring nations will launch electronic attacks together with conventional military ones. These attacks can aim to disrupt a nation’s power grids, wreak havoc on transportation systems. They can also aim to do large-scale damage to electronic equipment in general with EMP (electromagnetic pulse) weapons. Like national intelligence organizations, attackers will have access to vast amounts of money and resources. Unlike intelligence agencies, the goals are short-term ones. There is no risk of public relations embarrassment and no need for continued surveillance. </p>
+
+<p>The recent (2016) U.S. presidential election added a new twist to this arena. Disruptions need not be strikes that wipe out targets such as power grids but can instead be a steady stream of misinformation, amplification of information, and possibly blackmail that can steer public opinion. Tampering with electronic voting machines can further manipulate the political process.</p>
+
+<p>In the past, there was a distinction between military and civilian systems: military systems used custom hardware, operating systems, application software, and even custom networks and protocols. That distinction has largely evaporated. Commercial technology advances too quickly and an increasing number of military and government systems use essentially the same hardware and software as civilian companies. In 2012, for example, U.S. soldiers received Android tablets and phones, running a modified version of Android. In 2016, U.S. Army Special Operations Command reported that they are replacing their Android tactical smartphone with an iPhone 6s. The report stated that the iPhone is “faster; smoother; Android freezes up and has to be restarted too often”. Bugs, with security ramifications, have become <em>de rigueur</em> for the military. Vulnerabilities present in commercial systems now apply to military and government systems. Moreover, governments tend to have slower refresh cycles, so there’s a higher likelihood of older systems with more documented vulnerabilities being present. These systems include routers, Wi-Fi access points, and embedded systems, all of which are likely to not be treated as “computers” and patched or upgraded on a regular basis. </p>
+
+<h2 id="threatmatrix">Threat matrix</h2>
+
+<p>We can simplify this list of adversaries into a four-quadrant threat matrix, with <em>focus</em> on the x-axis and <em>skill</em>_ on the y-axis.</p>
+
+<figure>
+<img src="images/threat-matrix.png" alt="Figure 1. Threat matrix" id="threat-matrix" title="Threat matrix" style="width:350px;" />
+<figcaption>Figure 1. Threat matrix</figcaption></figure>
+
+
+
+<h3 id="focus">Focus</h3>
+
+<p>Threats with a low focus have a broad scope. They are <strong>opportunistic</strong>. The attacker does not have any specific target in mind and hopes to cast a wide net to see what people or systems can be attacked. For instance, an attacker may scour the Internet searching for network cameras or routers with default passwords or send out an email message to a broad audience, hoping that someone will be careless enough to click on a link or take action. Opportunistic attacks are usually automated via worms and viruses. They look for and exploit poorly-protected services, bugs, or known login credentials. By hitting a large set of systems, the attacker hopes that even if a tiny percentage are vulnerable, there will be some wins.</p>
+
+<p>Threats with a high focus are <strong>targeted</strong>. The attacker has a specific target in mind with a specific goal (extract a document, cause damage, steal money) and will customize the attack to get to that target. <strong>Spear phishing</strong>, for example, is sending email with a malicious link but with information that requires some specific knowledge of the person being targeted. It may appear to come from a friend or co-worker or may reference known details of a bank account. </p>
+
+<p>Targeted attacks require planning. This often entails gathering some intelligence about the target. For example, social engineering might be used to learn about the user or to gain an understanding of the infrastructure (system, software, and networks) that is being attacked to know where the desired assets are located and what steps one needs to take to retrieve them.</p>
+
+<p>Some attacks may fall in between &#8211; not targeting arbitrary people but trying to reach specific groups. For instance, it is believed that a set of malicious websites that hacked into iPhones over a two-year period were put in place by the Chinese government to target Uyghur Muslims<a href="#fn:15" id="fnref:15" title="see footnote" class="footnote">[15]</a>. </p>
+
+<h3 id="skill">Skill</h3>
+
+<p>The vast majority of attacks are performed by low-skilled players. The term <strong>script kiddies</strong> refers to someone who does not have the skills to find or write their own exploits but uses programs (scripts) created by others to attack systems. More often than not, these are not targeted attacks but rather attempts to find systems that are capable of being exploited. An example is someone downloading a malware toolkit and trying a large set of IP addresses to see if they can find any vulnerable systems.</p>
+
+<p>Poorly-protected systems may still be vulnerable to attacks from script kiddies and even these attackers are thus capable of causing real damage. For example, the <a href="https://www.eenews.net/stories/1061111289">first successful documented cyberattack on the U.S. power grid in March of 2019</a> was attributed to &#8220;an automated bot that was scanning the internet for vulnerable devices, or some script kiddie.&#8221;</p>
+
+<p>With increasing skill, a hacker may find their own exploits or write their own tools to implement recently found exploits. With opportunistic attacks, the goal is still to find a target &#8211; any target &#8211; that is vulnerable to the exploit.</p>
+
+<p>Targeted attacks can also be performed with a low skill level, although they generally require a bit of work to identify the target and know how to achieve one&#8217;s goals. A simple low-skill targeted threat is the aforementioned spear phishing attack. </p>
+
+<p>The most dangerous adversaries go by the name of <strong>advanced persistent threats</strong> (<strong>APT</strong>). This is a military term that identifies attacks that are sustained until their goal has been achieved. This term has been adopted by the computer security community to refer to organizations that perform highly-complex attacks. These groups are often intelligence agencies of nation-states or groups that are funded by the state. The attacks, called <strong>advanced targeted attacks</strong>, require knowledge of a system&#8217;s infrastructure and may require considerable time and effort to execute. The attack may require multiple steps using varying exploits to reach the goal as one may need to hop from one system to another. This is referred to as <strong>lateral movement</strong>. An APT group may be out to steal data, sabotage a utility, destroy critical infrastructure, or siphon money from a banking network. These attackers are sophisticated, goal-oriented, and well-funded. </p>
+
+<h2 id="threatmodels">Threat models</h2>
+
+<p>A <strong>threat model</strong> is the set of assumptions that we construct about the abilities and motivations of an adversary. It gives us a way to identify and prioritize potential threats while thinking from
+the attacker&#8217;s point of view. Attackers are not going to follow your rules. They don&#8217;t care about the policies you put in place and only need to circumvent any <em>mechanisms</em> that enforce those policies. Protection requires thinking about the types of attacks that could be launched against your systems and what things might possibly go wrong. </p>
+
+<p>We need to assess what is valuable to us (what is worth our time and money to defend), what is valuable to the attacker (what they are likely to go after), the likelihood of an attack, what type of attackers might go after our systems (joy hackers or the NSA?), and how we can recover after an attack. For example, if ransomware cripples your organization, do you have to pay and hope that your data will be restored or can you simple reformat and reinstall your operating system and software and recover data from recent backups?</p>
+
+<h2 id="thinkingaboutsecurity">Thinking about security</h2>
+
+<p>In thinking about security, we need to consider <em>all</em> the entities in the system:
+all the individual components, how they communicate, and how they store
+data. We need to understand the trust boundaries of each component. A <strong>trust
+boundary</strong> refers to the subset of hardware and software where the system
+trusts all the sub-components. For example, a running process trusts the
+underlying operating system, hardware, and storage system. Communicating with
+another system over a network, or perhaps even with another local process,
+is crossing a trust boundary. The processes for ensuring the integrity and
+confidentiality of data need to be assessed at each trust boundary.</p>
+
+<p>To design secure systems, we need to identify each of these boundaries and
+know where and how protection is enforced when data crosses each boundary.
+We also need to understand how protection is enforced within the trust boundary.</p>
+
+<h2 id="trustedcomputingbase">Trusted Computing Base</h2>
+
+<p>A key part of this is knowing whether the systems themselves are trustworthy.
+The <strong>Trusted Computing Base</strong> (<strong>TCB</strong>) refers to all the hardware and software
+of a computing system that is essential to its security.
+The U.S. Department of Defense
+<a href="https://en.wikipedia.org/wiki/Trusted_Computer_System_Evaluation_Criteria">Trusted Computer System Evaluation Criteria</a>,
+known colloquially as the <em>Orange Book</em>, defines the TCB as
+&quot;<em>The totality of protection mechanisms within it, including hardware, firmware, and software, the combination of which is responsible for enforcing a computer security policy.</em>”</p>
+
+<p>If any part of the TCB is compromised then we can no longer guarantee the security
+of a system. For example, if we cannot trust the microcode of a processor, we cannot trust that
+the instructions of the operating system or application are being executed correctly
+and may thus have security-sensitive side-effects.
+The components that constitute the TCB should ideally protect themselves against
+tampering. For instance, the operating system uses the processor&#8217;s memory management
+unit, its own enforcement of well-defined interfaces (system calls), and its access
+protection models
+to ensure that even if an application is compromised, it will not be be
+able to affect the security of the operating system and other lower-level components.</p>
+
+<h2 id="thehumanelement">The human element</h2>
+
+<p>We saw that security is as weak as its weakest link. In most cases, that weakest link
+is the human. Humans are horrible at storing keys (we can remember only the simplest
+of passwords, and not too many of those, and we often fail even at that). They have a poor innate ability to assess risks. We demonstrate this in our physical life by our investments in Collateral Debt Obligations, building homes in flood planes, and
+fear of flying versus confidence in driving. In the computer world, we might take great care to encrypt our data using a 256-bit AES algorithm but neglect to ensure that attackers cannot access the key. </p>
+
+<p>We need to be aware of the fact traditional methods of attack, such as bribery, blackmail, and burglary, are still highly effective.</p>
+
+<p>Humans are not accurate and often careless.
+They are polite and trusting: you are likely to hold the
+door open to let the person walking behind in even if access requires a key card.
+This trust makes them gullible and makes social engineering the top threat in computer
+security &#8212; and the one that is most difficult to prevent. Leaks from insiders are a serious threat. They could be accidental (such as taking critical files home on a flash drive that then gets misplaced) or malicious due to a change of loyalty to the organization (e.g., whistleblowing or getting employed by a competitor).</p>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li>Ross J. Anderson, <a href="https://www.cl.cam.ac.uk/~rja14/book.html">Security Engineering: A Guide to Building Dependable Distributed Systems</a>, 2nd edition, Wiley pub.. 2008</li>
+<li>Steven M. Bellovin, <a href="http://amzn.to/2iLqdjb">Thinking Security: Stopping Next Year&#8217;s Hackers</a>, 1st edition, Addison-Wesley pub., 2015</li>
+<li>Matt Bishop, <a href="http://amzn.to/2kEM5Oy">Introduction to Computer Security</a>, 1st edition, Addison-Wesley pub., 2004</li>
+<li>Bruce Schneier, <a href="http://amzn.to/2jNudRQ">Secrets and Lies: Digital Security in a Networked World</a>, 1st edition, Wiley pub., 2004</li>
+</ul>
+
+<p>This is an update of document originally created on January 27, 2017.</p>
+
+<ul>
+<li><p><a href="https://en.wikipedia.org/wiki/List_of_security_hacking_incidents">List of security hacking incidents</a></p></li>
+<li><p>Lily Hay Newman, <a href="https://www.wired.com/2017/03/hacker-lexicon-attack-surface/">Hacker Lexicon: What is an Attack Surface?</a>, Wired Magazine, March 12, 2017.</p></li>
+<li><p>SentinelOne, <a href="https://www.sentinelone.com/blog/what-are-advanced-targeted-attacks/">What Are Advanced Targeted Attacks? Can You Defend Against Them?</a>, February 4, 2019</p></li>
+<li><p>Secureworks, <a href="https://www.secureworks.com/blog/advanced-persistent-threats-apt-a">Advanced Persistent Threats: Learn the ABCs of APTs - Part A</a>, September 27, 2016</p></li>
+<li><p>Raimund Genes, <a href="https://blog.trendmicro.com/trendlabs-security-intelligence/targeted-attacks-versus-apts-whats-the-difference/">Targeted Attacks versus APTs: What’s The Difference?</a>, Trend Micro, September 14, 2015</p></li>
+<li><p>Lily Hay Newman, <a href="https://www.wired.com/2017/03/hacker-lexicon-attack-surface/">Hacker Lexicon: What Is an Attack Surface?</a>, Wired, March 12, 2017.</p></li>
+<li><p>Ellen Nakashima, Shane Harris, <a href="https://www.washingtonpost.com/national-security/elite-cia-unit-that-developed-hacking-tools-failed-to-secure-its-own-systems-allowing-massive-leak-an-internal-report-found/2020/06/15/502e3456-ae9d-11ea-8f56-63f38c990077_story.html">Elite CIA unit that developed hacking tools failed to secure its own systems, allowing massive leak, an internal report found</a>, Washington Post, June 16 2020.</p></li>
+</ul>
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>In the U.S. government, the <strong>secret</strong> level applies to information whose unauthorized disclosure could be expected to cause serious damage to national security. The <strong>confidential</strong> level applies to information whose unauthorized disclosure could be expected to cause damage to national security. I do not know where the boundary lies between &#8220;damage&#8221; and &#8220;serious damage.&#8221; <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:2">
+<p><a href="https://en.wikipedia.org/wiki/2014_JPMorgan_Chase_data_breach">JPMorgan Chase data (2014)</a>, <a href="http://www.bankinfosecurity.com/global-payments-breach-tab-94-million-a-5415">Global Payments (2012)</a>, <a href="http://www.bankinfosecurity.com/citi-breach-exposes-card-dååata-a-3724">Citi (2011)</a>, <a href="http://www.bankinfosecurity.com/bofa-breach-a-big-scary-story-a-3673">Bank of America (2011)</a>. <a href="#fnref:2" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:3">
+<p><a href="http://www.reuters.com/article/us-usa-election-cybersecurity-idUSKCN1141L4">State voter systems (2016)</a>, <a href="https://en.wikipedia.org/wiki/Commission_on_Elections_data_breach">Philippines Commission on Elections (2016)</a>, <a href="http://www.military.com/daily-news/2015/07/10/us-more-than-21-million-affected-by-government-data-breach.html">U.S. Government (2015)</a>, <a href="https://epic.org/privacy/vatheft/">Veterans Affairs (2016)</a>. <a href="#fnref:3" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:4">
+<p><a href="https://www.washingtonpost.com/local/virus-infects-medstar-health-systems-computers-hospital-officials-say/2016/03/28/480f7d66-f515-11e5-a3ce-f06b5ba21f33_story.html?utm_term=.336dfa56b62b">MedStart Health (2016)</a>, <a href="http://www.ibtimes.com/hackers-ransom-attack-california-hospital-more-proof-healthcare-cybersecurity-2309720">Hollywood Presbyterian Medical Center (2016)</a>, <a href="http://www.usatoday.com/story/tech/2015/02/04/health-care-anthem-hacked/22900925/">Anthem Healthcare (2015)</a>, <a href="http://www.inforisktoday.com/tricare-breach-affects-49-million-a-4105">TRICARE (2011)</a>. <a href="#fnref:4" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:5">
+<p><a href="http://fortune.com/2016/08/19/eddie-bauer-data-breach/">Eddie Bauer (2016)</a>, <a href="http://www.wsj.com/articles/home-depot-breach-bigger-than-targets-1411073571">Home Depot (2014)</a>, <a href="https://www.washingtonpost.com/business/economy/target-says-70-million-customers-were-hit-by-dec-data-breach-more-than-first-reported/2014/01/10/0ada1026-79fe-11e3-8963-b4b654bcc9b2_story.html?utm_term=.533b16927f3e">Target (2014)</a>, <a href="http://www.computerworld.com/article/2544306/security0/tjx-data-breach--at-45-6m-card-numbers--it-s-the-biggest-ever.html">TJX (2007)</a>. <a href="#fnref:5" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:6">
+<p><a href="http://money.cnn.com/2016/12/14/technology/yahoo-breach-billion-users/">Yahoo (2016)</a>, <a href="https://www.wired.com/2016/11/hack-brief-412m-accounts-breached-friendfinder-sex-sites/">Friend Finder (2016)</a>, <a href="https://nakedsecurity.sophos.com/2015/03/30/slack-gets-hacked-rolls-out-two-factor-authentication-after-user-database-breach/">Slack (2015)</a>, <a href="https://en.wikipedia.org/wiki/Ashley_Madison_data_breach">Ashley Madison (2015)</a>, <a href="http://www.forbes.com/sites/gordonkelly/2014/05/21/ebay-suffers-massive-security-breach-all-users-must-their-change-passwords/#6cfaae693c15">eBay (2014)</a>. <a href="#fnref:6" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:7">
+<p>Ross J. Anderson, <a href="https://www.cl.cam.ac.uk/~rja14/book.html">Security Engineering: A Guide to Building Dependable Distributed Systems</a>, 2nd edition, Wiley pub.. 2008 <a href="#fnref:7" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:8">
+<p>A dictionary attack is one where software iterates through a list (a &#8220;dictionary&#8221;) of likely passwords, trying one after another. <a href="#fnref:8" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:9">
+<p><a href="http://www.businessinsider.com/apple-copy-cats-2012-1">The Most Blatant Examples Of Companies Stealing Apple&#8217;s Design</a> <a href="#fnref:9" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:10">
+<p>Bruce Schneier, <a href="http://amzn.to/2jNudRQ">Secrets and Lies: Digital Security in a Networked World</a>, 1st edition, Wiley pub., 2004 <a href="#fnref:10" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:11">
+<p>February 2, 2012, <a href="http://www.darkreading.com/attacks-and-breaches/cia-website-hacked-struggles-to-recover/d/d-id/1102790?">CIA Website Hacked, Struggles To Recover</a> <a href="#fnref:11" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:12">
+<p><a href="http://toool.us">The Open Organization of Lockpickers</a> <a href="#fnref:12" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:13">
+<p><a href="https://www.techopedia.com/definition/10267/dumpster-diving">Dumpster diving</a> <a href="#fnref:13" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:14">
+<p>Freedom fighter or terrorist? It depends whose side you are on. <a href="#fnref:14" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:15">
+<p><a href="https://techcrunch.com/2019/08/31/china-google-iphone-uyghur/">Techcrunch article</a> <a href="#fnref:15" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+
+							</section>
+							<footer class="main">
+								Last modified September 12, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

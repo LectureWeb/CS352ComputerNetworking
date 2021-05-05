@@ -1,0 +1,287 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Distributed lookup services</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Distributed lookup services</h1>
+								<h2>Object Storage & Distributed Hash Tables</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>March 29, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Create a highly-scalable, decentralized key-value store.</p>
+</blockquote>
+
+<p>The purpose of a distributed lookup service is to find the computer that has
+data that corresponds to a <strong>key</strong> that you have. For example,
+the key can be the name of the song and the computer is one that is hosting
+the MP3 file, or the key can be your customer ID and the corresponding data
+is the contents of your shopping cart.</p>
+
+<p>The most straightforward approach is to use a <strong>central coordinator</strong>
+to store all
+the keys and their mapping to computers. You ask the server to look up a
+key and it gives you the computer containing the content. This is the
+Napster implementation, which was one of the first peer-to-peer file sharing
+services. A coordinator served as the web service that kept track of who
+was hosting which music files for download but the files themselves were hosted
+by the community of users.
+The Google File System, GFS, also uses a central
+coordinator although the corresponding data for a key (file) is distributed among
+multiple chunkservers.</p>
+
+<p>Another approach is to &#8220;<strong>flood</strong>&#8221; the network with queries.
+What happens here is that your computer knows of a few peer computers, not the entire
+collection. It sends the request to these computers.
+Those computers, in turn, know of other computers. When a computer needs
+to look up a key, it forwards the request to all of its peer nodes.
+If a peer does not have the content, it repeats the process and forwards
+the request to its peers (and they forward the request to their peers &#8230;).
+A <strong>time to live</strong> (<strong>TTL</strong>)
+value in the request is decremented with each
+hop and the request is no longer forwarded if the hop count drops below zero.
+If one of the peers has the content, then it responds to whoever sent it
+the request. That node, in turn sends the response back to its requestor
+and the process continues back until the originator of the query gets the
+response. This is called <strong>back propagation</strong>.
+This approach was used by the Gnutella file sharing system.</p>
+
+<p>Flooding uses what is known as an <strong>overlay network</strong>. An
+overlay network is a logical network that is built on top of another network.
+Typically, computers on the network have knowledge of only some of the other
+computers on the network and will have to use these &#8220;neighbor&#8221; nodes to
+route traffic to more distant nodes.</p>
+
+<p>Finally, the <strong>distributed hash table</strong> (<strong>DHT</strong>)
+approach is a set of solutions that is
+based on hashing the search key to a number that is then used to find the
+node responsible for items that hash to that number.
+A key difference between the DHT approach and the
+centralized or flooding approaches is that the hash of the key determines which
+node is responsible for holding information relating to the key.</p>
+
+<h2 id="consistenthashing">Consistent hashing</h2>
+
+<p>Conventional hash functions require most keys to be remapped if the size of the hash table changes:
+that is, keys will usually hash to a different value when the size of the table changes.
+For a distributed hash, this will be particularly problematic. It would mean that if we
+remove or add a node to a group of computers managing a DHT, a very large percentage of
+data will have to migrate onto different systems. A <strong>consistent hash</strong>
+is a hashing technique where most keys will not need to be reamapped if the number of
+slots in the table changes. On average, only <em>k/n</em> keys will need to be remapped for
+a system where <em>k</em> is the number of keys and <em>n</em> is the number of slots in the table.</p>
+
+<h2 id="can:content-addressablenetwork">CAN: Content-Addressable Network</h2>
+
+<p>CAN implements a logical x-y grid (although it can be applied to an
+arbitrary number of dimensions).
+A key is hashed by two hashing functions, one for each dimension (e.g.,
+an x-hash and a y-hash). The result of these hashes identifies an <em>x, y</em>
+point on the grid.
+Each node is responsible for managing all keys that are located within
+a rectangle on the grid; that is, a node will be responsible for all keys
+whose x-hash falls in some range between x<sub>a</sub> and x<sub>b</sub>
+and whose y-hash falls in some range between y<sub>a</sub> and y<sub>b</sub>.
+This rectangle is known as a <strong>zone</strong>.
+If a node is contacted with a query for a key, it will hash the key and determine
+if it is present within its zone. If it falls within the node&#8217;s zone, the node can satisfy the request.
+If the hashed values are out of range, the node will forward the request to one
+of four neighbors (north, east, south, or west), which will then invoke the
+same logic to either process the query of forward it onto other nodes.
+The average route for a system with <em>n</em> nodes is <em>O(sqrt(n))</em> hops.</p>
+
+<p>CAN scales because each zone can be split into two, either horizontally or vertically,
+and the process can be repeated over and over as needed. For each split, some
+of the keys will have to move to the new node. For fault tolerance, <em>key, value</em>
+data can be replicated on one or more neighboring nodes and each node will know not
+just its neighbors but its neighbors' neighbors. If a node is not reachable, the request
+will be sent to a neighboring node.
+Even though we discussed CAN in two dimensions, it can be implemented in an arbitrary
+number of dimensions. For <em>d</em> dimensions, each node needs to keep track of <em>2d</em>
+neighbors.</p>
+
+<h2 id="chord">Chord</h2>
+
+<p>Chord constructs a logical ring representing all possible hash values (bucket positions).
+Note that for
+hash functions such as a 160-bit SHA-1 hash, this is an insanely huge value of approximately
+1.46 x 10<sup>48</sup> slots.
+Each node in the system is assigned a position in the huge logical ring
+by hashing its IP address. Because the vast majority of bucket positions will be empty,
+(<em>key, value</em>) data is stored either at the node to which the key hashes (if, by some
+rare chance, the key hashes to the same value that the node&#8217;s IP address hashed)
+or on a <strong>successor</strong> node, which is the next node that would be encountered as the
+ring is traversed clockwise. For a simple example, let us suppose that we have a 4-bit
+hash (0..15) and nodes occupying positions 2 and 7. If a key hashes to 4, the <em>successor</em>
+node is 7 and hence the computer at node 7 will be responsible for storing all data
+for keys that hash to 4. It is also responsible for storing all data to keys that hash
+to 3, 5, 6, and 7.</p>
+
+<p>For fault tolerance, a node can store a copy of its key-value data at a successor node.
+This requires nodes to know not only their successor but their successor&#8217;s successor so they
+can still forward requests if a node is down. It also requires mechanisms to restore any updates
+back to the failed node once it recovers.</p>
+
+<p>When a node is added to the system, its predecessor node will need to know about it since
+the new node will be its successor. The successor of the new node will need to go through
+its stored keys and move over any key-value data whose key hashes to the position of the new
+node or a lesser value.</p>
+
+<p>If a node only knows of its clockwise neighbor node, then any query that a node cannot
+handle will be forwarded to a neighboring node. This results in an unremarkable <em>O(n)</em>
+lookup time for a system with <em>n</em> nodes. An alternate approach is to have
+each node keep a list of all the other nodes in the group. This way, any node will be
+able to find out out which node is responsible for the data on a key simply by hashing
+the key and traversing the list to find the first node &ge; the hash of the key. This
+gives us an impressive <em>O(1)</em> performance at the cost of having to maintain
+a full table of all the nodes in the system on each node.
+A compromise approach to have a bounded table size is to use <strong>finger tables</strong>.
+A finger table is a partial list of nodes with each element in the table identifying
+a node that is a power of two
+away from the current node. Element 0 of the table is the next node (2<sup>0</sup> = 1 away),
+element 1 of the table is the node after that (2<sup>1</sup> = 2 away),
+element 2 of the table four nodes removed (2<sup>2</sup>),
+element 3 of the table eight nodes removed (2<sup>3</sup>), and so on. With finger tables,
+<em>O(log n)</em> nodes need to be contacted to find the owner of a key.</p>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

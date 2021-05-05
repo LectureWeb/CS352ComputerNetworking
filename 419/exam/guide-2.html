@@ -1,0 +1,2395 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 419 Exam 2 Study Guide </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+.rqbox {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+        position: relative;
+	width: 15em;
+        background-color: #FDF5B6;
+        border-style: double; border-width: 3px;
+        padding: 0.5em 0.5em 0.5em 0.5em;
+}
+.nofinal {
+        text-decoration: underline;
+}
+
+</style>
+</head>
+
+<body id="s_ru419">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Computer Security </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<P>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a>  </li>
+ 	<li> <a href="../../index.html"> Rutgers </a>  </li>
+ 	<li> <a href="../index.html"> CS 419 </a>  </li>
+ 	<li> <a href="../exam/index.html"> Exam info </a>  </li>
+ 	<li> <a href="../exam/guide-2.html"> Exam 2 study guide </a>  </li>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main"> <div id="headline">
+<h1> Exam 2 study guide </h1>
+<h2> The one-hour study guide for exam 2 </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> Latest update: Sun Feb  2 17:01:20 EST 2020
+ </p>
+</div>
+
+<p class="first">
+
+Disclaimer: 
+This study guide attempts to touch upon the most
+important topics that may be covered on the exam but does not claim to
+necessarily cover everything that one needs to know for the exam. Finally,
+don't take the <em>one hour</em> time window in the title literally.</p>
+
+<h1 id="malware">Malware</h1>
+
+<p><strong>Malware</strong> is a term that refers to any malicious software that is unintentionally installed on a computer system.
+Malware can be distributed in various ways: viruses, worms, unintentional downloads, or trojan horses.
+It may spy on user actions and collect information on them (<strong>spyware</strong>),
+or present unwanted ads (<strong>adware</strong>). It may disable components of the system or
+encrypt files, undoing its damage if the owner pays money (<strong>ransomware</strong>).
+The software may sit dormant and wait for directives from some coordinator (a <strong>command and control server</strong>), who
+assembled an arsenal of hundreds of thousands of computers ready to do its bidding
+(for example, launch a <strong>distributed denial of service</strong>, <strong>DDoS</strong>, attack). Some
+software might be legitimate but may contain <strong>backdoors</strong> &#8211; undocumented ways
+to allow an outsider to use that software to perform other operations on your system.</p>
+
+<h2 id="malwaremotivation">Malware Motivation</h2>
+
+<p>A saying often paraphrased from Sun Tzu&#8217;s <em>The Art of War</em> is <em>&#8220;know your enemy.&#8221;</em> In the case of malware, it helps to understand why someone would want to install malicious software on your computer. There are numerous reasons. Some are:</p>
+<dl>
+<dt>Steal account credentials</dt>
+<dd>If an attacker can obtain someone’s login and password credentials on one system, there is a good chance that those same credentials will work on other systems.</dd>
+
+<dt>Espionage</dt>
+<dd>An attacker may have an interest in spying on the activities of a particular person. Traditionally, this would have been done through planting covert cameras and recording devices. Now it is often easier to accomplish the same results - and more - by installing software on the target’s computer. Such software is called <strong>spyware</strong>.</dd>
+
+<dt>Data theft</dt>
+<dd>An attacker may target a person at a specific company (or a student taking a certain class) in an attempt to exfiltrate data of strategic interest. Alternatively, an attacker may target people anonymously, with the hope of obtaining information of value, such as credit card data or bank account information.</dd>
+
+<dt>Sabotage</dt>
+<dd>There’s vengeance or vandalism: the attacker may want to destroy a target’s content or devices.</dd>
+
+<dt>Host services</dt>
+<dd>An attacker may need to harness computing, storage, or network resources. This can help hide the owner’s identity or amass a large collection of computers. An attacker can set up servers to host contraband data (e.g., stolen credit cards, login credentials, illegal material), send spam email on a large scale, mine cryptocurrency for free, or create a botnet for DDoS (distributed denial of service) attacks.</dd>
+
+<dt>Adware and ad clicking</dt>
+<dd>An attacker may add software to a system or reconfigure a browser or hosts file to present unwanted advertising in the form of pop-up windows or banners. Additionally, the malware may redirect search requests or create click-throughs on ads that the user never wanted.</dd>
+
+<dt>Ransomware</dt>
+<dd>Finally, the attacker may want money directly. Ransomware installs software to encrypt files that will be (hopefully) decrypted if ransom is paid. The emergence of cryptocurrencies led to a huge increase in ransomware since they enabled anonymous payments.</dd>
+</dl>
+
+
+<p>Another saying paraphrased from <em>The Art of War</em> is <em>&#8220;all warfare is based on deception.&#8221;</em> This is also useful to consider with malware since it is most often installed willingly by the user of the system via some form of deception rather than through the exploitation of bugs in the system.</p>
+
+<h2 id="malwareinfiltration">Malware Infiltration</h2>
+
+<p>There are several ways in which malware gets onto a system.</p>
+
+<p>An attacker can exploit vulnerabilities in system services, particularly network services, to inject code that will download the malware. <strong>Zero-day vulnerabilities</strong> are particularly useful to attackers. These are bugs that have been discovered but not yet reported to the software vendor or the general public and hence are not fixed. They are typically known only to those who discovered and exploited the vulnerability &#8230; or sold the exploit.</p>
+
+<p>As such, an attacker can be confident that the exploit will work on virtually all systems running the software and does not have to rely on targets who were not diligent enough to keep their systems patched. Ideally (for the attacker), the vulnerabilities will allow malware to run with elevated privileges so they can access all parts of a system or conceal itself more effectively.</p>
+
+<p>Related to this are <strong>N-day vulnerabilities</strong>. N-day vulnerabilities are known vulnerabilities. Because they are known, developers have the opportunity to patch the code with a fix and IT administrators have the ability to apply a patch, shut off services, or put some detection mechanisms in place. However, all this does not happen instantly. Attackers have a period of time &#8212; N days &#8212; between the time that a vulnerability is disclosed and the time that most systems have been patched to avoid the vulnerability.</p>
+
+<p>Malware might be installed unknowingly via infected removable media, most commonly USB flash drives (in earlier years, it would have been CDs or floppy disks). </p>
+
+<h3 id="socialengineering">Social engineering</h3>
+
+<p>By far the most common way that malware enters a system is via deception: the legitimate user of the system installed it unknowingly. This uses a <strong>social engineering</strong> attack to convince the user that it is in his or her interest to install the software.
+Social engineering is the art of manipulating, influencing, or deceiving a user into taking some action that is not in his/her or the organization&#8217;s best interest. Goal of social engineers is to obtain your trust and get you to divulge information or provide them with some form of access. In computers, social engineering refers to any techniques used by an adversary to trick you into disclosing information, opening a file, downloading an attachment, reading a message, or running a program.</p>
+
+<p>Websites may offer downloads of &#8220;security&#8221; software, system &#8220;cleaner&#8221; software, or software &#8220;updates,&#8221; none of which will do their purported task. An attacker may convince a user to click on a URL in an email attachment or a web page. Software obtained from file sharing services are also excellent venues for distributing malware. A user may try to avoid spending $4,000 for an AutoCAD license or $240/year for an Adobe Illustrator license and turn to a file sharing site to download a patched copy or a crack for the software that bypasses license checks. Quite often, these downloads contain malware instead of the desired software (what do you expect - the user is trying to be a thief downloading software from thieves).</p>
+
+<p>An attacker may search collections of stolen email addresses (or usernames) and passwords. Since people often use the same name and password on multiple systems, this can often give the attacker access to other websites on which the user has accounts. Accounts for banking sites are, of course, particularly valuable since they can be a direct conduit for transferring money. </p>
+
+<p>Given login information about a user, an attacker can log onto the systems or services as the owner of the account and install malware, monitor the internal organization, and even send email (e.g., contact other employees or friends).</p>
+
+<p>Any information the attacker can get about a user can help an attacker create a more convincing social attack. The term <strong>pretexting</strong> refers to using a concocted scenario to contact a user and get additional information (e.g., an attacker can pretend to be a caller from the IT department or a high-level manager from another location to try to extract information; with some rudimentary information, the attacker can mention some employee, department, or project names to sound like a true insider).</p>
+
+<h2 id="typesofmalware">Types of Malware</h2>
+
+<h3 id="wormsandviruses">Worms and viruses</h3>
+
+<p>A <strong>virus</strong> is software that attaches itself to another piece of software. It may
+also be content, such as scripts inside a Microsoft Word document or PDF file, that will be accessed and hence executed by some software. It may also be an email attachment that contains a document or software with the malware or a link to the malware.</p>
+
+<p>It might even be a modification of the boot loader
+of a computer or the firmware on a flash drive. The key point is that it does
+not run as an independent process. A virus may spread automatically by trying to </p>
+
+<p>A virus is executed because another program ran.
+Viruses are often spread by sharing files or software. On a computer, a virus may
+replicate itself onto other files or software to maximize its chance of spreading and reduce its chance of being removed.</p>
+
+<p>A <strong>worm</strong> is conceptually similar in that it can do the same damage to the computer
+as a virus can. The distinction from a virus is that <strong>a worm runs as a standalone
+process while a virus requires a host program</strong>.</p>
+
+<p>Worms and virus are both designed to propagate to other computers, although they
+may require human intervention to spread. In other cases,
+they can replicate themselves and spread to other systems automatically, exploiting
+weaknesses in software on those computers to allow themselves to infiltrate those
+machines. The popular use of both terms, <em>worm</em> and <em>virus</em>, has often blurred
+the distinctions between them. People often refer to any malware as a virus.</p>
+
+<p>When using non-legitimate ways of getting into a system or elevating their privileges, attackers
+often try to find <strong>zero-day vulnerabilities</strong>. These are
+vulnerabilities (bugs or configuration errors) that have not been publicly reported, or are newly discovered, and hence are unpatched.
+They are referred to as &#8220;zero-day&#8221; because developers have zero days to fix the problem.</p>
+
+<h3 id="virusandwormcomponents">Virus and worm components</h3>
+
+<p>Viruses and worms contains three components:</p>
+<dl>
+<dt><strong>Infection mechanism</strong></dt>
+<dd>The infection mechanism is the component of a worm or virus that enables it to spread. It can exploit software vulnerabilities to connect to other systems, patch certain files, or alter start-up scripts.</dd>
+
+<dt><strong>Payload</strong></dt>
+<dd>This is the malicious part of the virus and contains the code that does
+the actual harm to the system such as uploading personal information or deleting files. In some cases, the payload may be a generic service that contacts a <strong>command and control</strong> server from which it gets specific instructions on what to do (e.g., mine cryptocurrency, send spam, participate in a DDoS attack).</dd>
+
+<dt><strong>Trigger</strong></dt>
+<dd>The trigger, also called a <strong>logic bomb</strong>, is code that is run
+whenever a file containing the virus is run. It makes the decision
+whether the payload should be executed. For example, some viruses
+may stay dormant until a particular date, number of runs, or upon getting directives from a command and control server.</dd>
+</dl>
+
+
+<h2 id="malwareresidence:wheredoesitlive">Malware residence: where does it live?</h2>
+
+<h3 id="fileinfectorvirus">File infector virus</h3>
+
+<p>A <strong>file infector</strong> virus is a virus that adds itself to
+an executable program. The virus patches the program so that, upon running,
+control will flow to the the virus code. Ideally, the
+code will install itself in some unused area of the file so that the file
+length will remain unchanged. A comparison of file sizes with the same
+programs on other systems will not reveal anything suspicious. When the
+virus runs, it will run the <em>infector</em> to decide whether to install itself
+on other files. The <em>trigger</em> will then decide whether the <em>payload</em>
+should be executed. If not, the program will appear to run normally.</p>
+
+<h3 id="bootloadermalware">Bootloader malware</h3>
+
+<p><strong>Bootkits</strong>, also known as <strong>boot sector viruses</strong>,
+are malware that targets the booting process of a
+system. The malware has
+an infector that installs itself in the
+Master Boot Record (MBR) of a disk. In older BIOS-based PC systems, the first
+sector of the bootable storage device is read into memory and executed
+when the system boots, Normally, the code that is loaded is the
+boot loader that then loads the operating system. By infecting the master
+boot record, the virus can repeatedly re-infiltrate the operating system or files
+on the disk even if any malware on the system was previously detected and removed.</p>
+
+<p>Boot sector viruses were common in the early days of PCs when users often
+booted off floppy disks and shared these disks. The virus would often use
+DOS commands to install itself onto other disks that it detects. Users on those systems had full administrative rights to modify any part of the system.</p>
+
+<p>These viruses have diminished as attackers found more appealing targets.
+However, there is no reason that malware that attacks on
+the bootloader should not be considered to be a continued threat.
+2011 saw the emergence of <em>ransomware</em> that modified the boot loader
+to prevent the operating system from booting unless a ransom was paid.
+In 2016, <em>Petya Trojan</em> ransomware was deployed, which also infects the MBR
+and encrypts disk contents. </p>
+
+<h3 id="infectedflashdrives">Infected flash drives</h3>
+
+<p>In the early days of PCs, people would share content by passing around floppy disks.
+This became a means for viruses to spread, which could be planted in either the
+boot sector or in files. These days, people share USB flash drives the way they
+used to share floppies.</p>
+
+<h4 id="autorun">Autorun</h4>
+
+<p>In earlier Windows systems, Microsoft provided a feature called <strong>AutoRun</strong>.
+It was designed to make the CD (and, later, DVD and flash drive) experience better for users, particularly when using CDs for software installation. If the CD contained a file called <code>autorun.inf</code>, Windows would automatically execute a program identified within that file. While this made the experience of figuring out what to do after a CD is inserted easier for most users, it created a horrific security vulnerability: all that an adversary had to do was to get you to insert the media. Moreover, this functionality worked with any removable storage so that inserting a flash drive would automatically run a program defined
+within <code>autorun.inf</code> on the drive.</p>
+
+<p>Microsoft eventually removed this capability from flash drives but some manufacturers created USB drives that emulated a CD drive to
+offer the &#8220;convenience&#8221; of AutoRun.
+Microsoft ultimately removed this functionality altogether in Windows 7. However, there are still old, unpatched versions
+of Windows out there that can be exploited with this vulnerability.</p>
+
+<p>A similar problem occurs in the KDE framework. KDE is a desktop environment widely
+used on Linux systems. Malicious <code>.desktop</code> and <code>.directory</code> files can be created
+to run malicious code.
+Whenever the user uses the KDE file viewer to navigate to the directory where these files are stored, the
+code contained within these files will execute without any user interaction.
+This problem has not been fixed as of August 2019.</p>
+
+<h4 id="usbfirmware">USB Firmware</h4>
+
+<p>The more insidious problem with USB flash drives now is unprotected firmware.
+A USB flash drive is a bunch of memory as well as firmware &#8211; embedded software
+on the chip. The firmware runs when you plug the drive into your computer.
+It identifies the drive as a USB storage device and manages the transferring
+of data. You don&#8217;t see this firmware and cannot tell if it has been changed.
+Because the firmware defines what the USB device is, modified firmware on the
+flash drive could present the drive as a keyboard and send a set of keyboard
+commands to the host system (for example, commands to open the terminal window
+and delete files). </p>
+
+<p>A USB device can have multiple profiles associated
+with it and thus present itself as multiple devices, so the
+flash drive can tell the computer it is a keyboard but also a flash drive, so the
+user will still be able to use the device as a storage device.
+The firmware could also modify file contents as they pass
+between the USB storage device and host computer. The same attack can
+be user on other USB devices. For example, an ethernet adapter can redirect
+network messages to an attacker&#8217;s site.</p>
+
+<p>Reprogramming the firmware has not been exploited by malware thus far, at least not in a
+widespread manner, but
+the vulnerability has been demonstrated and the <a href="https://github.com/brandonlw/Psychson">source code</a> to do this is freely and readily available.</p>
+
+<h4 id="dataleakage">Data leakage</h4>
+
+<p>The most common problem with flash drives is their portability
+and small size: they are easy to lose and easy to borrow. This
+makes them vulnerable to <strong>data leakage</strong>, which is just a fancy
+term that means some adversary may access your data simply by
+borrowing your flash drive.</p>
+
+<p>In 2016, researchers at the University of Illinois ran an experiment where they scattered nearly 300 USB drives in public areas through the campus. Each of those drives was loaded with files that, when opened on a network-connected computer, would contact a server to tell it that the drive has been picked up and the file was opened. The results of the study showed that 98% of the drives were picked up and someone opened up at least one file on 45% of them<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a>. Because of the risk of malicious firmware, even formatting a drive does not make it safe to use.</p>
+
+<h3 id="inadvertentprogramexecution">Inadvertent program execution</h3>
+
+<p>The portability of flash drives makes them a distribution mechanism. Experiments of scattering a number of them in parking lots revealed that many people are all too willing to plug a random drive into their system.</p>
+
+<p>Even without automatic execution capabilities enabled, attackers can use flash drives as a distribution mechanism for malware. The Stuxnet attack exploited a windows bug in rendering shortcut icons where just viewing them in Windows Explorer enabled the execution of arbitrary code. Others have exploited a bug in video playback that allowed code execution. Even something as simple as an HTML file on a drive may direct the target to a website that can launch an attack.</p>
+
+<p>There are many other USB device-based attacks. Take a look <a href="https://www.bleepingcomputer.com/news/security/heres-a-list-of-29-different-types-of-usb-attacks/">here</a> if you&#8217;re curious.</p>
+
+<h3 id="macroviruses">Macro viruses</h3>
+
+<p>Some applications have support for <strong>macros</strong>, which allow the user to
+define a set of commands to
+avoid repetitive tasks and improve productivity.
+They are particularly common in text editors but are present in other
+applications as well, such as Photoshop and Microsoft Word and Excel.
+In some cases, as with Microsoft Office applications, macros are embedded in
+the document, which means they can be passed on to other users who access
+that document. Some macro capabilities are far more powerful than simply defining
+repetitive commands. Microsoft Office products, for example, provide
+Visual Basic scripting, which effectively allows users to embed complete
+programs into their documents. VBScript is based on Visual Basic and provides features that make it easy to access network printers, network files, special folders, user information, and even execute scripts on remote systems.</p>
+
+<p>Scripts in Office documents can spread not only by having the user pass the original infected
+document around but by modifying the
+default template file, <code>normal.dot</code>. This will affect every
+other document on the system.
+With operating systems providing better access controls and users not running with administrative privileges, embedded scripts are a ripe area for attack. If you can
+convince somebody to open a document, they will run your program on their
+machine. </p>
+
+<p>The challenge, of course, is to get a file with a malicious macro to target
+users and get them to open it. One of the most common techniques is to
+send it as an email attachment with some inducement to get the user to
+click on the document. This is an example of <strong>social engineering</strong>.</p>
+
+<p>One hugely-successful virus that did this
+was the ILOVEYOU virus from 2000. The subject of the message stated that
+it is a letter from a secret admirer. The attachment wasn&#8217;t even a document;
+it was a visual basic script. To provide a better user experience, Microsoft
+would hide file extensions by default (macOS does this too). The file was
+named <code>LOVE-LETTER-FOR-YOU.TXT.vbs</code> but the <code>.vbs</code> suffix, which
+indicated that the file was a visual basic script, was hidden from users, so
+they only saw <code>LOVE-LETTER-FOR-YOU.TXT</code>. Not being aware of when extensions
+are hidden and when they are not, millions of users assumed they received
+an innocuous text file and clicked on it. Upon execution, the script would
+copy itself into various folders, modify and add new entries to the system registry,
+replace various types of files with copies of itself (targeting music and
+video files), and try to propagate itself through Internet relay Chat clients
+as well as email. If that wasn&#8217;t enough, it would download a file called
+<code>WIN-BUGFIX.EXE</code> and execute it. This was not a bug fixing program but
+rather a program that extracted user passwords and mailed them to the hacker.</p>
+
+<p>The ILOVEYOU virus transmitted itself largely through email to contacts in infected
+computers, so your &#8220;secret admirer&#8221; message came from someone you knew and
+hence you were more likely to click on it. An earlier highly successful virus,
+Melissa, spread by offering a list of passwords for X-rated web sites. Email-based
+virus transmission is still a dominant mechanism. Sender headers and links are
+often disguised to make it look like the content is from a legitimate party.</p>
+
+<h3 id="javascriptandpdffiles">JavaScript and PDF files</h3>
+
+<p>JavaScript, like Visual Basic, has evolved into a full programming language.
+Most browsers have security holes that involve Javascript. JavaScript can
+not only modify the content and structure of a web page but can connect
+to other sites. This allows any malicious site to leverage your machine. For
+example, systems can perform port scans on a range of IP addresses and report
+any detected unsecured services.</p>
+
+<p>PDF (Portable Document Format) files, would seem to be innocent printable
+documents, incapable of harboring executable code. However, PDF is a complex
+format that can contain a mix of static and dynamic elements. Dynamic elements
+may contain Javascript, dynamic action triggers (e.g., &#8220;on open&#8221;), and the
+ability to retrieve &#8220;live&#8221; data via embedded URLs. As with Visual Basic
+scripts, PDF readers warn users of dynamic content but, depending on the
+social engineering around the file, the user may choose to trust the file &#8230; or
+not even pay attention to the warning in yet-another-dialog-box.</p>
+
+<h3 id="trojans">Trojans</h3>
+
+<p>A <strong>Trojan horse</strong> is a program with two purposes: an overt purpose and a covert one.
+The <strong>overt purpose</strong> is what compels the user to get and run the program in the first place.
+The <strong>covert purpose</strong> is unknown to the user and is the malicious part of the program.</p>
+
+<p>For example, a script with the name of a common Linux command might be added to a target user&#8217;s search path.
+When the user runs the command, the script is run. That script may, in turn, execute
+the proper command, leading the user to believe that all is well. As a side effect,
+the script may create a setuid shell to allow the attacker to impersonate that user
+or mail copy over some critical data. Users install Trojans because they believe
+they are installing useful software, such as an anti-virus tool (BTW, a lot of downloadable
+hacker tools contain Trojans: hackers hacking wannabe hackers). The side-effect
+of this software can activate cameras, enable key loggers, or deploy bots for anonymization servers,
+DDoS attacks, or spam attacks.</p>
+
+<p>Trojans may include programs (games, utilities, anti-malware programs), downloading services, rootkits (see next) and backdoors (see next). They appear to perform a useful task that does not raise suspicion on the part of the victim.</p>
+
+<h3 id="backdoors">Backdoors</h3>
+
+<p>A <strong>backdoor</strong> is software that is designed with some undocumented mechanism to allow
+someone who knows about it to be able to access the system or specific functions
+in a way that bypasses proper authentication mechanisms. In many
+cases, they are not designed for malicious use: they may allow a
+manufacturer to troubleshoot a device or a software author to push
+an update. However, if adversarial parties discover the presence
+of a backdoor, they can use it for malicious purposes.</p>
+
+<p>An old, but famous, example of a backdoor is the <em>sendmail</em>
+mail delivery server. The author of <em>sendmail</em> wanted to have development access on
+a production system that had the program installed so that he can continue to improve it.
+The system administrator refused such access. His next release of <em>sendmail</em> contained
+a password-protected backdoor that gave him access to the system via the <em>sendmail</em> server.
+The password was hard-coded in the program and soon became well-known. Robert Morris
+used the knowledge of this backdoor as one of the mechanisms for his worm to propagate
+to other systems. More recently, in 2014, some Samsung Galaxy phones were delivered
+with backdoors that provide remote access to the data on the phone. </p>
+
+<h3 id="rootkits">Rootkits</h3>
+
+<p>A <strong>rootkit</strong> is software that is designed to allow an attacker to access
+a computer and hide the existence of the software &#8230; and sometimes hide the
+presence of the user on the system.</p>
+
+<p>Historically, a basic rootkit would replace common administration commands
+(such as <em>ps</em>, <em>ls</em>, <em>find</em>, <em>top</em>, <em>netstat</em>, etc.) with commands that
+mimic their operation but hide the presence of intruding users, intruding
+processes, and intruding files. The idea is that a system administrator
+should be able to examine the system and believe that all is fine and
+the system is free of malware (or of unknown user accounts).</p>
+
+<h4 id="usermoderootkits">User mode rootkits</h4>
+
+<p>The rootkit just described is a <strong>user mode</strong> rootkit and involves
+replacing commands, intercepting messages, and patching commonly-used APIs
+that may divulge the presence of the malware. A skilled administrator
+may find unmodified commands or import software to detect the intruding
+software. </p>
+
+<h4 id="kernelmoderootkits">Kernel mode rootkits</h4>
+
+<p>A <strong>kernel mode</strong> rootkit is installed as a kernel module. Being in the
+kernel gives the rootkit unrestricted access to all system resources and
+the ability to patch kernel structures and system calls. For example,
+directory listings from the <em>getdents64</em> system call may not report any
+names that match the malware. Commands and libraries can be replaced and
+not give any indication that malicious software is resident in the system.</p>
+
+<h4 id="hypervisorrootkits">Hypervisor rootkits</h4>
+
+<p>The most insidious rootkits are hypervisor rootkits. A hypervisor sits below
+the operating system and is responsible for translating between virtual device
+operations from operating systems and the underlying hardware. All I/O flows
+through the hypervisor. Most computer systems do not run virtual machines and
+hence have no hypervisor. These systems are prime targets for a hypervisor-based
+rootkit. Now you can have an environment where the entire operating system
+can run unmodified - or even be reinstalled - and be unaware that its operations
+are being intercepted at a lower level. The hypervisor does not
+have to virtualize all hardware interactions: just the ones
+it cares about. For example, it might want to grab keyboard events
+to record passwords and messages.</p>
+
+<p>Hypervisor attacks have not been deployed but have been demonstrated as a proof
+of concept. The challenge in detecting their presence is that operating systems
+are unaware if they are running under a hypervisor, so if a malicious hypervisor
+is installed, the operating system needs to detect that it is running
+under a hypervisor rather than directly on the computer system.
+Detection is difficult and often relies on measuring completion
+times of certain system calls. If they go through a hypervisor, they will take a longer
+time and the on-chip Time Stamp Counter (TSC), which counts CPU cycles, will
+show a longer value with a hypervisor in place. An alternative, and far more obscure,
+method of detection, is the use of an instruction that stores the interrupt
+descriptor table register (IDTR) into a memory location (the SIDT instruction).
+The hypervisor changes the register&#8217;s value and the instruction can detect that.
+However, this does not have to take place on a system with only one operating
+system, so measuring timing differences may still be the more foolproof approach.</p>
+
+<h3 id="ransomware">Ransomware</h3>
+
+<p>If we think back to the goals of malware, one common goal was to extract money: even
+hackers need to monetize their efforts. An indirect way of accomplishing this was
+by collecting information to gain access to bank account data, PayPal data, or modifying
+accounts that may take money, such as eBay accounts. A more direct way of getting
+money is to demand it from the victim. Ransomware is a relatively new form of malware
+that locks a computer, keeps it from booting, or encrypts all files on the system.
+It then asks the suer to pay a ransom (usually via bitcoin) to get a decryption program.</p>
+
+<h2 id="gatheringinformation">Gathering information</h2>
+
+<p>Malware has varying goals.
+These goals may include spying on user activity, destroying content, assembling
+a collection of servers, or
+extracting money from a victim.
+One common goal is to gather information &#8230; or get the user to
+provide information. Your computer might not have anything of direct value to an adversary,
+but your PayPal, bank, Amazon, or eBay credentials might be useful.</p>
+
+<h3 id="phishing">Phishing</h3>
+
+<p><strong>Phishing</strong> is a social engineering attack whose most common purpose is to get personal information from someone, usually
+login credentials to some service. These are often carried out vie email with similar
+techniques that are used to spread infected files. A message announcing that your PayPal
+account is being canceled, that your bank detected a fraudulent transaction, or that
+FedEx could not deliver a package may prompt the receiver to panic and immediately click
+on a link in the message, which may result in the browser displaying a site crafted to look
+like PayPal, the bank, or FedEx and prompt the user for login and password information.</p>
+
+<p>Phishing attacks are surprisingly effective. A 2018 study by <a href="https://www.proofpoint.com/us/human-factor-2018">Proofpoint</a> found that 52% of all successful phishing emails are clicked on within one hour of being sent.</p>
+
+<p><strong>Spear phishing</strong> is a targeted form of phishing. A phishing attack sends the same message to
+a large set of users, hoping that some percentage of them will be fooled. A spear
+phishing attack sends a customized message that demonstrates some knowledge of the
+target, which will usually lead the target to think that the message is legitimate.
+For example, the 2016 Democratic National Committee (DNC) was
+facilitated by spear phishing. Targets were sent a message containing <em>bit.ly</em> links, which
+is a common URL shortening service that hid the actual underlying URLs. Once clicked, the web site would display what looked like
+a legitimate Google accounts login page, already pre-populated with the victim&#8217;s GMail
+address. </p>
+
+<p>More recent GMail spear phishing attacks send email to contacts of compromised accounts. The
+email contains an innocent-looking attachment: a thumbnail image of a document. When the
+victim clicks on the attachment, a web page that looks like a legitimate Google sign-in
+page is presented. As soon as the victim enters a name and password, the attackers get the
+credentials, log into the account, and target people in the victim&#8217;s contact list. They
+use an image of an actual attachment in the victim&#8217;s email and an actual subject line to
+make the email look more legitimate.</p>
+
+<p>A <a href="https://www.webroot.com/us/en/about/press-room/releases/nearly-15-million-new-phishing-sites">2017 report</a> by Webroot found that 1.385 million new and unique phishing sites are created each month. Some warning signs that a mail message may be a phishing attack are:</p>
+
+<ol>
+<li><p><em>From header</em>: is it from an unknown or suspicious address?</p></li>
+<li><p><em>To header</em>: if the message is sent to multiple people, do you recognize any other names on the header?</p></li>
+<li><p><em>Date header</em>: if the message purports to be a personal message, was it sent during normal business hours?</p></li>
+<li><p><em>Subject header</em>: is the suspicious and is it relevant to your activities?</p></li>
+<li><p><em>Message content</em>: is the message a request to click on a link in order to avoid a negative consequence?</p></li>
+<li><p><em>Embedded links</em>: are there any links that you are asked to click? If you look at the target of those links, are they misspelled, suspicious, or for a site different from that of the sender?</p></li>
+<li><p><em>Attachments</em>: is there an unexpected attachment that you are expected to open, such as a Microsoft Word document or PDF file?</p></li>
+</ol>
+
+<h3 id="deceptivewebsites">Deceptive web sites</h3>
+
+<p>Quite often, malicious links in phishing attacks direct the user to a web site in order to obtain their login credentials. These sites <a href="https://www.cyberscoop.com/awpg-phishing-2016-report-tlds-malicious-registrations-cybercrime/">masquerade as legitimate sites</a>. The
+<a href="https://www.itgovernanceusa.com/blog/52-of-phishing-victims-click-within-one-hour">Proofpoint study</a> mentioned earlier found that for every legitimate website, there are 20 malicious sites that mimic it. This is known as <strong>typosquatting</strong>. Such sites can be masqueraded banking sites, Google/Microsoft/Apple authentication pages, videoconferencing plugin-software downloads, etc.</p>
+
+<p>File serving sites, including those that host software or those that provide services such as PDF or mp3 conversion are often ad-sponsored. Some of the ads on these sites, however, often look like download links and can trick a user into clicking on the ad instead of the link for the actual content. The </p>
+
+<h3 id="keyloggers">Keyloggers</h3>
+
+<p>Another way of obtaining information is to snoop on a user&#8217;s actions.
+<strong>Keyloggers</strong> record everything a victim types and allow a user to extract
+login names, passwords, and entire messages.</p>
+
+<p>Keyloggers can be implemented in several ways:</p>
+<dl>
+<dt>Malicious hypervisor</dt>
+<dd>Since a hypervisor provides virtual interfaces for all the resources of a computer,
+it can capture all keyboard, mouse, and even video data. These attacks are difficult since
+they rely on the ability to install a hypervisor.</dd>
+
+<dt>Kernel-based rootkit</dt>
+<dd>All input/output operations go through the operating system kernel. Modifying the
+kernel allows malicious software to log and upload keystroke data.</dd>
+
+<dt>System call hooking</dt>
+<dd>Some operating systems provide a system call hooking mechanism that allows
+data to and from system calls to be intercepted. We saw how this was used to
+implement sandboxing. Windows enables this without
+having to install any kernel-level drivers. The <code>SetWindowsHookEx</code> system
+call can be used to report WH_KEYBOARD and WH_MOUSE events, capturing keyboard
+and mouse activity.</dd>
+
+<dt>Browser-based logging</dt>
+<dd>JavaScript can be used to capture <code>onKeyUp()</code> events. These
+events will be captured for one page but other hacks can be used to create a broader
+context with embedded pages. Form submission can also be intercepted to get
+populated form data without having to reassemble key presses into coherent
+account credentials.</dd>
+
+<dt>Hardware loggers</dt>
+<dd>Although visible to the user, hardware key loggers can be used for USB-connected
+keyboards. Some of these have embedded Wi-Fi transceivers that enable an attacker
+to collect the data from a distance.</dd>
+</dl>
+
+
+<h2 id="defenses">Defenses</h2>
+
+<p>Malware was particularly easy to spread on older Windows systems since user accounts, and hence processes, ran with full administrative rights, which made it easy to modify any
+files on the system and even install kernel drivers. Adding <strong>file protection</strong>
+mechanisms, such as a distinction between user and administrator accounts added
+a significant layer of protection. However, malware installed by the user would
+run with that user&#8217;s privileges and would have full access to all of a user&#8217;s files.
+If any files are read or write protected, the malware can change DAC permissions.</p>
+
+<p>Systems took the approach of warning users if software wanted to install software
+or asked for elevated privileges. Social engineering hopes to convince users
+that they actually <em>want</em> to install the software (or view the
+document). They will happily grant permissions and install the malware. MAC permissions
+can stop some viruses as they will not be able, for instance, to override write permissions on
+executable files but macro viruses and the user files are still a problem.</p>
+
+<p>In general, however, studies have shown that by simply taking away admin rights (avoiding privilege escalation)
+from users, 94% of the 530 Microsoft vulnerabilities that were reported in 2016
+could be mitigated and 100% of vulnerabilities in Office 2016 could be mitigated.</p>
+
+<h3 id="anti-virusanti-malwaresoftware">Anti-virus (anti-malware) software</h3>
+
+<p>There is no way to recognize all possible viruses. <strong>Anti-virus</strong> software uses two strategies: <em>signature-based</em> and <em>behavior-based</em> approaches.</p>
+
+<p>With <strong>signature-based</strong> systems, anti-virus programs look for byte sequences that match those in known malware. Each bit pattern is an excerpt of code from a known virus and is called
+a <strong>signature</strong> (not to be confused with <em>digital signatures</em>, discussed later in the course). A virus signature is simply a set of bytes that make up a portion of the virus and allow scanning software to see whether that virus is embedded in a file. The hope is that the signature is long
+enough and unique enough that the byte pattern will not occur in legitimate programs.
+This scanning process is called <strong>signature scanning</strong>. Lists of signatures (&#8220;<strong>virus definitions</strong>&#8221;) have to be updated by the anti-virus software vendor as new viruses are discovered. Signature-based detection is used by most anti-virus products.</p>
+
+<p>A <strong>behavior-based</strong> system monitors the activities of a process (typically the system calls or standard library calls that it makes). Ideally, <strong>sandboxing</strong> is employed, to ensure that the suspected code is run within a sandbox or even in an interpreted environment within a sandbox to ensure that it cannot cause real damage. Behavior-based systems try to perform <strong>anomaly detection</strong>. If the observed activity is deemed suspicious, the process is terminated and the user alerted. Sandboxed, behavior-based analysis is often run by anti-malware companies to examine what a piece of suspected malware is actually doing and whether it should be considered to be a virus. A behavior-based can identify previously-unseen malware but these systems tend to have higher false positive rates of detection: it is difficult to characterize exactly what set of operations constitute suspicious behavior.</p>
+
+<p>Windows Defender, as an example, makes use of both signature-based scanning as well as behavior-based process monitoring. It uses signature-based scanning on files and behavior-based analysis for running processes. Behavior monitoring includes scanning for suspicious file and registry changes (e.g., ransomware may try to encrypt all the files on a system and a lot of malware may try to modify the registry so that the software runs when the system is rebooted. </p>
+
+<h3 id="countermeasures">Countermeasures</h3>
+
+<p>Some viruses will take measures to try to defend themselves from anti-virus software.</p>
+
+<h4 id="signaturescanningcountermeasures">Signature scanning countermeasures</h4>
+
+<p>A common thing to do in malware is to use a <strong>packer</strong> on the code, unpacking it prior to execution. Packing can be one of several operations:</p>
+
+<ul>
+<li>Simply obscure the malware payload by exclusive-oring (xor) with a repeating byte pattern (exclusive-oring the data with the same byte pattern reconstructs it.</li>
+<li>Compress the code and then uncompress it upon loading it prior to execution.</li>
+<li>Encrypt the code and decrypt it prior to execution.</li>
+</ul>
+
+<p>All of these techniques will change the signature of a virus. One can scan for a signature of a compressed version of the virus but there are dozens of compression algorithms around, so the scanning process gets more complicated.</p>
+
+<p>With encryption (xor is a simple form of encryption), only the non-encrypted part of the virus contains the unpacking software (decryption software and the key). A virus
+scanner will need to match the code for the unpacker component since the key and
+the encrypted components can change each time the virus propagates itself.</p>
+
+<p><strong>Polymorphic viruses</strong>
+mutate their code each time they run while keeping the algorithm the same. This
+involves replacing sequences of instructions with functionally-identical ones. For
+example, one can change additions to subtractions of negative numbers, invert
+conditional tests and branches, and insert or remove no-op instructions. This thwarts signature scanning software because the the byte pattern of the virus is different each time.</p>
+
+<h4 id="accesscontrolcountermeasures">Access control countermeasures</h4>
+
+<p>Access controls help but do not stop the problem of malware.
+Containment mechanisms such as containers work well for server software but
+are usually impractical for user software (e.g., you want Microsoft Word to be
+able to read documents anywhere in a user&#8217;s directories). Application sandboxing is generally far more effective and is a dominant technique used in mobile software.</p>
+
+<p>Trojans, deceptive downloads, and phishing attacks are insidiously difficult to defend against since
+we are dealing with human nature: users <em>want</em> to install the software or
+provide the data. They are conditioned to accepting pop-up messages and entering a password.
+Better detection in browsers &amp; mail clients against suspicious content or URLs helps. However, malware distributors have been known to simply ask a user to rename a file to turn it into one that is recognized by the operating system as an executable file (or a disk image, PDF, or whatever format the malware come in and may otherwise be filtered by the mail server or web browser.</p>
+
+<h4 id="sandboxingcountermeasures">Sandboxing countermeasures</h4>
+
+<p>Virusus are unlikely to get through a sandbox (unless there are vulnerabilities or an improper configuration). However, there are areas where malware can address sandboxing:</p>
+
+<ol>
+<li><p>Vendor examination<br/>
+Anti-virus vendors often test software within a tightly configured sandboxed environment so they can detect whether the software is doing anything malicious (e.g., accessing files, devices, or the network in ways it is not supposed to). If they detect that they do have malware, they will dig in further and extract a signature so they can update and distribute their list of virus definitions.
+Viruses can try to get through this examination phase by setting a trigger to keep the virus from immediately performing malicious actions or to stay dormant for the first several invocations. The hope is that the anti-virus vendors will not see anything suspicious and the virus will never be flagged as such by their software.</p></li>
+<li><p>User configuration (entitlements)<br/>
+Virtually all mobile applications, and increasingly more desktop/laptop applications, are run with application sandboxes in place. These may disallow malware from accessing files, devices, or the network. However, it never hurts to ask. The software can simply ask the user to modify the sandbox settings. If social engineering is successful, the user may not even be suspicious and not wonder why a game wants access to contacts or location information.</p></li>
+</ol>
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>Matthew Tischer, Zakir Durumeric, et al., <a href="https://zakird.com/papers/usb.pdf">Users Really Do Plug in USB Drives They Find</a>, University of Illinois,  <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+
+<h1 id="cryptography">Cryptography</h1>
+
+<p>Cryptography deals with encrypting <strong>plaintext</strong> using
+a <strong>cipher</strong>, also known as an <strong>encryption algorithm</strong>,
+to create <strong>ciphertext</strong>, which is unintelligible to anyone
+unless they can <strong>decrypt</strong> the ciphertext. It is a tool that
+helps build protocols that address:</p>
+<dl>
+<dt>Authentication</dt>
+<dd>Showing that the user really is that user.</dd>
+
+<dt>Integrity:</dt>
+<dd>Validating that the message has not been modified.</dd>
+
+<dt>Nonrepudiation:</dt>
+<dd>Binding the origin of a message to a user so that she cannot deny creating it.</dd>
+
+<dt>Confidentiality:</dt>
+<dd>Hiding the contents of a message.</dd>
+</dl>
+
+
+<p>A <strong>restricted cipher</strong> is one where the workings of the cipher
+must be kept secret. There is no reliance on any key and the secrecy
+of the cipher is crucial to the value of the algorithm. This has
+obvious flaws: people in the know leaking the secret, designers
+coming up with a poor algorithm, and reverse engineering. </p>
+
+<p>For any serious use of encryption, we use well-tested, <em>non-secret</em> algorithms
+that rely on secret keys. A <strong>key</strong> is a parameter to a cipher that alters
+the resulting ciphertext. Knowledge of the key is needed to decrypt the
+ciphertext.
+<strong>Kerckhoffs’s Principle</strong> states that a cryptosystem should be
+secure even if everything about the system, except the key, is
+public knowledge. We expect algorithms to be publicly known and all
+security to rest entirely on the secrecy of the key.</p>
+
+<p>A <strong>symmetric encryption algorithm</strong> uses the same secret key
+for encryption and decryption.</p>
+
+<p>An alternative to symmetric ciphers are <strong>asymmetric ciphers</strong>.
+An <strong>asymmetric</strong>, or <strong>public key</strong> cipher uses two
+related keys. Data encrypted with one key can only be decrypted
+with the other key.</p>
+
+<h3 id="propertiesofgoodciphers">Properties of good ciphers</h3>
+
+<p>For a cipher to be considered good, ciphertext should be indistinguishable
+from random values. Given ciphertext, there should be no way to
+extract the original plaintext or the key that was used to create
+it except by of enumerating over all possible keys. This is called a
+<strong>brute-force attack</strong>. The keys used for encryption should be large
+enough that a brute force attack is not feasible. Each additional bit
+in a key doubles the number of possible keys and hence doubles the
+search time.</p>
+
+<h2 id="classiccryptography">Classic cryptography</h2>
+
+<h3 id="monoalphabeticsubstitutionciphers">Monoalphabetic substitution ciphers</h3>
+
+<p>The earliest form of cryptography was the <strong>monoalphabetic substitution cipher</strong>. In
+this cipher, each character of plaintext is substituted with a
+character of ciphertext based on a substitution alphabet (a lookup
+table). The simplest of these is the <strong>Caesar cipher</strong>, known
+as a <strong>shift cipher</strong>, in which a
+plaintext character is replaced with a character that is <em>n</em> positions
+away in the alphabet. The key is the simply the the shift value: the number <em>n</em>.
+Substitution ciphers
+are vulnerable to <strong>frequency analysis attacks</strong>, in which an analyst
+analyzes letter frequencies in ciphertext and substitutes characters
+with those that occur with the same frequency in natural language
+text (e.g., if &#8220;x&#8221; occurs 12% of the time, it&#8217;s likely to really
+be an &#8220;e&#8221; since &#8220;e&#8221; occurs in English text approximately 12% of the
+time while &#8220;x&#8221; occurs only 0.1% of the time).</p>
+
+<h3 id="polyalphabeticsubstitutionciphers">Polyalphabetic substitution ciphers</h3>
+
+<p><strong>Polyalphabetic substitution ciphers</strong> were designed to increase resiliency against
+frequency analysis attacks. Instead of using a single
+plaintext to ciphertext mapping for the entire message, the substitution alphabet
+may change periodically.
+Leon Battista Alberti is credited with creating the first polyalphabetic substitution cipher.
+In the <strong>Alberti cipher</strong> (essentially a secret
+decoder ring), the substitution alphabet changes every <em>n</em> characters
+as the ring is rotated one position every <em>n</em> characters.</p>
+
+<p>The <strong>Vigenère
+cipher</strong> is a grid of Caesar ciphers that uses a <strong>repeating key</strong>.
+A repeating key is a key that repeats itself for as long as the message.
+Each character
+of the key determines which Caesar cipher (which row of the grid)
+will be used for the next character of plaintext. The position of
+the plaintext character identifies the column of the grid.
+These algorithms are still vulnerable to frequency analysis attacks but require
+substantially more plaintext since one needs to deduce the key length (or the
+frequency at which the substitution alphabet changes) and then
+effectively decode multiple monoalphabetic substitution ciphers.</p>
+
+<h3 id="one-timepads">One-time Pads</h3>
+
+<p>The <strong>one-time pad</strong> is the only provably secure cipher. It uses a
+random key that is as long as the plaintext. Each character
+of plaintext is permuted by a character of ciphertext (e.g., add
+the characters modulo the size of the alphabet or, in the
+case of binary data, exclusive-or the next byte of the text with
+the next byte of the key).
+The reason this cryptosystem is not particularly
+useful is because the key has to be as long as the message, so
+transporting the key securely becomes a problem. The challenge of
+sending a message securely is now replaced with the challenge of
+sending the key securely.
+The position in the key (pad) must by
+synchronized at all times. Error recovery from unsynchronized keys
+is not possible. Finally, for the cipher to be secure, a key must
+be composed of truly random characters, not ones derived by an
+algorithmic pseudorandom number generator. The key can
+never be reused. </p>
+
+<p>The one-time pad provides <strong>perfect secrecy</strong> (not to be confused with <em>forward secrecy</em>, also called <em>perfect forward secrecy</em>, which will be discussed later), which means that the ciphertext conveys no information about the content of the plaintext. It has been proved that perfect secrecy can be achieved <em>only</em> if there are as many possible keys as the plaintext, meaning the key has to be as long as the message. Watch <a href="https://www.youtube.com/watch?v=cAt6MYoGqJ4">this video</a> for an explanation of perfect secrecy.</p>
+
+<h3 id="streamciphers">Stream ciphers</h3>
+
+<p>A <strong>stream cipher</strong> simulates a one-time pad by using a <strong>keystream generator</strong> to
+create a set of key bytes that is as long as the message.
+A keystream generator is a <strong>pseudorandom number generator</strong> that is <strong>seeded</strong>,
+or initialized, with a key that drives the output of all the bytes that the
+generator spits out. The keystream generator is fully deterministic: the same
+key will produce the same stream of output bytes each time. Because of this,
+receivers only need to have the key to be able to decipher a message.
+However, because the keystream generator does not generate true random numbers,
+the stream cipher is not a true substitute for a one-time pad. Its strength
+rests on the strength of the key. A keystream generator will, at some point,
+will reach an internal state that is identical to some previous internal
+state and produce output that is a repetition of previous output. This also
+limits the security of a stream cipher but the repetition may not occur for
+a long time, so stream ciphers can still be useful for many purposes.</p>
+
+<h3 id="rotormachines">Rotor machines</h3>
+
+<p>A <strong>rotor machine</strong> is an electromechanical device that implements
+a polyalphabetic substitution cipher. It uses a set of disks (rotors),
+each of which implements a substitution cipher.
+The rotors rotate with each character in the style of an odometer: after a
+complete rotation of one rotor, the next rotor advances one position.
+Each successive character gets a new substitution alphabet applied to it.
+The multi-rotor mechanism allows for a huge number of substitution alphabets to be
+employed before they start repeating when the rotors all reach their
+starting position. The number of alphabets is c<sup>r</sup>, where
+<em>c</em> is the number of characters in the alphabet and <em>r</em> is
+the number of rotors.</p>
+
+<h3 id="transpositionciphers">Transposition ciphers</h3>
+
+<p>Instead of substituting one character of plaintext for a
+character of ciphertext, a transposition cipher scrambles the position of the
+plaintext characters. Decryption is the knowledge of how to unscramble them.</p>
+
+<p>A <strong>scytale</strong>, also known as a <em>staff cipher</em>, is an ancient implementation of a transposition cipher
+where text written along a strip of paper is wrapped around a rod and the resulting
+sequences of text are read horizontally. This is equivalent to entering
+characters in a two-dimensional matrix horizontally and reading them
+vertically. Because the number of characters might not be a multiple
+of the width of the matrix, extra characters might need to be added at the
+end. This is called <strong>padding</strong> and is essential for <strong>block ciphers</strong>,
+which encrypt chunks of data at a time.</p>
+
+<h2 id="blockciphers">Block ciphers</h2>
+
+<p>Most modern ciphers are <strong>block ciphers</strong>, meaning that they encrypt
+a chunk of bits, or <strong>block</strong>, of plaintext at a time. The same key
+is used to encrypt each successive block of plaintext.</p>
+
+<p>AES and DES are two popular symmetric block ciphers.
+Symmetric block ciphers are usually implemented as <strong>iterative ciphers</strong>.
+The encryption of each block of plaintext iterates over several <strong>rounds</strong>. Each round
+uses a <strong>subkey</strong>, which is a key generated from the main key via
+a specific set of bit replications, inversions, and transpositions. The
+subkey is also known as a <strong>round key</strong> since it is applied to only one round, or iteration.
+This subkey determines what happens to the block of plaintext as it
+goes through a <strong>substitution-permutation (SP) network</strong>. The SP
+network, guided by the subkey, flips some bits by doing a substitution, which is
+a table lookup of an input bit pattern to get an output bit pattern and
+a permutation, which is a scrambling of bits in a specific order.
+The output bytes are fed into the next round, which applies
+a substitution-permutation step onto a different subkey.
+The process continues for several rounds (16 rounds for DES, 10&#8211;14
+rounds for AES). and the resulting bytes are the ciphertext for the
+input block.</p>
+
+<p>The iteration through multiple SP steps creates
+<em>confusion</em> and <em>diffusion</em>. <strong>Confusion</strong> means that it is extremely
+difficult to find any correlation between a bit of the ciphertext with
+any part of the key or the plaintext. A core component of block ciphers
+is the <strong>s-box</strong>, which converts <em>n</em> input bits to <em>m</em> output bits, usually
+via a table lookup. The purpose of the s-box is to add <em>confusion</em> by
+altering the relationship between the input and output bits.</p>
+
+<p><strong>Diffusion</strong> means
+that any changes to the plaintext are distributed (diffused) throughout the
+ciphertext so that, on average, half of the bits of the ciphertext would
+change if even one bit of plaintext is changed.</p>
+
+<h3 id="feistelciphers">Feistel ciphers</h3>
+
+<p>A <strong>Feistel cipher</strong> is a form of block cipher that uses a variation
+of the SP network where a block
+plaintext is split into two parts. The substitution-permutation round
+is applied to only one part. That output is then XORed with the other
+part and the two halves are swapped. At each round, half of
+the input block remains unchanged. DES, the Data Encryption Standard,
+is an example of a Feistel cipher. AES, the Advanced Encryption Standard,
+is not.</p>
+
+<h3 id="des">DES</h3>
+
+<p>Two popular symmetric block ciphers are
+DES, the Data Encryption Standard, and AES, the Advanced Encryption Standard.
+DES was adopted as a federal standard in 1976 and is a block cipher
+based on the Feistel cipher
+that encrypts 64-bit blocks using a 56-bit key. </p>
+
+<p>DES has been shown to have some minor weaknesses against cryptanalysis.
+Key can be recovered using 2<sup>47</sup> chosen plaintexts or 2<sup>43</sup> known plaintexts.
+Note that this is not a practical amount of data to get for a real attack.
+The real weakness of DES is not the algorithm but but its 56-bit key.
+An exhaustive search requires 2<sup>55</sup> iterations on average (we assume
+that, on average, the plaintext is recovered halfway through the search).
+This was a lot for computers in the 1970s but is not much for today&#8217;s dedicated
+hardware or distributed efforts.</p>
+
+<h3 id="triple-des">Triple-DES</h3>
+
+<p><strong>Triple-DES</strong> (<strong>3DES</strong>)
+solves the key size problem of DES and allows DES to use keys up to 168 bits.
+It does this by applying three layers of encryption:</p>
+
+<ol>
+<li>C&#8217; = Encrypt M with key K<sub>1</sub></li>
+<li>C&#8217;&#8217; = Decrypt C&#8217; with key K<sub>2</sub></li>
+<li>C = Encrypt C&#8217;&#8217; with key K<sub>3</sub></li>
+</ol>
+
+<p>If K<sub>1</sub>, K<sub>2</sub>, and K<sub>3</sub> are identical, we have the original DES algorithm
+since the decryption in the second step cancels out the encryption in the first step.
+If K<sub>1</sub> and K<sub>3</sub> are the same, we effectively have a 112-bit key and if all three
+keys are different, we have a 168-bit key.</p>
+
+<p>Cryptanalysis is not effective with 3DES: the three layers of encryption
+use 48 rounds instead of 16 making it infeasible to reconstruct the
+substitutions and permutations that take place.
+DES is relatively slow compared with other symmetric ciphers, such as AES.
+It was designed with hardware encryption in mind
+3DES is, of course, three times slower than DES.</p>
+
+<h3 id="aes">AES</h3>
+
+<p>AES, the Advanced Encryption Standard, was designed as a successor to DES
+and became a federal government standard in 2002.
+It uses a larger block size than DES: 128 bits versus DES&#8217;s 64 bits and supports
+larger key sizes: 128, 192, and 256 bits.
+Even 128 bits is complex enough to prevent brute-force searches.</p>
+
+<p>No significant academic attacks have been found thus far beyond brute force search.
+AES is also typically 5&#8211;10 times faster in software than 3DES.</p>
+
+<h2 id="blockciphermodes">Block cipher modes</h2>
+
+<h3 id="electroniccodebookecb">Electronic Code Book (ECB)</h3>
+
+<p>When data is encrypted with a block cipher, it is broken into blocks
+and each block is encrypted separately. This leads to two problems.</p>
+
+<ol>
+<li><p>If different encrypted messages contain the same substrings and
+use the same key, an intruder can deduce that it is the same data.</p></li>
+<li><p>Secondly, a malicious party can delete, add, or replace
+blocks (perhaps with blocks that were
+captured from previous messages). </p></li>
+</ol>
+
+<p>This basic form of a block cipher
+is called an <strong>electronic code book</strong> (<strong>ECB</strong>).
+Think of the code book as a database of encrypted content. You can
+look up a block of plaintext and find the corresponding ciphertext. This
+is not feasible to implement for arbitrary messages but refers to the historic use of
+codebooks to convert plaintext messages to ciphertext.</p>
+
+<h3 id="cipherblockchainingcbc">Cipher Block Chaining (CBC)</h3>
+
+<p><strong>Cipher block
+chaining</strong> (<strong>CBC</strong>) addresses these problems. Every block of data
+is still encrypted with the same key. However, prior to being
+encrypted, the data block is exclusive-ORed with the previous
+block of ciphertext. The receiver does the process in reverse: a block
+of received data is decrypted and then exclusive-ored with the
+previously-received block of ciphertext to obtain the original data. The very
+first block is exclusive-ored with a random <strong>initialization vector</strong>,
+which must be transmitted to the remote side. </p>
+
+<p>Note that CBC does
+not make the encryption more secure; it simply makes the result of
+each block of data dependent on all previous previous blocks so that data
+cannot be meaningfully inserted or deleted in
+the message stream.</p>
+
+<h3 id="countermodectr">Counter mode (CTR)</h3>
+
+<p><strong>Counter mode</strong> (<strong>CTR</strong>) also addresses these problems
+but in a different way. The ciphertext of each block is a function
+of its position in the message. Encryption starts with a
+message counter. The counter is incremented for each block
+of input. Only the counter is encrypted. The resulting ciphertext is
+then exclusive-ORed with the corresponding block of plaintext, producing
+a block of message ciphertext. To decrypt, the receiver does
+the same thing and needs to know the starting value of the counter
+as well as the key. </p>
+
+<p>An advantage of CTR mode is that each block has
+no dependance on other blocks and encryption on multiple
+blocks can be done in parallel. </p>
+
+<h2 id="cryptanalysis">Cryptanalysis</h2>
+
+<p>The goal of <strong>cryptanalysis</strong> is break codes.
+Most often, it is to identify some non-random behavior
+of an algorithm that will give the analyst an advantage over
+an exhaustive search of the key space.</p>
+
+<p><strong>Differential cryptanalysis</strong>
+seeks to identify non-random behavior by
+examining how changes in plaintext input affect changes in the output ciphertext.
+It tries to find whether certain bit patterns are unlikely for certain keys
+or whether the change in plaintext results in likely changes in the output.</p>
+
+<p><strong>Linear cryptanalysis</strong>
+tries to create equations that attempt to predict the relationships between
+ciphertext, plaintext, and the key. An equation will never be equivalent to
+a cipher but any correlation of bit patterns give the analyst an advantage.</p>
+
+<p>Neither of these methods will break a code directly but may help find
+keys or data that are more likely are that are unlikely. It reduces the
+keys that need to be searched.</p>
+
+<h2 id="publickeycryptography">Public key cryptography</h2>
+
+<p><strong>Public key algorithm</strong>, also known as <strong>asymmetric ciphers</strong>, use
+one key for encryption and another key for decryption. One of these
+keys is kept private (known only to the creator) and is known as
+the <strong>private key</strong>. The corresponding key is generally made
+visible to others and is known as the <strong>public key</strong>.</p>
+
+<p>Anything encrypted with the private key can only be decrypted with the public
+key. This is the basis for digital signatures. Anything that is
+encrypted with a public key can be encrypted only with the corresponding
+private key. This is the basis for authentication and covert
+communication.</p>
+
+<p>Public and private keys are related but, given one
+of the keys, there is no feasible way of computing the other. They
+are based on <strong>trapdoor functions</strong>, which are one-way functions:
+there is no known way to compute the inverse unless you have extra data: the
+other key.</p>
+
+<h3 id="rsapublickeycryptography">RSA public key cryptography</h3>
+
+<p>The RSA algorithm is the most popular algorithm for asymmetric
+cryptography. Its security is based on the difficulty of finding the
+factors of the product of two large prime numbers. Unlike
+symmetric ciphers, RSA encryption is a matter of performing
+arithmetic on large numbers. It is also a block cipher and
+plaintext is converted to ciphertext by the formula:</p>
+
+<p>c = m<sup>e</sup> mod <em>n</em></p>
+
+<p>Where <em>m</em> is a block of plaintext, <em>e</em> is the encryption key, and
+<em>n</em> is an agreed-upon modulus that is the product of two primes.
+To decrypt the ciphertext, you need the decryption key, <em>d</em>:</p>
+
+<p>m = c<sup>d</sup> mod <em>n</em></p>
+
+<p>Given the ciphertext <em>c</em>, <em>e</em>, and <em>n</em>, there is no efficient way
+to compute the inverse to obtain <em>m</em>. Should an attacker find a way
+to factor <em>n</em> into its two prime factors, however, the attacker would
+be able to reconstruct the encryption and decryption keys, <em>e</em> and <em>d</em>.</p>
+
+<h3 id="ellipticcurvecryptographyecc">Elliptic curve cryptography (ECC)</h3>
+
+<p><strong>Elliptic curve cryptography</strong> (<strong>ECC</strong>) is a more recent public key algorithm
+that is an alternative to RSA. It is based on finding points
+along a prescribed elliptic curve, which is an equation of the form:</p>
+
+<p>y<sup>2</sup> = x<sup>3</sup> + ax + b</p>
+
+<p>Contrary to its name, elliptic curves have nothing to do with ellipses or conic sections
+and look like bumpy lines.
+With elliptic curves, multiplying a point on a given elliptic curve
+by a number will produce another point on the curve. However, given that
+result, it is difficult to find what number was used.
+The security in ECC rests not our inability to factor numbers but our
+inability to perform discrete logarithms in a finite field.</p>
+
+<p>The RSA algorithm is still the most widely used public key algorithm,
+but ECC has some advantages:</p>
+
+<ul>
+<li><p>ECC can use far shorter keys for the same degree of security. Security comparable
+to 256 bit AES encryption requires a 512-bit ECC key but a 15,360-bit RSA key</p></li>
+<li><p>ECC requires less CPU consumption and uses less memory than RSA. It is faster for encryption (including signature generation) than RSA but slower for decryption.</p></li>
+<li><p>Generating ECC keys is faster than RSA (but much slower than AES, where a key is just a random number).</p></li>
+</ul>
+
+<p>On the downside, ECC is more complex to implement and decryption is slower than with RSA.
+As a standard, ECC was also tainted because the NSA inserted weaknesses into the ECC
+random number generator that effectively created a backdoor for decrypting content. This
+has been remedied and ECC is generally considered the preferred choice over RSA for most
+applications.</p>
+
+<p>If you are interested,
+see <a href="https://arstechnica.com/information-technology/2013/10/a-relatively-easy-to-understand-primer-on-elliptic-curve-cryptography/">here</a> for a somewhat easy-to-understand tutorial on ECC.</p>
+
+<h2 id="quantumcomputing">Quantum computing</h2>
+
+<p>Quantum computers are a markedly different form computer. Conventional computers store and process
+information that is represented in bits, with each bit having a distinct value of 0 or 1.
+Quantum computers use the principles of quantum mechanics, which include superposition and
+entanglement. Instead of working with bits, quantum computers operate on <em>qubits</em>, which
+can hold values of &#8220;0&#8221; and &#8220;1&#8221; simultaneously via superposiion. The superpositions of qubits
+can be entangled with other objects so that their final outcomes will be mathematically related.
+A single operation can be carried out on 2^n values simultaneously, where <em>n</em> is the number
+of qubits in the computer.</p>
+
+<p>be solved exponentially faster than with conventional comptuers.
+<a href="https://en.wikipedia.org/wiki/Shor%27s_algorithm">Shor&#8217;s algorithm</a>,
+for instance, will be able to find the prime factors of large
+integers and compute discrete logarithms far more efficiently than is currently possible.</p>
+
+<p>So far, quantum computers are very much in their infancy and it is not clear when &#8211; or if &#8211;
+large-scale quantum computers that are capable of solving useful problems will be built.
+IBM and Google are two companies that are racing to build one. It is unlikely that they
+will be built in the next several years but we expect that they will be built eventually.
+Shor&#8217;s algorithm will be able to crack public-key based systems such as RSA, Elliptic Curve
+Cryptography, and Diffie-Hellman key exchange. In 2016, the NSA called for a migration to
+&#8220;post-quantum cryptographic algorithms&#8221; and has currently narrowed down the submissions to
+26 candidates. The goal is to find useful trapdoor functions that do not rely on
+multiplying large primes, computing exponents, any other mechanisms that can be attacked
+by quantum computation. If you are interested in these, you can read the
+<a href="https://nvlpubs.nist.gov/nistpubs/ir/2016/NIST.IR.8105.pdf">NSA&#8217;s report</a>.</p>
+
+<p>Symmetric cryptosystems, such as AES,
+are not particularly vulnerable to quantum computing since they rely on moving and flipping
+bits rather than applying mathematical functions on the data.
+The best potential attacks come via
+<a href="https://en.wikipedia.org/wiki/Grover%27s_algorithm">Grover&#8217;s algorithm</a>, which yields only
+a quadratic rather than an exponential speedup in key searches. This will reduce
+the effective strength of a key by a factor of two. For instance, a 128-bit key will have
+the strength of a 64-bit key on a conventional computer. It is easy enough to use a sufficiently
+long key (256-bit AES keys are currently recommended) so that quantum computing poses no
+threat to symmetric algorithms. </p>
+
+<h2 id="securecommunication">Secure communication</h2>
+
+<h3 id="symmetriccryptography">Symmetric cryptography</h3>
+
+<p>Communicating securely with symmetric cryptography is easy.
+All communicating parties must share the same secret key.
+Plaintext is encrypted with the secret key to create
+ciphertext and then transmitted or stored. It can be decrypted
+by anyone who has the secret key.</p>
+
+<h3 id="asymmetriccryptography">Asymmetric cryptography</h3>
+
+<p>Communicating securely with asymmetric cryptography is
+a bit different. Anything encrypted with one key can be
+decrypted only by the other related key. For Alice to
+encrypt a message for Bob, she encrypts it with
+Bob&#8217;s public key. Only Bob has the corresponding key that
+can decrypt the message: Bob&#8217;s private key.</p>
+
+<h3 id="hybridcryptography">Hybrid cryptography</h3>
+
+<p>Asymmetric cryptography alleviates the problem of
+transmitting a key over an unsecure channel. However, it
+is considerably slower than symmetric cryptography.
+AES, for example, is approximately 1,500 times
+faster for decryption than RSA and 40 times faster for encryption.
+AES is also much faster than ECC.
+Key generation is also far slower with RSA or ECC than it is with
+symmetric algorithms, where the key is just a random number
+rather than a set of carefully chosen numbers with specific properties.
+Moreover, certain keys with RSA may be weaker than others.</p>
+
+<p>Because of these factors, RSA and ECC are almost never used to encrypt
+large chunks of information.
+Instead, it is common to use <strong>hybrid cryptography</strong>, where
+a public key algorithm is used to encrypt a randomly-generated
+key that will encrypt the message with a symmetric algorithm.
+This randomly-generated key is called a <strong>session key</strong>, since
+it is generally used for one communication session and then discarded.</p>
+
+<h2 id="keyexchange">Key Exchange</h2>
+
+<p>The biggest problem with symmetric cryptography is <strong>key distribution</strong>. For
+Alice and Bob to communicate, they must share a secret key that no
+adversaries can get. However, Alice cannot send the key to Bob since it
+would be visible to adversaries. She cannot encrypt it because Alice
+and Bob do not share a key yet.</p>
+
+<h3 id="keyexchangeusingatrustedthirdparty">Key exchange using a trusted third party</h3>
+
+<p>For two parties to communicate using symmetric ciphers they need to
+share the same key. The ways of doing this are:</p>
+
+<ol>
+<li><p>Share the key via some trusted mechanism outside of the network, such are
+reading it over the phone or sending a flash drive via FedEx.</p></li>
+<li><p>Send the key using a public key algorithm.</p></li>
+<li><p>Use a trusted third party.</p></li>
+</ol>
+
+<p>We will first examine the use of a trusted third party. A trusted third party
+is a trusted system that has everyone&#8217;s key. Hence, only Alice and the trusted party
+(whom we will call Trent) have Alice&#8217;s secret key. Only Bob and Trent
+have Bob&#8217;s secret key.</p>
+
+<p>The simplest way of using a trusted third party is to ask it to come up
+with a session key and send it to the parties that wish to communicate.
+For example, Alice sends a message to Trent requesting a session key to
+communicate with Bob. This message is encrypted with Alice&#8217;s secret key
+so that Trent knows the message could have only come from Alice.</p>
+
+<p>Trent generates a random session key and encrypts it with Alice&#8217;s secret key.
+He also encrypts the same key with Bob&#8217;s secret key. Alice gets both keys
+and passes the one encrypted for Bob to Bob. Now Alice and Bob have a session
+key that was encrypted with each of their secret keys and they can communicate
+by encrypting messages with that session key.</p>
+
+<p>This simple scheme is vulnerable to <strong>replay attacks</strong>. An eavesdropper, Eve,
+can record messages from Alice to Bob and replay them at a later time. Eve
+might not be able to decode the messages but she can confuse Bob by sending him
+seemingly valid encrypted messages.</p>
+
+<p>The second problem is that Alice sends Trent an encrypted session key but
+Trent has no idea that Alice is requesting to communicate with him. While Trent
+<strong>authenticated</strong> Alice (simply by being able to decrypt her request) and
+<strong>authorized</strong> her to talk with Bob (by generating the session key), that information
+has not been conveyed to Bob.</p>
+
+<h3 id="needham-schroeder:nonces">Needham-Schroeder: nonces</h3>
+
+<p>The <strong>Needham-Schroeder</strong> protocol improves the basic key exchange protocol by
+adding <em>nonces</em> to messages. A <strong>nonce</strong> is simply a random string &#8211; a random bunch
+of bits. Alice sends a request to Trent, asking to talk to Bob. This time, it
+doesn&#8217;t have to even be encrypted. As part of the request she sends a <em>nonce</em>.</p>
+
+<p>Trent responds with a message that contains:</p>
+
+<ul>
+<li>Alice&#8217;s ID</li>
+<li>Bob&#8217;s ID</li>
+<li>the nonce</li>
+<li>the session key</li>
+<li>a <strong>ticket</strong>: a message encrypted for Bob containing Alice&#8217;s ID and the same session key</li>
+</ul>
+
+<p>This <em>entire message</em> from Trent is encrypted with Alice&#8217;s secret key.
+Alice can validate that the message is a response to her message because:</p>
+
+<ul>
+<li>It is encrypted for her: nobody but Alice and Trent has Alice&#8217;s secret key.</li>
+<li>It contains the same nonce as in her request, so it is not a replay of some earlier message, which would have had a different randomly-generated nonce.</li>
+</ul>
+
+<p>Alice sends the <em>ticket</em> (the message encrypted with Bob&#8217;s key) to Bob. He can decrypt it
+and knows:</p>
+
+<ul>
+<li>The message must have been generated by Trent since only Trent and Bob know Bob&#8217;s key and and thus could construct a meaningful message encrypted with Bob&#8217;s key.</li>
+<li>He will be communicating with Alice because Trent placed Alice&#8217;s ID in that ticket.</li>
+<li>The session key since Trent placed that in the ticket as well. Alice has this too.</li>
+</ul>
+
+<p>Bob can now communicate with Alice but he will first <strong>authenticate</strong> Alice to be sure
+that he&#8217;s really communicating with her. He&#8217;ll believe it&#8217;s Alice if she can prove that
+she has the session key. To do this, Bob creates another nonce, encrypts it with the session key,
+and sends it to Alice. Alice decrypts the message, subtracts one from the nonce,
+encrypts the result, and sends it back to Bob. She just demonstrated that she could
+decrypt a message using the session key and return back a known modification of the message.
+Needham-Schroeder is a combined authentication and key exchange protocol.</p>
+
+<h3 id="denning-saccomodification:timestampstoavoidkeyreplay">Denning-Sacco modification: timestamps to avoid key replay</h3>
+
+<p>One flaw in the Needham-Schroeder algorithm is when Alice sends the ticket to Bob.
+The ticket is encrypted with Bob&#8217;s secret key and contains Alice&#8217;s ID as well as the session key.
+If an attacker grabbed a communication session and managed to decrypt the session key,
+she can <strong>replay</strong> the transmission of the ticket to Bob. Bob won&#8217;t know that he received
+that same session key in the past. He will proceed to validate &#8220;Alice&#8221; by asking her to prove
+that she indeed knows the session key. In this case, Eve, our eavesdropper, does know it;
+that&#8217;s why she sent the ticket to Bob. Bob completes the authentication and thinks he is
+talking with Alice when in reality he is talking to Eve.</p>
+
+<p>A fix for this was proposed by Denning &amp; Sacco: add a <strong>timestamp</strong> to the ticket. When Trent creates the ticket that Alice
+will give to Bob, it is a message encrypted for Bob and contains Alice&#8217;s ID, the session key, and
+a <em>timestamp</em>. </p>
+
+<p>When Bob receives a ticket, he checks the timestamp. If it is older than some recent time (e.g., a few
+seconds), Bob will simply discard the ticket, assuming that he is getting a replay attack.</p>
+
+<h3 id="otway-reesprotocol:sessionidsinsteadoftimestamps">Otway-Rees protocol: session IDs instead of timestamps</h3>
+
+<p>A problem with timestamps is that their use relies on all entities having synchronized clocks.
+If Bob&#8217;s clock is significantly off from Trent&#8217;s, he may falsely accept or falsely reject a ticket
+that Alice presents to him. Time synchronization becomes an attack vector for this protocol.
+If an attacker can change Bob&#8217;s concept of time, she may be able to convince Bob to accept
+an older ticket. To do this, she can create fake NTP (network time protocol) responses to force
+Bob&#8217;s clock to synchronize to a different value or, if Bob is paranoid and uses a GPS receiver to
+synchronize time, create fake GPS signals.</p>
+
+<p>A way to avoid the replay of the ticket without using timestamps is to add a <strong>session ID</strong> to
+each message. The rest of the Otway-Rees protocol differs a bit from Needham-Schroeder but is conceptually
+very similar.</p>
+
+<ol>
+<li>Alice sends a message to Bob that contains:
+
+<ul>
+<li>A session ID</li>
+<li>Aoth of their IDs</li>
+<li>A message encrypted with Alice&#8217;s secret key. This encrypted message contains Alice and Bob&#8217;s IDs as well as the session ID.</li>
+</ul></li>
+<li>Bob sends Trent a request to communicate with Alice, containing:
+
+<ul>
+<li>Alice&#8217;s message</li>
+<li>A message encrypted with Bob&#8217;s secret key that also contains the session ID.</li>
+</ul></li>
+<li><p>Trent now knows that Alice wants to talk to Bob since the session ID is inside her encrypted message and
+that Bob agrees to talk to Alice since that same session ID is inside his encrypted message.</p></li>
+<li><p>Trent creates a random session key encrypted for Bob and the same key encrypted for Alice and sends both
+of those to Bob, along with the session key.</p></li>
+</ol>
+
+<p>The protocol also incorporates nonces to ensure that there is no replay attack on Trent&#8217;s response even
+if an attacker sends a message to Bob with a new session ID and old encrypted session keys (that were
+cracked by the attacker).</p>
+
+<h3 id="kerberos">Kerberos</h3>
+
+<p><strong>Kerberos</strong> is a trusted third party authentication,
+authorization, and key exchange
+protocol using symmetric cryptography and based closely on
+the Needham-Schroeder protocol with the Denning-Sacco modification (the use of timestamps).</p>
+
+<p>When Alice wands to talk with Bob (they can be users and services),
+she first needs to ask Kerberos. If access is authorized, Kerberos will send her
+two messages. One is encrypted with Alice&#8217;s secret key and contains
+the session key for her communication with Bob. The other
+message is encrypted with Bob&#8217;s secret key. Alice cannot read
+or decode this second message. It a <strong>ticket</strong> (sometimes known as a
+<em>sealed envelope</em>). It contains
+the same session key that Alice received but is encrypted for
+Bob. Alice will send that to Bob. When Bob decrypts it, he knows that the message
+must have been generated by an entity that knows its secret key:
+Kerberos.
+Now that Alice and Bob both have the session key, they can communicate
+securely by encrypting all traffic with that session key.</p>
+
+<p>To avoid replay attacks, Kerberos places a <strong>timestamp</strong> in Alice&#8217;s response and in the ticket.
+For Alice to authenticate herself to Bob, she needs to prove that she was able
+to extract the session key from the encrypted message Kerberos sent her.
+She proves this by generating a new timestamp, encrypting it with the session key, and sending it to Bob.
+Bob now needs to prove to Alice that he can decode messages encrypted with the session key.
+He takes Alice&#8217;s timestamp, adds one (just to permute the value), and sends it back to Alice, encrypted
+with their session key.</p>
+
+<p>Since your secret key is needed to decrypt every service request
+you make of Kerberos, you&#8217;ll end up typing your password each time
+you want to access a service. Storing the key in a file to cache it
+is not a good idea. Kerberos handles this by splitting itself into
+two components that run the same protocol: the <strong>authentication
+server</strong> (<strong>AS</strong>) and the <strong>ticket granting server</strong> (<strong>TGS</strong>). The authentication
+server handles the initial user request and provides a session key
+to access the TGS. This session key can be cached for the user&#8217;s
+login session and allows the user to send requests to the TGS without
+re-entering a password. The TGS is the part of Kerberos that
+handles requests for services. It also returns two messages to the
+user: a different <em>session key</em> for the desired service and a <em>ticket</em> that must
+be provided to that service.</p>
+
+<h3 id="diffie-hellmankeyexchange">Diffie-Hellman key exchange</h3>
+
+<p>The <strong>Diffie-Hellman key exchange</strong> algorithm allows two parties
+to establish a <strong>common key</strong> without disclosing any information
+that would allow any other party to compute the same key. Each
+party generates a private key and a public key.
+Despite their name, these are <em>not</em>
+encryption keys; they are just numbers. Diffie-Hellman does not
+implement public key cryptography. Alice can compute a common key
+using her private key and Bob&#8217;s public key. Bob can compute the
+same common key by using his private key and Alice&#8217;s public key.</p>
+
+<p>Diffie-Hellman uses the one-way function <em>a<sup>b</sup>mod&nbsp;c</em>.
+Its one-wayness is due to our inability to compute the inverse:
+a discrete logarithm. Anyone may see Alice and Bob&#8217;s public keys
+but will be unable to compute their common key. Although Diffie-Hellman
+is not a public key encryption algorithm, it behaves like one in the
+sense that it allows us to exchange keys without having to use a
+trusted third party.</p>
+
+<h2 id="keyexchangeusingpublickeycryptography">Key exchange using public key cryptography</h2>
+
+<p>With public key cryptography, there generally isn&#8217;t a need for key exchange.
+As long as both sides can get each other&#8217;s public keys from a trusted source,
+they can encrypt messages using those keys.
+However, we rarely use public key cryptography for large messages.
+It can, however, be used to transmit a session key. This use of
+public key cryptography to transmit a session key that will be used
+to apply symmetric cryptography to messages is called <strong>hybrid cryptography</strong>.
+For Alice to send a key to Bob:</p>
+
+<ol>
+<li>Alice generates a random session key.</li>
+<li>She encrypts it with Bob&#8217;s public key &amp; sends it to Bob.</li>
+<li>Bob decrypts the message using his private key and now has the session key.</li>
+</ol>
+
+<p>Bob is the only one who has Bob&#8217;s private key to be able to decrypt
+that message and extract the session key. A problem with this is that
+<em>anybody</em> can do this. Charles can generate a random session key,
+encrypt it with Bob&#8217;s public key, and send it to Bob. For Bob to be convinced
+that it came from Alice, she can encrypt it with her private key (this is
+<strong>signing</strong> the message).</p>
+
+<ol>
+<li>Alice generates a random session key.</li>
+<li>She signs it by encrypting the key with her private key.</li>
+<li>She encrypts the result with Bob&#8217;s public key &amp; sends it to Bob.</li>
+<li>Bob decrypts the message using his private key.</li>
+<li>Bob decrypts the resulting message with Alice&#8217;s public key and gets the session key.</li>
+</ol>
+
+<p>If anybody other than Alice created the message, the result that Bob gets by
+decrypting it with Alice&#8217;s public key will not result in a valid key for anyone.
+We can enhance the protocol by using a standalone signature (encrypted hash) so
+Bob can identify a valid key from a bogus one.</p>
+
+<h2 id="forwardsecrecy">Forward secrecy</h2>
+
+<p>If an attacker steals, for example, Bob&#8217;s private key, he will be able to go through
+old messages and decrypt old session keys (the start of every message to Bob contained
+a session key encrypted with his public key). <strong>Forward secrecy</strong>, also called
+<strong>perfect forward secrecy</strong>, is the use of keys and key exchange protocols where the
+compromise of a key does not compromise past session keys. There is no secret
+that one can steal that will allow the attacker to decrypt multiple past messages.
+Note that this is of value for communication sessions but not stored encrypted documents
+(such as email). You don&#8217;t want an attacker to gain any information from a communication
+session even if a user&#8217;s key is compromised. However, the user needs to be able to
+decrypt her own documents, so they need to rely on a long-term key.</p>
+
+<p>Diffie-Hellman enables <strong>forward secrecy</strong>.
+Alice and Bob can each generate a key pair and send their public key to each other.
+They can then compute a common key that nobody else will know and use that
+to communicate.
+Achieving forward secrecy requires <strong>single-use</strong> (<strong>ephemeral</strong>) keys.
+Next time Alice and Bob want to communicate, they will generate a new set of keys
+and compute a new common key.
+At no time do we rely on <strong>long-term keys</strong>, such
+as Alice&#8217;s secret key or RSA private key. Encrypting a session key
+with a long-term key, such as Bob&#8217;s public key, will not achieve forward
+secrecy. If an attacker ever finds Bob&#8217;s private key, she will be able
+to extract the session key.</p>
+
+<p>Difie-Hellman is particularly good for for achieving forward secrecy because it is
+efficient to create new new key pairs on the fly.
+RSA or ECC keys can be used as well but key generation is far less efficient.
+Because of this, RSA and ECC keys tend to be used mainly as long-term keys (e.g., for authentication).</p>
+
+<h1 id="messageintegrity">Message Integrity</h1>
+
+<h2 id="one-wayfunctions">One-way functions</h2>
+
+<p>A <strong>one-way function</strong> is one that can be computed relatively
+easily in one direction but there is no known way of computing the
+inverse function. One-way functions are crucial in a number of
+cryptographic algorithms, including digital signatures, Diffie-Hellman
+key exchange, and both RSA and elliptic curve public key cryptography.
+For Diffie-Hellman and public key cryptography, they ensure that
+someone cannot generate the corresponding private key when presented
+with a public key. Key exchange and asymmetric cryptography algorithms
+rely on a spacial form of one-way function, called a <strong>trapdoor</strong> function.
+This is a function whose inverse is computable if you are provided with
+extra information, such as a private key that corresponds to the public
+key that was used to generate the data.</p>
+
+<h2 id="hashfunctions">Hash functions</h2>
+
+<p>A particularly useful form of a one-way function is the <strong>cryptographic hash function</strong>. This is a one-way function whose output is always a fixed number of bits for any input. Hash functions are commonly used in programming to construct hash tables, which provide O(1) lookups of keys.</p>
+
+<p><strong>Cryptographic hash functions</strong> produce far longer results than
+those used for hash tables. Common lengths are 224, 256, 384, or 512 bits.
+Good cryptographic hash functions (e.g., SHA&#8211;1, SHA&#8211;2, SHA&#8211;3) have several properties:</p>
+
+<ol>
+<li><p>Like all hash functions, take arbitrary-length input and produce <strong>fixed-length</strong> output</p></li>
+<li><p>Also like all hash functions, they are <strong>deterministic</strong>; they produce the same result each time when given identical input.</p></li>
+<li><p>They exhibit <strong>pre-image resistance</strong>, or <strong>hiding</strong>. Given a hash <em>H</em>, it should not be feasible to find a message <em>M</em> where <em>H=hash(M)</em>.</p></li>
+<li><p>The output of a hash function should not give any information
+about any of the input. For example, changing a byte in the message
+should not cause any predictable change in the hash value.</p></li>
+<li><p>They are <strong>collision resistant</strong>. While hash collisions can exist (the number of possible
+hashes is smaller than than number of possible messages; see the <a href="https://en.wikipedia.org/wiki/Pigeonhole_principle">pigeonhole principle</a>),
+it is not feasible
+to find any two different messages that hash to the same value. Similarly,
+it is not feasible to modify the plaintext without changing its resultant hash.</p></li>
+<li><p>They should be relatively <strong>efficient</strong> to compute. We would like to use hash functions as message integrity checks and generate them for each message without incurring significant overhead.</p></li>
+</ol>
+
+<p>The cryptographic hash function is the basis for <strong>message authentication
+codes</strong> and <strong>digital signatures</strong>. </p>
+
+<p>Because of these properties, we have extremely high assurance that a message
+would no longer hash to the same value if it is modified in any
+way. The holy grail for an attacker is to be able to construct a
+message that hashes to the same value as another message. That would
+allow the attacker to substitute a new message for some original
+one (for example, redirecting a money transfer). Searching for a
+collision with a pre-image (known message) is much harder than
+searching for any two messages that produce the same hash. The
+<a href="https://en.wikipedia.org/wiki/Birthday_problem">birthday paradox</a>
+tells us that the search for a collision of any two messages is
+approximately the square root of the complexity of searching for a
+collision on a specific message. This means that the strength of
+a hash function for a brute-force collision attack is approximately
+half the number of bits of the hash. A 256-bit hash function has
+a strength of approximately 128 bits.</p>
+
+<p>Popular hash functions include SHA&#8211;1 (160 bits), SHA&#8211;2 (commonly 256 and 512 bits), and SHA&#8211;3 (256 and 512 bits).</p>
+
+<h2 id="messageintegrityandhashpointers">Message Integrity and Hash Pointers</h2>
+
+<p>A cryptographic hash serves as a checksum for a message. If a message has been modified, it will yield a different hash. By associating a hash with a message, we have a basis for managing the integrity of that message: being able to detect if the message gets changed.</p>
+
+<h3 id="tamper-resistantlinked-lists:blockchains">Tamper-resistant linked-lists: blockchains</h3>
+
+<p>One way of associating a hash with a message is via the use of hash pointers. Pointers are used in data structures to allow one data element to refer to another. In processes, a pointer is a memory location. In distributed systems, a pointer may be an IP address and object identifier. A <strong>hash pointer</strong> is a tuple that contains a traditional pointer along with the hash of the data element that is being pointed to. It allows us to validate that the information being pointed to has not been modified.</p>
+
+<p>The same structures that use pointers can be modified to use hash pointers and create tamper-evident structures. For example, a linked list can be constructed with each element containing a hash pointer to the next element instead of a pointer.</p>
+
+<figure>
+<img src="images/integrity-blockchain.png" alt="Blockchain" />
+<figcaption>Blockchain</figcaption></figure>
+
+
+
+<p>Adding a new block is easy. You allocate the block, copy the <em>head</em> hash pointer into it (the <code>next</code> pointer), and update the <em>head</em> hash pointer to point to the new block and contain a hash of that block.</p>
+
+<p>If an adversary modifies, say, data block 1, we can detect that. The hash pointer in Data&#8211;2 will point to Data&#8211;1 but the hash of Data&#8211;1 will no longer match the hash in the pointer. For a successful attack, the adversary will also need to modify the hash value in the hash pointer in block 2. That will make the hash pointer in block 3 invalid, so that will need to be changed. The adversary will need to change all the hash pointers leading up to the head of the list. If we&#8217;re holding on to the head of the list (e.g., in a variable) so that the adversary cannot modify it, then we will always be able to detect tampering. A linked list using hash pointers is called a <strong>blockchain</strong>.</p>
+
+<h3 id="merkletrees">Merkle Trees</h3>
+
+<p>Another useful structure using hash pointers in place of conventional pointers is a binary tree, called a <strong>Merkle tree</strong> when implemented with hash pointers.</p>
+
+<figure>
+<img src="images/integrity-merkle.png" alt="Merkle Tree" />
+<figcaption>Merkle Tree</figcaption></figure>
+
+
+
+<p>Leaf nodes of a Merkle tree contain conventional hash pointers: pointers to the data blocks and the hashes of those data blocks. Non-leaf child nodes contain left and right pointers along with the hash of the two hashes they point to. As with binary trees, Merkle trees give us the advantage of being able to locate data in <em>O(log n)</em> time instead of linear time. More importanlty, we can validate any data in <em>O(log n)</em> time by traversing from the root down to the last hash pointer at the leaf.</p>
+
+<h4 id="applicationsofblockchainsandmerkletrees">Applications of blockchains and Merkle trees</h4>
+
+<p>With Merkle trees, the information in a leaf does not generally contain information to help you traverse the tree to search for data; we are not necessarily building a search tree. The purpose of the tree is to make it efficient to manage and validate the integrity of the underlying data. That is, the hash pointer structure is there just to allow you to validate the underlying data rather than search for stuff. If you want to search, you can add extra information to each node &#8211; in general, we are not concerned with secrecy and you can build whatever search structures an application needs. Hash pointers are all about helping assess the integrity of data. Structures such as hash-pointer-based linked lists and Merkle trees were designed with peer-to-peer systems in mind where data can come from various untrusted peers. You just need to get the root hash from a trusted place.</p>
+
+<p>The top-level pointer (the root in the case of a tree; the head in the case of linked lists) represents the integrity of the entire set of data. If any data block changes, that top level pointer will allow the user to detect that there has been a change. Therefore, it is important that this value be stored securely and obtained via a trustworthy mechanism. </p>
+
+<p>What a Merkle tree allows you to do is check the integrity of replicated data on a branch-by-branch basis in an efficient manner. Merkle trees are designed for environments where data is replicated among multiple systems and you want each system to be able to validate the integrity of the entire file. This helps in two cases:</p>
+
+<ol>
+<li><p>You can validate downloaded data without having to wait for the entire set of data to be downloaded.</p></li>
+<li><p>You can efficiently compare your data with that on another system.</p></li>
+</ol>
+
+<p>Suppose you have a file and want to check whether any blocks in your version are corrupted with respect to a version on another server. Both you and another system assembled your own structure of hash pointers.</p>
+
+<p>With a linked list of hash pointers, you’d start at the head of the list and compare hashes. If the hashes match, you are confident that your files match. If you have a mismatch, you need to compare the next hash. If it matches what you have then you know that first block has been modified. If it doesn’t then you need to get the hash after that. Ultimately, you may need to traverse the entire list linearly.</p>
+
+<p>With Merkle trees, it becomes easier to find the block (or blocks) that have changed. If the root hash matches, you know that your entire data set matches. If not, you request the left &amp; right hashes and compare those with your tree. If one doesn’t match then you can compare the hashes under that subtree, iterating down the tree until you find the mismatched data block. You do not need to iterate through the entire list of blocks. This is attractive for replicated data sets where we have tens of millions of data blocks, for example, and sending a hash list is not efficient. It is essentially a tree search to find the block that is inconsistent.</p>
+
+<p>Merkle trees are particularly useful for obtaining data from multiple untrusted sources. For example, they are used by Bitcoin and Ethereum servers to migrate copies of the transaction log (the blockchain). They are also used for data replication by a variety of NoSQL databases and by the Git version control system. Given a valid root (top-most) hash pointer, the remaining hash tree can be received from any untrusted source. The receiver can simply validate by checking hashes up to the root. Now that the receiver has the entire tree, any data blocks can be received from untrusted sources as well. Each block can be validated by comparing its hash with the hash at the leaf node of the Merkle tree.</p>
+
+<h2 id="messageauthenticationcodesmacs">Message Authentication Codes (MACs)</h2>
+
+<p>A cryptographic hash helps us ensure message <strong>integrity</strong>:
+it serves as a checksum that allows us to determine if a message has been modified.
+If the message is modified, it no longer hashes to the same value as before.
+However, if an attacker modifies a message, she may be able to
+modify the hash value as well. To prevent this, we need a hash
+that relies on a <strong>key</strong> for validation. This is a <strong>message
+authentication code</strong>, or <strong>MAC</strong>. Two forms of MACs are hash-based
+ones and block cipher-based ones:</p>
+<dl>
+<dt><strong>Hash-based MAC</strong> (<strong>HMAC</strong>):</dt>
+<dd>A hash-based MAC is a specific method for converting regular hash functions
+into MACs by using a cryptographic hash function, such as SHA&#8211;256, to hash the
+message <em>and</em> the key. Anyone who does not know the key will not
+be able to recreate the hash.</dd>
+
+<dt><strong>Block cipher-based MAC</strong> (<strong>CBC-MAC</strong>):</dt>
+<dd>Recall that cipher block chaining assures us that every encrypted
+block is a function of all previous blocks. CBC-MAC uses a zero
+initialization vector and runs through a cipher block chained encryption,
+discarding all output blocks except for the last one, which becomes the MAC.
+Any changes to the message will be propagated to that final block and the
+same encryption cannot be performed by someone without the key.
+Note that a CBC-MAC still produces a fixed-length result and has all
+The properties of a hash function.</dd>
+</dl>
+
+
+<h2 id="digitalsignatures">Digital signatures</h2>
+
+<p>Message authentication codes rely on a shared key. Anybody who possesses the key can modify and re-sign a message. There is no assurance that the action was done by the author of the message. <strong>Digital signatures</strong> have stronger properties than MACs:</p>
+
+<ol>
+<li>Only you can sign a message but anybody should be able to validate it.</li>
+<li>You cannot copy the signature from one message and have it be valid on another message.</li>
+<li>An adversary cannot forge a signature, even after inspecting an arbitrary number of signed messages.</li>
+</ol>
+
+<p>Digital signatures require three operations:</p>
+
+<ol>
+<li><strong>Key generation</strong>: {private_key, verification_key } := <strong>gen_keys</strong>(keysize)</li>
+<li><strong>Signing</strong>: signature := <strong>sign</strong>(message, private_key)</li>
+<li><strong>Validation</strong>: isvalid := <strong>verify</strong>(message, signature, verification_key)</li>
+</ol>
+
+<p>Since we trust hashes to be collision-free, it makes sense to apply the signature to the hash of a message instead of the message itself. This ensures that the signature will be a small, fixed size and makes it easy to embed in hash pointers and other structures and creates minimal transmission or storage overhead for verification.</p>
+
+<p>There are several commonly-used digital signature algorithms:</p>
+<dl>
+<dt>DSA, the Digital Signature Algorithm</dt>
+<dd>The current NIST standard that generates key pairs that are secure because of the difficulty of computing discrete logarithms.</dd>
+
+<dt>ECDSA, Elliptic Curve Digital Signature Algorithm</dt>
+<dd>A variant of DSA that uses elliptic curve cryptography</dd>
+
+<dt>Public key cryptographic algorithms</dt>
+<dd>RSA or Elliptic Curve Cryptography applied to message hashes.</dd>
+</dl>
+
+
+<p>All these algorithms generate public and private key pairs. The first two are not general-purpose encryption algorithms but are designed solely for digital signatures.</p>
+
+<p>We saw how public key cryptography can be used to encrypt messages: Alice encrypts a message using
+Bob&#8217;s public key to ensure that only Bob could decrypt it with his private key.
+We can use public key backwards: Alice can encrypt a message using her <em>private</em> key.
+Anyone can decrypt the message using her public key but, in doing so, would know that the message was encrypted by Alice.</p>
+
+<p>A <strong>digital signature</strong> can be constructed by simply encrypting the hash of a message with the creator&#8217;s (signer&#8217;s) private key. Alternatively, digital signature algorithms have been created that apply a similar principle: hashing combined with trapdoor functions so that you would use a dedicated set of public/private keys to create and verify the signature.
+Anyone who has the message signer&#8217;s public key can decrypt the hash and thus validate
+the hash against the message. Other parties cannot recreate the signature.</p>
+
+<p>Note that, with a MAC, the recipient or anyone in possession of the shared key can create the same MAC. With a digital signature, the signature can only be created by
+the owner of the private key. Unlike MACs,
+digital signatures provide <strong>non-repudiation</strong> &#8211; proof of identity. Alice cannot claim that she did not
+create a signature because nobody but Alice has her private key. Also unlike MACs,
+anyone can validate a signature since public keys are generally freely distributed. as with MACs, digital signatures also provide proof of <strong>integrity</strong>, assurance that the original message has not been modified.</p>
+
+<h2 id="covertandauthenticatedmessaging">Covert and authenticated messaging</h2>
+
+<p>We ignored the encryption of a message in the preceding discussion; our interest was assuring integrity. However, there are times when we may want to keep the message secret and validate that it has not been modified. Doing this involves sending a signature of the message along with the encrypted message.</p>
+
+<p>A basic way for Alice to send a signed and encrypted message to Bob is for her to use hybrid cryptography and:</p>
+
+<pre><code>1. Create a signature of the message. This is a hash of the message encrypted with her private key.
+2. Create a session key for encrypting the message. This is a throw-away key that will not be needed beyond the communication session.
+3. Encrypt the message using the session key. She will use a fast symmetric algorithm to encrypt this message.
+4. Package up the session key for Bob: she encrypts it with Bob's public key. Since only Bob has the corresponding private key, only Bob will be able to decrypt the session key.
+5. She sends Bob: the encrypted message, encrypted session key, and signature.
+</code></pre>
+
+<h2 id="anonymousidentities">Anonymous identities</h2>
+
+<p>A signature verification key (e.g., a public key) can be treated as an <strong>identity</strong>. You possess the corresponding private key and therefore only you can create valid signatures that can be verified with the public key. This identity is <strong>anonymous</strong>; it is just a bunch of bits. There is nothing that identifies you as the holder of the key. You can simply assert your identity by being the sole person who can generate valid signatures.</p>
+
+<p>Since you can generate an arbitrary number of key pairs, you can create a new identity at any time and create as many different identities as you want. When you no longer need an identity, you can discard your private key for that corresponding public key.</p>
+
+<h2 id="identitybinding:digitalcertificates">Identity binding: digital certificates</h2>
+
+<p>While public keys provide a mechanism for
+asserting integrity via digital signatures,
+they are themselves anonymous.
+We&#8217;ve discussed a scenario where Alice uses Bob&#8217;s public key but
+never explained how she can assert that the key really belongs to Bob
+and was not planted by an adversary.
+Some form of <strong>identity binding</strong> of the public key must be implemented
+for you to know that you really have <em>my</em> public key instead of
+someone else&#8217;s. How does Alice really know that she has Bob&#8217;s public key?</p>
+
+<p><strong>X.509 digital certificates</strong> provide a way to
+do this. A certificate is a data structure that contains user
+information (called a <strong>distinguished name</strong>) and the user’s public key.
+This data structure also
+contains a <strong>signature</strong> of the <strong>certification authority</strong>. The
+signature is created by taking a hash of the rest of the data in
+the structure and encrypting it with the private key of the
+certification authority. The certification authority (CA) is
+responsible for setting policies of how they validate the identity
+of the person who presents the public key for encapsulation in a
+certificate.</p>
+
+<p>To validate a certificate, you would hash all the certificate data except for
+the signature. Then you would decrypt the signature using the public
+key of the issuer. If the two values match, then you know that the certificate
+data has not been modified since it has been signed. The challenge
+is how to get the public key of the issuer. Public keys are stored in
+certificates, so the issuer would have a certificate containing its public key.
+This certificate can be signed by yet another issuer. This kind of process
+is called <strong>certificate chaining</strong>. For example, Alice can have a certificate
+issued by the Rutgers CS Department. The Rutgers CS Department&#8217;s certificate
+may be issued by Rutgers University. Rutgers University&#8217;s certificate could be
+issued by the State of New Jersey Certification Authority, and so on. At the
+very top level, we will have a certificate that is not signed by any higher-level
+certification authority. A certification authority that is not underneath
+any other CA is called a <strong>root CA</strong>.
+In practice, this type of chaining is rarely used. More commonly, there are
+hundreds of autonomous certification authorities acting as <strong>root CAs</strong>
+that issue certificates to companies, users, and services.
+The certificates for many of the trusted root CAs are preloaded into
+operating systems or, in some cases, browsers.
+See
+<a href="https://gallery.technet.microsoft.com/Trusted-Root-Certificate-123665ca">here</a> for
+Microsoft&#8217;s trusted root certificate participants and <a href="https://support.apple.com/en-us/HT202858">here</a>
+for Apple&#8217;s trusted root certificates.</p>
+
+<p>Every certificate has an expiration time (often a year or more in the future).
+This provides some assurance that even if there is a concerted attack to find a corresponding
+private key to the public key in the certificate, such a key will not be found until long
+after the certificate expires. There might be cases where a private key might be leaked
+or the owner may no longer be trustworthy (for example, an employee leaves a company).
+In this case, a certificate can be <strong>revoked</strong>. Each CA publishes a <strong>certificate revocation list</strong>,
+or <strong>CRL</strong>, containing lists of certificates that they have previously issued
+that should no longer be considered valid. To prevent spoofing the CRL, the list is, of course,
+signed by the CA. Each certificate contains information on where to obtain revocation information.</p>
+
+<p>The challenge with CRLs is the TOCTTOU problem: not everyone may check the certificate revocation list
+in a timely manner and some systems may accept a certificate not knowing that it was revoked.
+Some systems, particularly embedded systems, may not even be configured to handle CRLs.</p>
+
+<h1 id="authentication">Authentication</h1>
+
+<p>Authentication is the process of binding an identity to a user.
+Note the distinction between authentication and
+identification. <strong>Identification</strong> is simply the process of asking you
+to identify yourself (for example, ask for a login name). <strong>Authentication</strong>
+is the process of proving that the identification is correct.
+<strong>Authorization</strong> is the process of determining whether the user is permitted to do something.</p>
+
+<h2 id="authenticationfactors">Authentication factors</h2>
+
+<p>The three <strong>factors</strong> of authentication are:</p>
+
+<ol>
+<li><em>something you have</em> (such as a key or a card),</li>
+<li><em>something you know</em> (such as a password or PIN),</li>
+<li>and <em>something you are</em> (biometrics).</li>
+</ol>
+
+<p>Combining these into a <strong>multi-factor</strong>
+authentication scheme can increase security against the chance that
+any one of the factors is compromised.
+Multi-factor authentication must use two or more of these
+factors. Using two passwords, for example, is not sufficient and does not qualify as multi-factor.</p>
+
+<h2 id="passwordauthenticationprotocol">Password Authentication Protocol</h2>
+
+<p>The classic authentication method is the use of reusable passwords.
+This is known as the <strong>password authentication protocol</strong>,
+or <strong>PAP</strong>.
+The system asks you to identify yourself (login name) and then enter a
+password. If the password matches that which is associated
+with the login name on the system
+then you&#8217;re authenticated.</p>
+
+<h3 id="passwordguessingdefenses">Password guessing defenses</h3>
+
+<p>To avoid having an adversary carry out a password guessing attack, we need to make
+it not feasible to try a large number of passwords. A common approach is to
+<strong>rate-limit</strong> guesses. When the system detects an incorrect password, it will
+wait several seconds before allowing the user to try again. Linux, for example, waits
+about three seconds. After five bad guesses, it terminates and restarts the <em>login</em> process.</p>
+
+<p>Another approach is to completely disallow password guessing after a certain
+number of failed attempts by locking the account. This is common for some web-based
+services, such as banks. However, the system has now been made vulnerable to a
+denial-of-service attack. An attacker may not be able to take your money but may
+inconvenience you by disallowing you to access it as well.</p>
+
+<h3 id="hashedpasswords">Hashed passwords</h3>
+
+<p>One problem with the password authentication protocol is that if someone
+gets hold of the password file on the system, then they have all
+the passwords. The common way to thwart this is to store <strong>hashes</strong> of
+passwords instead of the passwords themselves. This takes advantage
+of the one-way property of the hash: anyone who sees the hash still has no way of computing your password.</p>
+
+<p>To authenticate a user, the system simply checks if
+<em>hash(password) = stored_hashed_password</em>. If someone got hold of the
+password file, they&#8217;re still stuck since they won&#8217;t be able to
+reconstruct the original password from the hash. They&#8217;ll have to
+resort to an <strong>exhaustive search</strong> (also known as a <strong>brute-force search</strong>)
+to search for a password that hashes to the value in the file. The hashed file should still be protected from read access by normal users to keep them from performing an exhaustive search.</p>
+
+<p>A <strong>dictionary attack</strong> is an optimization of the search that tests common
+passwords, including dictionary words, known common passwords, and common letter-number substitutions rather than every possible combination of characters.
+Moreover, an intruder does not need to perform such search on each hashed password to find the password.
+Instead, the results of a dictionary
+search can be stored in a file and later searched to find a corresponding hash in a password file. These are called <strong>precomputed hashes</strong>. To guard
+against this, a password is concatenated with a bunch of extra random characters,
+called <strong>salt</strong>. These characters make the password substantially longer and would make
+a table of precomputed hashes insanely huge and hence not practical. Such a table would need to go far beyond a dictionary list and create hashes of all possible - and long - passwords.
+The salt is not a secret &#8211; it is stored in plaintext in the password file
+in order to validate a user&#8217;s password. Its only function is to make using
+precomputed hashes impractical and ensure that even identical passwords do not
+generate the same hashed results. An intruder would have to select one specific
+hashed password and do a brute-force or dictionary attack on just that
+password, adding salt to each guess prior to hashing it.</p>
+
+<h3 id="passwordrecoveryoptions">Password recovery options</h3>
+
+<p>Passwords are bad. They are not incredibly secure. English text has a low entropy (approximately 1.2&#8211;1.5 bits per character) and
+are often easy to guess. Password files from some high-profile sites have been obtained to validate just how bad a lot of people are
+at picking passwords. Over <a href="http://www.passwordrandom.com/most-popular-passwords">90%</a> of all user passwords sampled
+are on a list of the top 1,000 passwords. The most common password is <code>password</code>. People also tend to reuse passwords.
+If an attacker can get passwords from one place, there is a good chance that many of those passwords will work with other services.</p>
+
+<p>Despite many people picking bad passwords, people often forget them, especially when they are trying to be
+good and use different passwords for different accounts. There are several common ways of handling forgotten
+passwords, none of them great:</p>
+<dl>
+<dt>Email them:</dt>
+<dd>This used to be a common solution and is somewhat dying off. It requires that the server is able to get the password (it is
+not stored as a hash). It exposes the risk that anyone who might see your email will see your password.</dd>
+
+<dt>Reset them:</dt>
+<dd>This is more common but requires authenticating the requestor to avoid a denial of service attack.
+The common thing to do is to send a <em>password reset</em> link to an email address that was entered when the account was created.
+We again have the problem that if someone has access to your mail, they will have access to the password reset
+link and will be able to create a new password for your account. In both these cases, we have the problem that
+users may no longer have the same email address. Think of the people who switched from Comcast to get Verizon FiOS and
+switched their comcast.net addresses to verizon.net (note: avoid using email addresses tied to services or locations that you might change).</dd>
+
+<dt>Provide hints:</dt>
+<dd>This is common for system logins (e.g. macOS and Windows). However, a good hint may weaken the password or may not help the user.</dd>
+
+<dt>Ask questions:</dt>
+<dd>It is common for sites to ask questions (&#8220;what was your favorite
+pet&#8217;s name?&#8221;, &#8220;what street did you live on when you were eight years
+old?&#8221;). The answers to many of these questions can often be found through
+some searching or via social engineering. A more clever thing is to have
+unpredictable answers (&#8220;what was your favorite pet&#8217;s name?&#8221; &#8220;Osnu7$Qbv999&#8221;)
+but that requires storing answers somewhere.</dd>
+
+<dt>Rely on users to write them down:</dt>
+<dd>This is fine as long as the thread model is electronic-only and you don&#8217;t worry about someone physically searching for your passwords.</dd>
+</dl>
+
+
+<h2 id="one-timepasswords">One-time Passwords</h2>
+
+<p>The other problem with reusable passwords is that
+if a network is insecure,
+an eavesdropper may sniff the password from the network. A potential
+intruder may also simply observe the user typing a password. To
+thwart this, we can turn to <strong>one-time passwords</strong>. If someone sees you
+type a password or gets it from the network stream, it won&#8217;t
+matter because that password will be useless for future logins.</p>
+
+<p>There are three forms of one-time passwords:</p>
+
+<ol>
+<li><p><strong>Sequence-based</strong>. Each password is a function of the previous password. S/Key is an example of this.</p></li>
+<li><p><strong>Challenge-based</strong>. A password is a function of a challenge provided by the server. CHAP is an example of this.</p></li>
+<li><p><strong>Time-based</strong>. Each password is a function of the time. TOTP and RSA&#8217;s SecurID are example of this.</p></li>
+</ol>
+
+<h3 id="sequence-based:skey">Sequence-based: S/Key</h3>
+
+<p><strong>S/Key authentication</strong> allows the use of one-time passwords
+by generating a list via one-way functions. The list is created such that
+password <em>n</em> is generated as <em>f(password[n&#8211;1])</em>, where <em>f</em>
+is a one-way function. The list of
+passwords is used backwards.
+Given a password <em>password[p]</em>, it is impossible
+for an observer to compute the next valid password because a one-way function
+<em>f</em> makes it improbably difficult to compute the inverse function,
+<em>f<sup>&#8211;1</sup>(password[p])</em>, to
+get the next valid password, <em>password[p&#8211;1]</em>.</p>
+
+<h3 id="challenge-based:chap">Challenge-based: CHAP</h3>
+
+<p>The <strong>Challenge-Handshake Authentication Protocol</strong>
+(<strong>CHAP</strong>) is an authentication protocol that
+allows a server to authenticate a user without sending a
+password over the network.</p>
+
+<p>Both the client and server share a secret (essentially a password).
+A server creates a random bunch of bits (called a <strong>nonce</strong>)
+and sends it to the client (user) that wants to authenticate. This
+is the <strong>challenge</strong>.</p>
+
+<p>The client identifies itself and sends a <strong>response</strong> that
+is the hash of the shared secret combined with the challenge.
+The server has the same data and can generate its own hash of the
+same challenge and secret. If the hash matches the one received from the
+client, the server is convinced that the client knows the shared secret
+and is therefore legitimate.</p>
+
+<p>An intruder that sees this hash cannot extract the original data.
+An intruder that sees the challenge cannot create a suitable hashed
+response without knowing the secret.
+Note that this technique requires passwords to be accessible at the
+server and the security rests on the password file remaining secure.</p>
+
+<h3 id="time-based:totpandsecuridreg">Time-based: TOTP and SecurID<sup>&reg;</sup></h3>
+
+<p>With the <strong>Time-based One Time Password</strong> (<strong>TOTP</strong>) protocol, both sides share a secret key. To authenticate, a user runs the TOTP function to create a one-time password. The TOTP function is a hash:</p>
+
+<pre><code>password := hash(secret_key, time) % 10^{password_length}
+</code></pre>
+
+<p>The resultant hash is taken modulo some number that determines the length of the password. A time window of 30 seconds is usually used to provide a reasonably coarse granularity of time that doesn&#8217;t put too much stress on the user or requirements for tight clock synchronization.
+The service, who also knows the secret key and time, can generate the same hash and hence validate the value presented by the user.</p>
+
+<p>TOTP is often used as a second factor (proof that you have some device with the secret configured in it) in addition to a password. The protocol is widely supported by companies such as Amazon, Dropbox, Wordpress, Microsoft, and Google.</p>
+
+<p>A closely related system is RSA&#8217;s SecureID is a two-factor authentication system that generates
+one-time passwords for response to a user login prompt. It relies
+on a user password (Personal ID Number, PIN) and a token device (an
+authenticator card or fob). The token generates a new number every
+30 seconds. The number is a function of a seed that is unique for
+each card and the time of day.</p>
+
+<p>To authenticate to a server, you send a concatenation of your PIN
+and the number from the token in lieu of a password. A legitimate
+remote system will have your PIN, the token seed, and the time of
+day and will be able to compute the same value to validate your
+password. An intruder would not know your PIN or the token’s seed
+and will never see it on the network.</p>
+
+<h2 id="publickeyauthentication">Public key authentication</h2>
+
+<p>Public key authentication relies on the use of nonces, similar to the way
+they were used to authenticate users using the Needham-Schroeder protocol.
+A <strong>nonce</strong> is is generated on the fly and used to present to the other party
+as a challenge for them to prove that they are
+capable of encrypting something with a specific key that they possess.
+The use of a nonce is central to <strong>public key authentication</strong>.</p>
+
+<p>If Alice wants to authenticate Bob, she needs to have Bob prove that
+he possesses his private key (private keys are never shared). To do this,
+Alice generates a nonce (a random bunch of bits) and sends it to Bob,
+asking him to encrypt it with his private key. If she can decrypt
+Bob&#8217;s response using Bob&#8217;s public key and sees the same nonce, she
+will be convinced that she is talking to Bob because nobody else will
+have Bob&#8217;s private key. <strong>Mutual authentication</strong> requires that each party
+authenticate itself to the other: Bob will also have to generate a nonce
+and ask Alice to encrypt it with her private key.</p>
+
+<h2 id="fidouniversalsecondfactoru2fauthenticators">FIDO Universal Second Factor (U2F) Authenticators</h2>
+
+<p><strong>FIDO U2F</strong> is a standard that was developed as an easy-to-use second factor for authentication and was primarily
+designed with web-based services in mind. It is generally implemented as a USB or Bluetooth fob. JavaScript on
+the browser calls APIs to communicate with the hardware. Hence, unlike TOTP or SecurID, the user does not have
+to transcribe any numbers. The entire user experience is:</p>
+
+<ol>
+<li>Enter name and password (this is the first factor).</li>
+<li>Insert the U2F key and touch the button. This validates the user&#8217;s physical presence and runs the client protocol.</li>
+<li>You&#8217;re logged in.</li>
+</ol>
+
+<p>U2F is currently supported by Google, Microsoft, Dropbox, GitHub, RSA, and many others as well as popular password managers and
+web browsers (except Safari, but it is in Apple&#8217;s preview releases).
+Google switched from TOTP to U2F in 2017 and reports that there were no successful phishing attacks against their 85,000+ employees since then.</p>
+
+<p>There are two interactions: registration with a service and authentication.</p>
+
+<p>For registration:</p>
+
+<ul>
+<li>The server sends a <strong>challenge</strong> (a random bunch of bits).</li>
+<li>The U2F device generates a public/private key pair and creates a data structure containing its ID and its public key. This is called the <em>handle</em>.</li>
+<li>The device signs a message comprising the handle and the server&#8217;s challenge and sends the result to the server.</li>
+<li>The server verifies the signed data against the public key in the message.</li>
+<li>The server then stores the key handle and associated public key in its database for future authentication sessions.</li>
+</ul>
+
+<p>For authentication (after the user registered the device):</p>
+
+<ul>
+<li>The server sends a challenge along with the user&#8217;s key handle (which it stored in its database)</li>
+<li>The device extracts the private key for the service (the private key never leaves the device)</li>
+<li>The device signs a data structure containing client info and the challenge &amp; sends it back</li>
+<li>The server receives the data and verifies it against the stored public key.</li>
+</ul>
+
+<p>U2F perform its interactions over a TLS link, so all communication between the client (browser) and server are encrypted.
+Note that keys are generated per site, so the authenticator will not use the same key pair for different services.
+U2F prevents phishing attacks because only the real site authenticate
+the user with a specific key. Authentication will fail on a fake (phishing)
+site even if the user was fooled into thinking it was real.</p>
+
+<h2 id="man-in-the-middleattacks">Man-in-the-middle attacks</h2>
+
+<p>Authentication protocols can be vulnerable to <strong>man-in-the-middle</strong> (<strong>MITM</strong>) attacks.
+In this attack, Alice thinks she is talking to Bob but is really
+talking to Mike (the man in the middle, an adversary). Mike, in turn
+talks to Bob. Any message that Alice sends gets forwarded by Mike to
+Bob. Mike forwards any response from Bob gets back to Alice.
+This way, Mike allows Alice and Bob to carry out their authentication
+protocol. Once Bob is convinced he is talking with Alice, Mike
+can drop Alice and communicate with Bob directly, posing as Alice &#8230; or
+stay around and read their messages, possibly changing them as he sees fit.</p>
+
+<p>The protocols that are immune to this are those where Alice and Bob
+establish an encrypted channel using trusted keys. For example,
+with Kerberos, both Alice and Bob get a session key that is encrypted
+only for each of them. Mike cannot find it even if he intercepts
+their communications.</p>
+
+<p>With public key cryptography, Mike can take over after Bob is
+convinced he is talking with Alice. To avoid a man-in-the-middle
+attack Alice will have to send Bob a session key. If she uses public
+key cryptography to do the key exchange, as long as the message
+from Alice is signed, Mike will not be able to decrypt the session
+key or forge a new one. </p>
+
+<h2 id="codesigning">Code signing</h2>
+
+<p>We have seen how we could use hash functions for message integrity in the form of MACs (message authentication codes, which use a shared key) and digital signatures (which use public and private keys). The same mechanism is employed to <strong>sign software</strong>: to validate that software has not been modified since it was created by the developer.</p>
+
+<p>The advantages of signing code are that the software can be downloaded from untrusted servers or distributed over untrusted channels and still be validated to be untampered. It also enables us to detect whether malware on our local system has modified the software.</p>
+
+<p>Microsoft Windows, Apple macOS, iOS, and Android all make extensive use of signed software. Signing an application is fundamentally no different than signing any other digital content:</p>
+
+<ol>
+<li>As a software publisher, you create a public/private key pair</li>
+<li>You obtain a digital certificate for the public key. In some cases, you need to obtain it from a certification authority (CA) that can certify you as a software publisher.</li>
+<li>You create a digital signature of the software that you&#8217;re distributing: generate a hash and encrypt it with your private key.</li>
+<li>Attach the signature and certificate to the software package. This will enable others to validate the signature.</li>
+</ol>
+
+<p>Prior to installation, the system will validate the certificate and then validate the signature. If the signature does not match the hash of the software package, that indicates that the software has been altered. Signed software usually also supports <strong>per-page hashes</strong>. Recall demand paging in operating systems: an operating system does not load a program into memory at once; it only loads chunks (<em>pages</em>) as they are needed. This is called <em>demand paging</em>. Signed software will often include signatures for each page (typically 4K bytes) and each page will be validated as it is loaded into memory. This avoids the overhead of validating the entire file prior to running the program (e.g., the executable for Adobe Photoshop is over 100 MB).</p>
+
+<h1 id="biometricauthentication">Biometric authentication</h1>
+
+<p><strong>Biometric authentication</strong> is the process of identifying a person
+based on their physical or behavioral characteristics as opposed to
+their ability to remember a password or their possession of some
+device. It is the third of the three factors of authentication:
+<em>something you know, something you have</em>, and <em>something you are</em>.</p>
+
+<p>It is also fundamentally different than the other two factors
+because it does not deal with data that lends itself to exact comparisons.
+For instance, sensing the same fingerprint several times is not likely
+to give you identical results each time. The orientation may differ,
+the pressure and angle of the finger may result in some parts of the
+fingerprint to appear in one sample but not the other, and
+dirt, oil, and humidity may alter the image. Biometric authentication
+relies on <strong>statistical pattern recognition</strong>: we establish thresholds
+to determine whether two patterns are close enough to accept
+as being the same.</p>
+
+<p>A <strong>false accept rate</strong> (<strong>FAR</strong>) is when a pair
+of <em>different</em> biometric samples (e.g., fingerprints from two different people)
+is <em>accepted</em> as a match.
+A <strong>false reject rate</strong> (<strong>FRR</strong>) is when a pair of
+<em>identical</em> biometric samples is <em>rejected</em> as a match.
+Based on the properties of the biometric data, the sensor,
+the feature extraction algorithms, and the comparison algorithms,
+each biometric device has a characteristic <strong>ROC</strong> (<strong>Receiver Operating
+Characteristic</strong>) curve. The name derives from early work on RADAR and
+maps the false accept versus false reject rates for a given
+biometric authentication device. For password authentication,
+the &#8220;curve&#8221; would be a single point at the origin: no false accepts
+and no false rejects. For biometric authentication, which is based
+on thresholds that determine if the match is &#8220;close enough&#8221;, we have
+a curve.</p>
+
+<p>At one end of the curve, we can have an incredibly low
+false accept rate (FAR). This is good as it means that we will not have
+false matches: the enemy stays out. However, it also means
+that the false reject rate (FRR) will be very high. If you think
+of a fingerprint biometric, the stringent comparison needed to yield
+a low FAR means that the algorithm will not be forgiving to a speck
+of dirt, light pressure, or a finger held at a different angle.
+We get high security at the expense of inconveniencing legitimate
+users, you may have to present their finger over and over again for
+sensing, hoping that it will eventually be accepted. </p>
+
+<p>At the other end of the curve, we have a very low false reject rate (FRR).
+This is good since it provides convenience to legitimate users. Their
+biometric data will likely be accepted as legitimate and they will
+not have to deal with the frustration of re-sensing their biometric,
+hoping that their finger is clean, not too greasy, not too dry, and
+pressed at the right angle with the correct pressure. The trade-off is
+that it&#8217;s more likely that another person&#8217;s biometric data will be
+considered close enough as well and accepted as legitimate.</p>
+
+<p>There are numerous biological components that can be measured.
+They include fingerprints, irises, blood vessels on the retina,
+hand geometry, facial geometry, facial thermographs, and many
+others. Data such as signatures and voice can also be used, but
+these often vary significantly with one&#8217;s state of mind (your
+voice changes if you&#8217;re tired, ill, or angry). They are <strong>behavioral
+systems</strong> rather than purely <strong>physical systems</strong>, such as your iris
+patterns, length of your fingers,
+or fingerprints, and tend to have lower recognition rates.
+Other behavioral biometrics include keystroke dynamics, mouse use
+characteristics, gait analysis, and even cognitive tests.</p>
+
+<p>Regardless of which biometric is used, the important thing to do
+in order to make it useful for authentication is to identify the
+elements that make it different. Most of us have swirls on our fingers.
+What makes fingerprints different from finger to finger are
+the various variations in those swirls: ridge endings, bifurcations,
+enclosures, and other elements beyond that of a gently sloping curve.
+These features are called <strong>minutia</strong>.
+The presence of minutia, their relative distances
+from each other an their relative positions can allow us to
+express the unique aspect of a fingerprint as a relatively compact
+stream of bits rather than a bitmap.</p>
+
+<p>Two important elements of biometrics are robustness and distinctiveness.
+<strong>Robustness</strong> means that the biometric data will not change
+much over time. Your fingerprints will look mostly the same next
+year and the year after. Your fingers might grow fatter (or thinner)
+over the years and at some point in the future, you might need to
+re-register your hand geometry data.</p>
+
+<p><strong>Distinctiveness</strong> relates to the differences in the biometric
+pattern among the population. Distinctiveness is also affected
+by the precision of a sensor. A finger length sensor will not measure
+your finger length to the nanometer, so there will be quantized
+values in the measured data. Moreover, the measurements will need to
+account for normal hand swelling and shrinking based on temperature
+and humidity, making the data even less precise. Accounting for
+these factors, approximately one in a hundred people may have hand
+measurements similar to yours.
+A fingerprint sensor
+may typically detect 40&#8211;60 distinct features that can be used for
+comparing with other sensed fingerprints. An iris scan, on the
+other hand, will often capture over 250 distinct features, making
+it far more distinctive and more likely to identify a unique individual.</p>
+
+<p>Some sensed data is difficult to <strong>normalize</strong>. Here, normalization
+refers to the ability to align different sensed data to some common
+orientation. For instance, identical fingers might be presented
+at different angles to the sensors. The comparison algorithm will
+have to account for possible rotation when comparing the two
+patterns. The inability to normalize data makes it difficult to
+perform efficient searches. There is no good way to search for a
+specific fingerprint short of performing a comparison against
+each stored pattern. Data such as iris scans lends itself to
+normalization, making it easier to find potentially matching patterns
+without going through an exhaustive search.</p>
+
+<p>In general, the difficulty of normalization and the fact that
+no two measurements are ever likely to be the same makes biometric
+data <strong>not</strong> a good choice for <strong>identification</strong>. It is extremely
+difficult, for example, to construct a system that will store
+hundreds of thousands of fingerprints and allow the user to
+identify and authenticate themselves by presenting their finger.
+Such a system will require an exhaustive search through the
+stored data and each comparison will itself be time consuming
+as it will not be a simple bit-by-bit match test. Secondly,
+fingerprint data is not distinct enough for a population of that
+size. A more realistic system will use biometrics for
+<strong>verification</strong> and have users identify themselves through
+some other means (e.g., type their login name)
+and then present their biometric data. In this case, the software
+will only have to compare the pattern associated with that user.</p>
+
+<p>The biometric authentication process comprises several steps:</p>
+
+<ol>
+<li><p><strong>Enrollment</strong>. Before any authentication can be performed, the
+system needs to have stored biometric data of the user that it can
+use for comparison. The user will have to present the data to
+the sensor, distinctive features need to be extracted, and the
+resulting pattern stored. The system may also validate if the
+sensed data is of sufficiently high quality or ask the user to
+repeat the process several times to ensure consistency in the data.</p></li>
+<li><p><strong>Sensing</strong>. The biological component needs to be measured by
+presenting it to a sensor, a dedicated piece of hardware that
+can capture the data (e.g., a camera for iris recognition, a
+capacitive fingerprint sensor). The sensor captures the raw
+data (e.g., an image).</p></li>
+<li><p><strong>Feature extraction</strong>. This is a signal processing phase where
+the interesting and distinctive components are extracted from
+the raw sensed data to create a biometric pattern that can be
+used for matching. This process involves removing signal noise,
+discarding sensed data that is not distinctive or not useful
+for comparisons, and determining whether the resulting values
+are of sufficiently good quality that it makes sense to use
+them for comparison. A barely-sensed fingerprint, for instance,
+may not present enough minutia to be considered useful.</p></li>
+<li><p><strong>Pattern matching</strong>. The extracted sample is now
+compared to the stored sample that was obtained during the
+enrollment phase. Features that match closely will have
+small distances. Given variations in measurements, it is
+unlikely that the distance will be zero, which would indicate
+a perfect match.</p></li>
+<li><p><strong>Decision</strong>. The &#8220;distance&#8221; between the sensed and
+stored samples is now evaluated to decide if the match is
+close enough. The decision determination decides whether the system
+favors more false rejects or more false accepts.</p></li>
+</ol>
+
+<h2 id="securityimplications">Security implications</h2>
+
+<p>There are several security issues that relate to biometric
+authentication. </p>
+<dl>
+<dt><strong>Sensing</strong></dt>
+<dd>Unlike passwords or encryption keys, biometric systems require
+sensors to gather the data. The sensor, its connectors, the software
+that processes sensed data, and the entire software stack around it
+(operating system, firmware, libraries) must all be trusted and
+tamper-proof.</dd>
+
+<dt><strong>Secure communication and storage</strong></dt>
+<dd>The communication path after the data is captured and sensed must
+also be secure so that attackers will have no ability to replace
+a stored biometric pattern with one of their own.</dd>
+
+<dt><strong>Liveness</strong></dt>
+<dd>Much biometric data can be forged. Gummy fingerprints can copy
+real fingerprints, pictures of faces or eyes can fool cameras into
+believing they are looking at a real person, and recordings can
+be used for voice-based authentication systems.</dd>
+
+<dt><strong>Thresholds</strong></dt>
+<dd>Since biometric data relies on &#8220;close-enough&#8221; matches, you can never
+be sure of a certain match. You will need to determine what threshold
+is good enough and hope that you do not annoy legitimate users too
+much or make it too easy for the enemy to get authenticated.</dd>
+
+<dt><strong>Lack of compartmentalization</strong></dt>
+<dd>You have a finite set of biological characteristics to present.
+Fingerprints and iris scans are the most popular biometric sources.
+Unlike passwords, where you can have distinct passwords for each
+service, you cannot have this with biometric data.</dd>
+
+<dt><strong>Theft of biometric data</strong></dt>
+<dd>If someone steals your password, you can create a new one. If
+someone steals your fingerprint, you have nine fingerprints left and
+then none. If someone gets a picture of your iris, you have one more left.
+Once biometric data is compromised, it remains compromised.</dd>
+</dl>
+
+
+<h1 id="detectinghumans">Detecting humans</h1>
+
+<p><strong>CAPTCHA</strong> (Completely Automated Public Turning test to tell Computers
+and Humans Apart) is <em>not</em> a technique to authenticate users but
+rather a technique to identify whether a system is interacting with
+a human being or with automated software. The idea behind it is
+that humans can recognize highly distorted characters far better
+than character recognition software can.</p>
+
+<p>CAPTCHA presents an image containing a string of distorted text and asks
+the user to identify the text. As optical character recognition (OCR)
+technology improved, this text had to be ever more distorted and
+often reached a point where legitimate users struggled to decode it.
+CAPTCHAs were designed to thwart scripts that would, for example,
+sign up for thousands of logins on a service or buy all tickets to an
+event. CAPTCHAs do this by having a human solve the CAPTCHA before proceeding.</p>
+
+<p>This was not always successful.
+CAPTCHAs were susceptible to a form of a man-in-the-middle attack
+where the distorted image is presented to low-cost (or free) humans
+whose job is to decipher CAPTCHAs. These are called CAPTCHA farms.
+Ever-improving OCR technology also made text-based CAPTCHAs susceptible
+to attack. By 2014, Google found that they could use AI techniques
+to crack CAPTCHAs with 99.8% accuracy.</p>
+
+<p>An alternative to text-based CAPTCHAs are CAPTCHAs that involve
+image recognition, such as &#8220;select all images that have mountains in them&#8221;
+or &quot;select all squares in an image that have street signs&#8217;.
+A recent variation of CAPTCHA is Google&#8217;s <strong>No CAPTCHA reCAPTCHA</strong>.
+This simply asks users to check a box stating that <em>I&#8217;m not a robot</em>.
+The JavaScript behind the scenes, however, does several things:</p>
+
+<ul>
+<li><p>It contacts the Google server to perform an &#8220;advanced risk analysis&#8221;. What this does is not defined but the act of contacting the server causes the web browser to send Google cookies to the server. If you&#8217;re logged in to a Google account, your identity is now known to the server via a cookie and the server can look at your past history to determine if you are a threat. </p></li>
+<li><p>By contacting the Google server, the server can also check where the request came from and compare it with its list of known malicious IP addresses known to host bots</p></li>
+<li><p>The JavaScript code monitors the user&#8217;s engagement with the CAPTCHA, measuring mouse movements, scroll bar movement, acceleration, and the precise location of clicks. If everything is too perfect then the software will assume it is not dealing with a human being.</p></li>
+</ul>
+
+<p>The very latest variation of this system is the <strong>invisible reCAPTCHA</strong>. The
+user doesn&#8217;t even see the checkbox: it is oriented tens of thousands of pixels above the origin, so the JavaScript code is run but the reCAPTCHA frame is out of view. If the server-based risk analysis does not get sufficient information from the Google cookies then it relocates the reCAPTCHA frame back down to a visible part of the screen.</p>
+
+<p>Finally, if the risk analysis part of the system fails, the software presents a CAPTCHA (recognize text on an image) or, for mobile users, a quiz to find matching images.</p>
+
+
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February  2, 2020
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 419 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/a89b56d4-d72e-4e3d-865e-f7acfbce9964"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 419 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+		<h2> Study guides </h2>
+	<ul>
+	<li> <a href="../exam/guide-1.html"> Study Guide 1 </a> </li>
+	<li> <a href="../exam/guide-2.html"> Study Guide 2 </a> </li>
+	<li> <a href="../exam/guide-3.html"> Study Guide 3 </a> </li>
+<!--
+	<li> <a href="../exam/guide-final.html"> Full Study Guide </a> </li>
+-->
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

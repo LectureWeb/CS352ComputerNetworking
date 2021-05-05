@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 lecture 4,5 </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main .nn ul {
+	margin: 0;
+	margin-left: -1.0em;
+	padding: 0.15em 1.0em 0.15em 1.0em;
+	list-style: none;
+	float: left;
+	margin-bottom: 0.5em;
+	text-transform: uppercase;
+	width: 100%;
+}
+#main .nn li { 
+	float: left;
+	padding: 0;
+	margin: 0;
+}
+#main .nn li.right { 
+	float: right;
+	text-align: right;
+	padding: 0;
+	margin: 0;
+}
+</style>
+</head>
+
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../index.html"> Rutgers </a> 
+ 	<li> <a href="../hw/index.html"> Lecture 4,5 </a> 
+</ul>
+</p>
+</div>
+  
+<div id="content-wrapper">
+
+<div id="main">
+<div class="nn">
+<ul>
+	<li> <a href="l-rpc.html">Previous Lecture</a> </li>
+	<li class="right"> <a href="l-clocks.html">Next Lecture</a> </li>
+</ul>
+</div>
+<div id="headline">
+<h1>
+	Week 4,5: Distributed File Systems
+</h1>
+</div>
+<dl>
+<dt> Lecture notes: </dt>
+<dd>
+	<a href=../notes/content/05-dfs.pdf>
+	Distributed File Systems
+	</a>
+	<br/>
+	<a href=../notes/content/04-dfs-intro-slides.pdf>Introduction to Distributed File Systems - Lecture slides</a>
+	(<a href=../notes/content/04-dfs-intro-slides-6up.pdf>6 per page</a>)
+	<br/>
+	<a href="../notes/content/07-dfs-studies-slides.pdf">Distributed File Systems Case Studies - Lecture slides</a>
+            (<a href="../notes/content/07-dfs-studies-slides-6up.pdf">6 per page</a>) </td>
+
+<dt> Recitation notes: </dt>
+<dd> </dd>
+
+<dt> Supplemental notes:
+<dd>
+	<dl>
+	<dt> NFS </dt>
+	<dd>
+	<a href=http://www.faqs.org/rfcs/rfc1094.html>
+	RFC 1094: NFS: Network File System Protocol Specification
+	</a>
+	</dd>
+
+	<dt> AFS </dt>
+	<dd>
+	<a href=http://www-2.cs.cmu.edu/afs/cs/project/coda-www/ResearchWebPages/docs-afs.html>
+	AFS Papers at CMU</a>
+	</dd>
+
+	<dd>
+	<a href=http://www.angelfire.com/hi/plutonic/afs-faq.html>AFS FAQ</a>
+	</dd>
+	
+	<dd>
+	<a href=http://www.openafs.org/>OpenAFS prohect page</a>
+	</dd>
+
+<!--
+	<font color=green size=-1>[SHORT]</font>
+	<a href=http://www.lemson.com/lemson/dce/present-may1/index.htm>
+	DFS vs. CIFS
+	</a>, <em>David Lemson</em>, University of Illinois CCSO 
+-->
+
+	<dt> CODA </dt>
+	<dd> 
+	<a href=http://coda.cs.cmu.edu/>Coda File System project page</a>
+	</dd>
+
+	<dd>
+	<a href=http://www.coda.cs.cmu.edu/ljpaper/lj.html>
+	The Coda Distributed File System 
+	</a>, <em>Peter J. Braam </em>, School of Computer Science,
+	Carnegie Mellon University 
+	</dd>
+
+	<dd>
+	<a href=http://www-2.cs.cmu.edu/afs/cs/project/coda/Web/docdir/wwos2.pdf>
+	Coda: A Highly Available File System for a Distributed Workstation Environment<a>,
+	M. Satyanarayanan, Carnegie Mellon University.
+	</dd>
+
+	<dt> DFS </dt>
+	<dd>
+	<a href=http://www-306.ibm.com/software/stormgmt/dfs/>IBM WebSphere software DFS page</a>
+	</dd>
+
+	<dd>
+	<a href=http://swexpert.com/C8/RS.C4.APR.97.pdf>Distributed File System</a>, SunExpert Magazine, April 1997:
+	a brief description of DFS and its architecture
+	</dd>
+
+	<dt> SMB/CIFS </dt>
+	<dd>
+	<a href=http://www.microsoft.com/mind/1196/cifs.asp>
+	CIFS: A Common Internet File System</a>,
+	Paul Leach and Dan Perry, Microsoft Internet Developer, November 1996
+	</dd>
+
+	<dd>
+	<a href=http://samba.anu.edu.au/cifs/docs/what-is-smb.html>
+	Just what is SMB?</a>,
+	Richard Sharpe, V1.2, 27 September 1999
+	</dd>
+
+	<dd>
+	<a href=http://us1.samba.org/samba/docs/using_samba/toc.html>
+	Using Samba, 2nd Edition</a>,
+	Jay Ts, Robert Eckstein, and David Collier-Brown
+	<br/>
+	2nd Edition, February 2003 <br/>
+	O'Reilly & Associates, ISBN: 0-596-00256-4
+	</dd>
+
+	<dd>
+	<a href=http://www.microsoft.com/NTServer/nts/downloads/winfeatures/NTSDistrFile/AdminGuide.asp>
+	Microsoft Distributed File System (Dfs)</a>,
+	Microsoft Windows NT Server Documentation
+	</dd>
+
+	<dt> Other stuff </dt>
+	<dd>
+	<a href="http://labs.google.com/papers/gfs.html">The Google File System</a>,
+		Sanjay Ghemawat, Howard Gobioff, and Shun-Tak Leung.
+		Google Research Publication; appeared in
+		9th ACM Symposium on Operating Systems Principles,
+		Lake George, NY, October, 2003.
+	</dd>
+
+	<dt> Other stuff </dt>
+	<dd>
+	<a href=http://now.cs.berkeley.edu/Xfs/xfs.html>
+	xFS: Serverless Network File System</a>,
+	University of California, Berkeley 
+	</dd>
+
+	<dd>
+	<a href=http://richard.jones.name/google-hacks/gmail-filesystem/gmail-filesystem.html>
+	GmailFS: Gmail Filesystem</a>,
+	Richard Jones, 2004
+	</dd>
+	</dl>
+
+<dt> Buzzwords:
+<dd>
+<p>
+file system, file directory service, file service, file server, file,
+upload/download model, remote access model, client driver, VFS,
+access transparency, mounting, global root, sequential semantics,
+absolute time ordering, session semantics, 
+write-through, block caching, file caching,
+file usage patterns, component-at-a-time pathname resolution,
+stateless server, stateful server, delayed writes, write on close
+</p>
+<p>
+NFS (Network File System), mounting protocol, directory and file 
+access protocol, UDP, file handle, rnode, static mounting,
+automounter, <em>lookup</em> RPC, write-through, validation,
+read-ahead
+</p>
+<p>
+AFS (Andrew File System), whole file serving, whole file caching,
+disk cache, volumes, cells, uniform name space, callback promise
+</p>
+<p>
+CODA (COnstant Data Availability), volume storage group (VSG),
+available volume storage group (AVSG), replicated volume ID, 
+resolution, disconnected operation, reintegration, hoard database,
+client modification log (CML)
+</p>
+<p>
+DFS (Distributed File System), tokens
+</p>
+<p>
+SMB (Server Message Block), CIFS (Common Internet File System),
+message blocks, protocol negotiation, piggybacking messages,
+oplocks (opportunistic locks): exclusive oplock, batch oplock,
+level II oplock,
+</p>
+<p>
+GmailFS, xFS, serverless filesystem, virtual disk
+</p>
+</dl>
+</div> <!-- main -->
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2011 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.
+</p>
+<p> Last updated: September  8, 2011
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> Belkin F1B0280-V Slimswitch data switch. This is a manual (knob) switch that switches among four DB25 connectors. I can't imagine why anyone would need this; perhaps for switching old printers. I never used it and can't remember how it ended up in my pile of junk.
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

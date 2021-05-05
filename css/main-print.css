@@ -1,0 +1,416 @@
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+/* fonts for layout.css */
+
+
+
+
+
+
+
+
+
+
+
+/* default font, navbar  */
+
+
+/* left sidebar (sidebar1) default font */
+
+
+/* sidebar1 heading 2 */
+
+
+/* sidebar1 content list (ul) */
+
+
+/* right sidebar (sidebar2) default font */
+
+
+
+
+
+
+
+
+/* ----- basic styles - pk ----- */
+#main {
+	font: normal 11pt/1.2  "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+}
+
+@media print {
+     body {margin-top: 0.75in; margin-bottom: 1.25in; 
+           margin-left: 1.25in; margin-right: 0in; }
+}
+
+#main h1, h2, h3, h4 { page-break-after : avoid; }
+
+
+/* ------------ headings -------------- */
+
+#main .author, #main .date {
+	font-family: "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+	color: #000000;
+}
+#main h1, #main h2, #main h3, #main h4, {
+	font-family: "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+	color: #008080;
+}
+
+#main #headline h1 {
+	color: #CC352F;
+	font-weight: bold;
+	text-shadow: none;
+	font-size: 20pt;
+}
+
+#main #headline h2 {
+	color: #777;
+	font-family: "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+}
+
+#main #headline .author {
+	font-style: normal; 
+	margin-bottom: 0em;
+	text-indent: 0em;
+	font: normal 1.0em;
+	line-height: 1.4em;
+	font-family: Palatino, "Palatino Linotype", Georgia, Times, "Times New Roman", serif;
+}
+#main #headline .date {
+	font-style: italic; 
+	line-height: 1.4em;
+	letter-spacing: 0.1em;
+	margin-bottom: 2em;
+	text-indent: 0em;
+	font-family: Palatino, "Palatino Linotype", Georgia, Times, "Times New Roman", serif;
+}
+
+#main h1 {
+	padding-top: 1.5em;
+	margin-bottom: 0.5em;
+	border-bottom: 1px solid #000000;
+	font-size: 14pt;
+	font-weight: bold;
+	letter-spacing: 0.1em;
+	position: relative;
+}
+
+#main h2 {
+	font-size: 12pt;
+	font-weight: bold;
+	margin-bottom: 0.25em;
+	padding-top: 1em;
+}
+
+#main h3 {
+	font-size: 10pt;
+	font-style: italic; 
+	font-weight: bold;
+	margin-bottom: 0.25em;
+	padding-top: 1em;
+}
+
+#main h4 {
+	font-size: 9pt;
+	font-weight: bold;
+	margin-bottom: 0.25em;
+	padding-top: 1em;
+}
+
+/* ------------ standard elements -------------- */
+
+#main p, #main blockquote, #main td, #main div, #main dl, #main ol, #main ul {
+	margin-bottom: 1em;
+	font: normal normal 10pt/1.5 Palatino, "Palatino Linotype", Georgia, Times, "Times New Roman", serif;
+}
+
+#main p.first {
+	text-indent: 0;
+}
+
+#main .first:first-letter {
+	font-size: 400%;
+	width: 1em;
+	margin-top: -0.1em;
+	font-weight: bold;
+	float:left;
+	color: #CC352F;
+}
+#xxxmain .first:first-letter {
+	font-size: 500%;
+	font-weight: bold;
+	float:left;
+	margin-right: 0.1em;
+	margin-left: -0.1em;
+	margin-top: -0.05em;
+	margin-bottom: 0em;
+	padding-top: 0.4em;
+	color: #CC352F;
+}
+
+#main p {
+	/* text-align: justify; */
+	text-indent: 0em;
+	margin-bottom: 0;
+}
+#main p + p {
+	/* text-align: justify; */
+	text-indent: 2em;
+}
+
+#main pre {
+        white-space: pre;
+	padding-top: 2em;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        margin-left: 2em;
+        line-height: 4em;
+        font-family: Consolas, "Lucida Console", Courier, "Courier New", monospace;
+	font-size: 80%;
+}
+
+#main a:link {
+	text-decoration: none;
+	color: black;
+}
+#main a:visited {
+	text-decoration: none;
+	color: black;
+}
+	
+/*
+#main a[href^="http://"]:after {
+	content: " (" attr(href) ")";
+	font-size: 90%;
+}
+*/
+
+/*
+#main table a[href^="http://"]:after {
+	content: "";
+}
+*/
+
+
+#main b, #main strong {
+	color: #000040;
+	font-weight: bold; 
+}
+
+#main em {
+	font-style: italic; 
+}
+
+#main tt, #main code {
+	font-size: 1.0em;
+	font-family: Consolas, "Lucida Console", Courier, "Courier New", monospace;
+}
+
+#main blockquote > p {
+	margin-bottom: 0;
+}
+
+#main hr {
+	clear: both;
+	margin-top: 2em;
+	margin-bottom: 1em;
+	margin-left: 2em;
+	margin-right: 2em;
+	text-align: center;
+	border: none;
+}
+#main hr:after {
+	white-space: pre;
+	content: '*      *      *';
+}
+
+/* ------------ lists -------------- */
+#main ul {
+	margin-left: 0.5em;
+	padding-left: 2.0em;
+	padding-top: 1em;
+	margin-top: 2em;
+}
+#main ol {
+	margin-left: 0.5em;
+	padding-left: 2.0em;
+	padding-top: 1em;
+}
+#main dl {
+	padding-top: 1em;
+}
+#main li {
+	margin-top: 0.5em;
+}
+#main li p {
+	margin-bottom: 0em;
+}
+#main .romanlist {
+	list-style-type: upper-roman;
+}
+#main .lromanlist {
+	list-style-type: lower-roman;
+}
+#main .alphalist {
+	list-style-type: lower-alpha;
+}
+#main dt {
+	font-style: italic;
+	color: #333;
+	margin-bottom: 0.5em;
+}
+#main dd {
+	margin-bottom: 1em;
+}
+
+/* ------------ tables -------------- */
+#main table {
+	background: #fff;
+	margin-left: auto;
+	margin-right: auto;
+	border-spacing: 5px;
+	border-collapse: collapse;
+}
+#main table caption {
+	caption-side: bottom;
+	text-align: right;
+	font-size: 90%;
+	font-weight: bold;
+	border-top: 1px solid #888;
+	padding-top: 0.25em;
+}
+#main table th, #main table td {
+	border: none;
+	border: 1px solid #ccc;
+	padding: 0.25em;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+#main table th {
+	# font-style: italic;
+	color: #000;
+	font-size: 90%
+	font-weight: bold;
+	font-weight: normal;
+	text-align: left;
+}
+
+/* ------------ boxes and blocks -------------- */
+
+#main .right-sidetext {
+	float: right;
+	position: relative; width: 20em;
+	background-color: yellow;
+	border-style: double; border-width: 1px;
+	margin-top: 2em;
+	margin-left: 2em;
+	margin-right: -5em;
+	padding: 0.5em 0.5em -0.5em 0.5em;
+	font-size: 80%;
+}
+
+#main .right-sidetext p {
+	margin-top: 0;
+	margin-bottom: 1.0em;
+	text-indent: 0;
+	text-align: left;
+}
+
+#main .codeblock {
+	white-space: pre;
+	margin-top: -1em;
+	margin-left: 2em;
+	font-size: 0.9em;
+	font-family: Consolas, "Lucida Console", Courier, "Courier New", monospace;
+}
+
+#main .codeblock-box {
+	white-space: pre;
+	background: white;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	padding-left: 1em;
+	padding-right: 1em;
+	margin-top: 0em;
+	margin-bottom: 1em;
+	margin-left: 2em;
+	margin-right: 2em;
+	font-size: 0.9em;
+	font-family: Consolas, "Lucida Console", Courier, "Courier New", monospace;
+	border: 1px solid #f82;
+}
+
+#main .box {
+	background: white;
+	padding-top: 0.0em;
+	padding-bottom: 0.0em;
+	padding-left: 1em;
+	padding-right: 1em;
+	margin-top: 0em;
+	margin-bottom: 0em;
+	margin-left: 2em;
+	margin-right: 2em;
+	border: 1px solid #f82;
+}
+
+/* ------------ figures -------------- */
+
+#main .figure {
+	border: none;
+}
+
+#main .figure p {
+	clear: both;
+	padding: 5px;
+	padding-top: 2px;
+	margin: 0;
+	text-align: left;
+	font: normal 0.9em/130% "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+	color: #CC352F;
+	background-color: #FFF;
+}
+
+#main figure figcaption {
+	text-align: left;
+	font-size: 75%;
+	font-weight: bold;
+}
+
+#main .framedphoto p {
+	color: #000;
+}
+#downloadmsg {
+	display: none;
+}

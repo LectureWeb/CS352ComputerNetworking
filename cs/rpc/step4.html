@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 Documents </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_cs">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../index.html"> Computing </a> 
+ 	<li> <a href="../rpc/index.html"> RPC Tutorial </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Introduction to programming with Sun/ONC RPC: step 4 </h1>
+</div>
+
+<table>
+<tr> <td> <a href="index.html">Step 1</a></td>
+<td> <a href="step2.html">Step 2</a></td>
+<td> <a href="step3.html">Step 3</a></td>
+<td class="inverse"> <a href="step4.html">Step 4</a></td>
+<td> <a href="step5.html">Step 5</a></td>
+<td> <a href="step6.html">Step 6</a></td></tr>
+</table>
+
+<h2>Step 4. Getting the server to do some work </h2>
+
+<p>
+Now that we know the client and sever compile and run, it's time
+to get the server to do some work.
+We will hard-code two numbers in the client that we want the
+server to add.
+
+<h2>Initialize parameter in client</h2>
+
+<p>
+<p>Edit <tt>add_client.c</tt>. Note that the function <i>add_prog_1</i>
+defines a variable <tt>add_1_arg</tt>. This argument is passed as
+a parameter to the remote procedure call a few lines later with the call:
+</p>
+<div class="codeblock-box">
+result_1 = add_1(&amp;add_1_arg, clnt);
+</div>
+<p>
+Before calling this function, we will initialize <tt>add_1_arg</tt> to
+contain the numbers 123 and 22. The variable is defined as type <tt>intpair</tt>,
+which we defined in <tt>add.x</tt> as containing to integers a and b
+(take a look at <tt>add.h</tt> to see how this is defined to the program).
+We can initialize the parameters with:
+</p>
+<div class="codeblock-box">
+<font color="gray">
+if (clnt == NULL) {
+	clnt_pcreateerror(host);
+	exit(1);
+}</font>
+add_1_arg.a = 123;
+add_1_arg.b = 22;
+<font color="gray">if (result_1 == NULL) {
+	clnt_perror(clnt, "call failed:");
+}
+</font>
+</div>
+<p>
+We can run <i>make</i> to make sure there were no syntax errors in
+transcribing these two lines (or the commands listed in step 3).
+</p>
+<p>
+Turning to the server, <tt>add_server.c</tt>, we see that the
+first parameter of the <i>add_1_svc</i> function is our incoming
+parameter of type <tt>intpair</tt>.
+</p>
+<p>
+We will add another print statement after the <tt>"add function called\n"</tt>
+one to print the values of the parameters. For more complex data types,
+these statements can serve as sanity checks and debugging aids. If the first
+statement is printed and the server dies after that, we know we made a
+mistake in dereferencing the parameters.
+</p>
+<p>
+ONC RPC passes an <i>address</i> to the parameter on the client side
+and the server receives a local <i>address</i> of the incoming
+parameter.  We now add the statement:
+<div class="codeblock-box">
+<font color="gray">printf("add function called\n");</font>
+printf("parameters: %d, %d\n", argp-&gt;a, argp-&gt;b);
+</div>
+<p>
+Compile and run this to see if we get what we expect. Compile with
+</p>
+<div class="codeblock">
+make
+</div>
+<p>
+and run the server (make sure you killed the old one) and then the client as in step 3. On the server
+window you should see:
+</p>
+
+<div class="codeblock">
+parameters: 123, 22
+</div>
+<p>
+This confirms that we get the parameters correctly. Let's compute the
+result and send it back. Before we return the address of <tt>result</tt>,
+set it to the sum of the two parameters and add another print statement:
+</p>
+<div class="codeblock-box">
+<font color=gray>printf("add function called\n");</font>
+<font color=gray>printf("parameters: %d, %d\n", argp-&gt;a, argp-&gt;b);</font>
+result = argp-&gt;a + argp-&gt;b;</font>
+printf("returning: %d\n", result);</font>
+<font color=gray>return &amp;result;</font>
+</div>
+<p>
+Note that the variable <tt>result</tt> is declared <tt>static</tt>.
+This is crucial because local (automatic) variables live on the stack.
+As soon as the server function returns the pointer to the result back
+to the server stub, the memory used by local variables can be
+reclaimed for use by the server stub. Failure to declare the return
+type <tt>static</tt> can result in nasty bugs where the code may
+seem to work a lot of the time but not always.
+</p>
+<p>
+On the client, we'll need to add code to print the result. The return
+value from the call to <tt>add_1</tt> is a <b>pointer</b> to the
+result type (int in this case). This allows us to find out whether the
+remote procedure call succeeded or not. If the return value is a 0
+(a null pointer), we know the RPC failed. Otherwise, we can dereference
+the return type and get the value. Let's modify <tt>add_client.c</tt>
+to print the value:
+<div class="codeblock-box">
+<font color="gray">if (result_1 == (int *) NULL) {</font>
+<font color="gray">	clnt_perror (clnt, "call failed");</font>
+<font color="gray">}</font> else {
+	printf("result = %d\n", *result_1);
+}
+</div>
+<p>
+Compile (<i>make</i>) and run the code again on the server and client.
+As soon as you run the client code, you should see the following on the
+server:
+</p>
+<div class="codeblock">
+add function called
+parameters: 123, 22
+returning: 145
+</div>
+<p>
+And the following on the client:
+</p>
+<div class="codeblock">
+result = 145
+</div>
+<p>
+We now have a working server.
+</p>
+<h3> <a href=step5.html>Continue to step 5</a></h3>
+<h3> <a href=step3.html>Back to step 3</a></h3>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2011 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.
+</p>
+<p> Last updated: January 21, 2011
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> <a href="#distributed_computing">Distributed Computing</a> </h2>
+	<h2> <a href="#computer_security">Computer Security</a> </h2>
+	<h2> <a href="#tutorials">Tutorials</a> </h2>
+	<ul>
+	<li> <a href="../rutgers/notes/make/index.html"> Makefiles </a> </li>
+	<li> <a href="../rutgers/notes/sockets/index.html"> Sockets </a> </li>
+	<li> <a href="../rpc/index.html"> RPC </a> </li>
+	</ul>
+	<h2> <a href="#miscellany">Miscellany</a> </h2>
+	<ul>
+	<li> <a href="../misc/Cstyle.pdf"> C programming style </a> </li>
+	<li> <a href="../misc/osx-space.html"> Freeing space on OS X </a> </li>
+	<li> <a href="../misc/osx-setup.html"> Configuring OS X  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<h1 class="first"> ***** </h1>
+<p> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh </p>
+<h2> Duis ultrices dolor sed erat. </h2>
+<p>Praesent ultrices, turpis vel feugiat tristique, mauris ligula pellentesque urna, quis interdum est enim mollis sem. </p>
+<p> Ellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent orci leo, suscipit vel, pretium eu, viverra at, eros. Morbi cursus. </p>
+</div>
+
+</div>
+</div>
+</body>
+</html>

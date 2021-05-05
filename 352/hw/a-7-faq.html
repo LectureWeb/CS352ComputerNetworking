@@ -1,0 +1,453 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Assignment 7 FAQ </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+
+.subhead {
+	background-color: #ddd;
+	text-align: center;
+	margin-left: 5em;
+	margin-right: 5em;
+	border: 1px solid #555;
+}
+.note {
+	font-style: italic;
+	color: #444;
+}
+#main blockquote {
+        background-color: #D1DBDB;
+	margin: 0;
+	margin-bottom: 1em;
+}
+
+#main > p {
+	margin-left: 1em;
+}
+
+#main dd {
+        margin-left: 2em;
+        margin-bottom: 2em;
+}
+#main dt {
+        background-color: #D1DBDB;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        padding-top: 0.25em;
+        padding-left: 0.5em;
+        color: black;
+	font-weight: normal;
+}
+#main dt strong, #main dt b {
+	color: red;
+}
+#main dt p + p {
+	padding-top: 1em;
+}
+#main dt p {
+	margin-bottom: 0;
+}
+
+#main .answer {
+	color: #a00000;
+}
+
+#main table.doclist {
+	width: 80%;
+}
+
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+#main figure {
+	float: left; 
+	display: block
+}
+
+</style>
+</head>
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 352 </a>
+        <li> <a href="../notes/index.html"> Assignments </a>
+        <li> <a href="../notes/a-7-faq.html"> Assignment 7 FAQ </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Assignment 7 FAQ </h1>
+</div>
+<div class="subhead"> Due April 3, 2016 11:59pm via sakai </div>
+<h1 id="assignment7faqaddenda">Assignment 7 FAQ &amp; Addenda</h1>
+
+<p>Latest update: Sun Jun 26 19:29:27 EDT 2016
+</p>
+
+<p><a href="a-7.html">Back to assignment 7</a></p>
+
+<h2 id="addenda">Addenda</h2>
+
+<blockquote>
+<p>Typos</p>
+</blockquote>
+
+<p>I had two typos. In <em>Step 3b</em>, I mentioned that the query type should be 0. That is incorrect. It should
+be 1, which signifies an A (address) record query.</p>
+
+<p>In the submission, I mentioned that you should test multithreading. You do not need to do this. Your
+assignment only has to be single threaded (although making it multithreaded is fine).</p>
+
+<blockquote>
+<p><strong>Warning about third party libraries!</strong></p>
+</blockquote>
+
+<p>You should not have a need for third-party libraries for this assignment. If you do use any, you should include the source and clear compilation instructions (preferably a makefile). You should also clearly document your use of such a librry in your code. If the source is more than a small file, <em>don&#8217;t use it</em>. We will not install any third party packages to compile and run your code. For example, something like the Click python package for processing a command line is complete overkill for the assignment.</p>
+
+<p>Also, you should, of course, not use any DNS libraries. The point of the assignment is for you to extract DNS query data and assemble a response. Using somebody else&#8217;s code to do so invalidates the point of the assignment.</p>
+
+<blockquote>
+<p>Dig complains with a message: &#8220;WARNING: Message has <em>NN</em> extra bytes at end&#8221;</p>
+</blockquote>
+
+<p>I noticed a possible problem with using the most recent version of the <em>dig</em> command. Following the prescribed protoocl, <em>dig</em> may not print the answer section
+of your response and may instead complain about &#8220;extra bytes at the end.&#8221; I know that at least one student had this issue and I was able to reproduce it on a couple
+of my Linux systems, which run Ubuntu and dig version DiG 9.9.5&#8211;3ubuntu0.8-Ubuntu. This problem does not occur on the iLab machines (which run DiG 9.8.2rc1-RedHat&#8211;9.8.2&#8211;0.37.rc1.el6_7.7) or on Macs (which run DiG 9.8.3-P1). If you are experiencing this problem, the easiest workaround seems to be to send back a response that does not contain the query section. This should not be necessary but it does work and keeps dig from complaining. I suggest that you try this code on the iLab machines as a final test.</p>
+
+<h2 id="faq">FAQ</h2>
+
+<blockquote>
+<p>We haven&#8217;t been able to figure out how to test opcodes other than the standard query, so we are unsure if our unimplemented return works properly. What commands could we use to do that?</p>
+</blockquote>
+
+<p>You can use dig to try other queries. For example, the -x option enables reverse DNS queries:</p>
+
+<pre><code>dig -x 128.6.4.1
+</code></pre>
+
+<p>but you really need not worry about this. The key things you should check are that you can query names in your hosts file and give a reasonable error for hosts that are not.</p>
+
+<blockquote>
+<p>If a host name is not found, I we set the rcode to 3 but does that mean we should no longer show the answer section or should we show the answer section with a 0.0.0.0 IP address?</p>
+</blockquote>
+
+<p>You don’t need an answer section then. Set an_count=0.</p>
+
+<blockquote>
+<p>What should I set the TTL field for the response?</p>
+</blockquote>
+
+<p>You can set it to pretty much any value. It doesn&#8217;t matter since you&#8217;re not caching the results. It&#8217;s a value in seconds. 300 (5 minutes) is a good value for sites that handle failover or live in a dynamic environment. 3600 (1 hour) is good for non-critical services with dyamic DNS.</p>
+
+<blockquote>
+<p>Should our DNS server be case insensitive to domain name queries (e.g., if ibm.com is an entry in the hosts.txt file and the server gets a query for IBm.CoM, should it return the address for ibm.com)?</p>
+</blockquote>
+
+<p>Case should not matter for domain names. You should be case insensitive.</p>
+
+<blockquote>
+<p>When comparing the results of running DIG on my code vs running DIG from the cmd I saw some differences and wanted to know if we should correct them. When we run our DIG we get a warning saying recursion requested but not available. </p>
+</blockquote>
+
+<p>dig requests recursion. You should say it’s not available. That’s perfectly fine.</p>
+
+<blockquote>
+<p>Why do you use a char * to store the query and not struct dns_question?</p>
+</blockquote>
+
+<p>Because the domain name isn’t part of dos_question. That follows the domain name. When you get past parsing the name, you can set</p>
+
+<pre><code>dns_question *dns_q = (dns_question *)wherever_i_am;
+</code></pre>
+
+<blockquote>
+<p>Is the dns server supposed to process two forms of query such as the IP address and also the URL such as google.com? And would we have to process different forms of the same webpage such as www.google.com, google.com, etc.?</p>
+</blockquote>
+
+<p>First, google.com is not a URL; it is a domain name (http://www.google.com is a URL). You need to answer queries about domain names, which can have an arbitrary number of components and return the corresponding address. You do not implement inverse queries (queries by address).</p>
+
+<blockquote>
+<p>What do we do with the hosts file?</p>
+</blockquote>
+
+<p>When your program starts up, you’ll open the file and read/parse its contents to build up a list of name-address mappings. You’ll use this list to look up a name and find the corresponding address when you get an incoming query.</p>
+
+<blockquote>
+<p>Is the hosts.txt file you provided the default file that we are using if a file is not specified?</p>
+</blockquote>
+
+<p>The hosts file I provided is an example. Your program should have a default name for a hosts file (hosts.txt) if it’s not specified with the -f parameter and you should assume it’s in the current directory.</p>
+
+<blockquote>
+<p>What error do I generate?</p>
+</blockquote>
+
+<p>If you receive a <em>query</em> (qr=0) with an opcode of <em>Query</em> (opcode=0, standard query) then: </p>
+
+<pre><code>- if you look up the name successfully return a response (qr=1) with an rcode=0 and the appropriate answer data 
+- otherwise return a response (qr=1) with an rcode=3 (name error) and no answer data
+</code></pre>
+
+<p>If you receive a query with any other opcode then </p>
+
+<pre><code>- return a response (qr=1) with an rcode=4 (not implemented) and no answer data
+</code></pre>
+
+<p>You should never receive a response (qr=1).</p>
+
+<blockquote>
+<p>So we need to check the native machine for endianess for us to decide whether to flip the bytes that are incoming or not? And would all incoming bytes guaranteed to be in big endian or little endian?​</p>
+</blockquote>
+
+<p>No, you don’t unless you plan to convert the byte array into an array of shorts, for example. In that case, you’d use ByteBuffer.wrap and specify ByteOrder.BIG_ENDIAN as in the sample code. Internet protocols use big endian representation of integers. That’s what you’ll have in your incoming data and that’s what you’ll return.</p>
+
+<p>If you are NOT reading ints/longs/shorts directly from an array of bytes then you do not have to flip bytes around. Any data in the packet should have the most significant byte before the least significant byte, so you can read or store the bytes explicitly that way as in the sample code.</p>
+
+<blockquote>
+<p>Does the server have to be multi-threaded.</p>
+</blockquote>
+
+<p>No.</p>
+
+<blockquote>
+<p>Do I have to deal queries with multiple questions? </p>
+</blockquote>
+
+<p>You do not have to handle queries with multiple questions.</p>
+
+<blockquote>
+<p>When there&#8217;s a query with 0 questions do I reply with 0 answer or just ignore it?</p>
+</blockquote>
+
+<p>A query with 0 questions does not really make sense and should not be issued, but you can reply with a 0 answer if you get it.</p>
+
+<blockquote>
+<p>What do I return if I can&#8217;t find an entry in the host file that matches with the query string?</p>
+</blockquote>
+
+<p>The best thing to return is a return code (rcode) of 3, which is a Name Error.
+See <a href="http://tools.ietf.org/html/rfc1035">RFC 1035</a> and search for RCODE or &#8220;Name Error&#8221;.</p>
+
+<blockquote>
+<p>How do I work with fields in Java?</p>
+</blockquote>
+
+<p>I did the assignment in C, which makes working with bit fields really easy.
+If you use Java, you&#8217;ll read your data as a byte array.
+Then you&#8217;ll have to do your own shifting and masking to extract individual bits
+or bit ranges. You&#8217;ll have to combine bytes if you need 16 bit quantities.
+If you are unfamiliar with this, you&#8217;ll need to use the web and study up.
+You can also look at things like ByteBuffer or ShortBuffer to covert to shorts
+in a way that takes the endianess of the data into account.
+To help you, you can download an
+<a href="udp.java">example Java program</a>. This simply reads in a UDP packet, dumps its
+contents, and demonstrates how to get various bit fields.</p>
+
+<blockquote>
+<p>How do I work with fields in C?</p>
+</blockquote>
+
+<p>Use the <a href="dns.h">DNS header file</a>. Your buffer will be in a char array called, for example, buf.
+To access each field, point to the part of the buffer that contains the start of the data
+that you need and set the type to the appropriate structure. For example, the DNS information
+starts with type <strong>dns_heaader</strong>, so you can define a pointer to dns_header that points to
+the start of your buffer</p>
+
+<pre><code>dns_header *dns = (dns_header *)buf;
+</code></pre>
+
+<p>Then you can access bit fields directly:</p>
+
+<pre><code>dns-&gt;qr contains the query/response flag
+dns-&gt;rd contains the recursion request
+</code></pre>
+
+<p>For 16-bit quantities, convert them to the native format upon reading:</p>
+
+<pre><code>query_count = htons(dns-&gt;qd_count);
+</code></pre>
+
+<p>And convert them the the Internet format for writing them back to the packet buffer:</p>
+
+<pre><code>dns-&gt;an_count = htons(1);
+</code></pre>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: June 26, 2016
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 352 Assignments </h2>
+	<ul>
+	<!-- <li> <a href="../hw/a-1.html">Assignment 1</a> </li> -->
+	</ul>
+<!--
+	<h2> Tutorials </h2>
+	<ul>
+	<li> <a href="../notes/sockets/index.html"> TCP Sockets tutorial </a> </li>
+	<li> <a href="../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+	<li> <a href="../notes/make/index.html"> Makefile tutorial </a> </li>
+	</ul>
+-->
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Clock Synchronization</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Clock Synchronization</h1>
+								<h2>Getting the right time</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>February 15, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Enable clocks on multiple machines to synchronize to the same time.</p>
+</blockquote>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>In most environments, we would like our computers to know and track the
+current time of day. By this, we mean <strong>UTC</strong> time,
+Coordinated Universal Time (or Temps Universel Coordonné),
+formerly called Greenwich Mean Time<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote"><sup>1</sup></a>. This is the
+international standard time of day. From this, we can present
+time in the user&#8217;s local time zone and adjust for daylight
+saving time. Note that clients or users accessing a computer
+could be in different time zones. We want a consistent time so we can
+make sense of timestamps on file data, mail messages, databases,
+and system logs.
+These timestamps can be used for software development environments
+(know what still needs to be compiled based on file modification times), versioning tools, and
+database queries.</p>
+
+<p>Keeping track of time is difficult.
+No two clocks tick in perfect synchrony with each other.
+Quartz oscillators, which
+drive the timekeeping mechanisms of clock circuits, are not
+consistent over time and no two tick at exactly the same
+rate.
+The difference between two clocks at any given instant is the clock
+<strong>offset</strong>. The <em>rate</em>
+at which the clocks are drifting is the clock <strong>drift</strong>.
+The variation of network delay is called <strong>jitter</strong>.
+Jitter is useful for assessing the consistency of our interaction
+with servers.</p>
+
+<p>We can correct for drift simply by changing the value of a system&#8217;s
+clock to reflect that of UTC time. However, we do not want to
+provide the illusion of time moving backward to any process that
+is observing the clock.
+A <strong>linear compensation function</strong> adjusts the rate at which time
+is measured on a computer (e.g., number of ticks that make up a
+second).</p>
+
+<p><strong>Cristian&#8217;s algorithm</strong> sets the time on a client to the time
+returned by the server plus an offset that is one half of the transit
+time between the request and response messages: T<sub>client</sub>
+= T<sub>server</sub> + &frac12;(T<sub>received</sub> - T<sub>sent</sub>).</p>
+
+<p>It also allows one to compute the maximum error of the new time
+stamp. The error is &plusmn;&nbsp;&frac12;[(round-trip time) - (best-case round-trip
+time)]. Errors are additive. If you incur an error of &plusmn;50
+msec and the server&#8217;s clock source has an error of &plusmn;80 msec,
+your clock&#8217;s error is now &plusmn;130 msec.</p>
+
+<p>The <strong>Berkeley algorithm</strong> does not assume the presence of a
+server with an accurate time (i.e., one that keeps track of UTC
+time). Instead, one system is chosen to act as a leader (coordinator). It
+requests the time from all systems in the group (including itself)
+and computes a <strong>fault-tolerant average</strong> (an arithmetic average,
+dismissing systems whose time values differ by more than a certain
+amount). It then sends each machine an offset by which to adjust
+its clock.</p>
+
+<p>The <strong>Network Time Protocol</strong>, NTP, was created to allow a large
+set of machines to synchronize their clocks. A set of machines act
+as time servers. This collection of machines is known as the
+<strong>synchronization subnet</strong>. The subnet is hierarchical, with the
+time server&#8217;s <strong>stratum</strong> defined as the number of hops it is
+from a machine that synchronizes from a direct time source. Machines
+that are directly connected to a time source (e.g., a GPS receiver)
+are at stratum 0. Machines that synchronize from a system at stratum
+0 are at stratum one, and so on. The <strong>Simple Network Time
+Protocol</strong>, <strong>SNTP</strong>, is a restricted form of NTP that does
+not support peer-to-peer synchronization of time servers. The
+peer-to-peer mode maintains state on drift and synchronization
+time and is intended for time servers to synchronize with each other.
+SNTP is essentially the same as Cristian&#8217;s algorithm.
+The formula for NTP and SNTP is
+<em>time_offset</em> = &frac12; (T<sub>2</sub> - T<sub>1</sub> + T<sub>3</sub> - T<sub>4</sub>)
+where
+T<sub>1</sub> is the time the message left the client,
+T<sub>2</sub> is the time it arrived at the server,
+T<sub>3</sub> is the time the response left the server,
+and T<sub>4</sub> is the time that it arrived at the client.
+If we let T<sub>S</sub> = &frac12;(T<sub>2</sub> + T<sub>3</sub>) then we arrive at Cristian&#8217;s formula.</p>
+
+<p>NTP encourages clients to try several servers. For each server contacted, the protocol
+computes</p>
+
+<dl>
+<dt><strong>Offset</strong>:</dt>
+<dd> The difference between the client&#8217;s clock and the server&#8217;s. This is how
+much the client needs to offset its clock to set it to the server&#8217;s time.</dd>
+
+<dt><strong>Delay</strong>:</dt>
+<dd> This is an estimate of the time spent sending or receiving the message. It is
+one half of the round-trip time minus the estimate of time spent on the server.</dd>
+
+<dt><strong>Jitter</strong>:</dt>
+<dd> Jitter measures the variation in delay among multiple messages to the server.
+It gives us an idea of how consistent the latency is between the client and server.</dd>
+
+<dt><strong>Dispersion</strong>:</dt>
+<dd> Dispersion is the estimated maximum error for the computed offset. It takes into
+account the <em>root delay</em> (total delay, not just to the server but the
+delay from the server to the ultimate time source), estimated server
+clock drift, and jitter.</dd>
+</dl>
+
+<p>Given the choice of several NTP servers, NTP picks the server with the lowest
+dispersion. That is, the server from which it can get the most consistent and
+accurate time. If there is a tie, it then picks one with the lowest stratum;
+that is, one closest to the master time source. Note that this may result
+having a client synchronize from a higher-stratum server even if it can
+contact a lower-stratum one (one that is closer to the time source). This may
+happen if the client can access that server more reliably and with less
+delay and jitter than a &#8220;better&#8221; server.</p>
+
+<p>The <strong>Precision Time Protocol</strong> (<strong>PTP</strong>, an IEEE standard), was
+designed with different goals than NTP. While NTP was designed for
+synchronizing time with machines across the Internet and remote servers,
+PTP was designed for LANs: networks with low jitter and low latency. PTP is
+intended to achieve sub-microsecond precision among cooperating machines.
+Clock synchronization is initiated by a PTP master (unlike NTP, where the
+client host initiates the sync). The master announces its time to clients
+via a <strong>sync</strong> message.
+If a client is then interested in synchronizing its clock, it must
+communicate back to the server in order to discern the delay in communication.
+The client sends a <strong>delay request</strong> message and notes the
+time it was sent. The server sends back a <strong>delay response</strong>
+message containing the time of arrival of the delay request message.
+With this data, and the assumption that uplink and downlink latency is the same,
+the client can compute the server&#8217;s timestamp with an
+adjustment for the network transit delay.</p>
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>The abbreviation UTC is a compromize between the English <em>Coordinated Universal Time</em> and the <em>French Temps Universel Coordonné</em>. <a href="#fnref:1" title="return to body" class="reversefootnote">&#160;&#8617;&#xfe0e;</a></p>
+</li>
+
+</ol>
+</div>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

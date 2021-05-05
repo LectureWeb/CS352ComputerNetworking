@@ -1,0 +1,328 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Assignment 4 </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+
+.subhead {
+	background-color: #ddd;
+	text-align: center;
+	margin-left: 5em;
+	margin-right: 5em;
+	border: 1px solid #555;
+}
+.note {
+	font-style: italic;
+	color: #444;
+}
+#main .faqlist dd {
+        margin-left: 2em;
+        margin-bottom: 2em;
+}
+#main .faqlist dt {
+        background-color: #D1DBDB;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        padding-top: 0.25em;
+        padding-left: 0.5em;
+        color: black;
+	font-weight: normal;
+}
+#main .faqlist dt strong, #main .faqlist dt b {
+	color: red;
+}
+#main .faqlist dt p + p {
+	padding-top: 1em;
+}
+#main .faqlist dt p {
+	margin-bottom: 0;
+}
+#main .newslist dt {
+        background-color: white;
+        color: #555;
+}
+#main .answer {
+	color: #a00000;
+}
+
+#main table.doclist {
+	width: 80%;
+}
+
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+#main figure {
+	float: left; 
+	display: block
+}
+
+</style>
+</head>
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 352 </a>
+        <li> <a href="../notes/index.html"> Assignments </a>
+        <li> <a href="../notes/a-4.html"> Assignment 4 </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Assignment 4 </h1>
+</div>
+<div class="subhead"> Due February 17, 2016 6:25pm via sakai </div>
+<h1 id="introduction">Introduction</h1>
+
+<p>Please answer the questions precisely and concisely. Every question
+can be answered in one or at most a few sentences. I will not have
+the patience to read long paragraphs or essays and you may lose
+credit for possibly correct answers.</p>
+
+<p>Submit your work via sakai as a plain text or pdf document.
+<strong>No Microsoft Word, Apple Pages, ePub, et cetera formats.</strong></p>
+
+<h1 id="reading">Reading</h1>
+
+<p>Text: pages 98&#8211;144 (section 2.2 - 2.5.3)</p>
+
+<h1 id="questions">Questions</h1>
+
+<p>1.
+[Kurose &amp; Ross text: page: 170, question R15]<br/>
+Why is it said that FTP sends control information “out-of-band”?</p>
+
+<p>2.
+[Kurose &amp; Ross text: page: 170, question R18]<br/>
+From a user’s perspective, what is the difference between the download-and-delete mode and the download-and-keep mode in POP3?</p>
+
+<p>3.
+Read <a href="https://www.nczonline.net/blog/2009/05/05/http-cookies-explained/">HTTP cookies explained</a>.
+What happens if a cookie is not given an expiration time?</p>
+
+<p>4.
+ARIN, the American Registry for Internet Numbers, manages IP address assignments
+to organizations (ISPs and other companies that have been assigned IP addresses directly by them).
+You can query these allocations via the <strong>SEARCH Whois</strong> box at the top right of
+<a href="https://www.arin.net">www.arin.net</a>. You can enter an organization name, such as <em>Google</em>, <em>Comcast</em>, or <em>Rutgers</em>
+(note: it&#8217;s the organization name, not the domain name). You can also enter an IP
+address to do a reverse DNS search. Alternatively, you can use the <strong>whois</strong> command
+on Linux or OS X systems to query domain or address ownership. See the <a href="https://en.wikipedia.org/wiki/WHOIS">wikipedia entry</a> to learn more about whois.</p>
+
+<p>4a. What company owns the address 66.135.216.190?</p>
+
+<p>4b. What company owns the address 9.8.7.6?</p>
+
+<p>5.
+The <em>dig</em> command on Linux and OS X systems is a program that queries DNS servers. It performs
+lookups and displays answers. You can see the documentation [here][] or run the command <strong>man dig</strong>.
+For example, </p>
+
+<pre><code>dig +nocmd rutgers.edu NS +noall +answer  
+</code></pre>
+
+<p>sends a name server (NS) query and will show you all the authoritative DNS servers registered for rutgers.edu.
+The <strong>++nocmd</strong> option tells the command not to print the initial comment identifying the version of <em>dig</em>
+and its options.
+The <strong>+noall</strong> option omits
+showing the DNS query options, the query command that was sent, and the answer unless you explicity
+ask for a section (try running the command with and
+without <strong>+noall</strong>). The <strong>+answer</strong> option says you want to display the answer section of the DNS query.
+The answer section is the response data to the query (called the <em>question</em>).</p>
+
+<p>As another example,</p>
+
+<pre><code>dig +nocmd google.com ANY +multiline +noall +answer
+</code></pre>
+
+<p>performs an ANY request, which asks the DNS resolver for all information it has about the domain. This may include
+mail servers (MX records), IP addresses for the host name (A records), aliases (CNAME records), and other fields.
+The <strong>+multiline</strong> option prits certain records, such as the SOA record (<em>start of authority</em>, which
+defines key information about the zone) in a more verbose multi-line format with comments.</p>
+
+<p>5a. What are the DNS servers that are responsible for the amazon.com domain?
+Don&#8217;t list the entire output of the dig command; just list the names of the name servers.</p>
+
+<p>5b. What is the mail server (MX record) for cs.rutgers.edu?</p>
+
+<p>5c. gmail.com defines five redundant mail servers. What are they?</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: June 26, 2016
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 352 Assignments </h2>
+	<ul>
+	<!-- <li> <a href="../hw/a-1.html">Assignment 1</a> </li> -->
+	</ul>
+<!--
+	<h2> Tutorials </h2>
+	<ul>
+	<li> <a href="../notes/sockets/index.html"> TCP Sockets tutorial </a> </li>
+	<li> <a href="../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+	<li> <a href="../notes/make/index.html"> Makefile tutorial </a> </li>
+	</ul>
+-->
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

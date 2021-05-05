@@ -1,0 +1,367 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 352 old exams: Exam 3 Spring 2013 </title>
+
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+#main ol h1 {
+	font-size: 140%;
+	margin-left: -1.3em;
+}
+#main ol li {
+	margin-bottom: 1em;
+}
+</style>
+</head>
+
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> 352 </a> 
+ 	<li> <a href="../../exam/index.html"> Exam info </a> 
+ 	<li> <a href="../../exam/old/index.html"> Old exams </a> 
+ 	<li> <a href="../../exam/old/exam3-2013-s.html"> Exam 3 Spring 2013 </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> CS 352 Exam 3 </h1>
+<h2>Spring 2013</h2>
+</div>
+
+<ol>
+
+<h1>
+PART I &ndash; 32 points </h1>
+
+<li> 8 Points </br/>
+Suppose that Dijkstra's algorithm computed the following results for network costs starting from node <em>a</em>:
+
+<table>
+<tr>
+<th>D(b), p(b)</th>
+<th>D(c), p(c)</th>
+<th>D(d), p(d)</th>
+<th>D(e), p(e)</th>
+<th>D(f), p(f)</th>
+</tr>
+<tr>
+<td>2, a</td>
+<td>1, a</td>
+<td>2, c</td>
+<td>4, d</td>
+<td>3, d</td>
+</tr>
+</table>
+
+(a) What is the full path from node <em>a</em> to node <em>f</em>? Express it as an ordered list of nodes starting from <em>a</em>.
+
+<br/>
+
+(b) Routing tables store first hops to a destination. What is the routing table at <em>a</em>? If some destination <em>n</em> is directly connected to <em>a</em>, write "<em>n</em>" for the next hop.
+
+<table>
+<tr>
+<th>Destination</th> <th> First hop </th>
+</tr>
+<tr><td> b </td> <td> &nbsp; </td> </tr>
+<tr><td> c </td> <td> &nbsp; </td> </tr>
+<tr><td> d </td> <td> &nbsp; </td> </tr>
+<tr><td> e </td> <td> &nbsp; </td> </tr>
+<tr><td> f </td> <td> &nbsp; </td> </tr>
+</table>
+
+</li><li> 8 Points <br/>
+<p>
+Node <em>B</em> has nodes <em>A</em> and <em>C</em> as neighbors. <em>B</em>'s initial distance vector is [<em>A</em>=1, <em>C</em>=2], identifying the cost of getting to <em>A</em> as 1 and the cost to <em>C</em> as 2.  <em>B</em> receives a distance vector from <em>A</em> that contains: [<em>B</em>=1, <em>D</em>=3, <em>E</em>=7, <em>F</em>=9]. Shortly after that, <em>B</em> receives a distance vector from <em>C</em> that contains [<em>B</em>=2, <em>D</em>=8, <em>E</em>=5]
+</p>
+
+<p>
+(a) After <em>B</em> receives these two vectors, what is its view of least-cost distances from <em>B</em> to the following nodes? Express the distance as a single number.
+</p>
+
+<table>
+<tr>
+<th>Destination</th> <th> Least-cost distance </th>
+</tr>
+<tr><td> <em> A </em> </td> <td> &nbsp; </td> </tr>
+<tr><td> <em> C </em> </td> <td> &nbsp; </td> </tr>
+<tr><td> <em> D </em> </td> <td> &nbsp; </td> </tr>
+<tr><td> <em> E </em> </td> <td> &nbsp; </td> </tr>
+<tr><td> <em> F </em> </td> <td> &nbsp; </td> </tr>
+</table>
+
+<p>
+(b) After <em>B</em> updates its distance vector and sends it to <em>C</em>, what is <em>C</em>'s distance vector? Express the distance as a single number.
+
+<table>
+<tr>
+<th>Destination</th> <th> Least-cost distance </th>
+</tr>
+<tr><td> <em> A </em> </td> <td> &nbsp; </td> </tr>
+<tr><td> <em> B </em> </td> <td> &nbsp; </td> </tr>
+<tr><td> <em> D </em> </td> <td> &nbsp; </td> </tr>
+<tr><td> <em> E </em> </td> <td> &nbsp; </td> </tr>
+<tr><td> <em> F </em> </td> <td> &nbsp; </td> </tr>
+</table>
+
+</li><li> 8 Points <br/>
+The data shown uses two-dimensional parity and has a one-bit error. Locate and correct the error.
+
+<br/>
+<img src="images/2013-exam3-q3-2d-parity.png" width=150 height=150/>
+</li>
+
+<li> 8 Points <br/>
+<p>
+(a) State the number of bits that the CRC code will occupy given a generator of <strong>101</strong>.
+(b) Compute the CRC code for the bits <strong>101100</strong> with the generator <strong>101</strong>.
+</p>
+</li>
+
+<h1>
+PART II &ndash; 68 points &ndash; 4 points each </h1>
+
+<li> In a link-state routing protocol:
+</br>(a) A node informs only its neighbors about changes to the state of any of its links.
+</br>(b) The state of a link is dynamically queried to determine whether data can be routed through it.
+</br>(c) The state of a link will change based on the state of other links that share the same node.
+</br>(d) All nodes get updates on node connectivity so each node can build a full graph of the network.
+
+</li><li> Poison reverse is designed to:
+</br>(a) Detect invalid links on a route.
+</br>(b) Handle the case where link costs may be asymmetric (that is, c(a, b) &ne; c(b, a)).
+</br>(c) A spoofing technique to force a route to go through a specific machine.
+</br>(d) Avoid creating routing loops.
+
+</li><li> A multi-homed stub Autonomous System:
+</br>(a) Is a subnetwork containing multiple systems but not connected to the Internet.
+</br>(b) Is a subnetwork that is a member of multiple ASes at the same time.
+</br>(c) Is a subnetwork that is connected to only one AS at a time.
+</br>(d) Will not route traffic from one connected AS to another connected AS.
+
+</li><li> Reverse Path Forwarding (RPF) is used to:
+</br>(a) Route messages from the receiver back to the sender.
+</br>(b) Build a spanning tree.
+</br>(c) Duplicate multicast packets and send them to interested destinations.
+</br>(d) Ensure that forwarding loops do not develop.
+
+</li><li> The Internet Group Multicast Protocol (IGMP):
+</br>(a) Allows hosts to inform their connected routers that they are interested in joining a multicast group.
+</br>(b) Allows a multicast sender to inform its connected router that it is interested in sending to a multicast group.
+</br>(c) Establishes routes between multicast senders and multicast receivers.
+</br>(d) All of the above.
+
+</li><li> Channel partitioning protocols such as TDM or FDM:
+</br>(a) Have a high probability of collisions.
+</br>(b) May fail if any node in the network goes down.
+</br>(c) Pass a token to nodes to give them permission to access the network.
+</br>(d) Will never allow a node to use the full channel capacity.
+
+</li><li> Collisions can occur in this form of MAC protocol:
+</br>(a) Frequency division multiplexing.
+</br>(b) Random access.
+</br>(c) Token passing.
+</br>(d) Polling.
+
+</li><li> In CSMA/CD, binary exponential backoff is used to:
+</br>(a) Make an adapter wait exactly double the previous interval whenever a frame experiences a collision.
+</br>(b) Increase the chance that an Ethernet adapter will wait longer times as a frame experiences more collisions.
+</br>(c) Require that an adapter first listen to the channel to sense that it is clear before transmitting.
+</br>(d) Ensure that collisions cannot occur because two adapters will never transmit during the same time slot.
+
+</li><li> IPv6's Neighbor Discovery protocol differs from ARP (Address Resolution Protocol) because:
+</br>(a) It uses TCP instead of UDP for greater reliability.
+</br>(b) A query is not sent to every host on the LAN.
+</br>(c) Hosts never have to send queries because every host periodically sends announcements.
+</br>(d) It uses a three-way handshake instead of a query-response.
+
+</li><li> An Ethernet switch knows which interface to use to forward an incoming frame based on:
+</br>(a) Having seen a source address in an earlier frame that arrived from that destination interface.
+</br>(b) The administrator having configured a switch table to identify which addresses are at which interfaces.
+</br>(c) The use of ARP to find the corresponding MAC address for an IP address.
+</br>(d) Each interface on a switch having a distinct MAC address and the sender using it as a destination address.
+
+</li><li> CSMA/CA:
+</br>(a) Waits a random time interval before transmitting after a channel is sensed to be busy.
+</br>(b) Is a taking-turns protocol; a device cannot transmit until it gets a token from the access point.
+</br>(c) Waits a random time interval if a transmitted frame resulted in a collision.
+</br>(d) Allocates time slots for each wireless station, which has to wait for its time slot before transmitting.
+
+</li><li> Unlike Ethernet, 802.11 uses sequence numbers in its frame to allow the receiver to
+</br>(a) Detect and discard duplicate frames.
+</br>(b) Ensure that all frames are delivered to upper protocol layers in the proper order.
+</br>(c) Request retransmission of missing frames.
+</br>(d) All of the above.
+
+</li><li> Request to Send / Clear to Send (RTS/CTS) is a feature of the 802.11 MAC to:
+</br>(a) Provide acknowledgements from the access point to indicate that a frame has been received successfully.
+</br>(b) Enable power management by telling the access point that a station will or will not be transmitting anymore.
+</br>(c) Allow all stations to know that one station will be transmitting even if they are out of range of that station.
+</br>(d) Allow one station to negotiate to receive a frame from another station, bypassing the access point.
+
+</li><li> Differentiated Services (DiffServ) is a technique for:
+</br>(a) Providing quality of service on a network by reserving router resources ahead of time.
+</br>(b) Grouping datagram streams from different servers together if they are routed to the same client.
+</br>(c) Identifying and prioritizing classes of network traffic by tagging IP datagrams.
+</br>(d) Transforming an IP network into one with the properties of a circuit switched network.
+
+</li><li> A weighted fair queuing link scheduling discipline:
+</br>(a) Services output queues in strict priority order to ensure that their quality of service needs are met.
+</br>(b) Uses multiple output queues and gives each of them an equal percentage of link bandwidth.
+</br>(c) Prioritizes output queues but ensures that each gets a defined minimum percentage of link bandwidth.
+</br>(d) Uses a single output queue per link and transmits packets in the order that they arrive.
+
+</li><li> A leaky bucket algorithm primarily addresses which quality of service (QoS) problem?
+</br>(a) Bandwidth
+</br>(b) Delay
+</br>(c) Jitter
+</br>(d) Packet loss
+
+</li><li> The Reservation Protocol (RSVP) is used to:
+</br>(a) Schedule packets in a router's output queue.
+</br>(b) Reserve socket resources on both the client and server.
+</br>(c) Specify the quality of service needs for a stream of datagrams.
+</br>(d) Police traffic to drop any datagrams that exceed a bandwidth threshold.
+
+</li><li> The RTP Control Protocol, RTCP:
+</br>(a) Is a version of the RTP (Real-Time Protocol) that uses reliable datagram delivery.
+</br>(b) Dynamically modifies an RTP datagram stream to enforce quality of service guarantees.
+</br>(c) Provides a sender with feedback on the quality of service that a receiver is getting.
+</br>(d) Allows an administrator to configure quality of service parameters on an RTP datagram stream.
+
+
+</ol>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: April 20, 2016
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+		<h2> Old exams </h2>
+	<ul>
+	<li> <a href="exam1-2013-s.html"> Spring 2013 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2013-s.html"> Spring 2013 &ndash; Exam 2</a> </li>
+	<hr/>
+
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

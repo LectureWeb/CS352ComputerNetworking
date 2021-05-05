@@ -1,0 +1,671 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 416 Documents </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> CS 416 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/c-tutorials/index.html"> Tutorials </a> 
+ 	<li> <a href="../../notes/c-tutorials/dup2.html"> Signal Tutorial </a> 
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> C Tutorial: I/O Redirection </h1>
+</div>
+
+<h1> Redirecting I/O </h1>
+<p>
+A powerful capability in the shell is the ability to treat terminal input and output
+interchangeably with file input/output for most commands. For example, to save
+the list of all files ending with <code>.c</code> into a file called <em>files.txt</em>,
+one can run:
+</p>
+<pre><code>
+find . -iname '*.c' &gt;files.txt
+</code></pre>
+
+<p>
+Even though many commands optionally support one or more file names on the 
+command line, we can also feed them file data as the standard input. For instance,
+to count the number of files in <em>files.txt</em>:
+</p>
+<pre><code>
+wc -l &lt;files.txt
+</code></pre>
+
+<h1> Standard input, standard output, and standard error </h1>
+<p>
+In UNIX systems (and derivatives), open files and devices are identified 
+by <strong>file descriptors</strong>. A file descriptor is a small integer
+that, internally, is simply an index into a per-process table of information
+about open files.
+Each process expects to have three open file descriptors
+upon startup.
+The standard input, file descriptor 0, is used as the default input source.
+Typically, this is data that the user enters via the keyboard to the
+virtual terminal (window running a shell) but may be redirected to 
+another source such as a file (through input redirection) or the output
+of another program (via a pipe).
+The standard output, file descriptor 1, is used as the default output source.
+This, too, is the user's virtual terminal by default. 
+The standard error, file descriptor 2, is an alternate output source that
+is typically used for sending error messages. Typically, this is the
+same as the standard output. However, if the standard output is redirected,
+the standard error is still the terminal so that the user can see 
+any error messages that are generated by the program. The user can redirect
+this on the shell via the <code>2&gt;</code> redirector:
+</p>
+
+<pre><code>
+find . -iname '*.c' &gt;files.txt 2&gt;errors.txt
+</code></pre>
+
+<p>
+The user can also direct the standard error to the same stream as standard
+output even if the standard output is redirected with this syntax, which 
+explicitly states that the standard error is redirected to file descriptor 1::
+</p>
+
+<pre><code>
+find . -iname '*.c' &gt;files.txt 2&gt;&amp;1
+</code></pre>
+
+<h1> What about stdin, stdout, and stderr? </h1>
+
+<p>
+A lot of programs use functions calls such as
+<em>printf</em>, <em>scanf</em>, <em>fprintf</em>, <em>fscanf</em>, 
+<em>fgets</em>, <em>fgetc</em>, <em>getc</em>, <em>puts</em>, <em>fputs</em>,
+<em>putc</em>, <em>fputc</em>, <em>fread</em>, and <em>fwrite</em>
+for input and output.
+</p>
+<p>
+These functions are not system calls and are part of the
+<strong>stdio</strong> package. The <em>stdio</em> package is
+a set of functions that provides user-level buffering for input
+and output. File descriptors are not accessed directly since
+doing so will bypass any buffering that is done by the library.
+Instead, the libary keeps track of open files with <code>FILE</code>
+structures. The variables <code>stdin</code>, <code>stdout</code>, and
+<code>stderr</code> are pointers to <code>FILE</code> structures
+that correspond to the standard input, output, and error streams.
+Internally, the stdio library of course uses file descriptors along
+with <em>read</em>, <em>write</em>, <em>open</em>, and <em>close</em>
+system calls since those are the
+only facilities provided by the operating system.
+
+</p>
+
+<h1> dup2: Duplicating a file descriptor </h1>
+
+<p>
+A custom program is welcome to open or create any files it wishes to and
+use the resultant file descriptor for accessing that file. There
+is rarely any particular need to change the standard input, standard output,
+or standard error. However, in cases where other programs need to be run,
+one's ability to change where data is read from or written to is often
+limited to redefining the standard input and output streams. As we've 
+seen, the shell uses this facility extensively for providing I/O
+redirection and pipe capabilities to programs it runs.
+</p>
+
+<p>
+The kernel allows us to do this via the <strong>dup2</strong> system call.
+The <em>dup2(int f_orig, int f_new)</em> system call
+takes two file descriptors as parameters and duplicates the first one
+(<em>f_orig</em>) onto the second one (<em>f_new</em>). If the second
+file descriptor was referencing a file, that file is closed. After
+the system call, both file descriptors are valid references to the file.
+</p>
+
+<h2> Example  </h2>
+<p>
+This is a really small program that illustrates how <em>dup2</em> works.
+We get a file name from the command line and create it as a new file, getting
+a file descriptor for it.
+We then write something to the standard output using <em>printf</em> and the stdio library.
+After that, we use <em>dup2</em> to copy the file descriptor for the new file (<code>newfd</code>)
+onto the standard output file descriptor (<code>1</code>). 
+Any <em>printf</em> functions will continue to go to the standard output, but that has now
+been changed to the file we just opened.
+</p>
+
+<div class="codeblock-box"><span class="comment">/*
+	output redirection with dup2()
+	Super-simple example
+
+	Paul Krzyzanowski
+*/</span>
+
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;fcntl.h&gt;
+
+int
+main(int argc, char **argv)
+{
+	int pid, status;
+	int newfd;	<span class="comment">/* new file descriptor */</span>
+
+	if (argc != 2) {
+		fprintf(stderr, "usage: %s output_file\n", argv[0]);
+		exit(1);
+	}
+	if ((newfd = open(argv[1], O_CREAT|O_TRUNC|O_WRONLY, 0644)) &lt; 0) {
+		perror(argv[1]);	<span class="comment">/* open failed */</span>
+		exit(1);
+	}
+	printf("This goes to the standard output.\n");
+	printf("Now the standard output will go to \"%s\".\n", argv[1]);
+
+	<span class="comment">/* this new file will become the standard output */</span>
+	<span class="comment">/* standard output is file descriptor 1, so we use dup2 to */</span>
+	<span class="comment">/* to copy the new file descriptor onto file descriptor 1 */</span>
+	<span class="comment">/* dup2 will close the current standard output */</span>
+
+	dup2(newfd, 1); 
+
+	printf("This goes to the standard output too.\n");
+	exit(0);
+}
+
+</div>
+<p> <a href="files/dup2-a.c">Download this file</a> </p>
+<p> Save this file by control-clicking or right clicking the download link and then saving it as <tt>dup2-a.c</tt>. </p>
+<p> Compile this program via: </p>
+<div class="codeblock">
+gcc -o dup2-a dup2-a.c
+</div>
+<p> If you don't have gcc, You may need to substitute the gcc command with cc or another name of your compiler.  </p>
+<p> Run the program: </p>
+<div class="codeblock">
+./dup2-a
+</div>
+
+<p>
+There's one glitch with the program. If you redirect the output to another file and run:
+</p>
+<pre><code>
+dup2 abc.txt &gt;def.txt
+</code></pre>
+
+<p>
+You'll find that <em>all</em> of the output went to the file <code>def.txt</code>! This is a side-effect
+of the stdio library buffering its output to minimize the amount of times it calls the <em>write</em>
+system call. In the case where we did not redirect the standard output, stdio was smart enough to 
+realize that we are writing to a terminal device and all data should be flushed out so that the user
+is not delayed waiting for output. In the case where we redirected the output, the data was not written
+until after the file descriptor was changed. It was just sitting in a memory buffer. 
+To get the desired behavior, we need to ensure that we flush any pending data with the <strong>fflush</strong>
+function (part of <code>stdlib</code>):
+
+<div class="codeblock-box"><span class="comment">/*
+	output redirection with dup2()
+	Super-simple example
+
+	Paul Krzyzanowski
+*/</span>
+
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;fcntl.h&gt;
+
+int
+main(int argc, char **argv)
+{
+	int pid, status;
+	int newfd;	<span class="comment">/* new file descriptor */</span>
+
+	if (argc != 2) {
+		fprintf(stderr, "usage: %s output_file\n", argv[0]);
+		exit(1);
+	}
+	if ((newfd = open(argv[1], O_CREAT|O_TRUNC|O_WRONLY, 0644)) &lt; 0) {
+		perror(argv[1]);	<span class="comment">/* open failed */</span>
+		exit(1);
+	}
+	printf("This goes to the standard output.\n");
+	printf("Now the standard output will go to \"%s\".\n", argv[1]);
+	fflush(stdout);
+
+	<span class="comment">/* this new file will become the standard output */</span>
+	<span class="comment">/* standard output is file descriptor 1, so we use dup2 to */</span>
+	<span class="comment">/* to copy the new file descriptor onto file descriptor 1 */</span>
+	<span class="comment">/* dup2 will close the current standard output */</span>
+
+	dup2(newfd, 1); 
+
+	printf("This goes to the standard output too.\n");
+	exit(0);
+}
+
+</div>
+<p> <a href="files/dup2-b.c">Download this file</a> </p>
+<p> Save this file by control-clicking or right clicking the download link and then saving it as <tt>dup2-b.c</tt>. </p>
+<p> Compile this program via: </p>
+<div class="codeblock">
+gcc -o dup2-b dup2-b.c
+</div>
+<p> If you don't have gcc, You may need to substitute the gcc command with cc or another name of your compiler.  </p>
+<p> Run the program: </p>
+<div class="codeblock">
+./dup2-b
+</div>
+
+<h1> Redirection: executing a process after dup2 </h1>
+<p>
+The more useful example of dup2 is input or output (or both) redirection.
+Here we get the name of the output file from the command line as before and set that to be the standard output
+but now execute a command (<code>ls -al /</code> in this example). The command sends its output to the standard
+output stream, which is now the file that we created.
+</p>
+
+<div class="codeblock-box"><span class="comment">/*
+	output redirection with dup2()
+	send the output of a command to a file of the user's choice.
+
+	Paul Krzyzanowski
+*/</span>
+
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;fcntl.h&gt;
+
+int
+main(int argc, char **argv)
+{
+	int pid, status;
+	int newfd;	<span class="comment">/* new file descriptor */</span>
+	char *cmd[] = { "/bin/ls", "-al", "/", 0 };
+
+	if (argc != 2) {
+		fprintf(stderr, "usage: %s output_file\n", argv[0]);
+		exit(1);
+	}
+	if ((newfd = open(argv[1], O_CREAT|O_TRUNC|O_WRONLY, 0644)) &lt; 0) {
+		perror(argv[1]);	<span class="comment">/* open failed */</span>
+		exit(1);
+	}
+	printf("writing output of the command %s to \"%s\"\n", cmd[0], argv[1]);
+
+	<span class="comment">/* this new file will become the standard output */</span>
+	<span class="comment">/* standard output is file descriptor 1, so we use dup2 to */</span>
+	<span class="comment">/* to copy the new file descriptor onto file descriptor 1 */</span>
+	<span class="comment">/* dup2 will close the current standard output */</span>
+
+	dup2(newfd, 1); 
+
+	<span class="comment">/* now we run the command. It runs in this process and will have */</span>
+	<span class="comment">/* this process' standard input, output, and error */</span>
+
+	execvp(cmd[0], cmd);
+	perror(cmd[0]);		<span class="comment">/* execvp failed */</span>
+	exit(1);
+}
+
+</div>
+<p> <a href="files/dup2-c.c">Download this file</a> </p>
+<p> Save this file by control-clicking or right clicking the download link and then saving it as <tt>dup2-c.c</tt>. </p>
+<p> Compile this program via: </p>
+<div class="codeblock">
+gcc -o dup2-c dup2-c.c
+</div>
+<p> If you don't have gcc, You may need to substitute the gcc command with cc or another name of your compiler.  </p>
+<p> Run the program: </p>
+<div class="codeblock">
+./dup2-c
+</div>
+
+<h1> Redirecting in a new process </h1>
+
+<p>
+The above example uses <em>execvp</em>, which overwrites the current process with the new program.
+If we want the command to run in a separate process while sending its output to the file that we created,
+we can simply <em>fork</em> a new process. Note that we perform our <em>dup2</em> call in the child
+so that we do not overwrite the standard output of the parent. We also close the standard input since
+we do not want the forked process trying to read from there (the <em>ls</em> command in this example
+will not but other programs might). Finally, the parent waits for the child process to terminate before
+continuing.
+</p>
+
+<div class="codeblock-box"><span class="comment">/*
+	output redirection with dup2()
+	send the output of a command to a file of the user's choice.
+
+	Paul Krzyzanowski
+*/</span>
+
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;fcntl.h&gt;
+
+void runcmd(int fd, char **cmd);
+
+int
+main(int argc, char **argv)
+{
+	int pid, status;
+	int newfd;	<span class="comment">/* new file descriptor */</span>
+	char *cmd[] = { "/bin/ls", "-al", "/", 0 };
+
+	if (argc != 2) {
+		fprintf(stderr, "usage: %s output_file\n", argv[0]);
+		exit(1);
+	}
+	if ((newfd = open(argv[1], O_CREAT|O_TRUNC|O_WRONLY, 0644)) &lt; 0) {
+		perror(argv[1]);	<span class="comment">/* open failed */</span>
+		exit(1);
+	}
+	printf("writing output of the command %s to \"%s\"\n", cmd[0], argv[1]);
+
+	runcmd(newfd, cmd);	<span class="comment">/* run the command, sending the std output to newfd */</span>
+
+	printf("all done!\n");
+	exit(0);
+}
+
+<span class="comment">/*
+	runcmd(fd, cmd): fork a child process and run the command cmd,
+	sending the standard output to the file descriptor fd.
+	The standard input is closed. The parent waits for the child
+	to terminate.
+*/</span>
+void
+runcmd(int fd, char **cmd)
+{
+	int status; 
+
+	switch (fork()) {
+	case 0:	<span class="comment">/* child */</span>
+		dup2(fd, 1); 	<span class="comment">/* fd becomes the standard output */</span>
+		execvp(cmd[0], cmd);
+		perror(cmd[0]);		<span class="comment">/* execvp failed */</span>
+		exit(1);
+
+	default: <span class="comment">/* parent */</span>
+		while (wait(&amp;status) != -1) ;	<span class="comment">/* pick up dead children */</span>
+		break;
+
+	case -1: <span class="comment">/* error */</span>
+		perror("fork");
+	}
+	return;
+}
+
+</div>
+<p> <a href="files/dup2-d.c">Download this file</a> </p>
+<p> Save this file by control-clicking or right clicking the download link and then saving it as <tt>dup2-d.c</tt>. </p>
+<p> Compile this program via: </p>
+<div class="codeblock">
+gcc -o dup2-d dup2-d.c
+</div>
+<p> If you don't have gcc, You may need to substitute the gcc command with cc or another name of your compiler.  </p>
+<p> Run the program: </p>
+<div class="codeblock">
+./dup2-d
+</div>
+
+<p> 
+For more examples, see the <a href="pipe.html">pipe</a> tutorial.
+</p>
+
+<h2> What happened to <em>dup</em>? </h2>
+<p>
+This entire discussion focussed on the <em>dup2</em> system call. Given that name,
+one cannot help but wonder what happened to <em>dup1</em>. There actually is a
+<strong>dup</strong> system call and it predates <em>dup</em> by many years.
+Unlike <em>dup2</em>, <em>dup</em> takes a single parameter: the open file descriptor.
+It then duplicates it onto the lowest numbered file descriptor that is currently
+not used by that process and returns the number of that file descriptor.
+</p>
+<p>
+A process starts off with the first three file 
+descriptors in use (0, 1, and 2; standard in, standard out, and standard error, respectively). 
+To duplicate a new file descriptor onto, say, the standard output, you would close the standard
+output file descriptor (1) and then call <em>dup</em>. Since the lowest unused file descriptor
+is now 1, <em>dup</em> will duplicate the file descriptor to file descriptor 1.
+</p>
+<pre><code>
+close(1);	/* close std output */
+dup(newfd);	/* duplicate newfd to fd 1 */
+</code></pre>
+
+<p>
+There are two downsides to using <em>dup</em>. First, you have to close the file descriptor that
+will be the target of duplication so that it becomes unused. This means that you will be making
+two system calls instead of one. Second, you cannot rely on the fact that file descriptor 0
+is truly in use. If it was closed without your knowledge (say, before a <em>fork</em> and <em>exec</em>)
+then <em>dup</em> will duplicate onto the wrong file descriptor.
+</p>
+
+<h2> Is there yet another way to accomplish this? </h2>
+<p>
+I'm glad you asked. Yes, there's even another way to duplicate a file descriptor: with the
+<strong>fcntl</strong> system call. The <em>fcntl</em> call is a call for several miscellaneous
+operations that you can do to files: get/set file modes, get/set owners/groups, and get/set
+file locks. Depending on the operating system, it can also do thins such as truncate a file,
+preallocate storage, read bootstrap code, toggle disk caching, and a slew of other file-related
+operations.
+</p>
+<p>
+One of the functions that <em>fcntl</em>  can perform is <code>F_DUPFD</code>, 
+which duplicaes a file descriptor in a manner similar to <em>dup</em>.
+</p>
+<pre><code>
+#include &lt;fcntl.h&gt;
+
+fcntl(fd, F_DUPFD);
+</code></pre>
+<p>
+is exactly equivalent to <code>dup(fd)</code>.
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: March 28, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+        <h2> Tutorials </h2>
+        <ul>
+        <li> <a href="../../notes/c-tutorials/index.html"> C/Unix tutorials </a> </li>
+        <li> <a href="../../notes/make/index.html"> Makefile tutorial </a> </li>
+        <li> <a href="../../notes/sockets/index.html"> TCP/IP Sockets </a> </li>
+        <li> <a href="../../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+<!--
+        <li> <a href="../../notes/clocks/index.html"> Clocks demo </a> </li>
+-->
+        </ul>
+
+	
+        <h2> <a href="index.html">C Tutorials</a> </h2>
+	<h3> Processes </h3>
+        <ul>
+        <li> <a href="../../notes/c-tutorials/getpid.html"> getpid </a> </li>
+        <li> <a href="../../notes/c-tutorials/getppid.html"> getppid </a> </li>
+        <li> <a href="../../notes/c-tutorials/fork.html"> fork </a> </li>
+        <li> <a href="../../notes/c-tutorials/exec.html"> exec </a> </li>
+        <li> <a href="../../notes/c-tutorials/forkexec.html"> fork&amp;exec </a> </li>
+        <li> <a href="../../notes/c-tutorials/wait.html"> wait </a> </li>
+        <li> <a href="../../notes/c-tutorials/signal.html"> signal </a> </li>
+	</ul>
+	<h3> I/O and IPC </h3>
+	<ul>
+        <li> <a href="../../notes/c-tutorials/dup2.html"> dup2 </a> </li>
+        <li> <a href="../../notes/c-tutorials/pipe.html"> pipe and dup2 </a> </li>
+        <li> <a href="../../notes/c-tutorials/isatty.html"> isatty </a> </li>
+	<ul>
+	</ul>
+	<h3> Timing </h3>
+        <li> <a href="../../notes/c-tutorials/times.html"> times </a> </li>
+        <li> <a href="../../notes/c-tutorials/gettime.html"> clock_gettime </a> </li>
+	<ul>
+	<h3> Basics </h3>
+	<ul>
+        <li> <a href="../../notes/c-tutorials/getopt.html"> Command options </a> </li>
+        <li> <a href="../../notes/c-tutorials/strtok.html"> Parsing tokens </a> </li>
+<!--
+        <li> <a href="../../notes/c-tutorials/fpointer.html"> Pointers to functions </a> </li>
+-->
+        <li> <a href="../../notes/c-tutorials/list.html"> Linked list </a> </li>
+<!--
+        <li> <a href="../../notes/c-tutorials/hash.html"> Hash tables </a> </li>
+-->
+        </ul>
+
+</div>
+
+<div id="sidebar2">
+<h1 class="first"> Recommended </h1>
+<p>
+</p>
+<p>
+<a href="http://www.amazon.com/exec/obidos/ASIN/020161586X/pkorg/">
+<img align="left" width="100" height="138" src="images/practice-of-programming.jpg"
+alt="The Practice of Programming"/>
+</a>
+</p>
+<p>
+&nbsp;
+</p>
+
+<p>
+<a href="http://www.amazon.com/exec/obidos/ASIN/0131103628/pkorg/">
+<img align="left" width="100" height="132" src="images/c-programming-language.jpg"
+alt="The C Programming Language"/>
+</a>
+</p>
+<p>
+&nbsp;
+</p>
+
+<p>
+<a href="http://www.amazon.com/dp/013937681X/pkorg/">
+<img align="left" width="100" height="132" src="images/unix-programming-environment.jpg"
+alt="The UNIX Programming Environment"/>
+</a>
+</p>
+</div>
+
+</div>
+</div>
+</body>
+</html>

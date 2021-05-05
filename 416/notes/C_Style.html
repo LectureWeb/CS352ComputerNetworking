@@ -1,0 +1,634 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> C Programming Style </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 416 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/C_Style.html"> C Programming Style </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> C Programming Style </h1>
+<h2>  </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> 2016 (Original version, 1998) </p>
+</div>
+<blockquote>
+<em>
+In character, in manner, in style, in all things, the supreme excellence is simplicity.
+&mdash; Henry Wadsworth Longfellow
+</em>
+</blockquote>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>The past several years of teaching computer science courses to
+classes consisting largely of juniors, seniors, and graduate students
+have forced me to look at hundreds of samples of student code. Since
+most of this code was written for programming assignments, I must
+assume that the submitted assignment was a student&#8217;s best, if somewhat rushed, effort.
+Many of the assignments &#8220;worked&#8221; in that they performed the task
+requested by the assignment. A surprising number of submissions did
+not. The assignments that worked were generally unforgiving of
+improper input data and often core dumped when presented with such
+data.</p>
+
+<p>Looking at the source code, I often saw a complete absence of
+anything that may resemble style. Fewer than one percent of larger
+programs were ever broken up into multiple files. Worse yet, most
+students were reluctant to ever split their algorithm into several
+functions; modular decomposition seems to be largely unknown.</p>
+
+<p>The purpose of this essay is to provide opinions on programming
+style. You may agree with some things that I have to say and disagree
+with others, but my goal is to encourage you to think about the
+style of your program.</p>
+
+<p>This essay is influenced by Rob Pike&#8217;s <em>Notes on Programming in C</em>
+ and Kernighan and Plauger&#8217;s <em>The Elements of Programming Style</em>.
+It is also influenced by the thousands of programs I&#8217;ve
+had to look at, work with, or write over the past years.</p>
+
+<h1 id="striveforclarity">Strive for clarity</h1>
+
+<p>Above all else, try to keep your programs simple and clear. This is easier said than done, especially if you have not seen many programs or have not written many yourself. It is easy to get immersed in a programming project and maintain a large amount of mental state while programming. During this time, the meaning of every variable and purpose of every function is clear. This mental model erodes rather quickly once the project is completed. Will the functions, data structures, and variable names still make sense to you in the future? More importantly perhaps, will they make sense to someone else who has to figure out your program and possibly modify it?</p>
+
+<h2 id="dontover-comment">Don&#8217;t over-comment</h2>
+
+<p>There is a style of programming that believes that every line of source code should have a comment associated with it. This is simply nonsense. When programming, you should assume that your program will be read in the future by someone versed in the language and basic algorithms. There is no need to explain the language syntax or basic algorithms. If you use good, clear variable and function naming and structure your code aesthetically, a programmer should have no trouble reading your code. Comments often get in the way of readability, particularly if the occupy lines between code. Comments that merely paraphrase code are not of much use. The classic example is:</p>
+
+<pre><code>i = i + 1;  /* add one to i */
+</code></pre>
+
+<p>Even more complex code segments are not necessarily worthy of comments:</p>
+
+<pre><code>for (s=buf; *s &amp;&amp; (*s != '@'); ++s) /* search for the first @ /
+    ;
+</code></pre>
+
+<p>If your code is so obscure that it needs a comment to be understood, it may be worth thinking about rewriting it. Comments also suffer from obsolescence. Code may evolve, but the comments are often not updated.</p>
+
+<h2 id="dontunder-commenteither">Don&#8217;t under-comment either</h2>
+
+<p>Now that comments have been put down, it&#8217;s time to defend them.
+Your program <em>should</em> have comments. It is useful to explain global
+variables, structures, and data types. Comments are also useful in
+introducing a function, particularly one whose purpose isn&#8217;t
+immediately obvious from its name.</p>
+
+<p>Introductory comments should also serve to document any side-effects produced by the function
+or any dependencies that this function has.
+Comments on central data structures are generally more useful than comments on algorithms.</p>
+
+<h2 id="writeyourprogramfromthetopdown">Write your program from the top down</h2>
+
+<p>Recall that you&#8217;re assuming your program will be read by someone. It makes logical sense for the main functions to appear first and support functions to appear later. A programmer can easily get to the core algorithm and read on further if necessary to get the details. The opposite method (and one generally encouraged by the Pascal school) forces the programmer to have to wade through the details first.</p>
+
+<h2 id="choosevariablenamessensibly">Choose variable names sensibly</h2>
+
+<p>Daniel D. McCracken&#8217;s 1961 <em>A Guide to FORTRAN Programming</em> has this to say about variable names: </p>
+
+<p><em>The name of a fixed point variable is one to six digits or letters, of which the first is I, J, K, L, M, or N. Examples of acceptable names of fixed point variables: I, KLM, MATRIX, L123, I6M2K.</em></p>
+
+<p>Luckily, those days are behind us. Unfortunately, we see more and more code that looks like<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a>:</p>
+
+<pre><code>DWORD __stdcall OnW32DeviceIoControl(PDIOCPARAMETERS p) {
+    switch (p-&gt;dwIoControlCode) {
+    case DIOC_GETVERSION:
+        return 0;
+    ...
+    case 1:
+        if (!p-&gt;lpvOutBuffer || p-&gt;cbOutBuffer &lt; 2)
+            return ERROR_INVALID_PARAMETER;
+        (WORD)p-&gt;lpvOutBuffer) = 0x0100;
+        if (p-&gt;lpcbBytesReturned)
+            *(PDWORD)(p-&gt;lpcbBytesReturned) = 2;
+        return 0;
+    ...
+}
+</code></pre>
+
+<p>When choosing a variable name, length does not necessarily improve
+clarity (<strong>buf</strong> is no less clear than <strong>buffer</strong>, <strong>maxaddr</strong> is no less clear
+than <strong>MaximumAddress</strong>). Wisely chosen variable names lead to
+self-documenting code. Long names often do more harm than good by
+obscuring the algorithm in which they are used. Convention can play
+a large part in choosing sensible variable names. Long before
+computers, mathematicians used conventions such as <em>i</em>, <em>j</em>, and <em>k</em> for
+indices. In C programming, the variable names <em>s</em> and <em>t</em> are often
+used for character pointers in library functions that operate on
+generic strings. Obeying conventions such as these helps keep your
+code concise and clear. However, variables that actually do refer
+to something (rather than serving as indices or scanning pointers)
+should have sensible names that represent their function. Rob Pike
+advocates longer variable names in cases there is little context
+around them, such as global variables and shorter names when there
+is a lot of context to fill in the meaning.</p>
+
+<p>For one programming assignment, a number of students had variables of the form:</p>
+
+<pre><code>char buffer1[442];  
+char buffer2[442];
+char buffer3[442];
+char buffer4[442];
+</code></pre>
+
+<p>If you find yourself programming like this, alarms should go off
+and you should reconsider your algorithm and data structures. Do
+you really need exactly four buffers? Could there be a case when
+you may need more or less? Why is the size set to 442? Perhaps it
+will make more sense to have an array of pointers to strings? If
+you decide that you really do need those four buffers and they
+really need to be 442 bytes long, then you can improve the clarity
+of your code by defining 442 as a symbolic constant (with a comment
+explaining why) and picking more descriptive names for the four
+buffers. Similarly, if you find yourself declaring:</p>
+
+<pre><code>int a, b, c, d, ff, gg, ii;
+char a_buf[], b_buf[];
+</code></pre>
+
+<p>then it is time to reconsider the clarity of you variable names and possibly comment some of the data definitions.</p>
+
+<h2 id="camelcase_or_underscores">CamelCase_or_underscores</h2>
+
+<p>A large number of programmers favor mixed capitalization (known
+as CamelCase or medial capitals) in variable
+names. For example, names such as <strong>keyboardInputBuffer</strong>. I personally
+favor something more concise, such as <strong>kbdbuf</strong> for the clarity reasons
+cited above. If I must be verbose, I find underscores less
+offensive than embedded capitals. Consider the readability of English
+prose:</p>
+
+<pre><code>fourscore_and_seven_years_ago_our_fathers_brought_forth_on_this_continent_a_new_
+</code></pre>
+
+<p>nation_conceived_in_liberty_and_dedicated_to_the_proposition_that_all_men_are_created_equal.</p>
+
+<p>versus:</p>
+
+<pre><code>fourscoreAndSevenYearsAgoOurFathersBroughtForthOnThisContinentANewNationConceivedInLibertyAndDedicatedToThePropositionThatAllMenAreCreatedEqual
+</code></pre>
+
+<p>Others disagree. Just strive for consistency and legibility. The code you will have
+to read may be your own.</p>
+
+<h2 id="modularize">Modularize</h2>
+
+<p>Most student assignments that I&#8217;ve seen demonstrate a reluctance
+to decompose code. This turns even simpler assignments into difficult
+chores. Functional decomposition is the essence of algorithmic
+programming and a key to preserving clarity. Long gone are the days
+when a subroutine would be written only because the common code
+needs to be used in several places. Code should be structured so
+the underlying algorithms are clearly visible. Try to keep each
+function short and let it have a single purpose. If details need
+to be handled, let a support function take care of them.</p>
+
+<p>Files are a useful vehicle for further modularization. If you have
+a number of related functions or your main program decomposes into
+several logical entities, don&#8217;t hesitate to create files. Don&#8217;t
+worry if the files are small. Perhaps the most useful file is a
+header file that is included by each of the source files. The header
+file will define all the data structures and types used by the
+program. It will also contain function prototypes for all of the
+functions. This file will serve as the most useful reference for
+the data structures and interfaces provided in your program.</p>
+
+<h2 id="avoidcutetypography">Avoid cute typography</h2>
+
+<p>The visual layout of a program is crucial to its readability. Blocks (code between <strong>{</strong> and <strong>}</strong>
+should be indented. Two styles are acceptable:</p>
+
+<pre><code>if (whatever) {
+    statement;
+    statement;
+}
+else {
+    statement;
+}
+</code></pre>
+
+<p>and </p>
+
+<pre><code>    if (whatever) {
+        statement;
+        statement;
+    } else {
+        statement;
+    }
+</code></pre>
+
+<p>Quite a few students, perhaps influenced by code that was influenced by Pascal&#8217;s <em>begin – end</em> blocks, write:</p>
+
+<pre><code>    if (whatever)
+       {
+            statement;
+            statement;
+       }
+    else
+       {
+            statement;
+       }
+</code></pre>
+
+<h2 id="tabsarenotspaces">Tabs are not spaces</h2>
+
+<p>When indenting your code, I do not care whether your tab stop is
+three characters, four characters, eight, or twelve. The important
+point is I <strong>shouldn&#8217;t</strong> have to care and you should not assume that I will
+be looking at your code with the same editor and the same tab
+settings that you used in writing it.</p>
+
+<p>This is a problem with some
+editors that insist on using a mix of spaces and tabs
+(for example, four spaces for the first indentation level and a tab
+character for the second indentation level). If your editor does
+this, figure out how to fix it, don&#8217;t use this feature, or switch
+editors. If you use the tab character to indent your code, don&#8217;t
+switch to using a space character to do so. The resultant code will
+not look right unless the reader has the same tab settings and font
+as the writer.</p>
+
+<h2 id="avoidboldorcoloredtext">Avoid bold or colored text</h2>
+
+<p>Some output filtering programs “pretty-print” your source to look
+like an Algol&#8211;68 report, rendering all the reserved keywords in
+boldface and comments in italics. Rob Pike points out that this
+accentuates irrelevant detail and is as sensible as putting all
+prepositions in English text in bold type.</p>
+
+<p>I am not averse to typographically distinct text for comments, since they are somewhat orthogonal to the code
+but there is not need to decorate reserved keywords, library functions, or variables.</p>
+
+<h2 id="cleanyourcode:consistentindentsandnocommentedcode">Clean your code: consistent indents and no commented code</h2>
+
+<p>If you decide to remove an if statement, make sure that you remove
+the extra indentation from the following statement. There is also
+no need to have code that is commented-out. It only serves to confuse
+the reader. While programming, and after programming, look at the
+aesthetics of your program source.</p>
+
+<h1 id="berobustinacceptinginputproduceusefuloutput">Be robust in accepting input; produce useful output</h1>
+
+<p>I cringe when I see an assignment that declares:</p>
+
+<pre><code>char line[80];
+</code></pre>
+
+<p>The line is obviously written by someone who assumes input comes
+in the form of IBM punched cards, whose physical limitation is eighty
+characters per card.</p>
+
+<p>When accepting input in your program, be robust. A core dump due
+to bad input is not acceptable. Ever. Check your input for validity
+at all times. If it&#8217;s not valid, recover gracefully. Produce a
+concise and descriptive error message pinpointing the problem. Print
+the error message to the standard error stream (<em>stderr</em>).</p>
+
+<p>If your program accepts command-line arguments, make sure the input
+is foolproof and free-format. Don&#8217;t require the user to know a
+particular order in entering arguments. Learn to use the <em>getopt</em>
+function for robust parsing of simple command-line arguments.
+If the user makes a mistake, print an error message
+explaining the syntax of the program.
+Avoid accepting too many options;
+users will never learn them. Look at the <em>ls</em> command as a bad
+example:</p>
+
+<pre><code>usage: ls [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx1] [file ...]
+</code></pre>
+
+<p>If you really do need to provide a large set of command-line parameters, you
+will need to switch to textual names for clarity and use <em>getopt_long</em>
+to parse these parameters.</p>
+
+<p>The Microsoft DOS world introduced many people to programs that look like:</p>
+
+<pre><code>C&gt; fact
+Bernice's excellent factorial program
+(c)1998 Bernice F. Lamingo
+
+Please enter the number: 8
+
+The answer to 8 factorial is 40320
+
+C&gt;
+</code></pre>
+
+<p>Pretty, eh? Compare that output with this:</p>
+
+<pre><code>$ fact 8
+40320
+</code></pre>
+
+<p>The verbosity is gone. One line of input was produced instead of
+seven but no information was lost. The user presumably knew what
+the program was before running it, so there is no point in announcing
+the program. The user knew the input to the program, so there is
+no point in regurgitating that, Finally, the user really doesn&#8217;t
+care about the author.</p>
+
+<p>Far more importantly, the second form of
+output turns the program into a useful tool that can be used by
+other programs (shell scripts). The verbosity of the output as well
+as the inconvenient input of the former program disallows such use.</p>
+
+<h1 id="testyourprogramfrequently">Test your program &#8230; frequently</h1>
+
+<p>I&#8217;ve seen many attempts by students to sit down and write a
+multi-hundred line program and then try to debug it. The debugging
+efforts often lead to frustration and failure as there are numerous
+faults in the program and it is difficult to locate them. Debugging
+and testing should be done in conjunction with incremental development.
+It is useful to write your program so that it compiles at all times
+during creation. This often requires the writing of stub functions &#8211;
+placeholder functions that don&#8217;t really do the work of the function
+but pretend to do so. The point is to get your main algorithm
+compiled and working as quickly as possible, before the bells and
+whistles are added. After it works, you can start embellishing it
+by adding the features you need &#8211; one at a time and testing each
+time.</p>
+
+<p>Test the program for robustness on accepting input. If you process
+a text file, feed it a huge object file. If the program expects to
+read in a number, give it text. Test your input buffer management
+by feeding your program huge lines of data. Perhaps the most common
+error is failing to detect an end-of-file at unexpected points.
+Finally, don&#8217;t use the <em>gets</em> function. It does not check for buffer
+overflow.</p>
+
+<h1 id="optimizeyourcodelater">Optimize your code &#8230; later</h1>
+
+<p>No doubt you&#8217;ve studied or read about some nifty algorithms. You
+probably know of algorithms that can do your task in <em>n</em> log<sub>2</sub> <em>n</em> time
+instead of n<sup>2</sup> time. You may be eager to use them. It probably doesn&#8217;t
+make sense to do so 99% of the time. The fancier algorithms are
+generally more complicated and hence more bug-prone than the simpler
+ones. You&#8217;ll save yourself some grief by using the simpler algorithm
+for your first version of the program. Most everyone can implement
+Shell&#8217;s sort without errors the first time but the a heap sort or
+quicksort will probably require a few iterations to get correct.
+Similarly, using a brute-force search for a string is trivial, but implementing
+a Boyer-Moore search take a bit of effort.</p>
+
+<p>The second argument
+against the &#8220;better&#8221; algorithms is that there is often a constant
+setup time involved that is ignored in the order-complexity
+calculation. Complexity numbers have an implicit “for large values
+of n” assumption and your program will often not have the large
+volume of data for the efficiency of the better algorithm to be
+realized.</p>
+
+<h2 id="profile">Profile!</h2>
+
+<p>The bottom line is that you probably don&#8217;t know whether your algorithm
+is good enough or whether you should try using a better one. There&#8217;s
+one way to find out. Use the simple algorithm first. It will get
+your program working in less time. After that, profile your code.
+Learn to compile your program to include timing measurements and
+use a tool such as <em>gprof</em> (or a line profiler if you have
+one available). The profiler will tell you where the program really
+is spending most of its time. If the routine that you were concerned
+about is taking 15% of the total execution time, then even if you
+make it <em>infinitely</em> faster, your program will run only 1.18 times
+faster. Alternatively, the profiler may confirm your suspicions and
+you may choose to improve the algorithm. Profile first. Optimize
+if necessary.</p>
+
+<p>Most compilers are relatively smart. They reuse common subexpressions
+and keep frequently-accessed variables in machine registers. Writing
+dense code or otherwise trying to encourage a compiler to produce
+more efficient code is generally futile.</p>
+
+<h1 id="pointersarenotevil">Pointers are not evil</h1>
+
+<p>Yet another edict of the old Pascal school of programming was that
+pointers, especially pointers to functions, are to be avoided. While
+they can lead to problems if used incorrectly, they are both a
+useful tool and a notational device. Students raised on Java never
+encounter them and sometimes find them scary and dangerous.</p>
+
+<p>In the simplest case, pointers offer the programmer one less thing to
+worry about. A programmer examining code containing a pointer has
+only that value to be concerned with rather than dealing with a
+variable and an index into it. To a programmer familiar with C, the
+code snippet</p>
+
+<pre><code>for (; *s; ++s) {
+    if ( *s == '%') ...
+</code></pre>
+
+<p>is every bit as clear as</p>
+
+<pre><code>for (i=0; s[i]; ++i) {
+    if ( s[i] == '%') ...
+</code></pre>
+
+<p>with one less variable to worry about. Pointers to functions are particularly useful in cases when the data determines which function gets called. Far too often, I see code that looks like:</p>
+
+<pre><code>if (strcmp(cmd, &quot;run&quot;) == 0)
+    run_cmd(args);
+else if (strcmp(cmd, &quot;step&quot;) == 0)
+    step_cmd(args);
+else if (strcmp(cmd, &quot;exit&quot;) == 0)
+    exit_cmd(args);
+</code></pre>
+
+<p>The list goes on. As more commands get added, the number of if
+statements grows. It would be far cleaner to leave the code alone
+and put the command-to-function mapping into a data structure. For
+instance, define:</p>
+
+<pre><code>struct ltab {
+    char *cmd;
+    void (*func)();
+} map = {
+    { &quot;run&quot;, run_cmd },
+    { &quot;step&quot;, step_cmd },
+    { &quot;exit&quot;, exit_cmd },
+    { 0, 0 }
+};
+</code></pre>
+
+<p>Then the code looks like this:</p>
+
+<pre><code>struct ltab *tab;
+
+for (tab=map; tab-&gt;cmd; ++tab)  /* search through the table */
+    if (strcmp(cmd, tab-&gt;cmd) == 0)
+        break;
+if (tab-&gt;cmd)
+    tab-&gt;func(args);
+else
+    fprintf(&quot;illegal command: %s\n&quot;, cmd);
+</code></pre>
+
+<p>OK, you need to know how to use pointers to functions, but look at the benefits.
+The code is somewhat shorter in cases when there are more than two
+possible commands. Far more importantly, a programmer can add new
+commands simply by adding an entry to a table and writing the
+appropriate processing function. The structure also encourages you
+to give the same interface to all the related functions.
+This makes documentation
+easier. Finally, since the program and data are dissociated, the
+programmer may choose to replace the linear search with a better
+algorithm as the list gets longer &#8211; perhaps reading the list at
+start-up into a hash table.</p>
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>Walter Oney, <em>Systems Programming for Windows 95</em>, ©1996 Microsoft Press, p. 270&#8211;271 <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: January 25, 2016 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

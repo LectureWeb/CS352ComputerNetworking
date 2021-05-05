@@ -1,0 +1,271 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Distributed Systems Security</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css?v=1.1"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Distributed Systems Security</h1>
+								<h2>Authentication</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>April 20, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal:</strong> Create protocols for authenticating users, establishing secure communication sessions, authorizing services, and passing identities.</p>
+</blockquote>
+
+<p><strong>Authentication</strong> exists to establish and verify the identity of a user (or a service, process, or server). Once authentication is complete, a process can decide whether to allow access to the service or its resources and what type of access is permitted. This is called <strong>authorization</strong>.</p>
+
+<p>The three <strong>factors</strong> of authentication are:
+<em>something you have</em> (such as a key or a card),
+<em>something you know</em> (such as a password or PIN),
+and <em>something you are</em> (biometrics).</p>
+
+<p>Each of these factors has pitfalls and can be stolen. Someone can take your access card or see your password. Biometrics are more insidious: they are not precise and if someone can recreate your stolen biometric then you can never use it again.</p>
+
+<p>Combining these factors into a <strong>multi-factor</strong> authentication scheme can increase security against the chance that any one of the factors is compromised.
+Multi-factor authentication must use two or more of these factors. Using two passwords, for example, is not sufficient.</p>
+
+<h2 id="passwordauthenticationprotocolpap">Password Authentication Protocol (PAP)</h2>
+
+<p>The best-known authentication method is the use of reusable passwords. This is known as the <strong>password authentication protocol</strong>, or <strong>PAP</strong>. The system asks you to identify yourself (your login name) and then enter a password. If the password matches that which is associated with the login name on the system then you&#8217;re authenticated.</p>
+
+<p>One problem with the protocol is that if someone gets hold of the password file on the system, then they have all the passwords. The common way to thwart this is to store hashes of passwords instead of the passwords themselves. This takes advantage
+of the one-way property of the hash. To authenticate a user, check if
+<em>hash(password) = stored_hashed_password</em>. If an intruder gets hold of the
+password file, they&#8217;re still stuck since they won&#8217;t be able to reconstruct the original password from the hash. They&#8217;ll have to resort to an exhaustive search or a <strong>dictionary attack</strong> to search for a password that hashes to the value in the file. An exhaustive search may take a prohibitively long time.</p>
+
+<p>A dictionary attack is an optimization of the search that tests common passwords, including dictionary words and common letter-number substitutions. An intruder does not need to perform a search for each password to find a matching hash. Instead, the results of an exhaustive or dictionary search can be stored and searched quickly to find a corresponding hash in a password file. These are called <strong>precomputed hashes</strong>. To guard against this, a password is concatenated with a bunch of extra random characters, called <strong>salt</strong>. These characters make the password substantially longer and a table of precomputed hashes insanely huge and hence not practical to use. The salt is not a secret &#8211; it is stored in plaintext in the password file in order to validate a user&#8217;s password. Its only function is to make using precomputed hashes impractical and ensure that even identical passwords do generate the same hashed results.</p>
+
+<p>The other problem with reusable passwords is that if a network is insecure, an eavesdropper may sniff the password from the network. A potential intruder may also simply observe the user typing a password. To thwart this, we can turn to <strong>one-time passwords</strong>. If someone sees you type your credentials or read them from the network stream, it won&#8217;t matter because that information will be useless for future logins.</p>
+
+<h2 id="chapauthentication">CHAP Authentication</h2>
+
+<p>The <strong>Challenge-Handshake Authentication Protocol</strong> (<strong>CHAP</strong>) is an authentication protocol that allows a server to authenticate a user without sending a password over the network.</p>
+
+<p>Both the client and server share a <strong>secret</strong> (such as a password). A server creates a random bunch of bits (called a <strong>nonce</strong>) and sends it to the client (user) that wants to authenticate. This is the <strong>challenge</strong>.</p>
+
+<p>The client identifies itself and sends a <strong>response</strong> that is the hash of the shared secret combined with the challenge. The server has the same data and can generate its own hash of the same challenge and secret. If the hash matches the one received from the client, the server is convinced that the client knows the shared secret
+and is therefore legitimate.</p>
+
+<p>An intruder who sees this hash cannot extract the original data. An intruder who sees the challenge cannot create a suitable hashed response without knowing the secret.
+Note that this technique requires passwords to be accessible at the</p>
+
+<p>server and the security rests on the password file remaining secure.</p>
+
+<h3 id="time-based:totp">Time-based: TOTP</h3>
+
+<p>With the <strong>Time-based One Time Password</strong> (<strong>TOTP</strong>) protocol, both sides share a secret key. To authenticate, a user runs the TOTP function to create a one-time password. The TOTP function is a password created as a hash of a shared secret key and the time of day. The service, who also knows the secret key and time, can generate the same hash and thus validate the value presented by the user.</p>
+
+<p>TOTP is often used as a second factor (proof that you have some device with the secret configured in it) in addition to a password. The protocol is widely supported by companies such as Amazon, Dropbox, Wordpress, Microsoft, and Google.</p>
+
+<h2 id="publickeyauthentication">Public key authentication</h2>
+
+<p>Public key authentication relies on the use of nonces.
+A <strong>nonce</strong> is simply a randomly-generated bunch of bits and is sent to the other party as a challenge for them to prove that they are capable of encrypting something with a specific key that they possess. The use of a nonce is central to <strong>public key authentication</strong>.</p>
+
+<p>If Alice wants to authenticate Bob, she needs to have Bob prove that he possesses his private key (private keys are never shared). To do this, Alice generates a nonce (a random bunch of bits) and sends it to Bob, asking him to encrypt it with his private key. If she can decrypt Bob&#8217;s response using Bob&#8217;s public key and sees the same nonce, she will be convinced that she is talking to Bob because nobody else will have Bob&#8217;s private key. <strong>Mutual authentication</strong> requires that each party authenticate itself to the other: Bob will also have to generate a nonce and ask Alice to encrypt it with her private key.</p>
+
+<h2 id="identitybinding:digitalcertificates">Identity binding: digital certificates</h2>
+
+<p>While public keys provide a mechanism for asserting integrity via digital signatures,
+they are themselves anonymous.
+We&#8217;ve discussed protocols where Alice uses Bob&#8217;s public key but never explained how she can be confident that the key really belongs to Bob and was not presented by an adversary.
+Some form of <strong>identity binding</strong> of the public key must be implemented for you to know that you really have <em>my</em> public key instead of someone else&#8217;s.</p>
+
+<p><strong>Digital certificates</strong> provide a way to do this. A certificate is a data structure that contains user information (called a <em>distinguished name</em>) and the user’s public key.
+To ensure that nobody changes any of this data, this data structure also contains a <strong>signature</strong> of the <strong>certification authority</strong>. The signature is created by taking a hash of the rest of the data in the structure and encrypting it with the private key of the certification authority. The certification authority (CA) is an organization that is responsible for setting policies of how they validate the identity of the person who presents the public key for encapsulation in a certificate.</p>
+
+<p>To validate a certificate, you hash all the certificate data except for the signature. Then you would decrypt the signature using the public key of the issuer. If the two values match, then you know that the certificate data has not been modified since it has been signed. The challenge now is how to get the public key of the issuer. Public keys are stored in certificates, so the issuer would also have a certificate containing its public key. The certificates for many of the CAs are preloaded into operating systems or, in some cases, browsers.</p>
+
+<h2 id="transportlayersecuritysecuresocketslayer">Transport Layer Security (Secure Sockets Layer)</h2>
+
+<p><strong>Transport Layer Security</strong> (<strong>TLS</strong>), an evolution of
+<strong>Secure Sockets Layer</strong> (<strong>SSL</strong>),
+that provides authentication, integrity, and encrypted communication while preserving
+the abstraction of a sockets interface to applications. An application sets up a TLS session
+to a service. After that, it simply sends and receives data over a socket just like it would
+with the normal sockets-based API that operating systems provide. The programmer
+does not have to think about network security.</p>
+
+<p>Any TCP-based application that may not have addressed network security can be
+security-enhanced by simply using TLS. For example, the standard email protocols,
+SMTP, POP, and IMAP, all have TLS-secured interfaces. Web browsers use
+HTTP, the Hypertext Transfer
+Protocol, and also support HTTPS, which is the exact same protocol but uses
+A TLS connection.</p>
+
+<p>TLS provides these key components for secure communication:</p>
+
+<dl>
+<dt>Data encryption</dt>
+<dd> Symmetric cryptography is used to encrypt data.</dd>
+
+<dt>Data integrity</dt>
+<dd> Ensure that we can detect if data in transit has not been modified. TLS includes a MAC with transmitted data.</dd>
+
+<dt>Authentication</dt>
+<dd> TLS provides mechanisms to authenticate the endpoints prior to sending data. Authentication is optional and can be unidirectional (the client may just authenticate the server), unidirectional (each side authenticates the other), or none (in which case we just exchange keys but do not validate identities).</dd>
+
+<dt>Key exchange</dt>
+<dd> After authentication, TLS performs a key exchange so that both sides can obtain random shared session keys. TLS creates separate keys for each direction of communication (encryption keys for client-to-server and server-to-client data streams) and separate keys for data integrity (MAC keys for client-to-server and server-to-client streams).</dd>
+
+<dt>Interoperability &amp; evolution</dt>
+<dd> TLS was designed to support many different key exchange, encryption, integrity, &amp; authentication protocols. The start of each session enables the protocol to negotiate what protocols to use for the session.</dd>
+</dl>
+
+<p>These features are implemented in two sub-protocols within TLS:</p>
+
+<dl>
+<dt>(1) Authentication and key exchange</dt>
+<dd> Authentication uses public key cryptography with X.509 certificates to authenticate a system. Both the client and
+server can present their X.509 digital certificates. TLS validates the signature of the certificate. A user authenticates by signing a hash of a set of messages with their private key. With web sites, most commonly only the server presents a certificate, so only the client can validate the server. After a secure session is set up, the service will often use some other protocol to authenticate a user, such as the password authentication protocol.</dd>
+
+<dd> Key exchange supports several options. Ephemeral Diffie-Hellman key exchange is the most common since it supports the efficient generation of shared keys and there is no long-term key storage. TLS can accommodate other key exchange techniques as well, including public key-based key exchange and pre-shared static keys.</dd>
+
+<dt>(2) Communication</dt>
+<dd> Data encryption uses symmetric cryptography and supports a variety of algorithms, including AES, AES, ARIA, and ChaCha20. AES is the Advanced Encryption Standard. ARIA is a South Korean standard encryption algorithm that is similar to AES. ChaCha20 is an encryption algorithm that is generally more efficient than AES on low-end processors.</dd>
+
+<dd> Data integrity is provided by a message authentication code (MAC) that is attached to each block of data. TLS allows the choice of several, including HMAC-MD5, HMAC-SHA1, HMAC-SHA256/384, and Poly1305.</dd>
+</dl>
+
+
+							</section>
+							<footer class="main">
+								Last modified April 21, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

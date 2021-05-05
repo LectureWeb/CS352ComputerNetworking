@@ -1,0 +1,243 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Homework 13 (Project 4) Feedback</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css?v=1.1"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Homework 13 (Project 4) Feedback</h1>
+								<h2></h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>December 4, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<div class="boldbox"> Deadline: Sunday, December 6, 2020 11:59pm EST </div>
+
+								<ul>
+<li><a href="files/hw13-testfiles.zip">Test files</a></li>
+<li><a href="files/Project-4-overview.pdf">Recitation notes</a>.</li>
+<li><a href="../notes/videos/Project-4-overview-video.mp4">Recitation video</a></li>
+<li><a href="files/hw13-samples.zip">Sample output</a></li>
+</ul>
+
+<h1 id="grades">Grades</h1>
+
+<p>Grades for homework 13 (project 4) are on a 10-point scale.</p>
+
+<p>Roughly speaking, grades fall in the following buckets:</p>
+
+<p>|:&#8212;|:&#8212;-|
+| Grade | Description |
+| 10 | Superb work, no glitches: A+ |
+| 9 | Perfectly solid but perhaps a single test case that didn&#8217;t work properly or incorrect command invocation produced a cryptic message: A ||
+| 8 | Really good work - maybe a couple of glitches: B++ |
+| 6&#8211;7 | Generally working assignment but quite a few conditions that aren&#8217;t handled: B..B+|
+| 4&#8211;5 | Something&#8217;s seriously wrong. <code>pow-create</code> may be generating invalid data or <code>pow-check</code> may not be working properly: C+ |
+| 2&#8211;3 | Far too many things wrong for this to even be considered a functional piece of work: C |
+| 1 | You got credit for submission but the program either didn&#8217;t prodcue the right data or was just too buggy: D |</p>
+
+<p>You can get an approximate feel for your grade on a 4-point GPA scale (A=4) via the formula <em>(&frac13;p + 1)</em>, where <em>p</em> is your non-zero score.</p>
+
+<h1 id="deductions">Deductions</h1>
+
+<p>You lose points for various errors and I don&#8217;t bother with fractional points.</p>
+
+<p>Errors also include deviations from the specified output formats. These cause my tests to fail and required effort on my part to patch your program to generate the right output (if possible). </p>
+
+<h3 id="commandnames">Command names</h3>
+
+<p>You lost a point if you submitted programs with names such as <code>pow-create`.py`, `powcreate`, or</code>pow-create<code>.sh</code>. All these required me to do extra work to run them against my scripts.</p>
+
+<h3 id="commandusage">Command usage</h3>
+
+<p>Possibly the most important aspect of programming with security in mind is to validate all inputs. I did not check how you alert the user to things such as unreadable files but did try a few variations of improper command usage. If you didn&#8217;t handle these gracefully and caused a runtime environment to dump some junk, you lost a point.</p>
+
+<h3 id="powgeneration">PoW generation</h3>
+
+<p>I tested your <code>pow-create</code> output by running your output headers against my test program. If your headers had the wrong names, I fixed your code so you&#8217;d have a chance to not lose all credi. Unfortunately, this cost you two points.</p>
+
+<p>I tested <code>pow-create</code> header generation on four sample files (you can <a href="files/hw13-testfiles.zip">download</a> them).</p>
+
+<p><code>
+timeout 600s ./`pow-create` 5 $testfiles/magnacarta.txt &gt;results/out-00.txt
+timeout 600s ./`pow-create` 15 $testfiles/magnacarta.txt &gt;results/out-01.txt
+timeout 600s ./`pow-create` 15 $testfiles/colossus.txt &gt;results/out-02.txt
+timeout 600s ./`pow-create` 20 $testfiles/eggs.txt &gt;results/out-03.txt
+timeout 600s ./`pow-create` 20 $testfiles/spools.jpg &gt;results/out-04.txt
+</code></p>
+
+<p>The results were checked by running my version of <code>pow-check</code> using the same input file and validating your headers.
+You lost up to 4 points for bad PoW generation. You lost up to 2 points for mistakes in other headers. The most common mistake was
+counting the number of leading zeros incorrectly: it should be value actually present in your hash value, not the value requested.</p>
+
+<p>If a 20-bit proof-of-work generation took over a minute, you lost a point. I used a Raspberry Pi 4 for running the programs, which is 3.2x slower than the iLab systems. The vast majority of submissions did not exhibit atrocious performance, although a few did reach my 10-minute timeout.</p>
+
+<h3 id="powchecking">PoW checking</h3>
+
+<p>I ran your validation against data that your <code>pow-create</code> program generated (which I expect you did).
+To test whether your <code>pow-check</code> program works, I ran it against a set of good headers and a set
+of headers that had a single component whose value was modified to be incorrect.
+You lost points if you didn&#8217;t identify the bad data or if your runtime environment generated some crap.</p>
+
+<p>You may lose a maximum of 4 points for a bad <code>pow-check</code> program.</p>
+
+<h1 id="creditforeffort">Credit for effort</h1>
+
+<p>I truly hope that most of you were able to finish the assignment quickly.
+The majority of students earned grades of 8 or higher. These were submissions that ran properly (for the most part) and did not require any significant effort on my part to get to run.
+If this assignment took you many hours, take this as a sign that you need to brush up on your programming.</p>
+
+<p>Some assignments simply didn&#8217;t work. The programs would either crash or not generate valid proof-of work values or not be able to validate valid headers.
+Beyond the 1 point, you get no credit for effort.
+If it took you many hours to do this assignment and you received a poor grade, you really need to spend more time getting comfortable with programming and debugging.</p>
+
+<h1 id="mistakes">Mistakes</h1>
+
+<p>If you believe I made a mistake in your grading, <strong>please email me <em>before</em> Monday</strong> and identify the precise item that you believe was misgraded.
+Most submissions ran without problems. In some cases, I had to create <code>pow-create</code> and <code>pow-check</code> scripts or modify your code so it would run with my tests.
+It&#8217;s possible that I ran your program incorrectly and you lost a lot of points because of that. If so, please let me know.</p>
+
+<p><strong>Do not send me screen shots</strong>. Any messages with screenshots will be deleted immediately.</p>
+
+<ol>
+<li>Copy and paste the command you ran and the output you get.</li>
+<li>Identify why the output is correct but was misgraded.</li>
+</ol>
+
+<p>Before contacting me:</p>
+
+<ol>
+<li><p>Run <code>pow-create</code> or <code>pow-check</code> on all the sample files. For example, there were a couple of submissions that failed on the file <code>spools.jpg</code>. As far as I could guess, for some unfathomable reason, the program insisted on validating that the input data was text-only.</p></li>
+<li><p>Validate your <code>pow-create</code> output manually with <code>openssl</code> exactly as described in the assignment writeup.</p></li>
+</ol>
+
+<p>Please do not contact me if you don&#8217;t honestly believe I made a mistake but are simply hoping to get more points.</p>
+
+							</section>
+							<footer class="main">
+								Last modified December  5, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:pxk@cs@@rutgers@@edu" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>
+	</body>
+</html>

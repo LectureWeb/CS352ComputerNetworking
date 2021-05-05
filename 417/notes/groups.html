@@ -1,0 +1,677 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Group communication</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Group communication</h1>
+								<h2>Multicast</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>February 22, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Control how we communicate with a group of processes</p>
+</blockquote>
+
+<h2 id="introduction">Introduction</h2>
+
+<figure>
+<img src="images/groups-1-dynamic.png" alt="Figure 1. Group dynamics" id="groups-1-dynamics" title="Group dynamics" width="350" />
+<figcaption>Figure 1. Group dynamics</figcaption>
+</figure>
+
+<p>Most of our communications between computers is point-to-point. This is called <strong>unicast</strong>. It is what we use to communicate between a client and a server. It&#8217;s what we use for higher-level protocols, such as remote procedure calls (RPC) and web services.</p>
+
+<p>A variant of unicast communication is anycast. <strong>Anycast</strong> was created for IPv6 networking and is is
+point-to-point communication (as in unicast) but the receiver is
+the nearest one of multiple receivers with the same address.
+For example, IPv6 uses this to allow a host to update the routing table of the
+nearest host. It is also be used sometimes for reading data from content delivery networks, where replicated servers strore identical copies of content.
+Anycast is a special purpose form of unicast that will
+will not discuss here. Because it is part of IPv6 and not IPv4, it is not available in most deployed networks in the U.S.</p>
+
+<p>An alternative to point-to-point communication is point-to-multipoint, or <strong>group communication</strong>.
+Group communication is called <strong>multicast</strong> and it gives programmers the abstraction of sending
+a single message that is delivered to all group members.</p>
+
+<p>Groups are generally <strong>dynamic</strong> (Figure 1). They may be created and destroyed. Processes may join or leave groups and processes may belong to multiple groups. An analogy to group communication is the concept of a mailing list. A sender sends a message to one party (the mailing list) and multiple users (members of the list) receive the message. <em>Groups allow processes to deal with collections of processes as one abstraction</em>. Ideally, a process should only send a message to a group and need not know or care who its members are.</p>
+
+<h2 id="implementinggroupcommunication">Implementing group communication</h2>
+
+<figure>
+<img src="images/groups-2-multicast.png" alt="Figure 2. Group multicast" id="groups-2-multicast" title="Multicast" width="350" />
+<figcaption>Figure 2. Group multicast</figcaption>
+</figure>
+
+<figure>
+<img src="images/groups-3-broadcast.png" alt="Figure 3. Simulating a multicast via a broadcast" id="groups-3-broadcast" title="Broadcast" width="350" />
+<figcaption>Figure 3. Simulating a multicast via a broadcast</figcaption>
+</figure>
+
+<p>Group communication can be implemented in several ways. Hardware support for multicasting allows the software to request the hardware to join a multicast group. Messages sent to the <strong>multicast address</strong> for the group and will be received by all network cards listening on that group(s) (Figure 2). If the hardware does not support multicasting, an alternative is to use hardware broadcast and add software filters at the receivers. Each message is tagged with a multicast address. The software processing the incoming messages extracts this address and compares it with its list of multicast addresses that it should accept. If it is not on the list, the message is simply dropped (Figure 3). While this method generates overhead for machines that are not members of the group, it requires the sender to only send out a single message.</p>
+
+<figure>
+<img src="images/groups-4-netcast.png" alt="Figure 4. Simulating group communication with multiple unicasts" id="groups-4-netcast" title="Broadcast" width="350" />
+<figcaption>Figure 4. Simulating group communication with multiple unicasts</figcaption>
+</figure>
+
+<p>Another implementation option is to simulate multicasting completely in software. In this case, a separate message will be sent to each receiver. This can be implemented in two ways. The sending process can know all the members of the group and send the same message to each group member (Figure 4).</p>
+
+<figure>
+<img src="images/groups-5-coordinator.png" alt="Figure 5. Simulating group communication with a central coordinator" id="groups-5-coordinator" title="Coordinator" width="350" />
+<figcaption>Figure 5. Simulating group communication with a central coordinator</figcaption>
+</figure>
+
+<p>Alternatively, some process on some computer can be designated as a group coordinator: a central point for group membership information (Figure 5). The sender will send one message to the group coordinator, which then iterates over each group member and sends the message to each member.</p>
+
+<p>As with unicast communication, group communication also requires a transport-level protocol. Even with hardware support, there must be a mechanism for directing data to the interested process(es).</p>
+
+<p>Remote procedure calls (RPC) were, for many applications, more convenient and intuitive than the send/receive (write/read) model provided by sockets. Remote procedure calls, however, do not lend themselves to group communication. RPC is based on a function call model wherein a procedure is called and a value returned as a result. If we try to apply this to group communication, one message is sent to the group to invoke the procedure. The return value is not clear now, since every member of the group may generate one. RPC just does not expect this behavior. We have to fall back on send/receive primitives when working with a group.</p>
+
+<h3 id="designissues">Design Issues</h3>
+
+<p>A number of design alternatives for group communication are available. These will affect how the groups behave and send messages.</p>
+
+<dl>
+<dt>Closed group vs.open group</dt>
+<dd> With <strong>closed groups</strong>, only the group members may send a message to the group. This is useful when multiple processes need to communicate with others in solving a problem, such as parallel processing applications.</dd>
+
+<dd> The alternative is <strong>open groups</strong>, where non-members can send a message to a group. An example use of this type of group is an implementation of a replicated server (such as a redundant file system).</dd>
+
+<dt>Peer groups vs. hierarchical groups</dt>
+<dd> With <strong>peer groups</strong>, every member communicates with each other. The benefits are that this is a decentralized, symmetric system with no point of failure. However, decision-making may be complex since all decisions must be made collectively (a vote may have to be taken).</dd>
+
+<dd> The alternative is <strong>hierarchical groups</strong>, in which one member plays the role of a group coordinator. The coordinator makes decisions on who carries out requests. This allows the workload of sending multicasts to be distributed among multiple sub-coordinators, each of which handles sending messages to only parts of a group. Decision-making is simplified since it is centralized. The downside is that this is a centralized, asymmetric system and therefore has a single point of failure.</dd>
+
+<dt>Centralized group membership vs. distributed membership</dt>
+<dd> If control of group membership is <strong>centralized</strong>, we will have one group server that is responsible for getting all membership requests. It maintains a database of group members. This is easy to implement but suffers from the problem that centralized systems share – a single point of failure.</dd>
+
+<dd> The alternative mechanism is to manage group membership in a distributed way where all group members receive messages announcing new members (or the departure of members).</dd>
+</dl>
+
+<p>Several problems can arise in managing group membership. Suppose a group member crashes. It effectively leaves the group without sending any form of message informing others that it left the group. Other members must somehow discover that it is missing.</p>
+
+<p>Leaving and joining a group must be <strong>synchronous</strong> with message delivery. No messages should be received by a member after leaving a group. This is easier to achieve if a group coordinator/group server is used for message delivery and membership management.</p>
+
+<p>A final design issue is <strong>fault tolerance</strong>. If the processes, the computers they run on, and/or the network die so the group cannot function, how are things restarted?</p>
+
+<p>There are two considerations in implementing group communication (multicast): reliability and message ordering.</p>
+
+<h3 id="messagereceiptversusmessagedelivery">Message receipt versus message delivery</h3>
+
+<p>We talk about a process <strong>receiving</strong> a message, which means that it is
+received from the network and handled by a multicast receiving algorithm.
+This algorithm decides when to <strong>deliver</strong> the message to the application
+logic.</p>
+
+<p>Since receivers cannot control the order in which messages
+are received over the network, a layer of software is responsible
+for transmitting a multicast message and, at the receiver, receiving
+it and deciding when and if to make it available to the application (i.e., deliver it).
+When a message is received, the multicast receiving algorithm may
+take one of three actions:</p>
+
+<ol>
+<li><p><strong>Discard the message</strong>. This may be done if the receiver is no longer
+a member of the group or if the message is a duplicate.</p></li>
+<li><p><strong>Deliver the message</strong>. The message is placed into a FIFO (first-in,
+first-out) queue from which the application reads incoming multicast messages.</p></li>
+<li><p><strong>Hold the message</strong>. The message is not ready to be delivered to
+the application. Most likely, this is because it has not arrived in the
+expected order and the algorithm must first receive an earlier
+message. Alternatively, it may need to be held to get feedback that
+all other members have received it before passing it to the application.
+In cases like this, the message is placed on a <strong>hold-back queue</strong>.
+When the next message is received, the algorithm may check the hold-back
+queue to determine whether any held messages can now be delivered or
+discarded.</p></li>
+</ol>
+
+<figure>
+<img src="images/groups-6-receiving.png" alt="Figure 6. Delivering and receiving" id="groups-6-receiving" title="Message receipt" width="450" />
+<figcaption>Figure 6. Delivering and receiving</figcaption>
+</figure>
+
+<h2 id="messagereliability">Message Reliability</h2>
+
+<h3 id="atomicmulticast">Atomic multicast</h3>
+
+<p>One desirable property for certain types of group communication is that of ensuring that all group members get a message. More specifically, if a message is sent to a group and one member receives it, that member can be sure that <em>all</em> members will get the message. This is an all or nothing property: it either arrives correctly at all members or else no member receives the message. There will never be a situation where some members receive the message and others do not. This property is known as <strong>atomicity</strong> and this type of multicast is called an <strong>atomic multicast</strong>. An atomic multicast is appealing because it makes application design easier in that there is one less thing to worry about – missing or partially delivered messages.</p>
+
+<p>While this property is desirable, it is not easy to achieve. The only way to be sure that a destination received a message is to have it send back an acknowledgement message upon message receipt. This is prone to problems since some replies can be lost, the sender may have crashed after sending the message and cannot process the replies, or the receiver crashed before it could send a reply. What we need to do to achieve an atomic multicast is to ensure that we can deliver messages even with process failures.</p>
+
+<h4 id="implementingatomicmulticasts">Implementing atomic multicasts</h4>
+
+<p>There are several ways that we can achieve an atomic multicast. One way is to use a persistent log. This is an approach adopted n the two-phase commit protocol used by many distributed databases and transaction processing systems. The persistent log is simply a series of messages written onto a disk or some non-volatile memory so that it could be recovered even if the process dies. Should a process die, it is responsible for reading the log when it comes up again.</p>
+
+<p>In this system, the sender writes the message to the log. This way, even if it dies it will be able to recover and have the message it needs to send.
+It sends messages to all members of the group and waits for an acknowledgement from each member. The sender saves a copy of the message in the log and also logs acknowledgements from receivers. This way, even if it dies, it can resume where it left off once the process is restarted. If an acknowledgement has not been received from a member, the sender will retransmit periodically until the member acknowledges the message. On the receiving side, a group member logs the received message into its persistent log upon receiving the message and prior to sending the acknowledgement. If the group member dies now, it will have the message in its when it restarts. When all members have acknowledged receipt of the message, the sender can then send a &#8220;deliver&#8221; message, instructing each member to deliver the message to the higher layers of the software that will process the message.</p>
+
+<p>This solution is somewhat troublesome to implement in terms of logging and recovering from failed processes. It is also time consuming since messages have to be written to a permanent log instead of sitting in memory. The essential point is that the protocol must account for the sender crashing after it sent some or all of the messages and for receivers that may be dead at any point during the multicast.</p>
+
+<p>Another approach to multicast is the one adopted in virtual synchrony (which we will examine later). Here, we accept the fact that receviers can die and do not wait for them to recover. Instead, we redefine the group to exclude them and make sure that a multicast message reaches all members of the new group. If a receiver recovers, it will have to rejoin the group and update its state as necessary. The thing we have to deal witih now is the fact that the sender might die partway through the multicast.</p>
+
+<p>To account for the sender&#8217;s death, it can tell all group members that every member received a message when it is done. Until they get this message, each group member must hold on to a copy of the message. If the sender dies partway through the multicast, all receivers that have these incompletely delivered messages will take on the task of transmitting them to all group members and then telling the members that the entire group received the message.</p>
+
+<h3 id="reliablemulticast">Reliable multicast</h3>
+
+<p>A compromise to atomic multicast is to assume that the sending process will remain alive to ensure that a message was sent out to all members of the group. This is called a <strong>reliable multicast</strong>. It is a best-effort attempt at reliability but makes no guarantees in the case where the sender is unable to transmit or receive messages to other group members. One implementation can be:</p>
+
+<ol>
+<li>Set a long timer, T<sub>L</sub>. This will be used to detect an non-responding process.</li>
+<li>Set a shorter timer, T<sub>S</sub>. This will be used to detect lost messages or lost acknowledgements.</li>
+<li>Send a message to each group member.</li>
+<li>Wait for an acknowledgement message from each group member.</li>
+<li>If timer T<sub>S</sub> goes off, then retransmit the message to members that have not responded, reset the timer, and wait.</li>
+<li>If timer T<sub>L</sub> goes off, then label the non-responding processes as &#8220;failed&#8221; and remove them from the group.</li>
+</ol>
+
+<p>In the best case, if multicast or broadcast facilities are available, the sender needs to only send one message. If these facilities are not available, they can be simulated:</p>
+
+<pre><code>for (dest in group)
+	send(dest, message)
+</code></pre>
+
+<p>Each recipient sends one message as an acknowledgement.</p>
+
+<p>A problem with acknowledgements, even in unicast communication, is that they introduce extra traffic on the network since each message has a corresponding acknowledgement. They also introduce delays since a sender will wait for an acknowledgement before sending the next message. With multicast, the problem gets worse because we expect an acknowledgement from each group member. Even if we use hardware mechanisms that allow us to send a single message, we still expect multiple responses. This problem is called <strong>feedback implosion</strong>.</p>
+
+<p>Acknowledgements can be optimized in several ways.</p>
+
+<p><strong>Pipelining</strong> is a technique where ww can send a sequence of messages without waiting for an acknowledgement from one message before sending the next one. Acknowledgements (ACKs) are received asynchronously. The sender must store the message until it is acknowledged by each group member - or until it decides the group member is unreachable.</p>
+
+<p><strong>Cumulative ACKs</strong> are a technique where the receiver does not send an acknowledgement immediately but, instead, waits to see if other messsages come from that sender. If they do, the receiver can send one message to acknowledge the receipt of several packets.</p>
+
+<p><strong>Piggybacked ACKs</strong> take advantage of the fact that some of our communications are bidirectional: a process sends a message and the receiving process sends a response. The acknoweledgement can be placed within the response packet instead of sending it as a separate packet.</p>
+
+<p>TCP uses all three of these techniques.</p>
+
+<p>We can also increase performance by having the receiver contact the sender only if it missed a message. The sender maintains a count of the number of messages sent. This count is appended to each message sent and acts as a message sequence number. Recipients send no acknowledgement message unless the sequence number indicates that a message was missed. This is known as a <strong>negative acknowledgement protocol</strong>. The sender is responsible for keeping copies of old messages for retransmission. The problem with this protocol is that the sender has no way to detect that a process is no longer responding.</p>
+
+<h3 id="unreliablemulticast">Unreliable multicast</h3>
+
+<p>If the reliable multicast is deemed too costly, the next step down is the <strong>unreliable multicast</strong>. This is the basic multicast in which a message is sent and the process just hopes that it arrives at all destinations. It is useful for services that don’t require reliability (e.g., multicast video and audio). It is also useful in cases when the sender does not know the identity of the group members.</p>
+
+<p>If multicast or broadcast facilities are available, the sender needs to only send one message. The recipients need to send nothing. If these facilities are not available, they can be simulated as mentioned above.</p>
+
+<h2 id="messageordering">Message ordering</h2>
+
+<p>To make group communication easy to use and understand, two properties are desirable:</p>
+
+<ul>
+<li>atomicity: message arrives everywhere</li>
+<li>first-in-first-out (FIFO) message ordering: consistent message ordering.</li>
+</ul>
+
+<p>Suppose we have a group of four processes {0, 1, 2, 3}. Processes A and B, outside the group, send messages to the group at approximately the same time via multiple unicasts. A sends message M<sub>A</sub> and B sends a message M<sub>B</sub></p>
+
+<p>Process A: M<sub>A</sub> &rarr; P<sub>0</sub>, M<sub>A</sub> &rarr; P<sub>1</sub>, M<sub>A</sub> &rarr; P<sub>2</sub>, M<sub>A</sub> &rarr; P<sub>3</sub>
+<br/>
+Process B: M<sub>B</sub> &rarr; P<sub>0</sub>, M<sub>B</sub> &rarr; P<sub>1</sub>, M<sub>B</sub> &rarr; P<sub>2</sub>, M<sub>B</sub> &rarr; P<sub>3</sub></p>
+
+<p>It each process receives the the sequence of message {M<sub>A</sub>, M<sub>B</sub>} then we have <strong>consistent</strong>, or good, ordering.
+On the other hand, if some processes receive M<sub>A</sub> followed by M<sub>B</sub> while others receive M<sub>B</sub> first and then M<sub>A</sub>, we have <strong>inconsistent</strong>, or bad, ordering.</p>
+
+<h3 id="totalordering">Total ordering</h3>
+
+<p>To avoid confusion and potential problems, it is desirable to have all messages arrive in the exact orders sent. This is known as <strong>global time ordering</strong>. It is not feasible to implement global time ordering. Messages can originate from multiple computers at the same time. Also, messages from closer computers can arrive earlier than later messages sent from more distant computers. We cannot count on timestamps being so precise and unique that each receiving system can make the same comparisons.</p>
+
+<p>A compromise it to say that if two messages are relatively close together, all receiving systems will choose one of them as being “first.” All messages will arrive at all group members in the same order (which may or may not be the exact order sent). This compromise is called <strong>consistent time ordering</strong> or <strong>total ordering</strong>.</p>
+
+<p>One algorithm for achieving total ordering is:</p>
+
+<div class="box">
+
+<ol>
+<li><p>Assign a unique totally sequenced message ID<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote"><sup>1</sup></a> to each message.</p></li>
+<li><p>Each message is regarded as <strong>stable at an element</strong> if no message with a lower ID is expected to arrive. When messages can arrive out of order, the system will accept such messages but not forward them to the application. A message is stable at an element when the system has received all earlier messages and passed them on to the receiving process. Any message that is stable at an element can be immediately passed on to the receiving process. This ensures in-order delivery. Any other messages are buffered until the out-of-order messages are received.</p></li>
+<li><p>The communications driver passes only stable at an element messages to the application, passing the message with he lowest ID first.</p></li>
+<li><p>Each member saves all messages in a queue for delivery to applications.</p></li>
+</ol>
+
+</div>
+
+<p>One problem that arises in implementing this protocol is that of generating a message identifier since we need a <em>shared</em> sequence of identifiers. A few solutions can be adopted:</p>
+
+<ul>
+<li><p>Use a <strong>sequencer</strong>, a common process to which all multicast messages are sent. The sequencer receives a message, attaches a sequence number, and then resends the message to the group members.</p></li>
+<li><p>Use a sequence number server. A process will first contact the sequence number server to request a sequence number. The process will then attach the sequence number to the message and multicast it.</p></li>
+<li><p>Alternatively, one can come up with a distributed protocol for generating unique, monotonically increasing message identifiers.</p></li>
+</ul>
+
+<h3 id="partialcausalordering">Partial (causal) ordering</h3>
+
+<p>We can relax ordering rules further and dictate that ordering will be preserved only amongst related messages.
+<strong>Causal ordering</strong> means that messages that are causally related (according
+to Lamport&#8217;s <em>happened before</em> definition) will be delivered in order to all
+group members.
+Concurrent messages may be delivered in any order.</p>
+
+<p>One way of implementing causal ordering is by having each process keep
+a <strong>precedence vector</strong> and sending it along with every message that is
+sent to the group. A precedence vector is similar to a vector timestamp
+with the exception that an event counter is not incremented for received
+messages. The vector applies only to events that relate to sending messages
+to a specific group. Each entry in the precedence vector represents
+the latest message sequence number that the corresponding process (group member) knows about.</p>
+
+<p>When a process P<sub>sender</sub> sends a message, it increments
+the element of the vector that corresponds to its own entry:</p>
+
+<p><code> V<sub>sender</sub>[sender] = V<sub>sender</sub>[sender] + 1 </code></p>
+
+<p>This vector is sent along with the message.</p>
+
+<p>When a process P<sub>receiver</sub> receives a message from P<sub>sender</sub>, it checks two
+conditions:</p>
+
+<div class="box">
+
+<p>(1) The message must be the very next message from P<sub>sender</sub>. That is, the
+value of the sequence number in the received vector that corresponds
+to P<sub>receiver</sub> must be exactly one greater than the one we have for that
+process in our vector:</p>
+
+<p><code> (V<sub>sender</sub>[i] == V<sub>receiver</sub>[i] + 1) ?</code></p>
+
+</div>
+<div class="box">
+
+<p>(2) The message should not be causally dependent on another message that
+the receiver has not yet seen. This means that every other element of
+the vector has to be less than or equal to the corresponding element
+of the vector at the receiver.</p>
+
+<p><code> &forall;i, i &ne; sender: (V<sub>sender</sub>[i] &le; V<sub>receiver</sub>[i]) ?</code></p>
+
+<p>If the vector from the sender contains some sequence number that is greater than
+a corresponding sequence number in the receiver&#8217;s vector, that means that the
+sending process has seen a message from some other process that the receiver
+has not yet processed. Since the precedence vector is used for group communication
+and the reciver is part of the group, that means the receiver needs to wait
+for that message to come.</p>
+
+</div>
+
+<p>If both conditions are satisfied, then the received message can
+be delivered to the application immediately. Otherwise, it is placed in
+the hold-back queue until the conditions can be satisfied. Causal ordering
+has the advantage that there is no need for a global sequencer as in
+total ordering. Note that the precedence vector technique requires reliable
+message delivery. Otherwise, the receiver will not know if a message was lost
+or if a message has just not yet arrived.</p>
+
+<h3 id="syncordering">Sync ordering</h3>
+
+<p>Relaxing the rules even more, we can decide that ordering does not matter at all and messages can be received in a different order at different machines. However, we can provide a special message type: a synchronization (sync) primitive that can be sent to ensure that any pending messages are processed before any additional (post-sync) messages will be accepted. This means that if a message is sent, it will be processed by all members before the synchronization operation. Any message sent after a member sends a sync message will be processed by all members after the sync. Message delivery is not split on either side of the sync. A sync is also known as <strong>barrier</strong>. This type of message ordering is known as <strong>sync ordering</strong>.</p>
+
+<h3 id="single-sourcefifo">Single-source FIFO</h3>
+
+<p><strong>FIFO</strong> (first in, first out) ordering on messages from each sender
+ensures that messages from each source are delivered in order but
+messages from multiple sources may be interleaved in any order at
+the receiver. For example, if host A sends messages
+m<sub>1</sub>,
+m<sub>2</sub>,
+m<sub>3</sub> and host B sends messages
+n<sub>1</sub>,
+n<sub>2</sub>,
+n<sub>3</sub>, it is valid for host C to receive the sequence
+m<sub>1</sub>,
+m<sub>2</sub>,
+m<sub>3</sub>,
+n<sub>1</sub>,
+n<sub>2</sub>,
+n<sub>3</sub> and for host D to receive the sequence
+m<sub>1</sub>,
+n<sub>1</sub>,
+n<sub>2</sub>,
+m<sub>2</sub>,
+n<sub>3</sub>,
+m<sub>3</sub>.</p>
+
+<h3 id="unorderedmulticasst">Unordered multicasst</h3>
+
+<p>Finally, the most relaxed form of message delivery is the <strong>unordered multicast</strong>. Messages can be delivered in a different order to different members. We may impose <strong>sequential ordering per source</strong>, which means that all messages sent from one member will be received in the order sent by all members, although members may receive different interleaved messages from others.</p>
+
+<h2 id="ipmulticasting">IP multicasting</h2>
+
+<p>IP multicasting is designed, like IP, to span multiple physical networks.
+Membership is dynamic: a machine can join or leave a multicast group at any time.
+Moreover, there is no central coordinator and no restriction on the number
+of hosts that can be in a group. Multicasting provides network efficiency.
+Packets in a multicast stream only need to be replicated when a router needs
+to send them to multiple network links. Only one stream of packets is needed
+on any network segment regardless of the number of receivers.</p>
+
+<figure>
+<img src="images/groups-6-class_d.png" alt="Figure 7. Class D multicast" id="groups-6-class_d" title="Class D address" width="186" />
+<figcaption>Figure 7. Class D multicast</figcaption>
+</figure>
+
+<p>An IP multicast address (also known as a class D address) is
+an IP address that starts with <code>1110</code> and contains
+a 28-bit multicast address.
+This spans the IP addresses from 224.0.0.0 through 239.255.255.255 (Figure 6). The set of all machines listening to a particular multicast address make up a host group.
+These machines can span multiple physical networks. Membership is dynamic – a machine can leave or join a group at any time and there is no restriction on the number of hosts in a group. A machine does not have to be a member of the group to send messages to the group.</p>
+
+<p>A host may join this address and receive
+messages addressed to that multicast ID.</p>
+
+<p>A multicast address may be chosen arbitrarily, but some well-known host group addresses are assigned by the IANA (Internet Assigned Numbers Authority). IANA information can be found in RFC 1340. This is similar to port numbers: arbitrary ports may be chosen but certain numbers are reserved for known applications. For example, some well-known ports are 21 for FTP, 25 for SMTP, 80 for HTTP. Some well-known multicast addresses are 244.0.0.1 for all systems on this subnet, 224.0.1.2 for SGI&#8217;s Dogfight, and 224.0.1.7 for the Audionews service.</p>
+
+<h3 id="lanmulticasting">LAN multicasting</h3>
+
+<p>Since IP is a logical network built on top of physical networks, let&#8217;s examine how multicasting works on LAN cards (e.g. an ethernet card). LAN cards that support multicast support it in one of two ways:</p>
+
+<ol>
+<li><p>Packets are filtered based on a hash value of the multicast hardware address (some unwanted packets may pass through because of hash collisions.</p></li>
+<li><p>The LAN card supports a small, fixed number of multicast addresses on which to listen. If the host needs to receive more, the LAN card is put in a multicast promiscuous mode to receive all hardware multicast packets.</p></li>
+</ol>
+
+<p>In either case, the device driver must check that the received packet is really the one that is needed. Even if the LAN card performed perfect filtering, there may still need to be a need to translate a 28-bit IP multicast ID to the hardware address (e.g. a 48-bit ethernet address). The translation of IP multicast ID numbers to ethernet addresses is defined by the IANA (Internet Assigned Numbers Authority), which decrees that the least significant 23 bits of the IP address are copied into an ethernet MAC address of the form 01:00:5e:xx:xx:xx.</p>
+
+<h3 id="ipmulticastingonasinglenetwork">IP multicasting on a single network</h3>
+
+<p>On a single physical network, the sender specifies a destination IP address that is a multicast address (class D). The device driver then converts this address to a corresponding ethernet address and uses this address in its hardware header (which envelopes the IP header). Now it sends out this multicast ethernet packet which contains a multicast IP packet within it.</p>
+
+<p>An IPv4 multicast address is mapped onto an Ethernet multicast address by copying
+the least-significant 23 bits of the address onto an Ethernet
+multicast address. Within a LAN, an ethernet chip is programmed to
+to perform an <strong>exact match</strong> on a small set
+of addresses or to accept addresses that
+<strong>hash</strong> to particular values. The ethernet driver will need to remove
+any unneeded addresses that pass through. The ethernet chip can also
+be set to <strong>multicast promiscuous mode</strong>, where it will
+accept all multicast ethernet packets.</p>
+
+<p>When a process wishes to receive multicast packets, it notifies the IP layer that it wants to receive datagrams destined for a certain IP address. The device driver has to enable reception of ethernet packets that contain that IP multicast address. This action is known as joining a multicast group.</p>
+
+<p>Upon receiving such packets, the device driver sends the IP packet to the IP layer, which must deliver a copy of the packet to all processes that belong to the group.</p>
+
+<h3 id="ipmulticastingbeyondthephysicalnetwork">IP multicasting beyond the physical network</h3>
+
+<p>When IP packets flow through multiple physical networks, they go through routers which bridge one network to another. In the case of multicasting, a multicast-aware routed needs to know whether there are any hosts on a physical network that belong to a multicast group.</p>
+
+<p>The <strong>Internet Group Management Protocol</strong> (<strong>IGMP</strong>, RFC 1112) is designed to accomplish this task. It is a simple datagram based protocol that is similar in principle to ICMP. Packets are fixed-size messages containing a 20-byte IP header, and 8 bytes of IGMP data. This data includes:</p>
+
+<ul>
+<li>4-bit version number</li>
+<li>4-bit operation type (1=query sent by router, 2=response)</li>
+<li>16-bit checksum</li>
+<li>32-bit IP class D address</li>
+</ul>
+
+<p>The IGMP protocol works as follows.</p>
+
+<p>To join a multicast group (that is, to start receiving messages that are sent to that address), the host will uses IGMP to send a
+<em>multicast join</em> message (also known a a <strong>membership report</strong>) to join a specific group. A multicast-aware
+router will get this message and now know that the the link on which
+the message arrived needs to receive any packets addressed to that multicast
+group.</p>
+
+<p>Periodically, a router will send a <strong>membership query</strong> message to all hosts
+on the LAN.
+If any node is still interested in the group, it must re-send a
+<em>join</em> message.
+When a machine receives an IGMP query, it sends one IGMP response packet for each group for which it is still interested in receiving packets.</p>
+
+<p>In version 1 of the protocol, if no <em>join</em> messages are received, then
+the router would stop responding to <em>join</em> messages and the LAN
+will no longer receive packets for that group.
+With IGMP v2, a <em>leave</em> message was added to avoid having to wait for the timeout
+to realize that nobody is interested in a group. That avoids needlessly
+sending multicast traffic on a LAN where no hosts are interested in
+receiving the messages anymore.</p>
+
+<p>A lingering problem was that multicast
+IP uses no centralized coordinator and anyone can send multicast messages
+to any multicast addresses. IGMP v3 adds the ability for a host that
+joins a multicast group to specify the source address (originator)
+of the multicast. The router will then not forward packets originating from unwanted
+source addresses onto the LAN.</p>
+
+<p>IGMP allows edge routers (those routers connected to LANs) to be told what multicast groups
+the nodes on its connected LANs are interested in receiving
+<strong>PIM</strong>, <strong>Protocol Independent Multicast</strong>,
+is responsible for conveying multicast membership information
+among routers within the wide area Internet.
+It assumes the presence of other protocols to know the network topology and which
+routers are connected together. There are two basic approaches to multicasting on the WAN (wide-area
+network): <strong>dense mode</strong> (<strong>flooding</strong>)
+and <strong>sparse-mode</strong> multicast.</p>
+
+<p><strong>Dense Mode</strong> multicast, also known as <strong>flooding</strong>, originates
+from the multicast sender. The message is duplicated and sent to all connected routers. Each of those routers,
+in turn, duplicates and sends the message to all of its connected routers, and so on.
+To avoid routing loops, each router uses <strong>reverse path forwarding</strong> (<strong>RFP</strong>).
+A received packet is forwarded <em>only</em> if it was received via the link that the router
+knows is the shortest path back to the sender (it finds this by checking its forwarding table,
+which is what it would use if it was sending a packet to that address).
+PIM Dense Mode floods the entire network of connected multicast-aware routers.</p>
+
+<p>If an edge router receives this multicast packet and is not interested the data stream (i.e., it
+has not received IGMP <em>join</em> messages), it will send a <strong>prune</strong> message
+to the router that delivered that packet. If that router receives <em>prune</em> messages from
+all interfaces, it will in turn send a <em>prune</em> message to the router that is sending it
+the multicast messages.
+A router sends <em>prune</em> messages if it is getting redundant traffic from
+another link or if its downstream router or LAN connections are not interested in the stream.
+If a node on a LAN joins a multicast group at a later time, sending an IGMP message to a
+router, that router would then send a PIM <em>Graft</em> message to its connected routers
+to state interest in the stream.
+Dense mode only makes sense when there are receivers spread through most locations covered
+my multicast-aware routers. It is rarely used.</p>
+
+<p>In contradistinction to Dense Mode, PIM <strong>Sparse Mode</strong> starts with requests
+from multicast receivers rather than flooding the network with traffic from the sender.
+Each router must send a <em>Join</em> message to its connected routers in order
+to request multicast traffic (and a <em>Prune</em> message when it no longer is).
+This causes multicast packets to only go to the routers
+where it is needed. The trick to getting this to work is that a multicast group must
+be associated with a router known as a <strong>rendezvous point</strong> (RP). The RP
+acts as a central point that senders know how to contact to register that they are transmitting
+multicast streams and for receivers to contact to join multicast streams. Join messages
+initially are routed to the RP to avoid flooding the network. From there, they are routed
+to participating routers &#8211; routers that expressed an interest in that multicast group.</p>
+
+<p>A sender
+that transmits multicast packets will simply have those packets routed only to the rendezvous point
+(this is effectively a unicast stream).
+The RP then multicasts the packet to any routers from which it has received <em>Join</em> messages.</p>
+
+<p>To ensure
+that the RP does not become a bottleneck, after a the aggregate bandwidth exceeds a
+defined threshold, routers closer to the receiver will try to <em>join</em> routers that
+are more directly connected to the source since they have seen the multicast traffic and know
+the source address.</p>
+
+<p>Sparse mode is ideal when the receivers are concentrated among a few network segments.</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+<li><p>George Coulouris, Jean Dollimore, Tim Kindberg, and Gordon Blair,
+<a href="http://www.amazon.com/dp/0132143011/pkorg">Distributed Systems: Concepts and Design</a>.
+Addison-Wesley; 5th edition, May 7, 2011.</p></li>
+<li><p>W. Richard Stevens,
+<a href="http://www.amazon.com/dp/0201633469/pkorg">TCP/IP Illustrated Volume 1</a>.
+Addison-Wesley Professional, December 1993.</p></li>
+<li><p>Andrew S. Tanenbaum and Maarten Van Steen,
+<a href="http://www.amazon.com/dp/0132392275/pkorg">Distributed Systems: Principles and Paradigms</a>, Second Edition. Prentice Hall, October 2006.</p></li>
+<li><p>Andrew S. Tanenbaum,
+<a href="http://www.amazon.com/dp/8177581791/pkorg">Distributed Operating Systems</a>.
+Dorling Kindersley Pvt Ltd, January 30, 2009.</p></li>
+</ul>
+
+<h3 id="webreferences">Web References</h3>
+
+<ul>
+<li><p>Darrin Woods, <a href="http://www.networkcomputing.com/1204/1204f1c1.html">Tutorial: The Wizardry of Multicast</a>. Network Computing, February 19, 2001.</p></li>
+<li><p>Mark Handley and Jon Crowcroft,
+<a href="http://www.cisco.com/web/about/ac123/ac147/ac174/ac198/about_cisco_ipj_archive_article09186a00800c851e.html">Internet Multicast Today</a>.
+The Internet Protocol Journal, Volume 2, No. 4., Cisco Systems, 1999.</p></li>
+<li><p><a href="http://docwiki.cisco.com/wiki/Internet_Protocol_Multicast">Internet Protocol Multicast</a>, Cisco Wiki.</p></li>
+<li><p><a href="http://www.ietf.org/rfc/rfc3376.txt">
+RFC 3376: Internet Group Management Protocol, Version 3</a></p></li>
+<li><p><a href="http://www.ietf.org/rfc/rfc2236.txt">
+RFC 2236: Internet Group Management Protocol, Version 2</a></p></li>
+<li><p><a href="http://www.ietf.org/rfc/rfc1112.txt">
+RFC 1112: Host Extensions for IP Multicasting (IGMP, version 1)</a></p></li>
+<li><p><a href="http://www.iana.org/assignments/multicast-addresses/multicast-addresses.xml">IPv4 Multicast Address Space Registry</a>, Internet Assigned Numbers Authority.</p></li>
+<li><p>John Kristoff, <a href="http://www.kuro5hin.org/story/2003/12/31/173152/86">Anycast Addressing on the Internet</a>. Kuro5hin.org, Jan 2004.</p></li>
+</ul>
+
+<p>This is an update of a document authored on October 25, 2012.</p>
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>By a <em>totally sequenced message ID</em> we mean that all members of the group get unique, chronologically increasing sequence numbers for their messages. <a href="#fnref:1" title="return to body" class="reversefootnote">&#160;&#8617;&#xfe0e;</a></p>
+</li>
+
+</ol>
+</div>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

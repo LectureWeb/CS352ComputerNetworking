@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 lecture 3,4 </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main .nn ul {
+	margin: 0;
+	margin-left: -1.0em;
+	padding: 0.15em 1.0em 0.15em 1.0em;
+	list-style: none;
+	float: left;
+	margin-bottom: 0.5em;
+	text-transform: uppercase;
+	width: 100%;
+}
+#main .nn li { 
+	float: left;
+	padding: 0;
+	margin: 0;
+}
+#main .nn li.right { 
+	float: right;
+	text-align: right;
+	padding: 0;
+	margin: 0;
+}
+</style>
+</head>
+
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../index.html"> Rutgers </a> 
+ 	<li> <a href="../hw/index.html"> Lecture 3,4 </a> 
+</ul>
+</p>
+</div>
+  
+<div id="content-wrapper">
+
+<div id="main">
+<div class="nn">
+<ul>
+	<li> <a href="l-naming.html">Previous Lecture</a> </li>
+	<li class="right"> <a href="l-dfs.html">Next Lecture</a> </li>
+</ul>
+</div>
+<div id="headline">
+    <h1>
+	Week 3,4: Remote Procedure Calls
+    </h1>
+</div>
+    <dl>
+    <dt> Lecture notes: 
+    <dd>
+	<a href=../notes/content/04-rpc.pdf>
+	Remote Procedure Calls
+	</a>
+	<br>
+	<a href=../notes/content/04-rpc-slides.pdf>
+	Lecture slides
+	</a>
+	(<a href=../notes/content/04-rpc-slides-6up.pdf>6 per page</a>)
+	<br>
+	<a href=../notes/content/04-rpc-case-slides.pdf>
+	RPC case studies slides
+	</a>
+	(<a href=../notes/content/04-rpc-case-slides-6up.pdf>6 per page</a>)
+
+    <p></p>
+
+    <dt> Recitation notes:
+    <dd>
+	<a href=../notes/content/ra-sunrpc.pdf>Programming with Sun RPC</a>
+	<br>
+	<a href=../notes/content/rb-rmi.pdf>Programming with RMI</a>
+
+    <p></p>
+    <dt> Sample programs:
+    <dd>
+	<a href=../../src/rpcdemo.tar>rpcdemo.tar</a> - demo of Sun's RPC
+	<p></p>
+	<a href=../../src/rmidemo.tar>rmidemo.tar</a> - demo of Java RMI
+
+    <p></p>
+    <dt> Supplemental notes:
+    <dd>
+	<a href="http://msdn2.microsoft.com/en-us/library/ms973857(d=printer).aspx">Microsoft .NET Remoting: A Technical Overview</a>
+	by Piet Obermeyer and Jonathan Hawkins, MSDN,
+	Microsoft Corporation, July 2001 
+	<p></p>
+
+	<a href="http://msdn.microsoft.com/msdnmag/issues/02/10/NETRemoting/default.aspx">Microsoft .NET Remoting: 
+Design and Develop Seamless Distributed Applications for the Common
+Language Runtime</a>
+	by Dino Esposito, MSDN, Microsoft Corporation, October 2002
+	<p></p>
+
+	<a href=http://www.arstechnica.com/paedia/n/net/net-1.html>Microsoft .Net</a>,
+	by Dr. Pizza, arstechnica.com 
+	<br>
+	<a href=http://www.arstechnica.com/paedia/n/net/net-5.html>
+	http://www.arstechnica.com/paedia/n/net/net-5.html</a>.
+	<p></p>
+	
+	
+	<a href=http://www.cs.arizona.edu/computer.help/policy/DIGITAL_unix/AA-QOR58-TET1_html/TOC.html>ONC (SUN) RPC documentation</a>
+	<p></p>
+	<a href=http://www.microsoft.com/ntserver/techresources/appserv/COM/dcom_architecture.asp>
+	Understanding the Distributed Object Component (DCOM) Architecture</a>,
+	(c) 2001 Microsoft Corporation
+	<p></p>
+	<a href=http://www.transarc.ibm.com/Library/documentation/dce/1.1/intro_to_dce_main.html>
+	Transarc DCE Introduction to the OSF Distributed Computing Environment
+	</a>, (c)1990-1996 Transarc, IBM
+	<p></p>
+        <a href=http://developer.java.sun.com/developer/onlineTraining/corba/corba.html>
+	Introduction to CORBA, Short Course, java.sun.com
+	</a>
+	<p></p>
+	<a fref=http://java.sun.com/j2se/1.4.2/docs/guide/rmi/getstart.doc.html>
+	 Getting Started with RMI </a>, Sun Microsystems. Writing a simple applet using jdk 1.4.2
+	<p></p>
+	<a href=http://www.ccs.neu.edu/home/kenb/com3337/rmi_tut.html>
+	 Java RMI Tutorial</a>, Ken Baclawski, Northeastern University
+	<p></p>
+	<a href=http://www.microsoft.com/msj/defaultframe.asp?page=/msj/0898/idl/idl.htm>Microsoft Systems Journal: Understanding Interface Definition Language</a>
+	<p></p>
+	<a href=http://msdn.microsoft.com/msdnmag/issues/01/02/webcomp/webcomp.asp>
+	Web Services: Building Reusable Web Components with SOAP and ASP .NET</a>,
+	David S. Platt, Microsoft MSDN
+	<p></p>
+	<a href=http://www.byte.com/documents/s=517/byt20001221s0005/>
+	Understanding Microsoft .NET </a>, David Platt, Byte,com December 2000:
+	<a href=http://www.byte.com/documents/s=517/byt20001221s0005/>Part 1</a>,
+	<a href=http://www.byte.com/documents/s=570/byt20010221s0002/index.htm>part 2</a>, 
+	<a href=http://www.byte.com/documents/s=610/byt20010418s0001/index.htm>part 3</a>
+	<p></p>
+	<a href=http://www.rollthunder.com/newslv3n1.htm>
+	Feature Article: Microsoft .NET Framework Objects</a>,
+	Thunderclap, the Newsletter of Rolling Thunder Computing.
+	<p></p>
+	<a href=http://www.w3schools.com>W3Schools.com</a>Some basic tutorials
+	on XML, SOAP, and .NET: short but not very through (.NET is particularly poor).
+    <p></p>
+ 
+    <dt> Buzzwords:
+    <dd>
+remote procedure call, language level construct,
+operating system level construct, stub functions, passing parameters,
+marshaling, canonical data encoding, implict typing, explicit typing,
+semantics of remote procedure calls, idempotent, non-idempotent
+<br>Sun RPC:</br>
+XDR (eXternal Data Representation), <em>rpcgen</em>,
+RPC compiler, interface definition language, portmapper
+<br>Sun RPC:</br>
+DCE RPC, <em>uuidgen</em>, cell, cell directory server,
+<br>Microsoft DCOM:</br>
+COM, surrogate process, monikers, ORPC,
+MIDL, interface pointer,
+distributed garbage collection, reference counting, pinging
+<br>CORBA:</br>
+object request broker, dynamic invocation,
+IIOP (Internet Inter-ORB Protocol),
+<br>Java RMI:</br>
+Remote Method Invocation, remote interfaces, 
+remote class, serializable class, <em>rmic</em>, <em>rmiregistry</em>
+<br>XNL-based RPCs:</br>
+XML-RPC, SOAP, WSDL, .NET web services, Common Language Runtime (CLR), Intermediate
+Language (IL)
+    </dl>
+</div> <!-- main -->
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2011 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.
+</p>
+<p> Last updated: September  8, 2011
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> Belkin F1B0280-V Slimswitch data switch. This is a manual (knob) switch that switches among four DB25 connectors. I can't imagine why anyone would need this; perhaps for switching old printers. I never used it and can't remember how it ended up in my pile of junk.
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

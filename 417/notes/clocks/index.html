@@ -1,0 +1,423 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 Documents </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../index.html"> Rutgers CS 417 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/make/index.html"> Clocks Discussion </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Assigning Lamport & Vector Timestamps </h1>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> September 29, 2017 </p>
+</div>
+
+<h1> Introduction </h1>
+<p>
+This is a brief example of assigning Lamport Timestamps and Vector Timestamps.
+<!--
+The details of the algorithms are described in the 
+<a href="../content/06-clocks.pdf">Clock Synchronization</a> notes.
+This page is less formal and supplements the lecture notes.
+-->
+</p>
+
+<h1> Lamport Clocks </h1>
+<p>
+Each process maintains a single Lamport timestamp counter. Each event in the process is tagged with
+a value from this counter. The counter is incremented before the event timestamp is assigned.
+If a process has four events, <em>a, b, c, d</em>, the events would get Lamport timestamps of <em>1, 2, 3, 4</em>, 
+respectively. 
+Let's look at an example. The figure below shows a bunch of events on three processes.
+Some of these events represent the sending of a messasge, others represent the
+receipt of a message, while others are just local events (e.g., writing some data to a file).
+With these per-process incrementing assignments, we get the clock values shown in the figure.
+</p>
+<div class="figure-center width400">
+<img src="images/clocks.png" width=400 height=169 alt="clocks" title="Clock Assignment"/>
+<p>
+Clock Assignment
+</p>
+</div>
+
+<p>
+This simple incrementing counter does not give us results that are consistent with
+causal events. If event <em>a</em> happened before event <em>b</em> then we expect
+<em>clock(a)</em> &lt; <em>clock(b)</em>.
+
+To make this work, Lamport timestamp generation has an extra step.
+If an event is the sending of a message then the timestamp of that event is sent along with the message.
+If an event is the receipt of a message then the the algorithm instructs you to compare the current
+value of the process' timestamp counter (which was just incremented before this event) with the timestamp
+in the received message. If the timestamp of the received message is greater than or equal to that of the event,
+the event and the process' timestamp counter are both updated with the value of the timestamp in
+the received message plus one. This ensures that 
+the timestamp of the received event and all further timestamps on that process will be greater than that of the 
+timestamp of the event of sending the message as well as all previous messages on that process.
+</p>
+<p>
+In the figure below, event <em>i</em> in process P<sub>1</sub> is the receipt of the message
+sent by event <em>b</em> in P<sub>0</sub>. If event <em>i</em> was just a normal local event, the
+P<sub>1</sub> would assign it a timestamp of 2. However, since the received timestamp is 2, which
+is greater than or equal to 2, the timestamp counter is set to 2+1, or 3. Event <em>i</em> gets the timestamp of 3.
+This preserves the relationship <em>b</em>&rarr;<em>i</em>, that is, b happened before i.
+A local event after <em>i</em> would get a timestamp of 4 because the process P<sub>1</sub>'s counter was 
+set to 3 when the timestamp for <em>i</em> was adjusted.
+</p>
+<p>
+Event <em>c</em> in process P<sub>0</sub> is the receipt of the message sent at event <em>h</em>.
+Here, the timestamp of <em>c</em> does not need to be adjusted. The timestamp in the message is 1, which
+is less than the event timestamp of 3 that P<sub>0</sub> is ready to assign to <em>c</em>.
+</p>
+<p>
+If event <em>j</em> was a local event, it would get the next higher timestamp on P<sub>1</sub>: 4. However,
+it is the receipt of a message that contains a timestamp of 6, which is greater than or equal to 4, so
+the event gets tagged with a timestamp of 6+1 = 7.
+</p>
+
+<div class="figure-center width400">
+<img src="images/clocks-lamport.png" width=400 height=169 alt="lamport clocks" title="Lamport Clock Assignment"/>
+<p>
+Lamport Clock Assignments
+</p>
+</div>
+
+<p>
+With Lamport timestamps, we're assured that two causally-related events will
+have timestamps that reflect the order of events. For example, 
+event <em>h</em> happened before event <em>m</em> in the Lamport causal sense. The
+chain of causal events is
+<em>h</em>&rarr;<em>c</em>,
+<em>c</em>&rarr;<em>d</em>, and
+<em>d</em>&rarr;<em>m</em>.
+Since the <em>happened-before</em> relationship is transitive, we know that
+<em>h</em>&rarr;<em>m</em> (<em>h</em> happened before <em>m</em>).
+Lamport timestamps reflect this. The timestamp
+for <em>h</em> (1) is less than the timestamp for <em>m</em> (7). However, just 
+by looking at timestamps we cannot conclude that there is a causal happened-before
+relation.
+For instance, because the timestamp for <em>k</em> (1) is less than
+the timestamp for <em>i</em> (3) does not mean that <em>k</em> happened before
+<em>i</em>. Those events happen to be concurrent but we cannot discern that
+by looking at Lamport timestamps.
+We need need to employ a different technique to be able to make that determination.
+That technique is the use of <em>vector timestamps</em>.
+</p>
+
+<br/>
+
+<h1> Vector Clocks </h1>
+<p>
+With vector clocks, we assume that we know the number of processes in the group
+(we will later remove this restriction). Instead of a single number,
+our timestamp is now 
+a vector of numbers, with each element corresponding to a process. Each process knows its position
+in the vector. For example, in the example below, the vector elements correspond to the processes
+(P<sub>0</sub>, P<sub>1</sub>, P<sub>2</sub>).
+</p>
+<p>
+As with Lamport's algorithm, the element corresponding to the processor in the vector timestamp
+is incremented prior to attaching a timestamp to an event. 
+
+If a process P<sub>0</sub> has four sequential events, <em>a, b, c, d</em>, they would get
+vector timestamps of <em>(1,0,0), (2, 0, 0), (3, 0, 0), (4, 0, 0)</em>.
+If a process P<sub>2</sub> has four sequential events, <em>a, b, c, d</em>, they would get
+vector timestamps of <em>(0,0,1), (0, 0, 2), (0, 0, 3), (0, 0, 4)</em>.
+</p>
+
+<p>
+If the event is the sending of a message,
+the entire vector associated with that event is sent along with the message.
+When the message is received by a process
+(which is an event that will get assigned a timestamp), the receiving process does the following:
+</p>
+<ol>
+
+<li> increment the counter for the process' position in the vector, just as it would
+prior to timstamping any local event.</li>
+
+<li>
+<p>
+Peform an element-by-element comparison of the received vector with the process' timestamp
+vector. Set the process' timestamp vector to the higher of the values:
+</p>
+<div class="codeblock">
+for (i=0; i &lt; num_elements; i++) 
+	if (received[i] > system[i])
+		system[i] = received[i];
+</div>
+</li>
+
+</ol>
+
+<p>
+The figure below shows the same set of events that we saw earlier but with vector clock assignments.
+Event <em>b</em> is the sending of a message to P<sub>1</sub>. That message contains event <em>b</em>'s
+timestamp: (2, 0, 0). Event <em>i</em> is the receipt of that message. If <em>i</em> was a local event,
+it would get the timestamp (0, 2, 0). Since it is the receipt of a message, we do an element-by-element
+comparison of values in the received timestamp and the local timestamp, picking the highest of each
+pair of numbers:
+</p>
+<p>
+Compare (2, 0, 0) with the received timestamp of (0, 2, 0).
+</p>
+<ul>
+<li> First element: 2 vs. 0: 2 is greater and wins. </li>
+<li> Second element: 0 vs. 2: 2 is greater and wins. </li>
+<li> Third element: 0 vs. 0: tie, so 0 wins. </li>
+</ul>
+<p>
+The resulting vector is hence (2, 2, 0) and is assigned to event <em>i</em> as well as to
+the system clock. The next local event on P<sub>1</sub> would be tagged with (2, 2+1, 0), or (2, 3, 0).
+</p>
+
+<div class="figure-center width400">
+<img src="images/clocks-vector.png" width=400 height=190 alt="vector clocks" title="Vector Clock Assignment"/>
+<p>
+Vector Clock Assignments
+</p>
+</div>
+
+<p>
+To determine if two events are <strong>concurrent</strong>, do an element-by-element comparison of the corresponding
+timestamps.
+If each element of timestamp V is less than or equal to the corresponding element of
+timestamp W then V causally precedes W and the events are not concurrent. 
+If each element of timestamp V is greater than or equal to the corresponding element of
+timestamp W then W causally precedes V and the events are not concurrent. 
+If, on the other hand, neither of those conditions apply and some elements in V are greater
+than while others are less than the corresponding element in W then the events are concurrent.
+We can summarize it with the pseudocode:
+</p>
+
+<div class="codeblock">
+isconcurrent(int v[], int w[])
+{
+	bool greater=false, less=false;
+
+	for (i=0; i &lt; num_elements; i++) 
+		if (v[i] &gt; w[i])
+			greater = true;
+		else (v[i] &lt; w[i])
+			less = true;
+	if (greater && less)
+		return true;	/* the vectors are concurrent */
+	else
+		return false;	/* the vectors are not concurrent */
+}
+</div>
+</p>
+<p>
+In the figure above, the timestamp for <em>e</em> is less than the
+timestamp for <em>j</em> because each element in <em>e</em> is less than or equal
+to the corresponding element in <em>j</em>. That is, 
+5 &le; 6, 1 &le; 3, and 2 &le; 2. The events are causally related and
+<em>e</em>&rarr;</em>j</em>
+</p>
+
+<p>
+Events <em>f</em> and <em>m</em>, on the other hand, are
+concurrent.
+When we compare the first element of <em>f</em> versus <em>m</em>, we see that
+<em>f</em> &gt; <em>m</em> (6 &gt; 4).
+When we compare the second element, we see that
+<em>f</em> = <em>m</em> (1 = 1). 
+Finally, when
+we compare the third element, we see that
+<em>f</em> &lt; <em>m</em> (2 &lt; 3). Because of this, 
+we cannot say that the vector for <em>f</em> is either less than
+or greater than the vector for <em>m</em>.
+</p>
+
+<p>
+Recall that we had to assume that we knew the number of processes in the group so
+that we could create a vector of the proper size.
+This is not always the case in real implementations. Moreover, all processes may
+not be involved in communication, resulting in an unnecessarily large vector.
+</p>
+<p>
+We can replace the vector with a set of tuples, each of which represents a process ID
+and its counter:
+</p>
+<pre>
+	( { P<sub>0</sub>, 6 }, { P<sub>1</sub>, 3 }, { P<sub>2</sub>, 2 } )
+</pre>
+<p>
+When a process sends a vector, it sends the entire set of tuples that it has.
+When it receives a vector and performs a comparison, it compares each related pair. 
+For instance, the value of P<sub>0</sub> will be compared against a tuple containing P<sub>0</sub>
+in the received vector. If any process IDs are missing in one of the sets, they are implicitly
+given a value of 0 for comparison. The resulting vector contains the superset of all tuples.
+</p>
+<p>
+For example, if a process has a system vector clock of:
+</p>
+<pre>
+        ( { P<sub>0</sub>, 6 }, { P<sub>1</sub>, 3 }, { P<sub>2</sub>, 2 } )
+</pre>  
+<p>
+and receives a value of 
+</p>
+<pre>
+        ( { P<sub>1</sub>, 1 }, { P<sub>2</sub>, 5 },  { P<sub>3</sub>, 8 } )
+</pre>
+<p>
+The resulting vector will be the set of all process IDs and their largest values:
+</p>
+<pre>
+        ( { P<sub>0</sub>, 6 }, { P<sub>1</sub>, 3 }, { P<sub>2</sub>, 5 }, { P<sub>3</sub>, 8 } )
+</pre>
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2018 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: December 14, 2018
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/9cbf3407-e64c-4dd9-b644-238d707b91b3"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1467 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 416 Exam 3 Study Guide </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+.rqbox {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+        position: relative;
+	width: 15em;
+        background-color: #FDF5B6;
+        border-style: double; border-width: 3px;
+        padding: 0.5em 0.5em 0.5em 0.5em;
+}
+</style>
+</head>
+
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<P>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a>  </li>
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a>  </li>
+ 	<li> <a href="../index.html"> CS 416 </a>  </li>
+ 	<li> <a href="../exam/index.html"> Exam info </a>  </li>
+ 	<li> <a href="../exam/study-guide-3.html"> Exam 3 study guide </a>  </li>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main"> <div id="headline">
+<h1> Exam 3 study guide </h1>
+<h2> The one-hour study guide for exam 3 </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> Latest update: Fri Mar 24 15:36:33 EDT 2017
+ </p>
+</div>
+
+<p>
+
+<em>Disclaimer: </em>
+This study guide attempts to touch upon the most
+important topics that may be covered on the exam but does not claim to
+necessarily cover everything that one needs to know for the exam. Finally,
+don't take the <em>one hour</em> time window in the title literally.
+</p>
+
+<h1 id="filesystemsforflashmemory">File Systems for flash memory</h1>
+
+<p>There are a couple of differences between solid state flash memory
+and magnetic disk drives. NAND flash memory presents itself as a
+block-addressable device: data is read or written a page (block) at a time
+and each page is uniquely addressed. In this way, it is very similar
+to a magnetic disk drive. Because there is no moving disk head that must
+to seek to a specific track to read or write a block, there is no seek latency
+with NAND flash, making the use of elevator algorithms pointless.</p>
+
+<p>Unlike a disk, data cannot be written directly to a page
+of NAND flash: the contents of the page must be erased first, turning each write
+operation into an erase-write sequence. Unlike disk drives, each
+page of NAND flash can handle only a limited number of erase-write
+cycles before it wears out. This number is typically between 100,000
+and 1,000,000. Because of this, a goal in NAND flash is <strong>wear
+leveling</strong>: distribute writes across all pages of the storage.</p>
+
+<p><strong>Dynamic wear leveling</strong> monitors high and low use
+areas of flash memory and at some point swaps high-use blocks (pages)
+with low-use blocks. Blocks that are not getting modified are not affected.
+A more aggressive
+form of wear leveling is <strong>static wear leveling</strong> where
+even unchanging (static) contents are periodically moved to other blocks
+to give all blocks a chance to wear out evenly.
+Wear leveling is implemented either in a NAND flash controller or
+in a layer of software between the flash device driver and the block device.
+This layer of software is called a <strong>Flash Translation Layer</strong>
+(<strong>FTL</strong>). The FTL maintains a <strong>block lookup table</strong>
+that maps logical to physical blocks so the block can be identified
+and located even after it is moved.</p>
+
+<h2 id="log-structuredfilesystems">Log-structured file systems</h2>
+
+<p>To avoid reusing the same blocks over and over again, a <strong>log-structured
+file system</strong> is attractive for flash memory that does not have a controller
+that implements wear leveling. This is a file system
+where each file operation is written as an entry to a transaction
+log (e.g., &#8220;new file 111: name=ABC&#8221;, &#8220;new data block 0 for file
+111: &#8230;&#8221;). One entry may make an older entry obsolete. When played
+from start to end, the log allows us to construct an up-to-date
+file system.
+Unlike traditional file systems, which implement a data structure
+to navigate among directories and file contents, the entire file system is stored
+simply as a sequence of log entries.</p>
+
+<p><strong>YAFFS</strong> is a popular log-structured file system. All
+data is written to a log as chunks. Each chunk is either a data
+chunk or an object header, which represents file metadata or a directory.
+New chunks may cause certain old chunks to become obsolete.
+If all the chunks in a block are no longer valid, the chunk can be
+reused. <strong>Garbage collection</strong> is performed periodically
+to reclaim free blocks. Free blocks can also be created by copying live
+(in-use) chunks from blocks that contain mostly deleted chunks onto
+other blocks.</p>
+
+<p>On startup, the YAFFS driver scans the log and constructs an in-memory
+view of the file system hierarchy (minus the data, which is still
+located in, and read from, flash). <strong>Checkpointing</strong> is
+the process of periodically writing out this file system hierarchy onto the
+file system. It speed up mounts since the file system driver
+can read the last checkpoint and no
+longer needs to reconstruct the entire file system hierarchy from the
+first transaction.</p>
+
+<h1 id="pseudodevicesandspecialfilesystems">Pseudo devices and special file systems</h1>
+
+<h2 id="pseudodevices">Pseudo devices</h2>
+
+<p>The classic view of a device driver is that of software that interfaces with some physical device
+and allows user processes to read, write, and otherwise control the device. The device, however,
+need not be a real device. Drivers can be written to create data streams for various purposes.
+A few examples of this are the <strong>null device</strong> (which discards any writes and
+always returns an end-of-file on reads), <strong>zero device</strong> (similar to the null device
+but always returns bytes containing values of 0), and the <strong>random device</strong>, which
+returns random numbers.</p>
+
+<p>The <strong>loop device</strong> is a pseudo device that is given a file name (via an
+<em>ioctl</em> system call) and creates a block device interface to that file. Recall that a block device
+interface is one where the system can only read and write fixed-size blocks of data.
+File systems are formatted on top of block devices (they are usually disk drives or NAND flash memory). Since
+a file can now present itself as a block device, one can now create a file system within that file and mount it
+just as one would a physical disk or flash memory.</p>
+
+<h2 id="specialfilesystems">Special file systems</h2>
+
+<p>Our classic view of a file system is that of a file system driver which lays out data structures on
+top of a block device and allows one to create, access, and delete files and directories.
+A file system driver can be more abstract, however. The <strong>process file system</strong>,
+for example, creates a file system view of processes and other aspects of the kernel.
+Each process is presented as a directory. Various aspects of the process, such as its
+command line, open files, memory map, signals, and statistics, are presented as files and
+directories within the process directory.
+A <strong>device file system</strong>
+presents all the kernel&#8217;s devices as device files so that one does not need to explicitly
+create and remove them from a <code>/dev</code> directory in a physical file system.
+<strong>FUSE</strong> is a kernel module that allows one to create user-level file systems.
+The VFS layer sends requests to FUSE that, in turn, sends them to a user-level process that
+interprets the requests as it sees fit.</p>
+
+<h1 id="client-servernetworking">Client-server Networking</h1>
+
+<p>Computers communicate with each other over a data communications network.
+In many cases, particularly over a wide area, multiple computers share the
+same communication channel (the same set of wires or radio spectrum). Figuring
+out how to do this is the job of <strong>Multiple Access Protocols</strong>.
+There are three approaches:</p>
+
+<ol>
+<li><p>Channel partitioning.
+ Each communication session either gets a fixed set of time slots (this is
+ called <strong>Time Division Multiplexing</strong>, <strong>TDM</strong>, or a specific band of
+ frequencies it can use (this is called <strong>Frequency Division Multiplexing</strong>,
+ <strong>FDM</strong>). The downside with this approach is that bandwidth is allocated
+ even if the communication channel is idle.</p></li>
+<li><p>Taking turns.
+ Various protocols enable one node to know that it is its turn to communicate.
+ One way to do this is by having a network master that informs nodes when they
+ can communicate. Another is a token passing protocol where a machine passes
+ a token (special message) to its neighbor. Ownership of the token means that the
+ system can communicate. These solutions have the danger of failing (lost token)
+ or requiring the complexity of a master coordinator.</p></li>
+<li><p>Random access.
+ Random access protocols rely on <strong>statistical multiplexing</strong>. That&#8217;s just a
+ fancy way of saying that messages from multiple systems can be mixed together,
+ one after another. There are no scheduled time slots.
+ There is a
+ danger of a collision occurring if two systems send messages at the same time so
+ retransmission may be needed in these cases. It turns out that random
+ access is the best of the three multiple access protocols in terms of
+ using the capacity of communication links.</p></li>
+</ol>
+
+<!-- 
+Data goes over a network in one of two ways: **baseband** or **broadband**.
+Only one node may transmit data at a time on a **baseband** network
+but, for that time, it has the full bandwidth of the network. A **broadband**
+network, on the other hand, has its available bandwidth divided into multiple
+channels, or frequency bands. Cable TV is an example of a broadband network.
+However, data services offered by cable providers are confined to two groups of
+channels (one set for downstream traffic and another set for upstream), making IP
+access effectively baseband within broadband. Don't confuse these terms with
+the marketing community's use of _broadband_ to refer to any relatively
+high-speed network to the home.
+
+Baseband networks have all nodes on the network share the same frequencies. Therefore,
+they cannot all talk at the same time and have to share the network.
+-->
+
+<p>Two common ways of communicating on a network are <strong>circuit-switching</strong>
+and <strong>packet switching</strong>.
+A <strong>circuit-switched</strong> network uses channel partitioning and divides the network into short, fixed-length
+time slots and each node is allowed the use of only specific time slots. This
+is called <strong>Time Division Multiplexing</strong> (<strong>TDM</strong>). With
+circuit switching, a
+dedicated path (route) is established between two endpoints. This path is
+called a <strong>virtual circuit</strong>. Circuit switching provides guaranteed
+bandwidth and constant latency but does not use networking resources efficiently
+since time slots may go unused if a node has nothing to transmit.
+The public telephone network is an example of circuit
+switching, providing a maximum delay of 150 milliseconds and digitizing voice to a
+constant 64 kbps data rate. <strong>Packet-switched</strong> networking uses random access and variable-length
+time slots. Data is segmented into variable-size packets and each packet must be identified
+and addressed. These are called <strong>datagrams </strong>.
+Packet-switching generally cannot provide guaranteed bandwidth or
+constant latency. Ethernet is an example of a packet-switched network. </p>
+
+<!-- 
+Ethernet is the most widely used data network for local
+area networking. It is a baseband network that was
+designed to use a shared medium.
+To transmit a packet on a shared 
+network, ethernet used a technique called
+**carrier sense multiple access with
+collision detection** (**CSMA/CD**). 
+analogous to making a phone call when someone else may be on the line.
+The network interface card monitors the network. Only when it detects no traffic
+does it send out its packet. While doing so, it still monitors the network
+to detect a collision:
+the case where two transceivers happened to send a packet out simultaneously. If a
+collision took place, the transmission is reattempted again at a later time.
+Progressively longer back-off times are used when collisions are encountered to
+ensure that overall performance degrades gracefully.
+-->
+
+<p>Data networking is usually implemented as layers &#8212; a <strong>stack</strong> of
+several <strong>protocols</strong>, each responsible for a specific aspect of
+networking. The <strong>OSI reference model</strong> defines seven layers of network protocols.
+Some of the more interesting ones are: the data link, network, transport, and presentation
+layers.</p>
+
+<ul>
+<li>The <strong>data link layer</strong> (layer 2) transfers data within a physical local area network.</li>
+<li>The <strong>network layer</strong> (layer 3) manages <strong>routing</strong>:
+ the journey of packets from one machine to another possibly across multiple networks.</li>
+<li>The <strong>transport layer</strong> (layer 4) manages
+ the communication of data from one application to another rather than machine-to-machine
+ delivery.</li>
+<li>The <strong>presentation layer </strong>(layer 6) manages
+ the representation of data and handles any necessary conversion of data types
+ across architectures (for example, different byte ordering in integers,
+ different character representations).</li>
+</ul>
+
+<h2 id="ipnetworking">IP Networking</h2>
+
+<p>The <strong>Internet Protocol</strong> (IP) handles the
+interconnection of multiple local and wide-area networks. It is a logical
+packet-switched
+network whose data is transported by one or more physical networks (such as Ethernet, for
+example). In the OSI model, IP is a layer 3 (network) protocol, while
+ethernet is a layer 2 (data link) protocol.
+Each machine on an IP network must have a unique IP address. As IP is
+a logical overlay network that connects multiple physical networks together,
+the IP address is separate from, and unrelated to, the address of any
+underlying network (e.g., ethernet MAC address).</p>
+
+<!--
+The addressing
+scheme for IP divided an address into two segments: a **network** part of the
+address, which determines where to route the packet, and a **host**
+part, which identifies the specific host within that local area
+network.
+
+Instead of using a fixed network-host partition, IP was designed to use
+three distinct partitions, or **classes** of networks: A, B, and C. This
+allowed for a small number of huge networks and a large number of networks with
+a small number of machines. However, the allocation of machines to networks was
+still inefficient. An organization that needed addresses for 300 machines would
+be allocated a class B network, and over 65,000 addresses would go unused (a
+class C network, accommodating only 254 machines, would have been too small). **Classless
+Inter-Domain Routing** (CIDR) was created to alleviate this inefficiency.
+Networks could be allocated to organizations on any power of two (arbitrary
+network-host partitioning). This made routing tables a bit more complex; they
+now need to have an extra datum: the number of leading bits that constitute the
+network part of the address. Eventually, even that was not sufficient to address
+the growing needs of the Internet and for well over a decade there has been a slow transition to the
+next version of IP: IP version 6, which uses 128-bit addresses to support a far larger
+address space.
+
+-->
+
+<p>Since IP is a logical network, any machine that needs to
+send out IP packets must do so via the physical network.
+Typically, this is Wi-Fi or
+Ethernet, which uses a 48-bit Ethernet address that is unrelated to a 32-bit IP (or 128-bit IPv6)
+address. To send an IP packet out, the system needs to find the <strong>physical</strong> (Ethernet)
+destination address (the <strong>MAC address</strong>, or Media Access Control address) that corresponds to
+the desired IP destination. The <strong>Address Resolution Protocol</strong>, or <strong>ARP</strong>,
+accomplishes this. It works by broadcasting a request containing an IP address
+(<em>do you know the corresponding MAC address for this IP address?</em>) and then
+waiting for a response from the machine with the
+corresponding IP address. To avoid doing this for every outgoing packet, it
+maintains a cache of most recently used addresses.</p>
+
+<p>Humans aren&#8217;t even happy working with IP numbers and prefer to use textual
+names instead (e.g., ls.cs.rutgers.edu). The <strong>Domain Name System</strong>, <strong>DNS</strong>,
+is a service that manages the mapping of hierarchical human-friendly names to their
+corresponding IP addresses. It is implemented as worldwide set of distributed
+servers that refer queries to other servers as they traverse the hierarchy
+of a domain name.</p>
+
+<p>There are two transport-layer protocols on top of IP: TCP
+and UDP. <strong>TCP</strong> (<em>Transmission Control Protocol</em>)
+simulates <strong>virtual circuit</strong>
+(<strong>connection-oriented</strong>) service. This layer of software ensures that
+packets arrive in order to the application and lost or corrupt packets are
+retransmitted. It permits bidirectional communication and tries to &#8220;play nice&#8221;
+on the network by lowering its bandwidth if it detects packet loss (which
+it assumes is due to network congestion).
+The transport layer keeps track of the destination so that the
+application can have the illusion of a connected data stream.</p>
+
+<p><strong>UDP</strong> (<em>User Datagram Protocol</em>) is a lightweight layer on top of IP
+that provides <strong>datagram</strong> (<strong>connectionless</strong>)
+service. UDP drops packets with corrupt data and does not request
+retransmits. It does not ensure in-order
+delivery or reliable delivery.</p>
+
+<p><strong>Port numbers</strong> in both TCP and UDP
+form the <em>transport address</em> and are used
+to allow the operating system to direct the data to the appropriate application
+endpoint (or, more precisely, to the <strong>socket</strong> that is associated with the
+communication stream). A source port number allows an application to know where
+to send return data.</p>
+
+<p><strong>Protocol encapsulation</strong> keeps the layers of the networking stack separate. A TCP or UDP packet,
+along with associated packet data, is treated simply as data within an IP packet.
+The IP header has a 6-bit protocol field that identifies the type of protocol that
+is encapsulated within it so that an IP driver can send the packet to the right
+transport-level protocol (e.g., to the TCP module).
+Likewise, an Ethernet packet (called a &#8220;frame&#8221;) treats
+the entire IP packet as data. It has a two-byte value that identifies the type of
+protocol that it is encapsulating so that an ethernet driver can send the data
+to the correct protocol module (e.g., to the IP driver).</p>
+
+<h2 id="sockets">Sockets</h2>
+
+<p><strong>Sockets</strong> are the interface to the network that is provided to
+applications by the operating system.
+A socket is a communication endpoint that allows one application to communicate
+with another application. Writing data to a socket allows a corresponding socket
+on another application to receive that data.
+The interface is usually a data network between
+machines but doesn&#8217;t have to be &#8212; sockets can also be used for interprocess
+communication within the same system. Because sockets are designed to deal with application-to-application
+communication, they almost always interact at the transport layer of the OSI
+reference model (UDP/IP and TCP/IP if IP communications is used).</p>
+
+<p>Sockets are created with the <strong>socket</strong>
+system call and are assigned an address and port number with the <strong>bind</strong> system
+call. For connection-oriented protocols, a socket on the server is set to
+listen for connections with the <strong>listen</strong> system call. The <strong>accept</strong>
+call blocks until a connection is received at a listening socket, at which point the server
+process is given a new
+socket dedicated to the new connection. A client can establish a connection with
+a server socket via the <strong>connect</strong> system call. After this, sending and receiving data is
+<strong>compatible</strong> with file operations: the same <strong>read</strong> and <strong>write</strong> system calls can be
+used. <em>This is a key feature of sockets:</em> once the network interface has been set up,
+the application can use file system I/O to communicate and does not have to think
+about networking.
+When communication is complete, the socket can be closed with the <strong>shutdown</strong>
+system call or the regular file system <strong>close</strong> system call.</p>
+
+<p>User processes interact with sockets either through <strong>socket-specific system
+calls</strong> (<em>socket</em>, <em>listen</em>, <em>connect</em>, etc.) or through
+<strong>file system calls</strong> (<em>read</em>, <em>write</em>, etc.). However, sockets are <em>not</em>
+implemented as a file system under the VFS layer of the operating system. The distinction between <em>files</em>
+and <em>sockets</em> occurs in the kernel data structure referenced by the socket&#8217;s file descriptor.
+Every socket has its own <strong><code>socket</code> structure</strong> associated with it.
+This structure identifies the set of operations that can be performed on it as
+well as its data send and receive queues. The structure also identifies the networking protocol
+that is associated with it (e.g., TCP) so that it can queue outbound data for processing
+by the appropriate protocol layer.</p>
+
+<p>The generic networking interface provided by sockets interacts with protocol-specific
+implementations. Just like the file system and device drivers, network protocols are modular
+and can be installed, registered, and removed dynamically. </p>
+
+<p>We love layered protocols because they nicely partition the different things
+that need to happen in a networking stack. What we don&#8217;t love is moving data around. Allocating,
+copying, and freeing data as it moves between layers of the protocol stack will severely impact
+performance. Instead, a packet is placed in a <strong>socket buffer</strong> (<strong>sk_buff</strong>)
+as soon as it is created: either at the system call (for sending data) or
+at the device driver (for received data). Instead of copying
+data, a pointer to the socket buffer moves between the queues of each layer of the
+networking stack. When an application needs to transmit data, the socket layer
+allocates a socket buffer with enough extra space to hold the process&#8217; data along with
+all the headers that will be needed as the packet goes down the protocol stack (e.g.,
+TCP, IP, and ethernet headers). The data is copied from the user&#8217;s process into the
+socket buffer in kernel space. The next time it is copied is when all protocol
+processing is complete and the data, with all of its headers, moves from the socket buffer
+out to the device.</p>
+
+<p>An <strong>abstract device interface</strong> sits below the networking layers and right
+above the actual device drivers. This interface contains generic functions for initializing
+devices, sending data and allocating socket buffers for received data. The <strong>network
+device driver</strong> (e.g., an Ethernet or 802.11b/g/n/ac driver) interacts with the physical
+network and is responsible for actually transmitting data out to the network and grabbing
+received data from the hardware. As with character and block device drivers,
+network device drivers are modules
+that can be inserted, registered, and deleted dynamically.</p>
+
+<p>With fast networks, the rate at which packets come in can generate thousands to
+hundreds of thousands of interrupts per second. To avoid this, Linux <strong>NAPI</strong>
+(&#8220;New&#8221; API) disables network device interrupts when a packet is received and
+reverts to periodic polling. If, at some time, a poll yields no data then interrupts are
+re-enabled and polling is stopped. This avoids unnecessary polling when there is no
+incoming traffic. Once a network interrupt is serviced, interrupts are again disabled
+and we repeat the same process.</p>
+
+<h1 id="remoteprocedurecalls">Remote Procedure Calls</h1>
+
+<p>One problem with the interface offered by sockets was that
+it provided a <em>send</em>-<em>receive</em> model of interaction. However, most
+programs use a functional (procedure call) model of interaction.
+Remote procedure calls are a
+<strong>programming language construct</strong> (something provided by the compiler), as opposed
+to an <strong>operating system construct</strong>, such as sockets. They provide the illusion of
+calling a procedure on a remote machine. During this time, execution of the
+local thread stops until the results are returned. The programmer is alleviated
+from packaging data, sending and receiving messages, and parsing results.</p>
+
+<p>The illusion of a remote procedure call is accomplished by
+generating <strong>stub functions</strong>. On the client side, the
+<strong>client stub</strong> is a function with
+the same interface as the desired remote procedure. Its function, however, is to take the
+parameters, <strong>marshal</strong> them into a network message, send them to the
+server (using sockets), await a reply, and then <em>unmarshal</em> the results and return them to
+the caller. On the server side, the <strong>server stub</strong> (sometimes known as a skeleton) is
+responsible for being the main program that registers the service and awaits
+incoming requests for running the remote procedure. It <strong>unmarshals</strong> the data in
+the request, calls the user&#8217;s procedure, and marshals the results into a
+network message that is sent back to the recipient.</p>
+
+<p>An <strong>Interface Definition Language</strong> (<strong>IDL</strong>) allows programmers to define
+remote interfaces. An <strong>rpc compiler</strong> takes the IDL as input and generates client
+and server stubs as output. The programmer does not have to deal with writing
+marshaling code or even any networking code. The generated client stub looks like
+the desired remote function except all it does is marshal the parameters and
+send a message to the server. The generated server listens for incoming messages
+and calls the requested server function. The operating system is not involved. It
+only knows about sockets. However, in some cases, client stubs can be
+used inside the kernel (see NFS, the Network File System, covered later).</p>
+
+<!-- 
+<h3>Sun (Open Network Computing) RPC
+
+Sun's RPC was one of the first RPC systems to achieve
+widespread use. It is still in use on virtually all Unix-derived systems
+(SunOS, System V, *BSD, Linux, OS X). It uses a pre-compiler called _rpcgen_ that
+takes input from an **interface definition language** (**IDL**) file.
+This is a file that defines the interfaces to the remote procedures. From this,
+_rpcgen_ creates client stub functions and a server stub program. These
+can be compiled and linked with the client and server functions, respectively.
+
+Every interface is assigned a unique 32-bit number, known
+as a program number. When the server starts up, it binds a socket to any
+available port and registers that port number and its program number with a
+name server, known as the _portmapper_, running on the same machine. A
+client, before invoking any remote procedure calls, contacts the portmapper on
+the desired server to find the port to which it needs to send its requests.
+
+Sun's RPC is a key protocol for NFS (Network File System), which contributes
+to RPC's lasting popularity. It is present on all POSIX (Unix, Linux, OS X, BSD) systems.
+It isn't without weaknesses and other RPC systems have evolved over the years.
+We won't cover them here but some include DCE RPC (distributed computing environment),
+Microsoft DCOM and Object-RPC, CORBA, Java RMI, XML-RPC, SOAP, and Microsoft .NET Remoting.
+they all employ the same model of using client and server-side stub functions.
+-->
+
+<h1 id="networkattachedstorage">Network attached storage</h1>
+
+<p>There are two basic models for implementing distributed
+file systems: the <strong>download/upload model</strong> or the <strong>remote
+access</strong> model.
+In the download/upload model, an entire file is downloaded to the local machine
+when that file is opened and, if modified, uploaded when closed.
+In the remote access model, individual requests are forwarded to the remote server as
+remote procedures.</p>
+
+<p>In a <strong>stateful</strong> file system, the server
+maintains varying amounts of state about client access to files (e.g., whether
+a file is open, whether a file has been downloaded, cached blocks, modes of
+access). In a <strong>stateless</strong> file system, the server maintains no state about
+a client&#8217;s access to files. The design of a file system will influence the <em>access
+semantics</em> to files. <strong>Sequential semantics</strong> are what we commonly expect
+to see in file systems, where reads return the results of previous writes. <strong>Session
+semantics</strong> occur when an application owns the file for the entire access
+session, writing the contents of the file only upon close, thereby making the
+updates visible to others after the file is closed, and overwriting any
+modifications made by others prior to that.</p>
+
+<h1 id="networkfilesystems:examples">Network file systems: examples</h1>
+
+<p>We examine three different network file systems. While they all provide users
+with the expected hierarchical file system view of remote files, they were
+designed with different goals. Sun&#8217;s NFS had a focus on fault-tolerance and
+rapid recovery from crashes due to its stateless design. CMU&#8217;s AFS was designed
+to enable long-term whole-file caching of files to reduce load on servers
+and support huge numbers of users. Microsoft&#8217;s SMB was designed with the
+goal of providing an identical experience to the local file system, even if
+it meant using a connection-oriented protocol and minimizing the amount of
+caching done at clients.</p>
+
+<h2 id="nfs">NFS</h2>
+
+<p>NFS was originally designed as a stateless, RPC-based model implementing
+commands such as <em>read bytes</em>, <em>write bytes</em>, <em>link files</em>, <em>create
+a directory</em>, and <em>remove a file</em>. Since the server does not maintain
+any state, there is no need for remote <em>open</em> or <em>close</em> procedures:
+these are used only on the client to keep track of the state locally.
+NFS works well in faulty environments:
+there&#8217;s no state to restore if a client or server crashes. To improve
+performance, regardless of how little data an application requests, a
+client requests remote data a block a <strong>large chunk</strong> at a time
+(8 KB by default, but negotiated based on network speeds) and
+performs <strong>read-ahead</strong> (fetching future blocks before they are needed).
+It also caches data for some period of time.
+NFS
+suffers from ambiguous semantics because the server, as well as other clients, has no
+idea what blocks the client has cached and the client does not know whether its
+cached blocks are still valid. The system checks modification times if there
+are file operations to the server but otherwise invalidates the blocks after a
+few seconds. File locking could not be supported because of NFS&#8217;s stateless
+design but was added through a separate lock manager that maintained the state
+of locks.</p>
+
+<h2 id="afs">AFS</h2>
+
+<p>AFS was designed as an improvement over NFS to support file sharing on a
+massive scale. NFS suffered because clients would never cache data for a long
+time (not knowing if it would become obsolete) and had to frequently contact
+the server. AFS introduced the use of a partition on a client&#8217;s disk to cache
+large amounts of remote files for a long time: a model of <strong>whole file caching</strong> and
+<strong>long-term
+caching</strong>. It supports a file download-upload model. The entire file is
+downloaded on first access (<strong>whole file download</strong>) and uploaded back to
+the server after a <em>close</em> only if it was modified. Because of this
+behavior, AFS provides <strong>session semantics</strong>: the last one to
+close a modified file wins and other changes (earlier closes) are lost.</p>
+
+<p>During file access, the client need never bother the
+server: it already has the file. When a client first downloads a file, the
+server makes a <strong>callback promise</strong>: it maintains a list of each client that
+has downloaded a copy of a certain file. Whenever it gets an update for that
+file, the server goes through the list and sends a <strong>callback</strong> to each client
+that may have a cached copy so that it can be invalidated on the client. The
+next time the client opens that file, it will download it from the server.
+Files under AFS are shared in units called <strong>volumes</strong>. A volume is just a
+directory (with its subdirectories and files) on a file server that is assigned
+a unique ID among the <em>cell</em> of machines.
+If an administrator decides
+to move the volume to another server, the old server can issue a <em>referral</em>
+to the new server. This allows the client to remain unaware of resource
+movement.</p>
+
+<h2 id="smb">SMB</h2>
+
+<p>Microsoft&#8217;s <strong>Server Message Block</strong> protocol was designed as a
+proprietary connection-oriented, <strong>stateful</strong> file system with the goal
+of providing strong consistency, full support for locking as well
+as other features provided by the native file system rather than client caching and
+performance. While it does not use remote procedure calls, its
+access principle is the same: it uses a remote access model as opposed
+to whole file downloads. Requests (message blocks) are
+functional messages, providing file access commands such as open, create,
+rename, read, write, and close.</p>
+
+<!--
+
+With the advent of Windows NT 4.0 and an increasing
+need to provide improved performance via caching, Microsoft introduced
+the concept of **opportunistic locks**
+(**oplocks**) into the operating
+system. An oplock tells
+the client how it may cache data. At any time, a client's oplock
+may be revoked or changed by the server. A **level 1 oplock** tells the
+client that it has exclusive access to the file (nobody else is
+reading or writing it), so it can cache lock information, file
+attributes, and perform read-aheads and write-behinds. A **level 2
+oplock** is granted if one or more clients are reading the file and
+one process is writing it. For example, a process that had a level
+1 oplock will have it revoked and replaced with a level 2 oplock
+if another process opens the file for reading. In this case, read
+operations and file attributes may be cached but everything else
+is sent to the server. If two or more processes open a file for
+writing, then the level 2 oplock will be revoked and the client
+will have to perform all operations directly against the server.
+-->
+
+<h1 id="protectionsecurity">Protection &amp; Security</h1>
+
+<p><strong>Protection</strong> is the <em>mechanism</em> that provides
+and enforces controlled access of resources to users and processes.
+<strong>Security</strong> is the set of policies that define authorized
+access to a system.</p>
+
+<p>The <strong>principle of least privilege</strong> is an approach
+to security that specifies that any entity (users, processes, functions) should
+be able to access only the resources that are essential to completing
+its task and no more. <strong>Privilege separation</strong>
+is a design where we segment a process into multiple parts, each
+granted only the privileges that it needs to operate. This allows us to partition
+a component that needs administrative access or needs to access a critical
+object away from other components and hence minimize any damage if the other
+components get compromised.</p>
+
+<p>In the most general sense, an operating system is responsible with providing
+processes and threads with controlled and protected access to resources.
+The process scheduler is responsible for providing threads with access to the CPU;
+the memory manager and the MMU are responsible for giving processes protected
+access to their own memory address space; device drivers and the buffer cache
+provide access to peripheral devices; sockets provide access to the network;
+and the file system provides access to logical data on disks.</p>
+
+<p>An operating system is responsible for ensuring that threads can access objects
+(devices, files, networks, etc.) only in accordance with security policies.
+Every thread operates in a <strong>protection domain</strong>, which defines
+what resources it is allowed to access. We can model the full system-wide
+set of access rights as an <strong>access matrix</strong>. Rows represent
+protection domains (e.g., users or group IDs under which a thread runs)
+and columns represent objects. The <em>row, column</em> intersection
+defines the access rights of a specific domain on a specific object.
+An access matrix is not an efficient structure to implement, so operating
+systems typically model it with access control lists.
+An <strong>access control list</strong> (<strong>ACL</strong>) is a column
+of an access matrix: a list of permissions for each domain that are assigned
+to a specific object. For example, a file may specify different
+<em>read</em>, <em>write</em>, or <em>execute</em> rights for different users.
+In Linux and most current operating systems, a domain is associated with a user.</p>
+
+<p>A challenge with access control lists is that they may potentially be long
+and hence will not fit into a fixed-length inode structure. To
+address this, UNIX-derived
+systems provide a severely limited form of ACLs by having the inode
+contain <em>read</em>, <em>write</em>, and <em>execute</em> permissions for the only
+the file owner&#8217;s ID, file&#8217;s
+group ID, and everyone else.
+If a full ACL is used, it is stored as an extended attribute and uses
+additional disk block(s) apart from the inode.</p>
+
+<p>Virtually all modern operating systems implement some form of access control lists.
+An alternate approach is a <strong>capability list</strong>, which represents
+a row of an access matrix. Each domain has a capability, which is an enumeration of
+all the objects in the system and the operations that the domain (user or group) can
+perform on them. Capabilities are typically implemented
+with items such as network services, where an authorization server may present
+a process with a <em>capability token</em> that it can pass on to an object and
+thereby prove that it is allowed to access the object.</p>
+
+<p>The access control mechanisms available in most systems (and the ones we use most)
+follow a model called <strong>discretionary access control</strong> (<strong>DAC</strong>).
+This allows the thread to access objects to which it has permissions and also
+pass that information to other processes or write it to other objects.
+Access to objects is restricted based on the identity of users or groups.
+A <strong>mandatory access control</strong> (<strong>MAC</strong>) model
+is one where a <strong>centrally-controlled</strong> policy restricts the actions of domains on
+objects. Users cannot modify or override the policy.
+MAC models are often associated with the enforcement of a
+<strong>Multi-Level Secure</strong> (<strong>MLS</strong>) access model, of which
+the <strong>Bell-LaPadula model</strong> is the most widely used example. In this
+model, objects are classified in a security hierarchy: unclassified, confidential,
+secret, and top-secret. Users (domains) are are also assigned a security clearance.
+The overall policy is <em>no read up; no write down</em>.
+This means that a user cannot read objects that belong to a higher
+clearance level than the user is assigned. The user also cannot
+write or modify objects that belong to a lower clearance level.</p>
+
+<p>This model, however, has limited use outside of governments as those policies
+do not apply well to civilian life. Another form of MAC is the use of an
+application sandbox (see later discussion). This allows an administrator or
+domain owner to specify restrictions on a per-process basis regardless
+of the user ID (protection domain) under which the process is executing. The
+process cannot override these restrictions.</p>
+
+<h1 id="cryptography">Cryptography</h1>
+
+<p>Cryptography deals with encrypting <strong>plaintext</strong> using
+a <strong>cipher</strong> (also known as an <strong>encryption algorithm</strong>
+to create <strong>ciphertext</strong>, which is unintelligible to anyone
+unless they can <strong>decrypt</strong> the message.</p>
+
+<p>A <strong>restricted cipher</strong> is one where the workings of the cipher
+must be kept secret. There is no reliance on a key and the secrecy of the cipher
+is crucial to the value of the algorithm. This has obvious flaws: people in the
+know leaking the secret, coming up with a poor algorithm, and reverse engineering.
+For any use of serious encryption, we use well-tested, non-secret algorithms that rely on secret keys.</p>
+
+<p>A <strong>one-way function</strong> is one that can be computed relatively
+easily in one direction but there is no known way of computing the
+inverse function. One-way functions are crucial in a number of
+cryptographic algorithms, including digital signatures,
+&lt;-—, Diffie-Hellman key exchange,
+&#8211;&gt;
+and RSA public key cryptography. For RSA keys, they ensure that someone cannot generate the corresponding
+private key when presented with a public key. A particularly useful
+form of a one-way function is the <strong>hash function</strong>. This is a
+one-way function whose output is always a fixed number of bits for
+any input. For good cryptographic hash functions,
+it is highly unlikely that two messages will ever
+hash to the same value, it is extremely difficult to construct
+text that hashes to a specific value, and it is extremely difficult
+to modify the plaintext without changing its hash.
+This is called <strong>collision resistance</strong>.
+The hash function is the basis for message authentication
+codes and digital signatures. Note that when we talk about
+cryptography and use phrases such as &#8220;<em>extremely difficult</em>&#8221;,
+we mean &#8220;<em>impossible for all practical purposes</em>,&#8221; not that
+&#8220;you can do it if you spend an entire day or two working on the problem.&#8221;</p>
+
+<!--
+<h2>DES
+
+The Data Encryption Standard, DES, was standardized in 1976 and is a
+block cipher that encrypts 64-bit chunks of data at a time. It uses
+a 56-bit key and employs 16 iterations of substitutions followed by
+permutations.
+
+The only serious weakness of DES is its key 56-bit key. By the 1990s
+it was possible to build machines that can iterate through all of the
+2^{56} permutations of keys within a few hours. Networked efforts
+can also test hundreds of billions of keys per second.
+
+To prevent against such a **brute force attack**, DES would
+need a longer key. **Triple-DES** solves this
+problem by using the standard
+56-bit DES algorithm three times:
+
+    C = E~{K3}(D~{K2}(E~{K1}(P)))
+
+If K~{1} = K~{3}, then we have a "classic" Triple-DES
+mode that uses a 2*56 (112-bit) key. 
+If K~{1} = K~{2} = K~{3}, then the middle 
+decryption undoes the first encryption and we have a standard 56-bit
+DES algorithm. Finally, if all three keys are different, then we have
+a 168 bit (3*56) key.
+
+-->
+
+<h2 id="securecommunication">Secure communication</h2>
+
+<p>To communicate securely using a symmetric cipher, both parties need
+to have a shared secret key. Alice will encode a message to Bob
+using the key and Bob will use the key to decode the message. If
+Alice wants to communicate with Charles, she and Charles will also
+need a secret key. The fact that every pair of entities will need
+a secret key leads to a phenomenon known as <em>key explosion</em>.
+Overall, in a system with <em>n</em> users, there will be
+<em>O(n<sup>2</sup>)</em> keys.</p>
+
+<p>The biggest problem with symmetric cryptography is dealing with key
+distribution: how can Alice and Bob establish a key so they can
+communicate securely?
+<!--
+The **Diffie-Hellman exponential key
+exchange** algorithm allows one to do this. Each party will
+generate a private key and a public key (these are _not_
+encryption keys; they are just numbers. Diffie-Hellman does
+not implement public key cryptography. It is unfortunate
+that the term "keys" was used to describe these numbers.
+It uses the one-way function _a^{b}mod&nbsp;c_ in a 
+way that allows Alice to compute a common
+key using her private key and Bob's public key. Bob can compute the
+same common key by using his private key and Alice's public key.
+--></p>
+
+<p>Using true public key cryptography, such as the RSA algorithm, if Alice encrypts a
+message with Bob&#8217;s public key, Bob will be the only one who can
+decrypt it since doing so will require Bob&#8217;s private key. Likewise,
+Bob can encrypt messages with Alice&#8217;s public key, knowing that only
+Alice will be able to decrypt them with her private key.</p>
+
+<h2 id="sessionkeys">Session keys</h2>
+
+<p>A <strong>session key</strong> is a random key that is generated for encryption
+during a single communication session. It is useful because if the key
+is ever compromised, no lasting information is obtained: future
+communication sessions will use different keys. A <strong>hybrid
+cryptosystem</strong> uses public key cryptography to send a session key
+securely. The originator generates a random session key and encrypts
+it with the recipient&#8217;s public key. The recipient decrypts the
+message with the corresponding private key to extract the session
+key. After that, symmetric cryptography is used for communication,
+with messages encrypted with the session key. This has the advantages
+of higher performance (public key cryptography is <em>much, much</em> slower than
+symmetric cryptography) and ease of communicating with multiple parties
+(just encrypt the session key with the public keys of each of the
+recipients). It also allows the bulk of data to be encrypted with
+session keys instead of the hardly-ever-changing
+public keys.
+Generating a public-private key pair is also much, much slower
+than generating a symmetric key, which is just a random number.</p>
+
+<h2 id="digitalsignatures">Digital signatures</h2>
+
+<p>With public key cryptography, a <strong>digital signature</strong> is simply the act
+of encrypting a hash of a message with the creator&#8217;s private key.
+Anyone who has the public key can decrypt the hash and thus validate
+it against the message. Other parties cannot recreate the signature
+since they do not have the private key even though they can create
+the hash.</p>
+
+<h1 id="authentication">Authentication</h1>
+
+<p>The three <strong>factors</strong> of authentication are:
+<em>something you have</em> (such as a key or a card),
+<em>something you know</em> (such as a password or PIN),
+and <em>something you are</em> (biometrics).
+Combining these into a <strong>multi-factor</strong>
+authentication scheme can increase security against the chance that
+any one of the factors is compromised. For example, the use of
+a password combined with an access card is two-factor
+authentication. Using two passwords, however, is still
+single-factor authentication because the same factor is used twice.</p>
+
+<h2 id="passwordauthenticationprotocolpap">Password Authentication Protocol (PAP)</h2>
+
+<p>The classic authentication method is the use of reusable passwords.
+This is known as the <strong>password authentication protocol</strong>,
+or <strong>PAP</strong>. With PAP, a password is associated with
+each user and stored in a file. The
+system asks you to identify yourself (login name) and then enter a
+password. If the password matches that which is associated
+with the login name on the system then you are authenticated.</p>
+
+<p>One problem with the protocol is that if someone
+gets hold of the password file on the system, then they have all
+the passwords. The common way to thwart this is to store hashes of
+passwords instead of the passwords themselves. This takes
+advantage of one-way functions. To authenticate a user, check if</p>
+
+<pre><code>
+hash(password) == stored_hashed_password(user)
+</code></pre>
+
+<p>Even if someone gets hold of the
+password file, they won&#8217;t be able to
+reconstruct the original password from the hash. They&#8217;ll have to
+resort to an exhaustive search or a dictionary attack and try
+different passwords, searching for one that hashes to the value in the file.</p>
+
+<p>Hashes are vulnerable to a dictionary attack with pre-computed hashes.
+An attacker can, ahead of time, create a table of a few
+million passwords and their corresponding hashes. Then, when
+confronted with a hash value, one simply searches the table for a matching
+hash to find the password that created it. A similar vulnerability
+exists if Alice notices that Bob&#8217;s password hash is the same as hers.
+She now knows that she and Bob share the same password.</p>
+
+<p><strong>Salt</strong> is extra data that is added to the password
+prior to hashing it.
+What salt does is change the input text and hence the resultant
+hash. When you created your password and stored its hash, the system
+generated a random salt to go along with it (and stored the value
+along with your identity and hashed password).
+Suppose your salt is &#8220;abc&#8221; and your password is &#8220;test123&#8221;. We now hash
+&#8220;test123abc&#8221; (or some such combination) and get a value that is NOT
+<em>hash(&#8220;test123&#8221;)</em>. The attacker can see the salt value in the password file but
+there&#8217;s no way to remove its effect from the hash value. Now, the
+attacker needs a much, much larger set of data to account for all
+possible salt values. This will generally not be feasible for
+decent-sized salt values. For example, Apache and BSD use a salt
+that&#8217;s up to 8 characters. Even with just alphanumeric characters,
+each possible password can have over 200 trillion variations as an input to
+the hash function.</p>
+
+<p>The other problem with reusable passwords is that,
+if a network is insecure,
+an eavesdropper may sniff the password from the network. A potential
+intruder may also simply observe the user typing a password. To
+thwart this, we turn to <strong>one-time passwords</strong>. If someone sees you
+type a password (or gets it from the network stream), it won&#8217;t
+matter because that password will be useless for future logins.</p>
+
+<h2 id="challengehandshakeauthentication">Challenge Handshake Authentication</h2>
+
+<p>One way to avoid the hazards of reusable passwords is never to
+send data over the network that an attacker can capture and replay to
+authenticate onto the system in the future. The
+<strong>Challenge Handshake Authentication Protocol</strong>,
+<strong>CHAP</strong>, does this by generating and sending a &#8220;challenge&#8221;,
+which is a random bunch of bits (more generally called a <strong>nonce</strong>).
+Both the client (e.g., user) and server share a secret key. The
+client generates a hash on data the includes the challenge and the
+secret key and sends the hash back to the server. The server
+can compute the same hash since it also has the challenge and
+knows the shared secret. If the computed hash matches the one
+it received, then authentication was successful. Anyone sniffing
+the network can get a challenge but will never see the shared
+secret and hence will not be able to generate a valid response.</p>
+
+<pre><code>challenge: nonce
+response: hash(key, nonce)
+</code></pre>
+
+<!--
+## S/Key Authentication 
+
+**S/Key authentication** allows the use of one-time passwords
+by generating a list via one-way functions. A one-time password is valid a
+just once. The list of passwords is created such that
+password _n_ is generated as _f(password[n-1])_. The list of 
+passwords is used backwards.
+Given a password _p_, it is impossible
+for an observer to compute the next valid password because a one-way function
+_f_ makes it improbably difficult to compute _f^{-1}(p)_.
+
+-->
+
+<h2 id="securidreg">SecurID<sup>&reg;</sup></h2>
+
+<p>RSA&#8217;s SecurID is a two-factor authentication system that generates
+one-time passwords for response to a user login prompt.
+It relies on a user password
+(a PIN: Personal ID Number) and a small computing device
+called a <em>token</em> (an authenticator card, fob, or software).
+The token generates a new number every 30 seconds. The number is a function of
+the time of day and a seed: a number that is unique for each card.
+To authenticate to a server, you send a combination of your
+PIN and the number from the number from
+the token in lieu of a password.
+A legitimate remote system will have your PIN as well as the token
+seed and will be able to compute the same value to validate your
+password. An intruder would not know both PIN and the token’s seed
+and will never see the data on the network.</p>
+
+<pre><code>password: hash(PIN, time, seed)
+</code></pre>
+
+<h2 id="publickeyauthentication">Public key authentication</h2>
+
+<p>A <strong>nonce</strong> is a random bunch of bits that is generated on the
+fly and is usually used to present to the other party as to prove that they are
+capable of encrypting something with a specific key that they possess.
+The use of a nonce is central to <strong>public key authentication</strong>
+(e.g., the kind used in SSL, the secure sockets layer). If I send you a nonce
+and you encrypt it with your private key and give me the results,
+I can decrypt that message using your public key. If the decryption
+matches the original nonce, this will convince me that only you
+could have encrypted the message since you are the only one who has
+access to your private key.</p>
+
+<pre><code>challenge: nonce
+response: E~{k}(nonce)
+</code></pre>
+
+<!--
+## Kerberos authentication 
+
+**Kerberos** is a trusted third party authentication and key exchange
+scheme using symmetric cryptography. When you want to access a
+service, you first need to ask Kerberos. If access is granted, you
+get two messages. One is encrypted with your secret key and contains
+the session key for your communication with the service. The other
+message is encrypted with the service's secret key. You cannot read
+or decode this message. It is known as a **ticket** or
+**sealed envelope**. It contains
+the same session key that you received but is encrypted for the
+service. When the service decrypts it, it knows that the message
+must have been generated by an entity that had its secret key:
+Kerberos.
+Now that it has the session key, the service can communicate with
+you securely by encrypting all traffic with that key.
+
+-->
+
+<h2 id="digitalcertificates">Digital certificates</h2>
+
+<p>While public keys simplify authentication (just decrypt this with
+my public key and you know that I was the only one who could have
+encrypted it), identity binding of the public key must be preserved.
+That is, you need to be convinced that my public key really is mine
+and not an impersonator&#8217;s.
+<strong>X.509 digital certificates</strong> provide a solution for this.
+A certificate
+is a data structure that contains user information and the user’s
+public key. This data structure also contains a identification of
+the <strong>certification authority</strong> (<strong>CA</strong>) and its signature.
+The signature is a hash of the certificate data
+that is encrypted using the certification authority&#8217;s private key.
+The certification authority (CA) is responsible for setting policies to validate
+identity of the person who presents the public key for encapsulation
+in a certificate.
+You can validate a user&#8217;s certificate if you have the CA&#8217;s public
+key.
+To validate, you generate a hash of the certificate (minus its signature).
+You then decrypt the signature on the certificate using the CA&#8217;s
+public key. If the decrypted signature and your hash match, then you are
+convinced that no data in the certificate has been altered.</p>
+
+<p>The CA&#8217;s public key is present in another certificate: the CA&#8217;s certificate.
+CA certificates for several hundred well-known CAs are pre-installed
+in places such as iOS&#8217;s Trust Store, OS X&#8217;s keychain, and Microsoft&#8217;s
+Trusted Root Certification Authorities store.</p>
+
+<!--
+## Secure Sockets Layer 
+
+**Secure Sockets Layer**
+(**SSL**, also known as **TLS**, or **Transport Layer
+Security**) is a layer of software designed to provide authentication
+and secure communication over the abstraction of a sockets interface.
+It makes it easy to add a secure transport onto insecure TCP socket based
+protocols (e.g., HTTP and FTP). SSL uses a **hybrid cryptosystem** and
+relies on public keys for authentication. If both the sender and
+receiver have X.509 digital certificates, SSL can validate them and
+use nonce-based public key authentication to validate that each party has the
+corresponding private key. In some cases, it may validate the server
+only. If the server does not have a certificate, SSL will then use
+a public key simply to allow a symmetric session key to be passed
+securely from client to server.
+The client generates a session key and encrypts it with the server's public key.
+This ensures that only the server will be able to decode the message and
+get the session key.
+After that, communication takes
+place using a symmetric algorithm and the client-generated session
+key.
+
+-->
+
+<h1 id="security">Security</h1>
+
+<p>Most security attacks on systems are not cryptographic: they do
+not find weaknesses in cryptographic algorithms and try to break
+ciphers. Most rely on bugs in software or the trust of individuals.</p>
+
+<p>For protocols with no encryption that use a public (or sniffable)
+network, one can sniff the network traffic to extract logins and passwords
+(there&#8217;s a lot of software that makes this easy; <em>snort</em>, for example,
+is one of the oldest and most popular). If one cannot find a password
+for a user, one can try guessing it. If one can&#8217;t do that then one
+can try all combinations. An exhaustive search through every possible
+password may be time-prohibitive. A <strong>dictionary attack</strong> is one where
+you go through a dictionary of words and names and test them
+as potential passwords, applying common tricks such as prefixing
+and suffixing digits and substituting numbers that look like letters).
+Performing this attack becomes a lot easier if you are lucky enough
+to get the hash password that you are searching for. Then you can
+perform the search on your own machine without going through the login service
+on the target system.</p>
+
+<p>A <strong>social engineering attack</strong> is one where you convince a person to
+give you the necessary credentials. You might do this by impersonating
+as a system administrator and simply asking. A <strong>Trojan horse</strong> is a
+program that masquerades as a legitimate program and tricks you
+into believing that you are interacting with the trusted program.
+A common example is a program that masquerades as a login program
+and obtains an unsuspecting user&#8217;s login and password. <strong>Phishing</strong> is
+an example of email that purports to come from a trusted party (such
+as your bank) and attempts to get the user to click on a link
+that will take them to what they believe is the party&#8217;s web site.
+In reality, it is an intruder&#8217;s site that is designed to look like
+the legitimate one. The goal here is also to collect data such as
+your login and password or perhaps your bank account, social security,
+or credit card numbers.</p>
+
+<p>A <strong>buffer overflow</strong> bug is one where software expects
+to read a small amount of data into a fixed-size buffer but never
+checks to see whether the incoming data is bigger than the buffer.
+What ends up happening is that the software continues to append
+data to the buffer but is now writing into memory beyond that which
+is allocated to the buffer. If the buffer was declared as a local variable within a
+function, then its memory resides on the stack. At some point,
+the overflow data will clobber the return address for that
+function. A carefully crafted data stream can ensure that the return
+address gets modified with the address of other code in this same
+stream, which will get executed as soon as the function attempts
+to return. This technique is known as <strong>stack smashing</strong>.</p>
+
+<p>The first approach to guard against stack smashing was to turn off
+<strong>execute permission</strong> in the memory management unit (MMU) for memory pages
+that are allocated for the stack.
+In the past, this was not possible since neither AMD nor Intel
+architectures had MMUs that permitted this. With this in place, an
+attacker cannot inject executable code.</p>
+
+<p>This defense was not sufficient, however. Since the return address can
+still be overwritten with a buffer overflow attack, an
+attacker can find some code within the program
+or any shared libraries that the program uses that performs
+a desired task and place that address as the return address
+on the stack. It is unlikely that there is a segment of
+code that will do everything the attacker needs.
+A clever enhancement of this technique led to
+<strong>return oriented programming</strong>, or <strong>ROP</strong>.
+Here, the attacker finds a sequence of useful bits of code in various
+libraries. All of the code must be at the tail end of functions
+with a a <em>return</em> instruction at the end. Once the
+function returns, it &#8220;returns&#8221; to an address that is read from the stack and
+is under control of the attacker. The return address can then
+take the program to another snippet of code. All together, the
+attacker adds a sequence of return addresses on the stack
+to get each block of code to execute in the desired order.</p>
+
+<p>Two additional defenses make this technique more difficult:</p>
+<dl>
+<dt><strong>stack canaries</strong></dt>
+<dd>The compiler places a random value (called a <strong>canary</strong>)
+ on the stack just before the
+ the region of data that is allocated to local variables, including
+ buffers. A buffer overflow attack will overwrite this value before it overwrites
+ the return value on the stack. Before returning from the function, the
+ compiler adds code to check the value of the canary. If it is corrupt, the
+ function will abort the program instead of return.</dd>
+
+<dt><strong>address space layout randomization</strong> (<strong>ASLR</strong>)</dt>
+<dd>The compiler randomly arranges the exact addresses where it places the stack, heap,
+ or libraries. This makes it impossible for the attacker to jump to a known
+ address in a library. However, this requires that all libraries are compiled
+ to generate position independent code.</dd>
+</dl>
+
+
+<!--
+
+A **SYN flooding attack** is a form of a denial of
+service attack where an intruder attempts to render a machine unable
+to accept any TCP/IP connections. Every TCP/IP session consumes a
+certain number of system resources, which are allocated when the
+first connection request is made (via a SYN packet). The intruder
+creates requests that come from unreachable hosts. If enough of
+these are sent to a host, the computer will reach a point where the
+operating system will not accept any more connections. There is a
+window of time before the machine will decide to give up on these
+pending connections. BSD systems typically allot 7.5 seconds for
+this period. Microsoft Windows Server 2003 advised using a value
+of two minute.
+
+-->
+
+<p>A <strong>rootkit</strong> is code that hides the presence of users
+or additional software from the user. Sometimes, this is done by
+replacing commands that would present this data (e.g., <em>ps</em>,
+<em>ls</em>, <em>who</em>, &#8230; on UNIX/Linux systems). In more
+sophisticated implementations, the rootkit modifies the operating
+system to intercept system calls.</p>
+
+<p>The four A&#8217;s of security are:</p>
+
+<ol>
+<li><p><strong>Authentication</strong>: the process of binding an identity
+ to the user. Note the distinction between authentication and
+ identification. <strong>Identification</strong> is simply the process of asking you
+ to identify yourself (for example, ask for a login name). Authentication
+ is the process of proving that the identification is correct.</p></li>
+<li><p><strong>Authorization</strong>: given an identity, making a decision
+ on what access the user is permitted. Authentication is responsible
+ for access control.</p></li>
+<li><p><strong>Accounting</strong>: logging system activity so that any
+ breaches can be identified (intrusion detection) or a post facto
+ analysis can be performed.</p></li>
+<li><p><strong>Auditing</strong>: inspecting the software and system configuration for security flaws. </p></li>
+</ol>
+
+<h2 id="sandboxes">Sandboxes</h2>
+
+<p>A <strong>sandbox</strong> is an environment designed for running
+programs while restricting their access to certain resources, such
+as disk space, file access, amount of memory, and network connections.
+It allows users to set restriction policies so that
+they can run untrusted code with minimal risk
+of harming their system. It is a form of mandatory access control
+in that the process, even though it runs under the protection
+domain of the user, loses specific privileges and cannot regain them. </p>
+
+<p>The simplest approach to sandboxing is the use of the
+<strong>chroot</strong> system call on Unix systems. This changes
+the root directory of the file system for a process from the real root
+to one that is specified by the parameter to chroot. For example, the call</p>
+
+<pre><code>chroot(&quot;/var/spool/postfix&quot;);
+</code></pre>
+
+<p>will set the root directory of
+the process to <code>/var/spool/postfix</code>. No files outside
+of this directory will be visible. This form of sandbox
+is known as a <strong>chroot jail</strong>. Even if an attacker
+compromises the application, she will not be able to access any files
+or run any programs outside the jail. One weakness is that if the
+attacker gets administrative privileges, she can use the <em>mknod</em>
+system call to create a device file for the disk that holds the root
+file system and re-mount the file system. This approach also does
+not restrict network operations.</p>
+
+<p>A <strong>rule-based sandbox</strong> provides the ability to set finer-grain policies
+on what an application cannot do. For example, an application may be
+disallowed from reading the file <code>/etc/passwd</code>; or be disallowed from writing
+any files; or not be allowed to establish a TCP/IP connection.
+Sandboxing is currently supported on a wide variety of platforms at
+either the kernel or application level.
+One example is the Apple Sandbox on OS X. It allows a detailed set of policies
+to be enumerated that govern networking and file system reads and writes.
+These policies can include patterns to allow one to restrict file operations
+to specific directories or to files matching certain names.
+These policies are parsed and loaded into the kernel. The kernel runs the
+TurstedBSD subsystem. This subsystem was originally designed to enforce
+mandatory access control policies but in this case passes requests to
+a kernel extension that goes through the list of rules to determine whether
+a specific instance of a system call should be allowed or not.</p>
+
+<p>A popular example of a sandbox that operates outside of the operating system
+is the Java Virtual Machine, initially designed for running Java
+applets, which were compiled Java programs would be loaded and run dynamically upon fetching a web
+page. The Java sandbox has three parts to it:</p>
+
+<ol>
+<li><p>The <strong>byte-code verifier</strong> tries to
+ensure that the code looks like valid Java byte
+code with no attempts to circumvent access restrictions, convert
+data illegally, or forge pointers.</p></li>
+<li><p>The <strong>class loader</strong> enforces
+restrictions on whether a program is allowed to load additional
+applets and that an applet is not allowed to access classes belonging
+to other applets.</p></li>
+<li><p>The <strong>security manager</strong> is invoked to provide
+run-time verification of whether a program has rights to invoke
+certain methods, such as file I/O or network access.</p></li>
+</ol>
+
+<h2 id="signedsoftware">Signed Software</h2>
+
+<p>Signed software allows an operating system to check the signature associated with an executable
+file to ensure that the file&#8217;s contents have not been modified since they left the publisher
+(for example, a virus is not attached to it).
+Recall that a signature is an encrypted hash.
+The basic idea of signing software is to do the same as we would for
+signing any other digital data: generate a hash of the entire package,
+encrypt it with the software publisher&#8217;s private key, and attach it to the
+software as a signature.
+To validate the signature, you would compute
+the hash of the program and compare it with the decrypted signature. You would
+use the using the software publisher’s public key to decrypt the signature.
+This key would be present in a digital certificate that is
+obtained from that publisher.</p>
+
+<p>For example, Apple OS X&#8217;s Gatekeeper allows users to
+ensure that only apps from the Apple App Store or trusted publishers are allowed to run.
+All 64-bit versions of Microsoft Windows require that all kernel software, including
+drivers, must have an accompanying digital signature in order to be loaded.</p>
+
+<p>Computing a hash for software before we run it would involve scanning
+through the entire code base. Demand-paged virtual memory systems
+load pages of the program as needed, so this would greatly increase
+the startup time of the software. Instead, signed software will
+often contain a signature <em>for every memory page</em>. When a particular
+page is loaded, the operating system would check the signature for
+that page.</p>
+
+<h1 id="virtualization">Virtualization</h1>
+
+<p>As a general concept, virtualization is the addition of a layer of abstraction
+to physical devices. With <strong>virtual memory</strong>,
+a process has the impression that it owns the entire memory address
+space. Different processes can all access the same virtual memory
+location and the memory management unit (MMU) on the processor maps
+each access to the unique physical memory locations that are assigned
+to the process.</p>
+
+<p>With <strong>storage virtualization</strong>, a computer gets a
+logical view of disks connected to a machine. In reality, those
+disks may be networked to a computer via a fibre channel switch
+or ethernet interface and may be parts of physical disks or collections
+of disks that appear to the computer as one disk.</p>
+
+<p><strong>CPU virtualization</strong> allows programs to execute on
+a machine that does not really exist. The instructions are interpreted
+by a program that simulates the architecture of the pseudo machine.
+Early pseudo-machines included o-code for BCPL and P-code for Pascal.
+The most popular pseudo-machine today is the Java virtual machine.</p>
+
+<p><strong>Machine virtualization</strong> allows a physical computer
+to act like several real machines with each machine running its own
+operating system (on a virtual machine) and applications that
+interact with that operating system. The key to machine virtualization
+is to not allow each guest operating system to have direct access
+to certain privileged instructions in the processor. These instructions
+would allow an operating system to directly access I/O ports, MMU
+settings, the task register, the halt instruction and other parts
+of the processor that could interfere with the processor&#8217;s behavior
+and with other operating systems. Instead, such instructions as
+well as system interrupts are intercepted by the <strong>Virtual
+Machine Monitor</strong> (<strong>VMM</strong>), also known as a
+<strong>hypervisor</strong>. The hypervisor arbitrates access to
+physical resources and presents a set of virtual device interfaces
+to each guest operating system (including the memory management
+unit, I/O ports, disks, and network interfaces).</p>
+
+<p>Two configurations of virtual machines are <strong>hosted virtual
+machines</strong> and <strong>native virtual machines</strong>.
+With a hosted virtual machine, the computer has a primary
+operating system installed that has access to the raw machine (all devices,
+memory, and file system). One or more <strong>guest operating
+systems</strong> can be run on virtual machines. The VMM serves as
+a proxy, converting requests from the virtual machine into operations
+that get executed on the <strong>host operating system</strong>. A
+<strong>native virtual machine</strong> is one where there is no
+&#8220;primary&#8221; operating system that owns the system hardware. The
+hypervisor is in charge of access to the devices and provides each
+operating system drivers for an abstract view of all the devices.</p>
+
+<p>The latest processors
+from Intel and AMD support the concept of a virtual machine layer
+and the ability to intercept privileged instructions.
+Prior to that, one of two approaches was used to implement
+virtualization.</p>
+
+<p><strong>Binary translation</strong> pre-scans the instruction
+stream of any code that has to run in privileged mode and
+replaces all privileged instructions with interrupts to the
+VMM.
+<strong>Paravirtualization</strong> requires modifying the
+operating system to replace privileged instructions with
+calls to a VMM API. This, of course, requires access to the
+source code of the operating system.</p>
+
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2017 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: March 24, 2017
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> Exam Info </h2>
+	<ul>
+	<li> <a href="../exam/index.html#list">List of topics</a>
+	<li> <a href="../exam/old/index.html"> Old Exams </a> </li>
+	<li> <a href="../exam/study-guide-1.html"> Exam 1 Study Guide </a> </li>
+	<li> <a href="../exam/study-guide-2.html"> Exam 2 Study Guide </a> </li>
+	<li> <a href="../exam/study-guide-3.html"> Exam 3 Study Guide </a> </li>
+	<li> <a href="../exam/study-guide-final.html"> Final Study Guide </a> </li>
+	</ul>
+	
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Notes on programming assignments </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+
+.subhead {
+	background-color: #ddd;
+	text-align: center;
+	margin-left: 5em;
+	margin-right: 5em;
+	border: 1px solid #555;
+	border-radius: 5px;
+}
+.note {
+	font-style: italic;
+	color: #444;
+}
+#main .faqlist dd {
+        margin-left: 2em;
+        margin-bottom: 2em;
+}
+#main .faqlist dt {
+        background-color: #D1DBDB;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        padding-top: 0.25em;
+        padding-left: 0.5em;
+        color: black;
+	font-weight: normal;
+}
+#main .faqlist dt strong, #main .faqlist dt b {
+	color: red;
+}
+#main .faqlist dt {
+	margin-bottom: 1em;
+}
+#main .faqlist dt p + p {
+	padding-top: 1em;
+}
+#main .faqlist p + pre {
+	margin-top: -1em;
+}
+#main .faqlist dt ul {
+	margin-top: 1em;
+}
+#main .faqlist dt p {
+	margin-bottom: 0;
+}
+#main .newslist dt {
+        background-color: white;
+        color: #555;
+}
+#main .answer {
+	color: #a00000;
+}
+
+</style>
+</head>
+
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 416 </a> 
+ 	<li> <a href="../hw/index.html"> Homework </a> 
+ 	<li> <a href="../hw/programming.html"> Notes on programming assignments </a> 
+</ul>
+</div>
+  
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Notes on Programming Assignments </h1>
+</div>
+
+<h1> Notes on style </h1>
+<ol class="separated">
+<li>
+I expect your code to be reasonably commented (not overly so) and
+well-structured. A comment explaining each function can be a good idea.
+Clean code should be readable on its own but you should guide the reader.
+A comment explaining each function is a good idea. Additional comments
+that point out anything that's non-obvious or a special case are
+also helpful.
+</li>
+
+<li>
+Do not put all functionality in one function. Break your code down
+into sensible functional blocks. Make your code readable: hide details
+in functions.
+</li>
+
+<li>
+<p>
+Pick sensible variable names.
+For example, a stream of variables named
+<code>a1</code>, <code>a2</code>, <code>a3</code> is a sign that you're
+doing something wrong. Names don't have to be long to be meaningful and
+<code>i</code> and <code>j</code> are perfectly fine names for index
+variables. I <i>strongly</i> encourage you <i>not</i> to use 
+<a href="http://en.wikipedia.org/wiki/Hungarian_notation">Hungarian notation</a>
+(prefixes or suffixes indicating variable types, as popularized by Microsoft);
+there is no compelling
+need to embed data type codes into your variables. Just strive to write
+the most readable code you can. Don't let needless comments or obscure variable
+names get in the way of reading the logic of the code.
+</p>
+Long names are more sensible for varaibles with a global or wide-area scope.
+With longer names, think about which is more readable:
+<code>longNamesWithStudlyCaps</code> or <code>long_names_with_underscores</code>.
+</li>
+
+<li>
+<p>
+Make sure your indentations are reasonable. I will <b>not</b> accept
+code that looks like:
+<pre>
+if (whatever)
+    {
+        statement;
+        statement;
+    }
+</pre>
+Use either:
+<pre>
+if (whatever) {
+        statement;
+        statement;
+}
+</pre>
+or
+<pre>
+if (whatever)
+{
+        statement;
+        statement;
+}
+</pre>
+</p>
+</li>
+
+<li>
+<p>
+<b>
+DO NOT MIX LEADING TABS AND SPACES!!
+IF YOUR EDITOR DOES SO, FIX THE FILE BEFORE
+SUBMITTING IT.</b>
+</p><p>
+The reason this is important is because my tab stops may be set
+differently than yours, so the spaces you or your editor uses to
+pad things out or create a half-tab may accomplish totally diferent
+results for me. Your code will appear inconsistenly indented to me
+and I won't properly see the structure of your code.
+</p><p>
+Your tab settings are probably not the same as mine. If you mix
+leading spaces and tabs, then the indentations will look wrong
+to me and you will lose points.  To check, look at your program
+filtered with the <b>expand</b> command, changing the tab stop
+setting. For example,
+<pre>
+expand -t 3 &lt;Server.java
+</pre>
+<p>
+and
+</p>
+<pre>
+expand -t 11 &lt;Server.java
+</pre>
+<p>
+should both appear properly indented and readable. If this
+is not the case, fix your tabs or convert them to spaces (you
+can use the expand command for this).
+</p><p>
+With vi, just use tabs and set whatever tabstop you want to see:
+<pre>
+set tabstop=4
+</pre>
+<p>
+You can ensure that tabs are converted to
+spaces by setting:
+</p>
+<pre>
+set expandtab
+set softtabstop=4
+</pre>
+<p>
+Setting softtabstop makes the backspace key treat the four spaces (in this example)
+like a tab.
+</p><p>
+If you are using emacs, run:</p>
+<pre>
+(setq-default indent-tabs-mode nil)
+</pre>
+<p>
+in your <tt>.emacs</tt> file so emacs won't use tabs
+for any <i>new</i> indentation. To replace
+all tabs with spaces in the current buffer you can use
+<tt>C-x h M-x untabify</tt>.
+</p><p>
+I am posting the emacs notes for guidance. I do not use the emacs
+editor. Learn how your editor behaves and how to make it behave the
+way you want to.
+</p>
+</li>
+
+<li>
+Check for errors - bad commands, missing arguments, extra arguments,
+lost connections. Your code should be robust and not die when bad things
+happen that you can anticipate. If you use Java, catch sensible exceptions
+and print human-friendly messages.
+</li>
+
+<li>
+You may use things like socket routines from the sample programs if 
+it makes sense to do so but a lot of my other code
+other code may be of little use. Do not leave stray variables
+or useless functions in your code. Attribute your sources; do not
+copy code from other sources.
+</li>
+
+</ol>
+<h1> Losing points on submission </h1>
+<p>
+Beyond logic errors,
+you will lose points for:
+</p>
+<ul>
+	<li> Unnecessary files submitted.
+	<li> Mixing leading tab and space characters in your code.
+	<li> Sloppy coding - commented-out code.
+	<li> Sloppy coding - strange indentations.
+	<li> Sloppy coding - pathetic style, lots of blank lines, ...
+	<li> Poor error checking.
+	<li> No comments.
+</ul>
+</div> <!-- main -->
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 417 Assignments </h2>
+	<ul>
+	<li> <a href="a-1.html"> Assignment 1 </a>
+	<li> <a href="a-2.html"> Assignment 2 </a>
+	<li> <a href="a-3.html"> Assignment 3 </a>
+	<li> <a href="a-4.html"> Assignment 4 </a>
+	<li> <a href="a-5.html"> Assignment 5 </a>
+	<li> <a href="a-6.html"> Assignment 6 </a>
+	<li> <a href="a-7.html"> Assignment 7 </a>
+	<li> <a href="a-8.html"> Assignment 8 </a>
+	</ul>
+	<h2> Tutorials </h2>
+	<ul>
+<!--
+	<li> <a href="../notes/sockets/index.html"> TCP Sockets tutorial </a> </li>
+	<li> <a href="../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+-->
+	<li> <a href="../notes/c-tutorials/index.html"> C/Unix tutorials </a> </li>
+	<li> <a href="../notes/make/index.html"> Makefile tutorial </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

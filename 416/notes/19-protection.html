@@ -1,0 +1,711 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Protection </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 416 </a> 
+ 	<li> <a href="../notes/index.html"> Documents </a> 
+ 	<li> <a href="../notes/19-protection.html"> Protection </a> 
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Protection </h1>
+
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> Last update: April 20, 2012 </p>
+</div>
+
+<blockquote>
+<em>
+He that has eyes to see and ears to hear may convince himself that no mortal can keep a secret. If his lips are silent, he chatters with his fingertips; betrayal oozes out of him at every pore.
+&mdash; Sigmund Freud
+</em>
+</blockquote>
+
+
+<h1> Introduction </h1>
+<p>
+The earliest computer systems (and most personal computers, until
+relatively recently) were rather simple compared with systems of
+today. With only one process in the system's memory at any time and
+a very limited number of I/O devices, a process could do no harm
+onto others. Security was still an issue, however. Some of the
+earliest machines (ENIAC, EDVAC) were given the task of computing
+ballistic firing tables. The data was sensitive and access to
+computing facilities was controlled by walls, locks, and guns and
+only trusted people were allowed near the computer (or to write
+programs for it). Even today, this is the most effective method of
+ensuring physical and information security.
+For instance, to get the Department of Defense's highest
+security level, A1, uncleared users cannot have access to the system.
+</p>
+<p>
+As time-sharing systems emerged, system security took on a new
+meaning. Even in a trusted community, one has to consider cases
+where individual programs or commands may go awry (and scribble in
+memory regions, devices, and/or files that are used by others).
+
+Also, in a community in which users may not always be trusted, one now has
+to consider that users may wish to keep certain data (and possibly
+devices) restricted from others.
+</p>
+<p>
+The next big change big era in computer security was the emergence
+of computer networking. With packet switched networks, one machine
+on a network may potentially snoop on other packets that are flowing
+in the network. Machines legitimately receiving packets now may
+wonder whether the packets are genuine or forgeries. In addition
+to that, authenticating (identifying) a user needs greater security,
+since it is no longer the case that people in physical proximity
+or directly connected to the computer will be the only ones trying
+to access it.
+</p>
+<p>
+Finally, we find ourselves at a stage where not only do we want
+our machines connected to a wide area network, but we welcome the
+teeming multitudes and grant them restricted access to
+our machines and resources (e.g., accessing our web and mail servers)
+and also casually download apps and allow someone else's applets
+JavaScript to run on our browsers.
+machines.
+</p>
+
+<h1> Protection versus security </h1>
+<p>
+We often throw the terms <em>security</em> and <em>protection</em> around interchangeably.
+Let's make a distinction (perhaps not a clear-cut one).
+
+By <strong>security</strong>, we refer to the prevention of unauthorized access to a system.
+This encompasses malicious as well as accidental access.
+"Access" may include users logging in, a process accessing data that it should not be able to, and
+even physical access to a machine, since that may allow a user to replace the bootloader, add 
+a keylogger, or update software.
+
+<p> 
+By <strong>protection</strong>, we refer to the <em>mechanism</em> that provides
+and enforces controlled access of resources to to users and processes. 
+A protection mechanism <em>enforces</em> security policies.
+We will address protection and security in two parts. First, we will look at key 
+mechanisms that we can place in the operating system to provide access control.
+In the discussion of security, we will focus on malicious attacks and safeguards 
+against them.
+</p>
+
+<h1> Principle of least privilege </h1>
+<p>
+A key approach to security policies is the <strong>principle of least privilege</strong>.
+This states that <em>at each abstraction layer, every element should be able to access
+only the resources necessary to perform its task</em>. By <em>element</em>, we generally
+refer to a process but it can also encompass everything that a user is allowed to do or
+perhaps a specific actions allowable to a function.
+</p>
+<p>
+The rationale for this principle is that, even if an element is compromised, the
+scope of damage can be limited. Let us consider a few examples of how this principle can
+be applied or violated:
+</p>
+<ul>
+<li>
+<em>A compromised print spooler allows the attacker to add new user accounts</em>.
+<br/>
+An attacker exploited a bug in a print spool daemon and is able to use it to execute arbitrary
+commands. Since the process is running with administrative privileges, the attacker
+has it execute a command to create a new user account. This is a violation of the principle
+since a print spooler has no legitimate reason to ever create user accounts. It should
+only be able to deal with the files in the print queue and interface with the printer.
+If the principle could be enforced, even if the attacker did exploit a bug in the program,
+he would be unable to create a user account.
+</li>
+<li>
+<em>A game reads files in a user's home directory.</em>
+<br/>
+A game may need to read a file containing saved state or high scores but accessing
+any other file violates the principle of least privilege. By granting this access,
+we make it possible for the game to steal files, remove or destroy files, or even
+accidentally create files in places it shouldn't (for example, witness the recent
+issues of applications uploading the contents of a user's address book on iOS devices).
+</li>
+<li>
+<em>Java and C++ programs don't allow a function in one object to access private variables of
+another object.</em>
+<br/>
+This is an example of the principle of least privilege in operation within a programming
+language. The programmer made policy decisions on which variables are will be private
+and which will not be. There are limitations imposed by the language in structuring
+the policy. We cannot, for instance, identify which classes have <em>write</em> access, which have
+<em>read</em> access, and which will be allowed no access.
+</li>
+<li>
+<em>New user accounts get administrative privileges.</em>
+<br/>
+This is (was) a common policy for personal computers and is a violation
+of the principle. Users of personal machines tend to be administrators but giving 
+a user administrative access means that any programs they run will have administrative
+access as well. For example, many viruses and rootkits (we'll discuss these later) are
+installed onto system files or system directories &mdash; places that should be off-limits
+to user processes.
+</li>
+</ul>
+<p>
+This principle of least privilege is often difficult to define, implement, and enforce.
+More often than not, our operating systems (and programming languages) do not give us
+enough granularity to fully define these policies. For example, you usually cannot specify that
+a certain program cannot use a certain set of system calls or can only access a specific
+set of files in the file system.
+</p>
+
+<h1> Privilege separation </h1>
+<p>
+<strong>Privilege separation</strong> is the process of dividing a program into multiple communicating parts, where
+each part has only the privileges it needs to operate. In a way, the interaction between a process and the
+operating system is an example of privilege separation. A user's process is restricted from certain operations
+(e.g., accessing other user's files, accessing devices directly, changing memory mappings). When it needs to
+do these actions, it sends a request to the the operating system via a system call.
+With user programs, privilege separation involves creating multiple processes with different access rights and
+well-defined communication interfaces between them. As with the principle of least privilege, the hope is
+severe to minimize the amount of harm that a process can do.
+</p>
+
+<div class="right-sidetext">
+A file can be set to run under the ID of a user <em>bob</em> regardless of who runs it by
+changing its owner to bob:
+<br/>
+<tt>chown bob filename </tt>
+<br/>
+and then setting the setuid bit and execute bit with:
+<br/>
+<tt>chmomd +sx filename </tt>
+</div>
+
+<p>
+On POSIX systems, every process has associated with it both a <strong>real</strong> and <strong>effective
+user ID</strong>. In most cases, they are the same. When a program is run, the process assumes the user ID (<em>uid</em>) and
+effective user ID (<em>euid</em>) of the user that ran it.
+Access privileges are evaluated based on the effective
+user ID (<em>euid</em>) of the process. An executable file may have a <strong>setuid bit</strong> set as
+one of its attributes. If this bit is set then when the command is run, the effective user ID is
+set to the file owner's ID, not the user's. The user ID is still set to the user's ID.
+</p>
+<p>
+An example of how we may separate a program into two parts with different privileges is to 
+set the owner of the program to a user that has access to whatever restricted resources the program
+needs and set the permissions of the file to <em>setuid</em>. When the program is run, a single
+process is created. The first thing the program will do is to create an interprocess communication link
+to itself (via the <em><a href="http://www.manpages.info/freebsd/pipe.2.html">pipe</a></em> system call,
+<a href="http://www.manpages.info/sunos/shmat.2.html">shared memory</a>, sockets, or any other
+available mechanism). It then forks into two processes. One process will call a function that will
+process requests from the other process. It will run under the effective UID of the program's
+owner. The other process will execute the system calls:
+</p>
+<div class="codeblock">
+seteuid(getuid);
+</div>
+<p>
+This will set the effective user ID to the real user ID, giving this process only the privileges that the 
+user has.
+</p>
+
+<h1> Goals </h1>
+<p>
+The overall goals of security include the following:
+</p>
+<ul>
+<li>
+<strong>Authentication</strong>:
+Ensure that users, machines, programs, and any other system resources
+are properly identified. It makes no sense to enforce security policies if we don't have confidence in which
+policy we have to enforce.
+</li>
+<li>
+<strong>Confidentiality</strong>:
+We want to ensure that processes cannot access any unauthorized data.
+</li>
+<li>
+<strong>Integrity</strong>:
+We need to ensure that data has not been compromised and be able to detect if it has.
+</li>
+<li>
+<strong>Availability</strong>:
+The system should be accessible to do what it is supposed to do. If we cannot create new processes cannot or access
+network services on a machine then we may have a security violation as well. For instance, a denial of service
+attack attempts to take machines out of service, or at least make them appear unresponsive on the network.
+</li>
+</ul>
+
+<h1> The operating system steps in </h1>
+<p>
+The operating system and system hardware provides user programs with controlled access to resources. For example:
+</p>
+<table>
+<tr> <td> process scheduler </td> <td> Provides controlled access to the CPU. A user cannot hog the processor and starve other processes. </td> </tr>
+<tr> <td> memory manager </td> <td> Provides controlled access to system memory and gives the process the 
+illusion that it is the only one accessing it. A user cannot access the memory of other processes (unless it was explicity shared) or grab all available system memory. </td> </tr>
+<tr> <td> device drivers and the buffer cache </td> <td> Provides controlled access system peripherals. The file system enforces access privileges 
+to devices. A user cannot write directly to a disk. </td> </tr>
+<tr> <td> file system </td> <td> Provides controlled access to logical regions of persistent data. File and directory permissions define which
+files a user can access and how they can be accessed. </td> </tr>
+<tr> <td> sockets </td> <td> Provides controlled access to communication networks. A user cannot impersonate another host or send bogus packets on the network.</td> </tr>
+</table>
+
+<p>
+All resource access requests go through the operating system. The
+operating system decides whether access should be granted and what
+sort of access is permissible. In many cases, all resource access
+itself goes through the operating system as well (e.g. read/write
+files). For memory, we've seen how the operating system may set
+hardware permissions in the memory management unit to enable
+applications to access memory in a protected manner directly through
+hardware. The collective set of rules that guide the decision of whether
+access to a specific resource should be granted is the <strong>security policy</strong> of the system.
+</p>
+
+<h1> Domains of protection </h1>
+
+<p> 
+In formulating a security policy, we first look at operating system
+protection in the abstract. We can view a computer system as a
+collection of processes and objects, where the objects are both the
+system hardware (CPU, memory, devices) and software (files, programs,
+semaphores, sockets). Each object has some unique name or identifier
+and can be accessed through well-defined operations. Thus, the objects
+essentially are abstract data types where the allowable operations
+depend on the object (a CPU object can only be used for execution, memory
+segments can be read/written/read-for-execute, files may be
+opened/closed/created/read/written/...).
+</p>
+<p>
+A process should be allowed to access only the resources that it
+has been authorized to access. Moreover, a process should be able
+to access only the resources it needs to complete the job and no
+more. 
+</p>
+<p>
+Each process operates within a <strong>protection domain</strong>. This domain
+specifies resources that processes may access and how they may
+access them. The domain itself is a set of objects and the types
+of operations that can be performed upon them. An <strong>access right</strong> is
+the ability to execute an operation on an object. A domain can then
+be viewed as a collection of access rights, where each access right
+can be represented by the ordered pair: <em>&lt;object-name, right-set&gt;</em>.
+For example, if the right
+<em>&lt;file F, {read, write}&gt;</em>
+exists in domain <em>D</em>
+it means that a process that is executing in domain
+<em>D</em> may perform <em>read</em> and <em>write</em> operations on file <em>F</em>. Domains in general
+need not be disjoint; they may share access rights. The association
+between processes and domains may be either static (a process is
+always operating within one domain) or dynamic (a process may switch
+between domains).
+</p>
+<p>
+A domain may be realized at one of several levels. Every user may
+be a domain. In this case, object access depends on the user ID.
+Every process may be a domain. In this case, access depends on the
+process ID. Finally, each procedure may be treated as a domain. In
+such an environment, the objects correspond to local variables.
+</p>
+
+<h1> Modeling the domain </h1>
+
+<div class="figure width300"> <img width="300" height="209" src="images/17-access_matrix.png"/>
+<p> Figure 1. Access matrix </p>
+</div>
+<div class="figure width500"> <img width="500" height="246" src="images/17-access_matrix_switching.png"/>
+<p> Figure 2. Access matrix with domain switching</p>
+</div>
+
+<p>
+A generic way of representing domains of protection is with an
+<strong>access matrix</strong>.
+This is a two-dimensional structure where the rows correspond
+to <em>domains</em> and columns correspond to <em>objects</em>. Each entry contains
+the set of access rights of a domain on an object. For example,
+Figure 1 shows a very simple access matrix:
+</p>
+
+<p>
+A process running in domain D<sub>1</sub> will be allowed <em>read</em>, <em>write</em>, and <em>execute</em> access to file
+<em>F<sub>0</sub></em>. The operating system is responsible for ensuring that a process
+executing in domain <em>D<sub>i</sub></em> can access only objects in row <em>i</em> as allowed
+by the matrix.
+
+An access control list can also model other properties in a domain. For example, 
+<strong>domain switching</strong> can be supported, which is the 
+permission to switch from one domain to another. It may be represented
+as a <em>switch</em> operation upon a domain. We can extend the access matrix
+to show this by adding domains to the columns (Figure 2).
+</p>
+
+<p>
+This allows processes to switch domains only if they have the right
+to do so. Another bit of functionality that is needed is the ability to
+change permissions in this matrix. We can define a <strong>copy right</strong> as
+the permission to copy an access right on an object in one domain
+onto the same object in another domain. To allow rights to be created
+and removed, we can define an <strong>owner right</strong>. If a domain is granted
+an <em>owner</em> right for an object, it is allowed to create or remove
+any rights for that object in other domains (staying in the same
+column). Finally, to allow access to objects within a domain to
+be controlled, we can define a <strong>control right</strong>. If an access in the
+matrix gives a process the <em>control</em> right, it can remove any access
+right from that entire row.
+</p>
+
+<h1> Implementing an access matrix </h1>
+<p>
+One way of implementing an access matrix could be for the operating system
+to store the access matrix as a table or as a list of triples containing
+<em>&lt;domain, object, right-set&gt;</em>. Such a table will generally be very
+large and not practical to store in memory. Hence, extra I/O will
+be involved in accessing it. In addition, it becomes difficult to
+take advantage of special groupings, such as a file that can be
+read by everyone). Adding a new object (e.g., creating a file) means 
+adding entries for every domain in the system. Adding a new domain (e.g.,
+creating a new user) means iterating through every object in the system
+and creating a new access right for the domain. Given that objects come
+and go frequently, this clearly is not practical.
+</p>
+
+<h2> Access control lists </h2>
+<div class="figure width500"> <img width="500" height="258" src="images/17-acl.png"/>
+<p> Figure 3. Access control list</p>
+</div>
+<p>
+A more directly implementable approach to managing an access matrix
+is to associate a column of the table with each object. 
+Each column in an access matrix can be stored as an
+<strong>access control list</strong> (<strong>ACL</strong>)
+for that one object. To save space, empty entries can
+be discarded. This list contains a set of ordered pairs,
+<em>&lt;domain, right-set&gt;</em> for that object.
+The list can also be extended to define a
+default set of access rights.
+If the domain is not found within the
+list, default access permissions for that object will apply.
+Practically every operating system uses some form of access control lists
+to implement file access permissions.
+</p>
+
+<h2> Capability lists </h2>
+<p>
+Access control lists associate columns in an access matrix. A
+<strong>capability list</strong> associates each row with its domain. It is a list
+containing objects along with the operations allowed on them.
+The object is often represented by a name or address, called a <strong>capability</strong>.
+To execute operation <em>M</em> on object <em>O<sub>j</sub></em>,
+a process requests operation <em>M</em> specifying
+the capability (pointer) for object <em>O<sub>j</sub></em> as a parameter. Possession
+of the capability means that access is allowed. The capability list
+is associated with a domain but is never directly accessible to a
+process in that domain. It is a protected object maintained by the
+operating system. Capability-based protection is based on the fact
+that capabilities are never allowed to migrate into any address
+space directly accessible by a user process (where they could be
+modified).
+</p>
+
+<h2> Unix approach: limited ACLs </h2>
+<p>
+The UNIX time-sharing system associates a domain with a user.
+Cross-domain switching corresponds to switching the user ID
+temporarily. This occurs by executing a <em>setuid</em> program or
+by having <em>super user</em> privileges and calling the <em>setuid</em>
+system call to set a specific user explicitly. Since devices are
+accessed through the file system, all access permissions for devices
+as well are stored within the file's inode just like they are for files.
+</p>
+<p>
+The problem with a true access control list is that its size is variable. It could 
+potentialy enumerate access rights for a large set of users and hence take up a lot
+of space. An arbitrary-size ACL cannot be
+contained within a fixed-sized inode entry. Hence, auxiliary disk I/O would
+be required to access an access control list. Instead, a simplified version of the concept was
+implemented.
+Access permissions are divided into three parts: <em>user</em> (the owner
+of the resource), <em>group</em> (a user may belong to a group, which is
+defined in the <tt>/etc/groups</tt> file), and <em>other</em> (everyone else). For
+each of the groupings, the allowable permissions are <em>read</em>, <em>write</em>,
+and <em>execute</em>. For directories, execute corresponds to search permission.
+Two additional permissions are <em>setuid</em>, in which the process' user
+ID will be changed to the owner of a file when it executes that
+file and <em>setgid</em>, in which the process' group ID will be changed
+to the group owner of the file when that file is executed.
+</p>
+<p>
+The UNIX administrator, the <em>super user</em>, or <em>root</em>
+(user ID 0) has supreme powers and access permissions do not apply
+for this user.
+</p>
+<p>
+For certain applications, UNIX's granularity of access protection
+was deemed inadequate (for example, when trying to obtain B-2
+security certification from the Department of Defense). As a result,
+most versions of UNIX (Linux, OS X, etc.) have been extended to support full Access Control Lists
+(ACLs), In which the basic permissions serve as a default and
+auxiliary data allows an owner to specify a full access list. Hence,
+the use of ACLs is entirely optional. With the ext3 file system, 
+ACLs are stored as <em>extended attributes</em>. Each inode has a field
+called <tt>i_file_acl</tt> that, if it's not zero, contains the block
+number of the block that stores a list of extended attributes. 
+</p>
+
+<h2> Windows approach (NT platform releases: Windows Servers, Vista, Windows 7, etc.) </h2>
+<p>
+All the system resources that need protection processes, threads,
+events, timers, semaphores, files, ...) are treated as objects and
+all access to them goes through the <em>object manager</em>. Names
+of objects appear as file system names since the object manager is
+responsible for presenting its namespace via a pseudo file system. Since the object manager
+is a common point of access to resources, it is responsible for
+protecting objects. This ensures that all objects are protected
+in a uniform manner.  </p>
+<p>
+The NT security subsystem is responsible for authenticating a user. Once a user
+has been identified and authenticated, the security subsystem creates
+an object called an <em>access token</em> which is attached to the user's
+process. This token serves to identify the user whenever the process
+requests a system resource. It includes a <em>security ID</em> (typically
+the user's login name, a list of group IDs to which the user belongs,
+privileges, a default owner, primary group, and a default access
+control list. The access control list is an initial list of permissions
+that will apply to objects that the process creates.
+</p>
+<p>
+When a process requests access to an object (via an <em>open</em> operation),
+the object manager contacts the security reference monitor. This
+monitor gets the process' token and determines whether it may access
+the object. If access is permitted, the monitor returns a set of
+granted access rights for that requesting process. The object manager
+stores these rights in the object handle that is created for that
+object (that is used for future references to the object). This
+enables the security system to perform rapid checks when the process
+accesses the object.
+</p>
+
+<h1> Mandatory vs. Discretionary access control models </h1>
+<figure><img src="images/19-MAC.png" width="200" height="194" alt="Bell LaPadula model"/>
+<figcaption>Figure 4. Bell-LaPadula MAC model</figcaption>
+</figure>
+<p>
+Most operating systems we use provide a 
+<strong>discretionary access control</strong> model (<strong>DAC</strong>).
+Ths is one where the subject (the domain) can pass information onto any
+other subject. In some cases, access rights to the object itself may be
+transferred onto a new domain. For example, a process that has the right
+to open a file that might be restricted from others can open it, read it,
+and create a less-protected copy that everyone can see. Alternatively,
+a user that owns a file can change its permission mode so that others can read it.
+</p>
+<p>
+<strong>Mandatory access control</strong> (<strong>MAC</strong>) refers to a <em>centrally-controlled</em>
+policy in which the operating system restricts actions of domains (subjects)
+on objects. Users do not have the ability to modify this policy.
+</p>
+<p>
+Mandatory Access Control is often associated with the <strong>Multi-Level Secure</strong> (<strong>MLS</strong>)
+access model. The <strong>Bell-LaPadula model</strong> is the most popular example of this model.
+It identifies the ability of a process (domain) to access and communicate data.
+All objects are classified into a hierarchy of sensitivity levels (unclassified,
+confidential, secret, top secret). Users (domains) are assigned a clearance level as well.
+The  overall policy is <em>no read up; no write down</em>.
+This means that a user cannot read objects that belong to a higher clearance level than the user is assigned.
+The user also cannot write or modify objects that belong to a lower clearance level.
+The MLS approach fits well with the government's use of classified information but generally
+does not translate well to civilian life.
+</p>
+
+<h1> References </h1>
+<ul>
+<li>
+
+
+Solaris Operating System Data Sheet,
+<a href="http://www.sun.com/software/solaris/ds/security.jsp">
+Solaris 10 Operating System and Security - Advanced Features Enable Secure Systems</a>
+</li>
+
+<li>
+<a href="http://www.centos.org/docs/5/html/Deployment_Guide-en-US/sec-mls-ov.html">
+Multi-level Security (MLS)</a>, 
+Red Hat Enterprise Linux Deployment Guide
+</li>
+
+<li>
+<a href="http://en.wikipedia.org/wiki/Computer_security">
+Computer Security</a>
+</li>
+
+<li>
+<a href="http://en.wikipedia.org/wiki/Distinction_of_protection_and_security">
+Separation of protection and security</a>
+</li>
+
+<li>
+<a href="http://en.wikipedia.org/wiki/Bell-LaPadula_model">
+Bell-LaPadula model</a>
+</li>
+
+<li>
+<a href="http://www.openbsd.org/papers/crypt-service.pdf">
+Cryptography As An Operating System Service: A Case Study</a>,
+Angelos D. Keromytis, Jason L. Wright, Theo DeRaadt, Matthew Burnside.
+</li>
+
+<li>
+<a href="http://www.iusmentis.com/technology/encryption/crashcourse/certificates/">
+Crash course on cryptography: Digital Certificates</a>, Ius mentis.
+</li>
+</ul>
+
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

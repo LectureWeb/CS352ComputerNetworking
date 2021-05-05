@@ -1,0 +1,370 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Stack frames </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru419">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Computer Security </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 419 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/frames.html"> Stack frames </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Stack frames </h1>
+<h2> A really quick explanation of stack frames and frame pointers </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> February 16, 2018 </p>
+</div>
+<h1 id="understandingframepointers">Understanding Frame Pointers</h1>
+
+<p>Each function has local memory associated with it to hold incoming
+parameters, local variables, and (in some cases) temporary variables.
+This region of memory is called a stack frame and is allocated on
+the process’ stack. A frame pointer (the ebp register on intel x86
+architectures, rbp on 64-bit architectures) contains the base address
+of the function’s frame. The code to access local variables within
+a function is generated in terms of offsets to the frame pointer.
+The stack pointer (the esp register on intel x86 architectures or
+rsp on 64-bit architectures) may change during the execution of a
+function as values are pushed or popped off the stack (such as
+pushing parameters in preparation to calling another function). The
+frame pointer doesn’t change throughout the function.</p>
+
+<p>Here’s what happens during function (there might be slight differences
+among languages/architectures)</p>
+
+<ol>
+<li><p>Push the current value of the frame pointer (ebp/rbp). This saves it so we can restore it later.</p></li>
+<li><p>Move the current stack pointer to the frame pointer. This defines the start of the frame.</p></li>
+<li><p>Subtract the space needed for the function’s data from the stack pointer. Remember that stacks grow from high memory to low memory. This puts the stack pointer past the space that will be used by the function so that anything pushed onto the stack now will not overwrite useful values.</p></li>
+<li><p>Now execute the code for the function. References to local variables will be negative offsets to the frame pointer (e.g., &quot;movl $123, &#8211;8(%rbp)”).</p></li>
+<li><p>On exit from the function, copy the value from the frame pointer to the stack pointer (this clears up the space allocated to the stack frame for the function) and pop the old frame pointer. This is accomplished by the &#8220;leave&#8221; instruction.</p></li>
+<li><p>Return from the procedure via a &#8220;ret&#8221; instruction. This pops the return value from the stack and transfers execution to that address.</p></li>
+</ol>
+
+<h1 id="basicexample">Basic example</h1>
+
+<p>Let&#8217;s consider the following set of functions in a file called try.c</p>
+
+<pre><code>void
+bar(int a, int b)
+{
+    int x, y;
+
+    x = 555;
+    y = a+b;
+}
+
+void
+foo(void) {
+    bar(111,222);
+}
+</code></pre>
+
+<p>We&#8217;ll compile it via</p>
+
+<pre><code>gcc -S  -m32 try.c
+</code></pre>
+
+<p>The -S option tells the compiler to create an assembler file. The -m32 option tells the
+compiler to generate code for a 32-bit architecture. In this example, it keeps the numbers smaller
+and we don&#8217;t have to worry about specifying -no-red-zone (see <em>more details</em>, below).</p>
+
+<p>gcc chooses to use the mov instruction (movl) instead of push because the Intel x86 instruction
+set doesn&#8217;t have an instruction to push constant values onto the stack. Adjusting the stack and
+then moving the required parameters into the proper places as negative offsets accomplishes the
+same thing.</p>
+
+<p>The generated code is (removing lines that contain directives to the linker):</p>
+
+<pre><code>bar:
+    pushl   %ebp
+    movl    %esp, %ebp
+    subl    $16, %esp
+    movl    $555, -4(%ebp)
+    movl    12(%ebp), %eax
+    movl    8(%ebp), %edx
+    addl    %edx, %eax
+    movl    %eax, -8(%ebp)
+    leave
+    ret
+foo:
+    pushl   %ebp
+    movl    %esp, %ebp
+    subl    $8, %esp
+    movl    $222, 4(%esp)
+    movl    $111, (%esp)
+    call    bar
+    leave
+    ret
+</code></pre>
+
+<p>We can annotate the code and trace it by starting at foo():</p>
+
+<pre><code>bar:        # --------- start of the function bar()
+    pushl   %ebp        # save the incoming frame pointer
+    movl    %esp, %ebp  # set the frame pointer to the current top of stack
+    subl    $16, %esp   # increase the stack by 16 bytes (stacks grow down)
+    movl    $555, -4(%ebp)  # x=555 a is located at [ebp-4]
+    movl    12(%ebp), %eax  # 12(%ebp) is [ebp+12], which is the second parameter
+    movl    8(%ebp), %edx   # 8(%ebp) is [ebo+8], which is the first parameter
+    addl    %edx, %eax  # add them
+    movl    %eax, -8(%ebp)  # store the result in y
+    leave           #
+    ret         #
+foo:        # --------- start of the function foo()
+    pushl   %ebp        # save the current frame pointer
+    movl    %esp, %ebp  # set the frame pointer to the current top of the stack
+    subl    $8, %esp    # increase the stack by 8 bytes (stacks grow down)
+    movl    $222, 4(%esp)   # this is effectively pushing 222 on the stack
+    movl    $111, (%esp)    # this is effectively pushing 111 on the stack
+    call    bar     # call = push the instruction pointer on the stack and branch to foo
+    leave           # done
+    ret         #
+</code></pre>
+
+<p>Let&#8217;s see what happens. In foo(), we need to prepare the stack for two parameters that will be sent to bar().
+The compiler would like to do</p>
+
+<pre><code>push $222
+push $111
+</code></pre>
+
+<p>but those instructions don&#8217;t exist on the IA&#8211;32 architecture so instead, the compiler generates code
+to subtract 8 from the stack pointer, making the stack grow by eight bytes (enough to hold two 32-bit
+values). It then uses stack offset addressing to place the values 111 and 222 on the stack (see figure 1).</p>
+
+<figure>
+<img src="images/frames-1.png" alt="Figure 1. Before call to bar" id="figure-1" title="Figure 1" style="width:200px;" />
+<figcaption>Figure 1. Before call to bar</figcaption></figure>
+
+
+
+<hr class="none"/>
+
+<p>Then foo calls bar. This pushes the return address onto the stack so it looks like this when
+execution starts at bar (figure 2):</p>
+
+<figure>
+<img src="images/frames-2.png" alt="Figure 2. At entry to bar" id="figure-2" title="Figure 2" style="width:200px;" />
+<figcaption>Figure 2. At entry to bar</figcaption></figure>
+
+
+
+<hr class="none"/>
+
+<figure>
+<img src="images/frames-3.png" alt="Figure 3. In bar" id="figure-3" title="Figure 3" style="width:200px;" />
+<figcaption>Figure 3. In bar</figcaption></figure>
+
+
+
+<p>On entry to bar(), we save the previous value of ebp, and set the frame pointer to the top of the stack (the current position of the stack pointer).
+Then we grow the stack by subtracting 16 from the stack pointer. Stacks on intel architectures
+grow from high memory to low memory, so the top of the stack (the latest contents) are in low memory.
+The stack now looks like the one shown in figure 3.
+We have a stack frame for the function bar that holds local data for this
+instance of the function. Negative offsets of the frame pointer %ebp
+(toward the top of the stack, into lower memory) will
+refer to local data in bar. Positive offsets of %ebp will allow us to read incoming parameters.</p>
+
+<p>Now we&#8217;re ready to execute the trivial logic of the function. We set local variable x to 555. This variable is the very next set of four bytes after the saved ebp. The next statement adds the two parameters and stores the result into
+the local int y. The code for this is to read the value of b (which is [ebp+12]) and store it into register %eax.
+The value of a (which is [ebp+8]) is read into register %edx. The two values are added and the result is
+stored in y, which is [ebp&#8211;8]. Figure 4 shows the position of the parameters and local variables.</p>
+
+<figure>
+<img src="images/frames-4.png" alt="Figure 4. In bar" id="figure-4" title="Figure 4" style="width:200px;" />
+<figcaption>Figure 4. In bar</figcaption></figure>
+
+
+
+<p>When we&#8217;re done, we call &#8220;leave&#8221;, which sets the stack pointer to the value of the frame pointer (%ebp) and
+pops the saved value of the frame pointer (the one the function <em>foo</em> was using). Now the stack
+pointer is pointing to the return address within <em>foo</em> that was saved when the <em>call</em> instruction was
+executed and our frame is effectively deallocated. The <em>ret</em> instruction pops the stack and transfers
+control back to <em>foo</em> right after the <em>call bar</em> instruction.</p>
+
+<p>You might be wondering why the stack was adjusted by 16 bytes instead of the eight that was needed
+to hold x and y. I don&#8217;t know. That seems to be a multiple that gcc uses. If you allocate two more
+local ints, the frame remains the same size. If you allocate another int, the compiler grows the
+stack by 32 bytes.</p>
+
+<h1 id="moredetailsabouthowframesareused">More details about how frames are used</h1>
+
+<ul>
+<li><p>gcc (and other compilers) uses registers for the first few (6) parameters and these are copied into areas inside the function’s frame]</p></li>
+<li><p>As an optimization, the intel x86&#8211;64 architecture allows functions to use space on the stack without adjusting the stack pointer if that space is &lt;= 128 bytes. Interrupt handlers are guaranteed to not modify this region. You can search for “red zone” to read about this if you’re interested. The gcc compiler can be told to ignore this via a -mno-red-zone option.</p></li>
+<li><p>Since the compiler can keep track of what’s going on with the stack at any point in time, the frame pointer isn’t strictly necessary. You can compile code to use the stack pointer exclusively with the -fomit-frame-pointer option to gcc. </p></li>
+</ul>
+
+<h1 id="exploitingbufferoverflow">Exploiting buffer overflow</h1>
+
+<p>By exploiting a buffer overflow, you can write arbitrary data onto
+the stack. This means that you can change the return address of a
+function and also change the data past that return address - the
+local variables of previous functions. In a basic code injection
+attack, you can change the return address to the address of the
+buffer that you overwrote with code of your choosing. You now
+injected code into the program. In a simple return-oriented-programming
+attack, you change the return address to the address of a library
+function such as system() and insert data on the stack to make give
+system() the parameters you want (e.g., a command to execute).
+Note that the code illustrated above is not vulnerable to buffer overflow since
+we&#8217;re using scalars (just ints) instead of arrays.</p>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Call_stack">Call stack</a></li>
+<li><a href="https://eli.thegreenplace.net/2011/09/06/stack-frame-layout-on-x86-64">Stack frame layout on x86&#8211;64</a></li>
+<li><a href="http://www.tenouk.com/Bufferoverflowc/Bufferoverflow2a.html">Buffer overflow: the function stack</a></li>
+<li><a href="https://en.wikibooks.org/wiki/X86_Disassembly/Functions_and_Stack_Frames">x86 Disassembly/Functions and Stack Frame</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Red_zone_(computing)">Red zone</a></li>
+<li><a href="https://c9x.me/x86/html/file_module_x86_id_154.html">x86 leave instruction</a></li>
+</ul>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2018 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: February 16, 2018 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 419 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/7a39b540-aec7-4d29-bcf7-04ff888acaf9"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 419 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

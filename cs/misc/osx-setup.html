@@ -1,0 +1,656 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> My macOS configuration </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_cs">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/small-logo.png" alt="pk.org" name="logo" width="97" height="45"/>
+  </div>
+  <div id="title"> Computing </div>
+
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../cs/index.html"> CS </a>
+        <li> <a href="../misc/osx-setup.html"> My macOS configuration </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> My macOS configuration </h1>
+<h2> Creating a comfortable environment </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> May 5, 2019 </p>
+</div>
+<blockquote>
+<p>Every year or so, I get a new Mac and have to set it up.
+I created this page as a checklist of things to configure.
+This is a personal cheat sheet to configure OS X to my liking.
+Your needs are almost certainly very different from mine.</p>
+</blockquote>
+
+<h1 id="systemsetup">System setup</h1>
+
+<h2 id="enabletherightmousebuttonandadjusttrackingspeed">Enable the right mouse button and adjust tracking speed</h2>
+
+<p><strong>System Preferences &gt; Mouse</strong></p>
+
+<p>Make sure that right clicking is enabled on your mouse. It probably is, so you can
+skip this step.
+If you&#8217;re using an Apple Magic Mouse, open <strong>System Preferences</strong>, select
+<strong>Mouse</strong>, and make sure the <strong>Point &amp; Click</strong> tab is selected.
+Make sure the <strong>Secondary click</strong> item is checked. </p>
+
+<p>If you&#8217;re using a generic two-button mouse (or scroll mouse),
+<strong>System Preferences</strong>, select <strong>Mouse</strong>. The
+<strong>Primary mouse button</strong> is typically set to <strong>Left</strong>.</p>
+
+<p>Change the tracking speed to a faster value. I use 9/10, one step removed from the fastest.</p>
+
+<h2 id="setthecomputername">Set the computer name</h2>
+
+<p><strong>System Preferences &gt; Sharing</strong></p>
+
+<p>Go to <em>System Preferences</em> and select <strong>Sharing</strong>. The name entry box is on the top.</p>
+
+<h2 id="enablesshloginfilesharingscreensharing">Enable ssh login, file sharing, screen sharing</h2>
+
+<p><strong>System Preferences &gt; Sharing</strong></p>
+
+<p>Go to <em>System Preferences</em> and select <strong>Sharing</strong>. Check
+<strong>Screen Sharing</strong>, <strong>File Sharing</strong>, <strong>Remote Login</strong>.</p>
+
+<h2 id="addcontenttothefinderssidebar">Add content to the Finder&#8217;s sidebar</h2>
+
+<p><strong>Finder &gt; Preferences &gt; Sidebar </strong></p>
+
+<p>Open the Finder, select <strong>Preferenecs</strong> and select the <strong>Sidebar</strong> tab.
+Select:</p>
+
+<p><em>Favorites</em></p>
+
+<ul>
+<li>Recents</li>
+<li>Applications</li>
+<li>Desktop</li>
+<li>Documents</li>
+<li>Downloads</li>
+<li>paul (your home directory)</li>
+</ul>
+
+<p><em>iCloud</em></p>
+
+<p>-iCloud Drive</p>
+
+<p><em>Locations</em></p>
+
+<ul>
+<li>Hard disks</li>
+<li>External disks</li>
+<li>CDs, DVDs,and iPods</li>
+<li>Bonjour computers</li>
+<li>Connected servers</li>
+</ul>
+
+<p><em>Tags</em>
+- Recent Tags</p>
+
+<h2 id="showdisksonthedesktop">Show disks on the desktop</h2>
+
+<p><strong>Finder &gt; Preferences &gt; General </strong></p>
+
+<p>A clean desktop is wonderful but I find it clunky to open the finder app from the dock and
+type command-N to create a new finder window.
+Open the Finder, select <strong>Preferenecs</strong> and select the <strong>General</strong> tab.
+Check <strong>Hard disks</strong>. Optionally, also check <em>External disks</em>, <em>CDs, DVDs, and iPods</em>, and <em>Connected servers</em>.</p>
+
+<h2 id="reducethedocksize">Reduce the dock size</h2>
+
+<p><strong>System Preferences &gt; Dock</strong></p>
+
+<p>Make the dock smaller and turn on mouse-over magnification.
+You can do this via
+<strong>System Preferences &gt; Dock</strong>
+or by clicking and dragging the separator bar on the bottom right part of the dock.</p>
+
+<p>I prefer a small zoom when hovering over dock items, so I:</p>
+
+<ul>
+<li>Check <strong>Magnification</strong></li>
+<li>Set it to about 60%</li>
+</ul>
+
+<h2 id="pickyourfavoritewallpaper">Pick your favorite wallpaper</h2>
+
+<p><strong>System Preferences &gt; Desktop &amp; Screen Saver &gt; Desktop</strong></p>
+
+<p>Why did Apple get rid of their collection of abstract patterns as wallpaper?
+I find photo backgrounds too distracting
+and solid colors a bit too boring.
+I use a blurred-out version of the old Aqua Graphite wallpaper:</p>
+
+<ul>
+<li><a href="images/Aqua_Graphite_Blurry.jpg">2560x1600</a></li>
+<li><a href="images/Aqua_Graphite_Blurry5K.jpg">5120x2880</a></li>
+</ul>
+
+<p>Move your wallpaper to some file in the system and navigate it via the <em>Folders</em>
+selector in <strong>System Preferences &gt; Desktop &amp; Screen Saver &gt; Desktop</strong>.</p>
+
+<h2 id="enablehotcornerstoputthedisplaytosleep">Enable hot corners to put the display to sleep</h2>
+
+<p><strong>System Preferences &gt; Desktop &amp; Screen Saver &gt; Screen Saver</strong></p>
+
+<p>Open <strong>System Preferences &gt; Desktop &amp; Screen Saver</strong> and select the <strong>Screen Saver</strong> tab.
+Then clock on the <strong>Hot Corners</strong> button on the bottom right.
+Select <strong>Put Display to Sleep</strong> for the bottom-right corner.</p>
+
+<h2 id="reducethedesktopiconsize">Reduce the desktop icon size</h2>
+
+<p>Right click (control click) anywhere on the screen and select
+<strong>Show View Options</strong>. I resized mine to 36x36 but that&#8217;s just a personal
+preference. With the touchpad on a notebook, you can change the desktop icon size dynamically by pinching or
+unpinching the touchpad with the mouse focus on the display.</p>
+
+<h2 id="showtheremainingbatterylifeinthemenubar">Show the remaining battery life in the menu bar</h2>
+
+<p>This is only useful for laptops, of course.
+Click on the battery icon in the menu bar. Select <strong>Show &gt; Time</strong>.</p>
+
+<h2 id="changecapslocktocontrol">Change caps lock to control</h2>
+
+<p><strong>System Preferences &gt; Keyboard</strong></p>
+
+<p><em>Nobody</em> needs a CAPS LOCK key! Make it function like a Control key instead.
+Incidentally, the original IBM PC keyboard had the control key to the left of the A key.
+For some reason, it was changed to a Caps Lock key when the PC/AT came out. </p>
+
+<p>Open <strong>System Preferences</strong> and select the <strong>Keyboard</strong> tab.
+Click on the <strong>Modifier Keys&#8230;</strong> button on the bottom-right
+part of the window.
+Change the Caps Lock modifier to be <strong>^ Control</strong> and press <strong>OK</strong>.</p>
+
+<h2 id="showcharacterviewersinthemenubar">Show character viewers in the menu bar</h2>
+
+<p><strong>System Preferences &gt; Keyboard</strong></p>
+
+<p>I often need to enter special characters (e.g, greek letters, math symbols, arrows) or need
+a reminder what some of the keyboard modifiers do.</p>
+
+<p>Open <strong>System Preferences</strong>, select the
+<strong>Keyboard</strong> and sekect tge <strong>Input Sources</strong> tab.
+Check the <strong>Show Input menu in menu bar</strong> box.</p>
+
+<p>Then select the <strong>Keyboard</strong> tab.
+Check the <strong>Show keyboard and emoji viewers in menu bar</strong> box.</p>
+
+<h2 id="customizecharacterlists">Customize character lists</h2>
+
+<p>Click on the Keyboard/Emoji/Symbol viewer in the top menu bar (it&#8217;s a rectangle with
+the Apple command symbol on the bottom right). </p>
+
+<p>Select <strong>Show Emoji &amp; Symbols</strong></p>
+
+<p>Click on the gear box on the top right of the
+window that opens and select <strong>Customize List&#8230;</strong>.
+Check:</p>
+
+<ul>
+<li>Arrows</li>
+<li>Bullets/Stars</li>
+<li>Currency Symbos</li>
+<li>Digits - All</li>
+<li>Dingbats</li>
+<li>Emoji</li>
+<li>Enclosed Characters</li>
+<li>Letterlike Symbols - All</li>
+<li>Math Symbols</li>
+<li>Parentheses - All</li>
+<li>Pictographs</li>
+<li>Punctuation - All</li>
+<li>Sign/Standard Symbols</li>
+<li>Technical Symbols</li>
+<li>European Alphabetic Scripts
+
+<ul>
+<li>Greek</li>
+<li>Latin</li>
+</ul></li>
+</ul>
+
+<h2 id="enablerootaccess">Enable root access</h2>
+
+<p>A lot of people recommend against enabling the root account, and suggest using the
+<code>sudo</code> command instead. I use root access too often and don&#8217;t have the patience to type the extra
+characters before everything that needs to run as root.</p>
+
+<p>See <a href="https://support.apple.com/en-us/HT204012">How to enable the root user on your Mac or change your root password</a>.</p>
+
+<ol>
+<li>Choose <strong>System Preferences</strong> from the Apple menu.</li>
+<li>Choose <strong>Users &amp; Groups</strong> from the <strong>View</strong> menu.</li>
+<li>Click the lock icon on the bottom left of the window and authenticate.</li>
+<li>Click <strong>Login Options</strong> at the bottom of the list of users.</li>
+<li>Click the <strong>Join&#8230;</strong> button next to <code>Network Account Server:</code></li>
+<li>Click on <strong>Open Directory Utility&#8230;</strong> in the window that pops up.</li>
+<li>Click the lock in the <em>Directory Utility</em> window and authenticate.</li>
+<li>Select <strong>Enable Root User</strong> on the <strong>Edit</strong> menu.</li>
+<li>Choose and enter a root password in both the Password and Verify fields, then click <strong>OK</strong>.</li>
+</ol>
+
+<h2 id="bringtheterminaltothedock">Bring the terminal to the dock</h2>
+
+<p>I use the shell (a.k.a. <em>Terminal</em>) a lot. If you don&#8217;t then this is useless to you.</p>
+
+<ul>
+<li>Open the finder. Select <code>Applications/Utilities</code>.</li>
+<li>Click and drag <strong>Terminal.app</strong> (or just <strong>Terminal</strong> if you don&#8217;t show all extensions) to the dock.</li>
+</ul>
+
+<h2 id="havetheterminalclosewhenyouexittheshellcleanly:">Have the terminal close when you exit the shell cleanly:</h2>
+
+<ul>
+<li>Launch Terminal.</li>
+<li>Select <em>Terminal &gt; Preferences &gt; Profiles &gt; Shell</em>.</li>
+<li>Select <strong>Close if the shell exited cleanly</strong> for <strong>When the shell exits:</strong>.</li>
+</ul>
+
+<h2 id="showallfileextensionsinthefinder">Show all file extensions in the finder</h2>
+
+<p><strong>Finder &gt; Preferences &gt; Advanced</strong></p>
+
+<p>There are two reasons I set this. First, I don&#8217;t need the mystery of hidden text in my file names. Second,
+OS X is forgiving if an extension is missing. For example, you can open a jpeg file even if it doesn&#8217;t have
+a <code>.jpg</code> suffix. This will really confuse Microsoft Windows if you move the file to that system.</p>
+
+<p>Enter the Finder (click on the leftmost icon in the dock or on the Macintosh HD icon). Then select
+<strong>Finder &gt; Preferences &gt; Advanced</strong> and check <strong>show all filename extensions</strong>.</p>
+
+<h2 id="enablescreenzoom">Enable screen zoom</h2>
+
+<p><strong>Finder &gt; Preferences &gt; Accessibility</strong></p>
+
+<ul>
+<li>Click the Zoom tab on the left</li>
+<li>Select &#8220;Use scroll gesture with modifier keys to zoom:&#8221;</li>
+<li>Select ^Control as the modifier key for zooming.</li>
+</ul>
+
+<h2 id="disableautomaticplayingofsongsduringimportonitunes">Disable automatic playing of songs during import on iTunes</h2>
+
+<pre><code>defaults write com.apple.iTunes play-songs-while-importing FALSE
+</code></pre>
+
+<h1 id="softwaresettings">Software settings</h1>
+
+<h2 id="safariwebsiteaddress">Safari website address</h2>
+
+<p>Ever since Yosemite, Safari doesn’t show the full address of a web page by default.</p>
+
+<ul>
+<li>In Safari, go to <strong>Preferences</strong>.</li>
+<li>Click on the <strong>Advanced</strong> tab (far right).</li>
+<li>Select “Show full website address” in the <strong>Smart Search Field</strong> on the first line of check boxes.</li>
+</ul>
+
+<h2 id="safarihomepage">Safari homepage</h2>
+
+<ul>
+<li>In Safari, go to <strong>Preferences</strong>.</li>
+<li>Click on the <strong>General</strong> tab (far left).</li>
+<li>Set the Homepage to about:blank or google.com</li>
+</ul>
+
+<h2 id="changemailscopyaddressbehavior">Change Mail&#8217;s <em>copy address</em> behavior</h2>
+
+<p>Starting in OS X 10.6, Mail&#8217;s Copy Address copied the name together with
+the address in angle brackets. To just copy the email address onto the
+clipboard, run this in Terminal:</p>
+
+<pre><code>defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool NO
+</code></pre>
+
+<h1 id="softwareinstallation">Software installation</h1>
+
+<h2 id="installdropbox">Install dropbox</h2>
+
+<ul>
+<li>Go to <a href="https://www.dropbox.com">www.dropbox.com</a> and download the installler</li>
+<li>Run the installer from the downloaded DropboxInstaller.dmg</li>
+<li>The installer will ask you to turn on <strong>Accessibility &gt; Dropbox</strong>.</li>
+</ul>
+
+<h2 id="rsynchomefiles">Rsync home files</h2>
+
+<p><strong>This is completely custom and will not apply to anyone else reading this.</strong>
+Go to system_setup in dropbox and:</p>
+
+<pre><code>cd System_setup
+mkdir $HOME/bin
+cp -p qsync-in $HOME/bin
+cp -p bash_profile $HOME/.bash_profile
+cp -p bashrc $HOME/.bashrc
+sudo cp -p hosts /etc/hosts
+qsync-in
+</code></pre>
+
+<p>Also, copy:
+- <code>/usr/local</code>
+- <code>Library/Tex</code></p>
+
+<h2 id="createa.bash_profile">Create a .bash_profile</h2>
+
+<p>If you use a shell, you&#8217;ll want a .bash_profile in your home directory. What you put
+in your profile is really up to you.
+Among other things, I stick in an</p>
+
+<pre><code>export BC_ENV_ARGS=-q
+PS1=&quot;\h|\W: &quot;
+</code></pre>
+
+<p>The first keeps bc from printing a copyright notice.
+The second sets the prompt to the <em>hostname|base_name_of_current_directory:</em>.
+If you don&#8217;t use bc (or the shell), then you won&#8217;t care.</p>
+
+<h2 id="appstoresoftware">App Store software</h2>
+
+<p>I use:</p>
+
+<ul>
+<li><a href="https://itunes.apple.com/us/app/1password-7-password-manager/id1333542190?mt=12">1Password</a></li>
+<li><a href="https://itunes.apple.com/us/app/cleaner-app/id1013897218?mt=12">Cleaner-App</a></li>
+<li><a href="https://itunes.apple.com/us/app/evernote/id406056744?mt=12">Evernote</a></li>
+<li><a href="https://itunes.apple.com/us/app/imovie/id408981434?mt=12">iMovie</a></li>
+<li><a href="https://itunes.apple.com/us/app/keynote/id409183694?mt=12">Keynote</a></li>
+<li><a href="https://itunes.apple.com/us/app/onedrive/id823766827?mt=12">Microsoft OneDrive</a></li>
+<li><a href="https://itunes.apple.com/us/app/mindnode-6/id1289197285?mt=12">Mindnode 6</a></li>
+<li><a href="https://itunes.apple.com/us/app/multimarkdown-composer-4/id1275176220?mt=12">MultiMarkdown Composer 4</a></li>
+<li><a href="https://itunes.apple.com/us/app/pages/id409201541?mt=12">Pages</a></li>
+<li><a href="https://itunes.apple.com/us/app/slack/id803453959?mt=12">Slack</a></li>
+<li><a href="https://itunes.apple.com/us/app/xcode/id497799835?mt=12">Xcode</a>
+
+<ul>
+<li>Alternatively, you can run a command such as <strong>gcc</strong>, which will prompt you to install Xcode&#8217;s command-line tools</li>
+</ul></li>
+</ul>
+
+<p>Optionally:</p>
+
+<ul>
+<li>Aperture</li>
+<li><a href="https://itunes.apple.com/us/app/blackmagic-disk-speed-test/id425264550?mt=12">Blackmagic Disk Speed Test</a></li>
+<li><a href="https://itunes.apple.com/us/app/diagrammix/id418534796?mt=12">Diagrammix</a></li>
+<li><a href="https://itunes.apple.com/us/app/eaglefiler/id414232012?mt=12">EagleFiler</a></li>
+<li><a href="https://itunes.apple.com/us/app/ibooks-author/id490152466?mt=12">iBooks Author</a></li>
+<li><a href="https://itunes.apple.com/us/app/novabench/id411466132?mt=12">Novabench</a></li>
+<li><a href="https://itunes.apple.com/us/app/pixelmator/id407963104?mt=12">Pixelmator</a></li>
+<li><a href="https://itunes.apple.com/us/app/the-unarchiver/id425424353?mt=12">The Unarchiver</a></li>
+</ul>
+
+<h2 id="additionalsoftware">Additional Software</h2>
+
+<p>Install additional software. Other software I use:</p>
+
+<ul>
+<li><a href="https://nektony.com/mac-app-cleaner">App CLeaner &amp; Uninstaller</a>
+
+<ul>
+<li>No longer available via the App Store since it uninstalls programs</li>
+</ul></li>
+<li><a href="https://helpx.adobe.com/download-install/kb/acrobat-downloads.html">Adobe Acrobat Pro</a>
+
+<ul>
+<li>Run &amp; then go to <strong>System Preferences &gt; General</strong> and select <strong>Open Anyway</strong></li>
+</ul></li>
+<li><a href="https://creative.adobe.com/products/download/creative-cloud">Adobe Creative Cloud</a>: for Photoshop &amp; Lightroom</li>
+<li><a href="https://www.xrite.com/service-support/downloads/c/colorchecker_camera_calibration_v1_1_1">ColorChecker Passport</a></li>
+<li><a href="http://freemind.sourceforge.net/wiki/index.php/Main_Page">FreeMind</a></li>
+<li><a href="https://handbrake.fr/downloads.php">Handbrake</a></li>
+<li><a href="https://nikcollection.dxo.com">Nik Collection by DxO</a></li>
+<li><a href="https://www.omnigroup.com/more">OmniDiskSweeper</a></li>
+<li><a href="https://www.omnigroup.com/omnigraffle/">OmniGraffle Professional</a></li>
+<li><a href="https://www.titanium-software.fr/en/onyx.html">Onyx</a></li>
+<li><a href="https://pdfexpert.com">PDF Expert</a></li>
+<li><a href="https://www.decisivetactics.com/products/printopia/">Printopia</a> &#8211; desktop systems only</li>
+<li>Quicken 2017</li>
+<li><a href="https://www.literatureandlatte.com/scrivener/overview">Scrivener</a></li>
+<li><a href="https://www.teamviewer.com/en-us/">Teamviewer</a></li>
+<li><a href="https://www.virtualbox.org">Virtualbox</a></li>
+<li><a href="https://my.vmware.com/web/vmware/details?downloadGroup=FUS-711&amp;productId=450&amp;rPId=7446">VMware Fusion</a></li>
+</ul>
+
+<p>Printer/Scanner software:</p>
+
+<ul>
+<li>[Datacolor Spyder3Elite and Spyder3Print](http://goto.datacolor.com/download/Spyder3Elite</li>
+<li><a href="https://support.datacolor.com/index.php?/Knowledgebase/Article/View/1667/133/spyderprint-502---macintosh">Datacolor Spyder3Print</a></li>
+<li><a href="https://www.dell.com/support/home/us/en/04/drivers/driversdetails?driverid=2yg2j">Dell H825cdw</a>
+
+<ul>
+<li>Custom Install: no Fax Driver</li>
+</ul></li>
+<li><a href="https://epson.com/Support/Printers/Professional-Imaging-Printers/SureColor-Series/Epson-SureColor-P800/s/SPT_SCP800SE">Epson P800</a></li>
+<li><a href="https://www.hamrick.com/download.html">VueScan</a></li>
+</ul>
+
+<h2 id="showthedateandtimeonthetopmenubar">Show the date and time on the top menu bar</h2>
+
+<p>Apple&#8217;s time display doesn&#8217;t show the date by default.
+If you just want to see the time with the day and date displayed,
+click on the date and select <strong>Open Date &amp; Time Preferences&#8230;</strong>.
+Select the <strong>Clock</strong> tab. Under <strong>Date options</strong>, select <strong>Show date</strong>.</p>
+
+<p>If you&#8217;d like to see a monthly calendar when you click on the date and have options
+to configure the display of the date and time, there are several programs
+that do the job.</p>
+
+<p>Since these programs replace the clock, you need to disable OS X from
+showing the clock. Run <strong>System Preferences</strong> and select
+<strong>Date &amp; Time</strong>. Then select <strong>Clock</strong>
+in the list of buttons on the top. Uncheck **
+Show date and time in menu bar**.</p>
+
+<p>I use Mowglii&#8217;s <a href="https://www.mowglii.com/itsycal/">itsycal</a>.
+Itsycal is a tiny menu bar calendar that shows a monthly calendar when
+you click the clock.</p>
+
+<ol>
+<li><p>Download the <a href="https://s3.amazonaws.com/itsycal/Itsycal.zip">itsycal zip file</a>.</p></li>
+<li><p>Navigate to your Downloads folder and and drag
+<code>itsycal.app</code> to <code>Applications/Utilities</code>.</p></li>
+<li><p>Click the program to run it.</p></li>
+<li><p>Click on itsycal&#8217;s date icon and select <strong>Preferences</strong>
+from the gear icon on the bottom right.
+Check &#8220;launch at login&#8221; from the <strong>General</strong> tab.</p></li>
+<li><p>Click on <strong>Appearance</strong> and enter the set the <code>datetime patterns</code> field
+to your preferences. Instructions for formats
+are <a href="https://www.mowglii.com/itsycal/datetime.html">here</a>.<br/>
+I use:<br/>
+<strong>E MMM d h:mm a</strong>. </p></li>
+<li><p>Now go to <strong>System Preferences</strong>, select <strong>Date &amp; Time</strong>, click
+on the <strong>Clock</strong> tab, and uncheck &#8220;Show date and time in menu bar&#8221;.
+This disables Apple&#8217;s clock display.</p></li>
+</ol>
+
+<h2 id="installcommand-linetoolsforxcode">Install command-line tools for Xcode</h2>
+
+<ul>
+<li>Open the Terminal</li>
+<li>Become root</li>
+<li>Run gcc</li>
+<li>Agree to the license (&#8220;agree&#8221;)</li>
+</ul>
+
+<p>If you don&#8217;t want to install all of xcode, run</p>
+
+<pre><code>xcode-select --install
+</code></pre>
+
+<h2 id="installmicrosoftoffice">Install Microsoft Office</h2>
+
+<p>Still a de facto standard. I get it from Office 365:</p>
+
+<ul>
+<li>Sign in via office.com</li>
+<li>Select <strong>Install Software</strong></li>
+</ul>
+
+<p>If you have a non-subscription version installed, copy</p>
+
+<pre><code>/Library/Preferences/com.microsoft.office.licensing.plist
+</code></pre>
+
+<p>from a computer that already has MS-Office installed.</p>
+
+<h3 id="movemicrosoftuserdataoutofdocuments.">Move <code>Microsoft User Data</code> out of Documents.</h3>
+
+<p>If you install Microsoft Office, you&#8217;ll notice that running any
+of its applications causes a directory called
+<strong>Microsoft User Data</strong> to be created under
+<strong>Documents</strong>. This, IMO, wasn&#8217;t a great design decision.
+The Documents directory in general holds things that you care about,
+not system configuration files. Move this directory to
+<strong>Library/Preferences</strong> under your home directory:</p>
+
+<pre><code>mv ~/Microsoft\ User\ Data ~Library/Preferences
+</code></pre>
+
+<p>If, by the way, you want to make the Library directory visible in
+the finder, run this shell command:</p>
+
+<pre><code>setfile -a v ~/Library
+</code></pre>
+
+<p>To make a file invisible to the finder, use <code>setfile -a V</code>.
+If you want to make all hidden files visible in the finder, run this
+command:</p>
+
+<pre><code>defaults write com.apple.finder AppleShowAllFiles TRUE
+</code></pre>
+
+<p>and then restart the finder with:</p>
+
+<pre><code>killall Finder
+</code></pre>
+
+<p>Change the last parameter to <strong>FALSE</strong> in the ``defaults write``` command to undo this. I
+choose not to do this because I don&#8217;t want to see extra clutter in my finder
+view and hidden files are rarely of interest to me.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: May  8, 2019 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> <a href="#distributed_computing">Distributed Computing</a> </h2>
+	<h2> <a href="#computer_security">Computer Security</a> </h2>
+	<h2> <a href="#tutorials">Tutorials</a> </h2>
+	<ul>
+	<li> <a href="../rutgers/notes/make/index.html"> Makefiles </a> </li>
+	<li> <a href="../rutgers/notes/sockets/index.html"> Sockets </a> </li>
+	<li> <a href="rpc/index.html"> RPC </a> </li>
+	</ul>
+	<h2> <a href="#miscellany">Miscellany</a> </h2>
+	<ul>
+	<li> <a href="misc/content/Cstyle.pdf"> C programming style </a> </li>
+	<li> <a href="misc/osx-space.html"> Freeing space on OS X </a> </li>
+	<li> <a href="misc/osx-setup.html"> Configuring OS X  </a> </li>
+	</ul>
+</div>
+
+</div>
+</div>
+</body>
+</html>

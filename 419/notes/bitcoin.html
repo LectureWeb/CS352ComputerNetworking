@@ -1,0 +1,395 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Blockchain and Bitcoin</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Blockchain and Bitcoin</h1>
+								<h2>Cryptocurrency</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>November 6, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<h1 id="hashpointers">Hash Pointers</h1>
+
+<p>A cryptographic hash serves as a checksum for a message. If a message has been modified, it will yield a different hash. By associating a hash with a message, we have a basis for managing the integrity of that message: being able to detect if the message gets changed.</p>
+
+<h2 id="tamper-resistantlinked-lists:blockchains">Tamper-resistant linked-lists: blockchains</h2>
+
+<p>One way of associating a hash with a message is via the use of hash pointers. Pointers are used in data structures to allow one data element to refer to another. In processes, a pointer is a memory location. In distributed systems, a pointer may be an IP address and object identifier. A <strong>hash pointer</strong> is a tuple that contains a traditional pointer along with the hash of the data element that is being pointed to. It allows us to validate that the information being pointed to has not been modified.</p>
+
+<p>The same structures that use pointers can be modified to use hash pointers and create tamper-evident structures. For example, a linked list can be constructed with each element containing a hash pointer to the next element instead of a pointer.</p>
+
+<figure>
+<img src="images/integrity-blockchain.png" alt="Blockchain" />
+<figcaption>Blockchain</figcaption></figure>
+
+
+
+<p>Adding a new block is easy. You allocate the block, copy the <em>head</em> hash pointer into it (the <code>next</code> pointer), and update the <em>head</em> hash pointer to point to the new block and contain a hash of that block.</p>
+
+<p>If an adversary modifies, say, data block 1, we can detect that. The hash pointer in Data&#8211;2 will point to Data&#8211;1 but the hash of Data&#8211;1 will no longer match the hash in the pointer. For a successful attack, the adversary will also need to modify the hash value in the hash pointer in block 2. That will make the hash pointer in block 3 invalid, so that will need to be changed. The adversary will need to change all the hash pointers leading up to the head of the list. If we&#8217;re holding on to the head of the list (e.g., in a variable) so that the adversary cannot modify it, then we will always be able to detect tampering. A linked list using hash pointers is called a <strong>blockchain</strong>.</p>
+
+<h2 id="merkletrees">Merkle Trees</h2>
+
+<p>Another useful structure using hash pointers in place of conventional pointers is a binary tree, called a <strong>Merkle tree</strong> when implemented with hash pointers.</p>
+
+<figure>
+<img src="images/integrity-merkle.png" alt="Merkle Tree" />
+<figcaption>Merkle Tree</figcaption></figure>
+
+
+
+<p>Leaf nodes of a Merkle tree contain conventional hash pointers: pointers to the data blocks and the hashes of those data blocks. Non-leaf child nodes contain left and right pointers along with the hash of the two hashes they point to. As with binary trees, Merkle trees give us the advantage of being able to locate data in <em>O(log n)</em> time instead of linear time. More importanlty, we can validate any data in <em>O(log n)</em> time by traversing from the root down to the last hash pointer at the leaf.</p>
+
+<h3 id="applicationsofblockchainsandmerkletrees">Applications of blockchains and Merkle trees</h3>
+
+<p>With Merkle trees, the information in a leaf does not generally contain information to help you traverse the tree to search for data; we are not necessarily building a search tree. The purpose of the tree is to make it efficient to manage and validate the integrity of the underlying data. That is, the hash pointer structure is there just to allow you to validate the underlying data rather than search for stuff. If you want to search, you can add extra information to each node &#8211; in general, we are not concerned with secrecy and you can build whatever search structures an application needs. Hash pointers are all about helping assess the integrity of data. Structures such as hash-pointer-based linked lists and Merkle trees were designed with peer-to-peer systems in mind where data can come from various untrusted peers. You just need to get the root hash from a trusted place.</p>
+
+<p>The top-level pointer (the root in the case of a tree; the head in the case of linked lists) represents the integrity of the entire set of data. If any data block changes, that top level pointer will allow the user to detect that there has been a change. Therefore, it is important that this value be stored securely and obtained via a trustworthy mechanism. </p>
+
+<p>A Merkle tree allows you to check the integrity of replicated data on a branch-by-branch basis in an efficient manner. Merkle trees are designed for environments where data is replicated among multiple systems and you want each system to be able to validate the integrity of the entire file. This helps in two cases:</p>
+
+<ol>
+<li><p>You can validate downloaded data without having to wait for the entire set of data to be downloaded.</p></li>
+<li><p>You can efficiently compare your data with that on another system.</p></li>
+</ol>
+
+<p>Suppose you have a file and want to check whether any blocks in your version are corrupted with respect to a version on another server. Both you and another system assembled your own structure of hash pointers.</p>
+
+<p>With a linked list of hash pointers, you’d start at the head of the list and compare hashes. If the hashes match, you are confident that your files match. If you have a mismatch, you need to compare the next hash. If it matches what you have then you know that first block has been modified. If it doesn’t then you need to get the hash after that. Ultimately, you may need to traverse the entire list linearly.</p>
+
+<p>With Merkle trees, it becomes easier to find the block (or blocks) that have changed. If the root hash matches, you know that your entire data set matches. If not, you request the left &amp; right hashes and compare those with your tree. If one doesn’t match then you can compare the hashes under that subtree, iterating down the tree until you find the mismatched data block. You do not need to iterate through the entire list of blocks. This is attractive for replicated data sets where we have tens of millions of data blocks, for example, and sending a hash list is not efficient. It is essentially a tree search to find the block that is inconsistent.</p>
+
+<p>Merkle trees are particularly useful for obtaining data from multiple untrusted sources. For example, they are used by Bitcoin and Ethereum servers to migrate copies of the transaction log (the blockchain). They are also used for data replication by a variety of NoSQL databases and by the Git version control system. Given a valid root (top-most) hash pointer, the remaining hash tree can be received from any untrusted source. The receiver can simply validate by checking hashes up to the root. Now that the receiver has the entire tree, any data blocks can be received from untrusted sources as well. Each block can be validated by comparing its hash with the hash at the leaf node of the Merkle tree.</p>
+
+<h1 id="bitcoin">Bitcoin</h1>
+
+<p>Bitcoin was introduced anonymously in 2009 by a person or group named Satoshi Nakamoto and is considered to be the first blockchain-based cryptocurrency. Bitcoin was designed as an open, distributed, public system: there is no authoritative entity and anyone can participate in operating the servers.</p>
+
+<p>Traditional payment systems rely on banks to serve as a trusted third party. If Alice pays $500 to Charles, the bank, acting as a trusted third party, deducts $500 from Alice&#8217;s account and adds $500 to Charles&#8217; account. Beyond auditing, there is no need to maintain a log of all transactions; we simply care about account sums. With a centralized system, all trust resides in this trusted third party. The system fails if the bank disappears, the banker makes a mistake, or if the banker is corrupt.</p>
+
+<p>With Bitcoin, the goal was to create a completely decentralized, distributed system that allows people to manage transactions while preventing opportunities for fraud. People have attempted this previously, using private keys to create digitally signed &#8220;coins&#8221; but the problem has been to figure out how to use them in a way that doesn&#8217;t allow double spending: to keep someone from spending the same coins for two different places. Solutions to this required a third party. Bitcoin solved the problem without the need for a trusted party.</p>
+
+<h2 id="theledgerandthebitcoinnetwork">The ledger and the Bitcoin network</h2>
+
+<p>Bitcoin maintains a complete list of every single transaction since its creation in January 2009. This list of transactions is called the <strong>ledger</strong> and is stored in a structure called a <strong>blockchain</strong>. Complete copies of the ledger are replicated at Bitcoin nodes around the world. There is no concept of a master node or master copies of the ledger. All of these systems run the same software. New systems get the names of some well-known nodes when they download the software and DNS query on these nodes returns their IP addresses. After connecting to one or more nodes, a Bitcoin node will ask each for a list of known Bitcoin nodes. This creates a <strong>peer discovery</strong> process that allows a node to get a complete list of other nodes in the network.</p>
+
+<h2 id="useridentitiesandaddresses">User identities and addresses</h2>
+
+<p>We know how to create unforgeable messages: just <em>sign</em> them. If Alice wants to transfer $500 to Charles, she can create a transaction record that describes this transfer and sign it with her private key (e.g., use a digital signature algorithm or create a hash of the transaction and encrypt it with her private key). Bitcoin uses public-private key pairs and digital signatures to sign transactions. </p>
+
+<p>Bitcoin transactions &#8212; the movement of bitcoins from one account to another &#8212; are associated with public keys and not users.
+Users are <strong>anonymous</strong>. Your identity is your public key and you can use this identity by proving they have the corresponding private key.</p>
+
+<p>There is never any association of your public key with your name or anything else that identifies you. In fact, nothing stops you from creating multiple key pairs and having many identities. The system does not care, or know, what your physical identity is or how many addresses you assigned to yourself. All that matters is that only you have the corresponding private keys to the public keys identified in your transactions so you are the only one who could have created valid signatures for your transactions. </p>
+
+<p>If you can create transactions on behalf of a specific public key, it means that you own the corresponding private key. If you lose that private key, then you can no longer create transactions and hence cannot access your Bitcoin funds. There is nobody to call to recover a lost key since you are solely responsible for storing it!</p>
+
+<p>In its initial deployment, your public key was your Bitcoin identity. If someone wanted to transfer money to you, they would create a transaction where your public key is identified as the recipient of the bitcoin. Bitcoin now identifies recipients by their <strong>Bitcoin address</strong>. Your Bitcoin address is essentially a hash of your public key (and you will have several addresses if you have several keys). The details of creating an address are a bit cumbersome:</p>
+
+<ol>
+<li><p>Generate an ECDSA (Elliptic Curve Digital Signature Algorithm) public, private key pair. This serves as your identity and signing key.</p></li>
+<li><p>Create a <a href="https://en.wikipedia.org/wiki/SHA-2">SHA&#8211;256</a> hash of the public key</p></li>
+<li><p>Perform a <a href="https://en.wikipedia.org/wiki/RIPEMD">RIPEMD&#8211;160</a> hash on that</p></li>
+<li><p>Add a version byte in front of the result</p></li>
+<li><p>Perform a SHA&#8211;256 hash on the result &#8230; and another SHA&#8211;256 hash on that result</p></li>
+<li><p>The four bytes of the result are treated as the address checksum. Add these four bytes to the end of the RIPEMD&#8211;160 hash from [4]</p></li>
+<li><p>Convert the bytes to a base&#8211;58 string using <a href="https://en.bitcoin.it/wiki/Base58Check_encoding">Base58Check</a> encoding to create a 20-byte printable string. Base58Check encoding adds a checksum to be able to validate that the value is not mistyped. This string is your <em>bitcoin address</em>.</p></li>
+</ol>
+
+<p>When all is said and done, the address is essentially just a hash of your public key. Since a hash is a one-way function, someone can create (or verify) your address if they are presented with your public key. However, they cannot derive your public key if they have your address.</p>
+
+<p>Bitcoin uses addresses <em>only</em> as destinations; an address can only receive funds. If Bob wants to send bitcoin to Alice, he will identify Alice as the <strong>output</strong> &#8211; the target of the money &#8211; by using her address. At some point in the future, Alice can use that money by creating a transaction whose source (<strong>input</strong>) refers to the transaction where she received the bitcoin. Any bitcoin node can validate this transaction:</p>
+
+<ul>
+<li><p>Alice&#8217;s transaction will identify where the money comes from (inputs). Each input contains a reference to a past transaction. The transaction contains Alice&#8217;s public key, and her signature.</p></li>
+<li><p>A node can validate the signature by using Alice&#8217;s public key, which is in the transaction. This proves that someone who owns the private key (Alice) that corresponds to that public key created the transaction.</p></li>
+<li><p>That transaction input references an older transaction where Alice&#8217;s address is identified as the output of the bitcoin. Given the address, we cannot derive the public key.</p></li>
+<li><p>A bitcoin node can hash Alice&#8217;s public key (from the input) to create the address and check that it is the same as in the output of the referenced old transaction. That way, it validates that the older transaction indeed gave money to Alice.</p></li>
+</ul>
+
+<h2 id="usertransactionsmovingcoins">User transactions (moving coins)</h2>
+
+<p>A transaction contains <strong>inputs</strong> and <strong>outputs</strong>. Inputs identify where the bitcoin comes from and outputs identify where to whom it is being transferred.
+If Alice wants to send bitcoin to Bob, she creates a message that is a bitcoin transaction and sends it to one or more bitcoin nodes. When a node receives a message, it will forward the transaction to its peers (other nodes it knows about). Typically, within approximately five seconds, every bitcoin node on the network will have a copy of the transaction and can process it.</p>
+
+<p>The bitcoin network is not a database. It is build around a ledger, the list of all transactions. There are no user accounts that can be queried. In her transaction, Alice needs to provide one or more links to previous transactions that will add up to at least the required amount of bitcoin that she&#8217;s sending. These links to earlier transactions are called <strong>inputs</strong>. Each input is an ID of an earlier transaction. Inputs are outputs of previous transactions.</p>
+
+<p>Alice&#8217;s account balance is the sum of all transactions that sent her money (she is an output) minus the all the money she spent (the money she used as inputs). It&#8217;s the sum of <strong>unspent transaction outputs</strong> (UTXO).</p>
+
+<p>When a bitcoin node receives a transaction, it performs several checks:</p>
+
+<ol>
+<li><p>The signature of each input is validated by checking it against the public key in the transaction. This ensures that it was created by someone who has the private key that corresponds to the public key.</p></li>
+<li><p>It hashes the public key in the transaction to create the <em>address</em>, which will be matched against the output addresses in the inputs.</p></li>
+<li><p>The transactions listed in the inputs are validated to make sure that those transactions have not been used by any other transaction. This ensures there will be no <strong>double spending</strong>. </p></li>
+<li><p>Finally, it makes sure that there is a sufficient quantity of bitcoin output by those input transactions.</p></li>
+</ol>
+
+<p>A bitcoin transaction contains:</p>
+<dl>
+<dt>One or more inputs:</dt>
+<dd>Each input identifies transactions where coins come from. These are references to past transactions. Bitcoin allows each input to contain a signature and a public key that corresponds to the private key that was used to create that signature. This is because a user may have multiple identities (keys) and may reference past transactions that were directed to different addresses that belong to the user.</dd>
+
+<dt>Output:</dt>
+<dd>Destination address &amp; amount &#8211; who the money goes to. This is simply the recipient&#8217;s bitcoin address.</dd>
+</dl>
+
+
+<p>Change:
+: The transaction owner’s address &amp; bitcoin amount. Every input must be <em>completely spent</em>. Any excess is generated as another output to the owner of the transaction.</p>
+
+<p>Transaction fee (anywhere from 10¢ to a $10+ per transaction).
+There is a limited amount of space (about 1 MB) in a block. A transaction is about 250 bytes. To get your transaction processed quickly, you need to outbid others. </p>
+
+<h2 id="blocksandtheblockchain">Blocks and the blockchain</h2>
+
+<p>Transactions are sent to all the participating servers. Each system keeps a <strong>complete copy</strong> of the entire ledger, which records all transactions from the very first one. Currently the bitcoin ledger is about <a href="https://www.blockchain.com/en/charts/blocks-size">250 GB</a>.</p>
+
+<p>Transactions are grouped into a <strong>block</strong>. A block is just a partial list of transactions. When a server is ready to do so, it can add the block to the ledger, forming a linked list of blocks that comprise the <strong>blockchain</strong>. In Bitcoin, a block contains ten minutes worth of transactions, all of which are considered to be concurrent. </p>
+
+<p>Every ten minutes, a new block of transactions is added to the blockchain. A block is approximately a megabyte in size and holds, on average, a bit over 2,000 transactions. To make it easy to locate a specific transaction within a block, the blocks are stored in a <strong>Merkle tree</strong>. This is a binary tree of hash pointers and makes it easy not just to locate a desired transaction but to validate that it has not been tampered by validating the chain of hashes along the path.</p>
+
+<h2 id="securingtheblock">Securing the Block</h2>
+
+<p>A critically important part of the Bitcoin blockchain is to ensure that blocks in the blockchain have not been modified. We explored the basic concept of a blockchain earlier. Each block contains a <strong>hash pointer</strong> to the previous block in the chain. A hash pointer not only points to the previous block but also contains a SHA&#8211;256<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a> hash of that block. This creates a <strong>tamper-proof</strong> structure. If the contents of any block are modified (accidentally or maliciously), the hash pointer that points to that block will no longer be valid (the hashes won&#8217;t match).</p>
+
+<p>To make a change to a block, an attacker will need to modify all the hash pointers from the most recent block back to the block that was changed. One way to prevent such a modification could have been to use signed hash pointers to ensure an attacker cannot change their values. However, that would require someone to be in charge of signing these pointers and there is no central authority in Bitcoin; anyone can participate in building the blockchain. We need a different way to protect blocks from modification.</p>
+
+<h3 id="proofofwork">Proof of Work</h3>
+
+<p>Bitcoin makes the addition of a new block &#8211; or modification of a block in a blockchain &#8211; extremely difficult by creating a <strong>puzzle</strong> that needs to be solved before the block can be added to the blockchain. By requiring a node solve a sufficiently difficult puzzle, there will be only a tiny chance that two or more nodes will propose adding a block to the chain at the same time. It will also make it computationally prohibitive to modify old hash pointers.</p>
+
+<p>This puzzle is called the <strong>Proof of Work</strong> and is an idea that has been adapted from an earlier system called <a href="https://en.wikipedia.org/wiki/Hashcash">hashcash</a>. Proof of Work requires computing a hash of three components, <em>hash(B, A, W)</em> where:</p>
+
+<ul>
+<li><em>B</em> = block of transactions (which includes the hash pointer to the previous block)</li>
+<li><em>A</em> = address (i.e., hash of the public key) of the owner of the server doing the computation</li>
+<li><em>W</em> = the Proof of Work number</li>
+</ul>
+
+<p>When servers are ready to commit a block of transactions onto the chain, they each compute this hash, trying various values of <em>W</em> until the hash result has a specific pre-defined property. The property they are searching for is a hash value that is less than some given number. Currently, it&#8217;s a value that requires the leading 74 bits of the 256-bit hash to all be 0s). The property changes over time to ensure that the puzzle never gets too easy or too difficult regardless of how many nodes are in the network or how fast processors get.</p>
+
+<p>Recall that one property of a cryptographic hash function is the inability to deduce any of the input by looking at the output. Hence, we have no idea what values of <em>W</em> will yield a hash with the desired properties. Servers have to try trillions of values with the hope that they will get lucky and find a value that yields the desired hash. This process of searching for <em>W</em> is called <strong>mining</strong>.</p>
+
+<p>When a server finds a value of <em>W</em> that yields the desired hash, it advertises that value to the entire set of bitcoin servers. Upon receiving this message, it is trivial for a server to validate the proof of work by simply computing <em>hash(B, A, W)</em> with the <em>W</em> sent in the message and checking the resultant value. The servers then add the block, which contains the Proof of Work number and the winner&#8217;s address, onto the blockchain.</p>
+
+<p>Bitcoin&#8217;s mining difficulty is adjusted every 2,016 blocks, which corresponds to approximately 14 days, to keep the average rate at which blocks are added to the blockchain at 10 minutes. This allows the network to handle changes in the number of miners participating in computing the proof work.</p>
+
+<h3 id="doublespendingandmodifyingpasttransactions">Double Spending and modifying past transactions</h3>
+
+<p>A major concern with decentralized cryptocurrency systems is <strong>double spending</strong>. Double spending refers to sending the same funds (or tokens) to multiple parties: Alice sends $500 to Charles and $500 to David but only has $500 in her account. Bitcoin deals with this by having every server maintain the complete ledger, so Alice&#8217;s entire list of transactions can be validated before a new one is accepted.</p>
+
+<p>Alice may decide to go back to an older transaction and modify it. For example, she might change change the transaction that sent bitcoin to Charles into one that sends money to David &#8211; or simply delete the fact that she paid Charles the full amount. </p>
+
+<p>To do this, she would need to compute a new proof of work value for that block so the block hash will be valid. Since Bitcoin uses hash pointers, each block contains a hash pointer to the previous (earlier) block. Alice would thus need to compute new proof of work values for all newer blocks in the chain so that her modified version of the entire blockchain is valid. She ends up making a <strong>competing blockchain</strong>.</p>
+
+<p>Recomputing the proof of work numbers is a computationally intensive process. Because of the requirement to generate the Proof of Work for each block, a malicious participant will not be able to catch up with the cumulative work of all the other participants. Because of errors or the rare instances where multiple nodes compute the proof of work concurrently, even honest participants may, on occasion, end up building a competing blockchain. Bitcoin&#8217;s policy is that <strong>the longest chain in the network is the correct one</strong>. The length of the chain is the chain&#8217;s <strong>score</strong> and the highest-scoring chain will be considered the correct one by the servers. A participant is obligated to update its chain with a higher-scoring one if it gets notice of a higher-scoring chain from another system. If it doesn&#8217;t update and insists on propagating its chain as the official one, its chain will simply be ignored by others.</p>
+
+<h3 id="attack">51% Attack</h3>
+
+<p>Let us go back to the example of Alice maliciously modifying a past transaction. In addition to the work of modifying the existing blockchain, Alice will also need to process new transactions that are steadily arriving, and making the blockchain get longer as new blocks get added to it. She needs to change the existing blockchain and also compute proof of work values for new blocks faster than everyone else in the network so that she would have the longest valid chain and hence a high score. </p>
+
+<p>If she can do this then her chain becomes the official version of the blockchain and everyone updates their copy.
+This is called a <strong>51% attack</strong>. To even have a chance of succeeding, Alice would need more computing power than the reset of the systems in the Bitcoin network combined. Back in 2017, The <a href="https://www.economist.com/the-economist-explains/2015/01/20/how-bitcoin-mining-works">Economist</a> estimated that &#8220;bitcoin miners now have 13,000 times more combined number-crunching power than the world’s 500 biggest supercomputers,&#8221; so it is not feasible for even a nation-state attacker to harness sufficient power to carry out this attack on a popular cryptocurrency network such as Bitcoin. Blockchain works only because of the assumption that the majority of participants are honest &#8230; or at least not conspiring together to modify the same transactions.</p>
+
+<p>Even if someone tried to do this attack, they&#8217;d likely only be able to modify transactions in very recent history &#8211; in the past few blocks of the blockchain. This is why For this reason, transactions further back in the blockchain are considered to be more secure.</p>
+
+<h2 id="committingtransactions">Committing Transactions</h2>
+
+<p>Because of the chain structure, it requires more work to modify older transactions (more blocks = more proof of work computations). Modifying only the most recent block is not hugely challenging. Hence, the further back a transaction is in the blockchain, the less likely it is that anyone can amass the computing power to change it and create a competing blockchain. </p>
+
+<p>A transaction is considered <strong>confirmed</strong> after some number, <em>N</em>, additional blocks are added to the chain.
+The value of <em>N</em> is up to the party receiving the transaction - a level of comfort. The higher the number, the deeper the transaction is in the blockchain and the harder it is to alter. Bitcoin recommends <em>N</em>=1 for low-value transactions (payments under $1,000; this enables them to be confirmed quickly), <em>N</em>=3 for deposits and mid-value transactions, and <em>N</em>=6 for large payments (e.g., $10k&#8230;$1M). Even larger values of <em>N</em> could be used for extremely large payments.</p>
+
+<h2 id="rewards">Rewards</h2>
+
+<p>Why would servers spend a huge amount of computation, which translates to huge investments in computing power and electricity, just to find a value that produces a hash with a certain property? To provide an incentive, the system rewards the <em>first</em> server (the <strong>miner</strong>) that advertises a successful Proof of Work number by depositing a certain number of Bitcoins into their account. To avoid rewarding false blockchains as well as to encourage continued mining efforts, the miner is rewarded only after 99 additional blocks have been added to the ledger.</p>
+
+<p>The reward for computing a proof of work has been designed to decrease over time. The reward is halved every 210,000 blocks mined, which is approximately every four years:</p>
+
+<ul>
+<li>50 bitcoins for the first 4 years since 2008</li>
+<li>25 bitcoins from 2012&#8211;2015</li>
+<li>12.5 bitcoins from block #420,000 July 9, 2016 – 2019</li>
+<li>6.25 bitcoins at block #630,000 – May 11, 2020</li>
+</ul>
+
+<p>Eventually, the reward will reach zero and there will be a maximum of around 21 million bitcoins in circulation. However, recall that each transaction has a fee associated with it. Whoever solves the puzzle first and gets a confirmed block into the blockchain will also reap the sum of all the transaction fees in that block.</p>
+
+<h2 id="centralization">Centralization</h2>
+
+<p>Bitcoin has been designed to operate as a large-scale, global, fully decentralized network. Anybody can download the software and operate a bitcoin node. All you need is sufficient storage to store the blockchain. There are currently over 9,000 reachable full nodes spread across 99 countries. It is <a href="https://bitcoinist.com/bitcoin-network-surpasses-100000-nodes-new-data-shows/">estimated</a> that there are over 100,000 total nodes, including those that are be running old versions of software or are not always reachable. In this sense, Bitcoin is truly decentralized. Note that there are <a href="https://thenextweb.com/hardfork/2019/03/01/bitcoin-blockchain-nodes-network/">different types of nodes</a>. The nodes we discussed serve as <strong>full nodes</strong>. They maintain an entire copy of the blockchain and accept transactions. Light nodes are similar but store only a part of the blockchain, talking to a full node parent if they need to access other blocks.</p>
+
+<p>Not everyone who operates a bitcoin node does mining (proof of work computation). Mining is incredibly time energy intensive. To make money on mining, one needs to buy dedicated ASIC mining hardware that is highly optimized to compute SHA&#8211;256 hashes. Conventional computers will cost more in energy than they will earn in bitcoin rewards. Because of this, mining tends to be concentrated among a far smaller number of players. It is not as decentralized as much as one would like.</p>
+
+<p>Bitcoin software is open source but there is only a small set of trusted developers. The software effort is inspectable but not really decentralized. Bugs have been fixed but many nodes still run old and <a href="https://thenextweb.com/hardfork/2019/05/06/bitcoin-100000-nodes-vulnerable-cryptocurrency/">buggy</a> versions. Bitcoin transactions cannot be undone even if they were created by buggy nodes or via compromised keys. </p>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><p><a href="https://www.blockchain.com/explorer?view=btc">Blockcahin Explorer</a>, blockchain.com - real-time visualization</p></li>
+<li><p><a href="http://bitcoin.sipa.be">Total network hashing rate</a>, bitcoin.sipa.be - hash rate graphs</p></li>
+<li><p>Ameer Rosic, <a href="https://blockgeeks.com/guides/what-is-hashing/">What is Hashing? Step-by-Step Guide Under Hood of Blockchain</a> - tutorial on hashing and hash pointers</p></li>
+<li><p>Satoshi Nakamoto, <a href="https://bitcoin.org/bitcoin.pdf">Bitcoin: A Peer-to-Peer Electronic Cash System</a> - the original paper</p></li>
+<li><p>Julian Martinez, <a href="https://medium.com/@julianrmartinez43/understanding-proof-of-work-part-1-586d7ee6b014">Part 1: Demystifying Solving a Block</a>, Medium.com, May 2018</p></li>
+<li>Andreas M. Antonopoulos, <a href="https://www.oreilly.com/library/view/mastering-bitcoin/9781491902639/">Mastering Bitcoin</a>, O&#8217;Reilly
+
+<ul>
+<li><a href="https://www.oreilly.com/library/view/mastering-bitcoin/9781491902639/ch05.html">Chapter 5. Transactions</a>, <em>Mastering Bitcoin</em>, O&#8217;Reilly</li>
+<li><a href="https://www.oreilly.com/library/view/mastering-bitcoin/9781491902639/ch08.html">Chapter 8. Mining and Consensus</a>, <em>Mastering Bitcoin</em>, O&#8217;Reilly</li>
+</ul></li>
+<li><p><a href="https://www.bitcoin.com/get-started/how-bitcoin-transactions-work/">How bitcoin transactions work</a>, Bitcoin.com</p></li>
+<li><p><a href="https://chainbulletin.com/proof-of-work-explained-in-simple-terms/">Proof of Work Explained in Simple Terms</a>, <a href="https://chainbulletin.com">The Chain Bulletin</a></p></li>
+<li><p><a href="https://en.bitcoin.it/wiki/Difficulty">Bitcoin difficulty</a>, Bitcoin.it</p></li>
+<li><p><a href="https://en.bitcoin.it/wiki/Target">Bitcoin target hash</a>, Bitcoin.it</p></li>
+<li><p><a href="https://en.bitcoinwiki.org/wiki/Difficulty_in_Mining">Difficulty in Mining</a>, Bitcoinwiki.org</p></li>
+<li><p><a href="https://learnmeabitcoin.com/technical/target">Target: the number you need to get below to mine a block</a>, Learnmeabitcoin.com</p></li>
+<li><p>Raghav Sood, <a href="https://raghavsood.com/blog/2018/06/10/bitcoin-signature-types-sighash">Bitcoin&#8217;s Signature Types - SIGHASH</a></p></li>
+</ul>
+
+<p>-
+<!--
+https://cointelegraph.com/news/crypto-under-attack-the-five-worst-hacks-that-shook-the-crypto-world
+--></p>
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>SHA&#8211;256 is the SHA&#8211;2 family of hash functions that produces a 256-bit output. The SHA&#8211;2 family also includes HA&#8211;224, SHA&#8211;256, SHA&#8211;384, and SHA&#8211;512. <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+
+							</section>
+							<footer class="main">
+								Last modified November  6, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

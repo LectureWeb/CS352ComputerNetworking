@@ -1,0 +1,471 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Cryptography</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Cryptography</h1>
+								<h2>Symmetric cryptosystems</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>October 12, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<h1 id="introduction">Introduction</h1>
+
+<p>Cryptography deals with encrypting <strong>plaintext</strong> using
+a <strong>cipher</strong>, also known as an <strong>encryption algorithm</strong>,
+to create <strong>ciphertext</strong>, which is unintelligible to anyone
+unless they can <strong>decrypt</strong> the ciphertext.</p>
+
+<p>Cryptography is a tool that
+helps build protocols that address:</p>
+<dl>
+<dt>Confidentiality:</dt>
+<dd>Hiding the contents of a message.</dd>
+
+<dt>Authentication</dt>
+<dd>Showing that the user really is that user.</dd>
+
+<dt>Integrity:</dt>
+<dd>Validating that the message has not been modified.</dd>
+
+<dt>Nonrepudiation:</dt>
+<dd>Binding the origin of a message to a user so that she cannot deny creating it.</dd>
+</dl>
+
+
+<p>A <strong>restricted algorithm</strong> is one where the workings of the cipher must be kept secret. There is no reliance on any key and the secrecy of the cipher is crucial to the value of the algorithm. This has obvious flaws: people in the know leaking the secret, designers coming up with a poor algorithm, and reverse engineering. </p>
+
+<p>For any serious use of encryption, we use well-tested, <em>non-secret</em> algorithms that rely on secret keys. A <strong>key</strong> is a parameter to a cipher that alters the resulting ciphertext. Knowledge of the key is needed to decrypt the ciphertext.
+<strong>Kerckhoffs’s Principle</strong> states that a cryptosystem should be secure even if everything about the system, except the key, is public knowledge. We expect algorithms to be publicly known and all security to rest entirely on the secrecy of the key.</p>
+
+<p>A <strong>symmetric encryption algorithm</strong> uses the same secret key for encryption and decryption.</p>
+
+<h2 id="propertiesofgoodciphers">Properties of good ciphers</h2>
+
+<p>For a cipher to be considered good:</p>
+
+<ol>
+<li>Ciphertext should be indistinguishable from random values.</li>
+<li>Given ciphertext, there should be no way to extract the original plaintext or the key that was used to create it except by of enumerating over all possible keys. This is called a <strong>brute-force attack</strong>.</li>
+<li>The keys used for encryption should be large enough that a brute force attack is not feasible. Each additional bit in a key doubles the number of possible keys and hence doubles the search time.</li>
+</ol>
+
+<h1 id="classiccryptography">Classic cryptography</h1>
+
+<h2 id="monoalphabeticsubstitutionciphers">Monoalphabetic substitution ciphers</h2>
+
+<p>The earliest practical; form of cryptography was the <strong>monoalphabetic substitution cipher</strong>. In this cipher, each character of plaintext is substituted with a character of ciphertext based on a substitution alphabet (a lookup table). The simplest of these is the <strong>Caesar cipher</strong>, known as a <strong>shift cipher</strong>, in which a plaintext character is replaced with a character that is <em>n</em> positions away in the alphabet. The key is the simply the the shift value: the number <em>n</em>. In the general case of the monoalphabetic substitution cipher, a randomly-scrambled substitution alphabet is used but this makes sharing knowledge of the substitution alphabet more difficult.</p>
+
+<p>Substitution ciphers
+are vulnerable to <strong>frequency analysis attacks</strong>, in which an analyst
+analyzes letter frequencies in ciphertext and substitutes characters
+with those that occur with the same frequency in natural language
+text (e.g., if &#8220;x&#8221; occurs 12% of the time, it&#8217;s likely to really
+be an &#8220;e&#8221; since &#8220;e&#8221; occurs in English text approximately 12% of the
+time while &#8220;x&#8221; occurs only 0.1% of the time).</p>
+
+<h2 id="polyalphabeticsubstitutionciphers">Polyalphabetic substitution ciphers</h2>
+
+<p><strong>Polyalphabetic substitution ciphers</strong> were designed to increase resiliency against
+frequency analysis attacks. Instead of using a single
+plaintext to ciphertext mapping for the entire message, the substitution alphabet
+may change periodically. </p>
+
+<p>Leon Battista Alberti is credited with creating the first polyalphabetic substitution cipher.
+In the <strong>Alberti cipher</strong> (essentially a secret decoder ring), the substitution alphabet changes every <em>n</em> characters
+as the ring is rotated one position every <em>n</em> characters.</p>
+
+<p>The <strong>Vigenère cipher</strong> is a grid of Caesar ciphers that uses a <strong>repeating key</strong>.
+A repeating key is created by taking a key and repeating to make a string that is as long as the message.
+Each character
+of the key determines which Caesar cipher (which row of the grid)
+will be used for the next character of plaintext. The position of
+the plaintext character identifies the column of the grid.</p>
+
+<p>These algorithms are still vulnerable to frequency analysis attacks but require
+substantially more plaintext since one needs to deduce the key length (or the
+frequency at which the substitution alphabet changes) and then
+effectively decode multiple monoalphabetic substitution ciphers.</p>
+
+<h2 id="one-timepads">One-time Pads</h2>
+
+<p>The <strong>one-time pad</strong> is the only <em>provably secure</em> cipher. It uses a
+random key that is as long as the plaintext. Each character
+of plaintext is permuted by a character of ciphertext (e.g., add
+the characters modulo the size of the alphabet or, in the
+case of binary data, exclusive-or the next byte of the text with
+the next byte of the key).</p>
+
+<p>The reason this cryptosystem is not particularly
+useful is because the key must be as long as the message, so
+transporting the key securely becomes a problem. The challenge of
+sending a message securely is now replaced with the challenge of
+sending the key securely.
+The position in the key (pad) must by
+synchronized at all times. Error recovery from unsynchronized keys
+is not possible. For the cipher to be secure, a key must
+be composed of truly random characters, not ones derived by an
+algorithmic pseudorandom number generator. Finally the key can
+never be reused. </p>
+
+<p>The one-time pad provides <strong>perfect secrecy</strong> (not to be confused with <em>forward secrecy</em>, also called <em>perfect forward secrecy</em>, which will be discussed in the next lecture). This means that the ciphertext conveys no information about the content of the plaintext. You can always create some key that will convert any ciphertext to any possible plaintext.
+Perfect secrecy can be achieved <em>only</em> if there are as many possible keys as the plaintext, meaning the key has to be as long as the message. See <a href="https://www.youtube.com/watch?v=cAt6MYoGqJ4">this video</a> for an explanation of perfect secrecy.</p>
+
+<h2 id="streamciphers">Stream ciphers</h2>
+
+<p>A <strong>stream cipher</strong> simulates a one-time pad by using a <strong>keystream generator</strong> to
+create a set of key bytes that is as long as the message.
+A keystream generator is a <strong>pseudorandom number generator</strong> that is <strong>seeded</strong>,
+or initialized, with a key that drives the output of all the bytes that the
+generator spits out. </p>
+
+<p>The keystream generator is fully deterministic: the same
+key will produce the same stream of output bytes each time. Because of this,
+receivers only need to have the key to be able to decipher a message.
+However, because the keystream generator does not generate true random numbers,
+the stream cipher is not a true substitute for a one-time pad. Its strength
+rests on the strength of the key. A keystream generator will, at some point,
+will reach an internal state that is identical to some previous internal
+state and produce output that is a repetition of previous output. This also
+limits the security of a stream cipher. Since key repetition may not occur for
+a long time, stream ciphers can still be useful for in some applications.</p>
+
+<h2 id="rotormachines">Rotor machines</h2>
+
+<p>A <strong>rotor machine</strong> is an electromechanical device that implements
+a polyalphabetic substitution cipher. It uses a set of disks (rotors),
+each of which implements a substitution cipher.
+A rotor rotate one position with each character. After a
+complete rotation of one rotor, the next rotor advances one position.
+Each successive character gets a new substitution alphabet applied to it.
+The multi-rotor mechanism allows for a huge number of substitution alphabets to be
+employed before they start repeating when the rotors all reach their
+starting position. The number of alphabets is c<sup>r</sup>, where
+<em>c</em> is the number of characters in the alphabet and <em>r</em> is
+the number of rotors.</p>
+
+<h2 id="transpositionciphers">Transposition ciphers</h2>
+
+<p>Instead of substituting one character of plaintext for a character of ciphertext, a transposition cipher scrambles the position of the plaintext characters. Decryption is the knowledge of how to unscramble them.</p>
+
+<p>A <strong>scytale</strong> (rhymes with <em>Italy</em>), also known as a <em>staff cipher</em>, is an ancient implementation of a transposition cipher where text written along a narrow strip of paper is wrapped around a rod and the resulting sequences of text are read horizontally. This is equivalent to entering characters in a two-dimensional matrix horizontally and reading them vertically. Because the number of characters might not be a multiple of the width of the matrix, extra characters might need to be added at the end. This is called <strong>padding</strong> and is essential for <strong>block ciphers</strong>, which encrypt chunks of data at a time.</p>
+
+<h1 id="computercryptpgraphy">Computer cryptpgraphy</h1>
+
+<h2 id="blockciphers">Block ciphers</h2>
+
+<p>With the exception of strea, ciphers, modern ciphers are <strong>block ciphers</strong>, meaning that they encrypt
+a chunk of bytes, or a <strong>block</strong>, of plaintext at a time. The same key
+is used to encrypt each successive block of plaintext.</p>
+
+<p>AES and DES are two popular symmetric block ciphers.
+Symmetric block ciphers are usually implemented as <strong>iterative ciphers</strong>.
+The encryption of each block of plaintext iterates over several <strong>rounds</strong>. Each round
+uses a <strong>subkey</strong>, which is a key generated from the main key via
+a specific set of bit replications, inversions, and transpositions. The
+subkey is also known as a <strong>round key</strong> since it is applied to only one round, or iteration.</p>
+
+<p>This subkey determines what happens to the block of plaintext as it
+goes through a <strong>substitution-permutation (SP) network</strong>. The SP
+network, guided by the subkey, flips some bits by doing a substitution, which is
+a table lookup of an input bit pattern to get an output bit pattern and
+a permutation, which is a scrambling of bits in a specific order.
+The output bytes are fed into the next round, which applies
+a substitution-permutation step onto a different subkey.
+The process continues for several rounds (16 rounds for DES, 10&#8211;14
+rounds for AES). and the resulting bytes are the ciphertext for the
+input block.</p>
+
+<p>The iteration through multiple SP steps creates
+<em>confusion</em> and <em>diffusion</em>. <strong>Confusion</strong> means that it is extremely
+difficult to find any correlation between a bit of the ciphertext with
+any part of the key or the plaintext. A core component of block ciphers
+is the <strong>s-box</strong>, which converts <em>n</em> input bits to <em>m</em> output bits, usually
+via a table lookup. The purpose of the s-box is to add <em>confusion</em> by
+altering the relationship between the input and output bits.</p>
+
+<p><strong>Diffusion</strong> means
+that any changes to the plaintext are distributed (diffused) throughout the
+ciphertext so that, on average, half of the bits of the ciphertext would
+change if even one bit of plaintext is changed.</p>
+
+<h2 id="feistelciphers">Feistel ciphers</h2>
+
+<p>A <strong>Feistel cipher</strong> is a form of block cipher that uses a variation
+of the SP network where a block
+plaintext is split into two parts. The substitution-permutation round
+is applied to only one part. That output is then XORed with the other
+part and the two halves are swapped. At each round, half of
+the input block remains unchanged. DES, the Data Encryption Standard,
+is an example of a Feistel cipher. AES, the Advanced Encryption Standard,
+is not.</p>
+
+<h2 id="des">DES</h2>
+
+<p>DES, the Data Encryption Standard was adopted as a federal standard in 1976 and is a block cipher
+based on the Feistel cipher that encrypts 64-bit blocks using a 56-bit key. </p>
+
+<p>DES has been shown to have some minor weaknesses against cryptanalysis. Key can be recovered using 2<sup>47</sup> chosen plaintexts or 2<sup>43</sup> known plaintexts. Note that this is not a practical amount of data to get for a real attack. The real weakness of DES is not the algorithm but its 56-bit key. An exhaustive search requires 2<sup>55</sup> iterations on average (we assume that, on average, the plaintext is recovered halfway through the search). This was a lot for computers in the 1970s but is not much for today. Custom hardware (FPGA-based DES crackers) or distributed efforts can do an exhaustive search to crack a DES key within a day.</p>
+
+<h2 id="triple-des">Triple-DES</h2>
+
+<p><strong>Triple-DES</strong> (<strong>3DES</strong>)
+solves the key size problem of DES and allows DES to use keys up to 168 bits.
+It does this by applying three layers of encryption:</p>
+
+<ol>
+<li>C&#8217; = Encrypt M with key K<sub>1</sub></li>
+<li>C&#8217;&#8217; = Decrypt C&#8217; with key K<sub>2</sub></li>
+<li>C = Encrypt C&#8217;&#8217; with key K<sub>3</sub></li>
+</ol>
+
+<p>If K<sub>1</sub>, K<sub>2</sub>, and K<sub>3</sub> are identical, we have the original DES algorithm
+since the decryption in the second step cancels out the encryption in the first step.
+If K<sub>1</sub> and K<sub>3</sub> are the same, we effectively have a 112-bit key and if all three
+keys are different, we have a 168-bit key.</p>
+
+<p>Cryptanalysis is not effective against 3DES: the three layers of encryption
+use 48 rounds instead of 16 making it infeasible to reconstruct the
+substitutions and permutations that take place.
+DES is relatively slow compared with other symmetric ciphers, such as AES.
+It was designed with hardware encryption in mind. Moreover, 3DES is, of course, three times slower than DES.</p>
+
+<h2 id="aes">AES</h2>
+
+<p>AES, the Advanced Encryption Standard, was chosen as a successor to DES
+and became a federal government standard in 2002.
+It uses a larger block size than DES: 128 bits (16 bytes) versus DES&#8217;s 64 bits (8 bytes) and supports larger key sizes: 128, 192, and 256 bits.
+Even 128 bits is long enough to prevent brute-force searches.</p>
+
+<p>No significant academic attacks against AES have been discovered thus far beyond brute force search.
+AES is also typically 5&#8211;10 times faster in software than 3DES.</p>
+
+<h2 id="blockciphermodes">Block cipher modes</h2>
+
+<h3 id="electroniccodebookecb">Electronic Code Book (ECB)</h3>
+
+<p>When data is encrypted with a block cipher, it is broken into blocks
+and each block is encrypted separately. This leads to two problems.</p>
+
+<ol>
+<li><p>If different encrypted messages contain the same substrings and
+use the same key, an intruder can deduce that it is the same data.</p></li>
+<li><p>Secondly, a malicious party can delete, add, or replace
+blocks (perhaps with blocks that were
+captured from previous messages). </p></li>
+</ol>
+
+<p>This basic form of a block cipher
+is called an <strong>electronic code book</strong> (<strong>ECB</strong>).
+Think of the code book as a database of encrypted content. You can
+look up a block of plaintext and find the corresponding ciphertext. This
+is not feasible to implement for arbitrary messages but refers to the historic use of
+codebooks to convert plaintext messages to ciphertext.</p>
+
+<h3 id="cipherblockchainingcbc">Cipher Block Chaining (CBC)</h3>
+
+<p><strong>Cipher block
+chaining</strong> (<strong>CBC</strong>) addresses these problems. Every block of data
+is still encrypted with the same key. However, prior to being
+encrypted, the data block is exclusive-ORed with the previous
+block of ciphertext. The receiver does the process in reverse: a block
+of received data is decrypted and then exclusive-ored with the
+previously-received block of ciphertext to obtain the original data. The very
+first block is exclusive-ored with a random <strong>initialization vector</strong>,
+which must be transmitted to the remote side. </p>
+
+<p>Note that CBC does
+not make the encryption more secure; it simply makes the result of
+each block of data dependent on all previous previous blocks so that data
+cannot be meaningfully inserted or deleted in
+the message stream.</p>
+
+<h3 id="countermodectr">Counter mode (CTR)</h3>
+
+<p><strong>Counter mode</strong> (<strong>CTR</strong>) also addresses these problems
+but in a different way. The ciphertext of each block is a function
+of its position in the message. Encryption starts with a
+message counter. The counter is incremented for each block
+of input. Only the counter is encrypted. The resulting ciphertext is
+then exclusive-ORed with the corresponding block of plaintext, producing
+a block of message ciphertext. To decrypt, the receiver does
+the same thing and needs to know the starting value of the counter
+as well as the key. </p>
+
+<p>An advantage of CTR mode is that each block has
+no dependance on other blocks and encryption on multiple
+blocks can be done in parallel. </p>
+
+<h2 id="cryptanalysis">Cryptanalysis</h2>
+
+<p>The goal of <strong>cryptanalysis</strong> is break codes.
+Most often, it is to identify some non-random behavior
+of an algorithm that will give the analyst an advantage over
+an exhaustive search of the key space.</p>
+
+<p><strong>Differential cryptanalysis</strong>
+seeks to identify non-random behavior by
+examining how changes in plaintext input affect changes in the output ciphertext.
+It tries to find whether certain bit patterns are unlikely for certain keys
+or whether the change in plaintext results in likely changes in the output.</p>
+
+<p><strong>Linear cryptanalysis</strong>
+tries to create equations that attempt to predict the relationships between
+ciphertext, plaintext, and the key. An equation will never be equivalent to
+a cipher but any correlation of bit patterns give the analyst an advantage.</p>
+
+<p>Neither of these methods will break a code directly but may help find
+keys or data that are more likely are that are unlikely. It reduces the
+keys that need to be searched.</p>
+
+<h1 id="references">References</h1>
+
+<p>Fred Cohen, <a href="http://fc0.co/all.net/edu/curr/ip/Chap2-1.html">2.1 - A Short History of Cryptography</a>, 1995.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Alberti_cipher_disk">Alberti Cipher Disk</a>, Wikipedia.</p>
+
+<p>Daniel Rodriguez-Clark, <a href="https://crypto.interactive-maths.com/caesar-shift-cipher.html">Caesar Shift Cipher</a>, Crypto Corner, 2019. - <strong>includes interactive examples </strong></p>
+
+<p>Simon Singh, <a href="https://www.simonsingh.net/The_Black_Chamber/vigenere_cracking.html">Cracking the Vigenère Cipher</a>, The Black Chamber, 2000.
+Daniel Rodriguez-Clark, <a href="https://crypto.interactive-maths.com/vigenegravere-cipher.html">Vigenère Cipher</a>, Crypto Corner, 2019. - <strong>includes interactive examples </strong></p>
+
+<p><a href="http://users.telenet.be/d.rijmenants/en/onetimepad.htm">One-time Pad</a></p>
+
+<p>Wikipedia, <a href="https://en.wikipedia.org/wiki/One-time_pad">One-time Pad</a></p>
+
+<p><a href="https://en.wikipedia.org/wiki/Data_Encryption_Standard">Data Encryption Standard</a>, Wikipedia.</p>
+
+<p>Sanchita Mal-Sarkar and Chansu Yu, <a href="https://academic.csuohio.edu/yuc/security/Chapter_06_Data_Encription_Standard.pdf">Data Encryption Standard</a>, Hands-on Experience on Computer System Security.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard_process">Advanced Encryption Standard process</a>, Wikipedia.</p>
+
+<p>Josh Lake, <a href="https://www.comparitech.com/blog/information-security/what-is-aes-encryption/">What is AES Encryption and how does it work?</a>, Comparitech, 2020.</p>
+
+							</section>
+							<footer class="main">
+								Last modified October 23, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

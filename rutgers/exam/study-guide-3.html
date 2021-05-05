@@ -1,0 +1,1117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 Exam 3 Study Guide </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+.rqbox {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+        position: relative;
+	width: 15em;
+        background-color: #FDF5B6;
+        border-style: double; border-width: 3px;
+        padding: 0.5em 0.5em 0.5em 0.5em;
+}
+</style>
+</head>
+
+<body id="s_ru">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/small-logo.png" alt="pk.org" name="logo" width="97" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru416"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<P>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a>  </li>
+ 	<li> <a href="../index.html"> Rutgers CS 417 </a>  </li>
+ 	<li> <a href="../exam/index.html"> Exam info </a>  </li>
+ 	<li> <a href="../exam/study-guide-3.html"> Exam 3 study guide </a>  </li>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Exam 3 study guide </h1>
+<h2> The one-hour study guide for exam 3 </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> April 26, 2009 </p>
+</div>
+
+<p class="first">
+
+Disclaimer: 
+This study guide attempts to touch upon the most
+important topics that may be covered on the exam but does not claim to
+necessarily cover everything that one needs to know for the exam. Finally,
+don't take the <i>one hour</i> time window in the title literally.</p>
+
+<h1>Distributed transactions</h1>
+<p>
+A key facet of a transaction is that it has to be <strong>atomic</strong> &mdash;
+all results have to be made permanent (<strong>commit</strong>) and appear as an
+indivisible action. If a transaction cannot complete, it must <strong>abort</strong>,
+reverting the state of the system to that before it ran. If several
+transactions run concurrently, the end result must be the same as
+if they ran in some (any) serial order.
+</p>
+<p>
+A <strong>write-ahead log</strong> (or transaction log) is used for <strong>rollback</strong>:
+reverting to the previous state when aborting a transaction. It
+is also crucial for maintaining state in a stable place in case the
+system should die; it allows the system to recover from where it
+was in the transaction.
+</p>
+<p>
+The <strong>two-phase commit protocol</strong> uses atomic multicasts to
+reach a consensus among the group on whether to commit or abort.
+It uses a coordinator to send a request
+(<i>"can you commit?"</i>) to every member of the group (reliably,
+retransmitting as often as needed until all replies are received).
+Phase 1 is complete when every member of the group responds. If the
+coordinator gets even a single <em>abort</em> response, it will have to tell
+all group members to abort the entire transaction. Otherwise, it
+can tell everybody to commit it. In phase 2, the coordinator sends
+the
+<em>commit</em> or <em>abort</em> order and waits for a response from everyone.
+The write-ahead log is crucial here to attain atomic multicasts
+(not for rollback!). For example,
+if a machine sent the coordinator a <em>commit</em> response for phase 1
+and then died, it must be able to reboot and reconstruct the
+transaction state from the log; it cannot change its mind.
+</p>
+
+<h1> Concurrency control </h1>
+<p>
+The goal of <strong>concurrency control</strong> is to allow multiple transactions
+to run concurrently but to ensure that data access is scheduled
+such that the net effect is the same as the transactions all ran
+in some serialized order. That is, we cannot have the net result
+be one where a transaction read an interim state of data from another
+transaction.
+</p>
+
+<p>
+Exclusive locks, via a lock manager, are an easy way to accomplish
+this. However, to ensure serializability, it is important that a
+transaction does not acquire any new locks after it has released a
+lock. This is known as <strong>two-phase locking</strong>. The first phase is the
+<em>growing phase</em>, in which locks are acquired. The second phase is the
+<em>shrinking phase</em>, in which locks are released. The problem with
+two-phase locking is that, if a transaction that has released some
+locks aborts, there is a chance that other transactions have used
+the data held by the released lock. In that case, those transactions
+(and all transactions that depend on them) have to abort as well.
+<strong>Strict two-phase locking</strong> avoids this problem by requiring all locks
+to be held until the end. The <em>shrinking phase</em>, in effect, is an
+atomic operation that occurs at the very end of the transaction.
+</p>
+
+<!--
+<p>
+<strong>Two-phase locking</strong> forces a lock to be held while the transaction
+is using the resource (or for the duration of the transaction).
+This restricts the maximum amount of concurrency that may be achieved
+in the system. <strong>Optimistic</strong> schemes assume that transactions are more
+likely to complete than not. As such, it is better to put more
+effort on rectifying errors from having used data from aborted
+transactions than to lock access to the data. One moderately
+optimistic scheme is <strong>two-version locking</strong>. In this case, one transaction
+writes tentative versions while other transactions read existing
+committed versions of the data. This allows increased concurrency
+but transactions that write data risk waiting or rejection when
+they attempt to commit and make their data permanent. A fully
+optimistic system uses no locks and checks for conflicts at commit
+time.
+</p>
+
+<p>
+<strong>Timestamp ordering</strong> allows concurrency by keeping track of two
+timestamps per object: the timestamp of the last committed that
+read the object and the timestamp of the last committed transaction
+that wrote the object. If a transaction wants to write an object,
+it compares its own timestamp with the object’s write timestamp.
+If the object’s timestamp is older than the ordering is good and
+the transaction can proceed. Otherwise the transaction aborts and
+is restarted.
+</p>
+-->
+
+<h1>Secure communication</h1>
+
+<p>
+To communicate securely using a symmetric cipher, both parties need
+to have a shared secret key. Alice will encode a message to Bob
+using the key and Bob will use the key to decode the message. If
+Alice wants to communicate with Charles, she and Charles will also
+need a secret key. The fact that every pair of entities will need
+a secret key leads to a phenomenon known as <em>key explosion</em>.
+Overall, in a system with <em>n</em> users, there will be
+<em>O(n<sup>2</sup>)</em> keys.
+</p>
+
+<p>
+The biggest problem with symmetric cryptography is dealing with key
+distribution: how can Alice and Bob establish a key so they can
+communicate securely? The <strong>Diffie-Hellman exponential key
+exchange</strong> algorithm allows one to do this. Each party will
+generate a private key and a public key (these are <i>not</i>
+encryption keys; they're just numbers &ndash; Diffie-Hellman does
+not implement public key cryptography &ndash; it is unfortunate
+that the word was used to describe these numbers).
+It uses the one-way function <i>a<sup>b</sup>mod&nbsp;c</i> in a 
+way that allows Alice to compute a common
+key using her private key and Bob's public key. Bob can compute the
+same common key by using his private key and Alice's public key.
+</p>
+
+<p>
+Using public key cryptography, such as RSA, if Alice encrypts a
+message with Bob's public key, Bob will be the only one who can
+decrypt it since doing so will require Bob's private key. Likewise,
+Bob can encrypt messages with Alice's public key, knowing that only
+Alice will be able to decrypt them with her private key.
+</p>
+
+<h2>Session keys</h2>
+
+<p>
+A <strong>session key</strong> is a random key that is generated for encryption
+during one communication session. It is useful because if the key
+is ever compromised, no lasting information is obtained: future
+communication sessions will use different keys. A <strong>hybrid
+cryptosystem</strong> uses public key cryptography to send a session key
+securely. The originator generates a random session key and encrypts
+it with the recipient's public key. The recipient decrypts the
+message with the corresponding private key to extract the session
+key. After that, symmetric cryptography is used for communication,
+with messages encrypted with the session key. This has the advantages
+of higher performance (public key cryptography is a lot slower than
+symmetric cryptography), ease of communicating with multiple parties
+(just encrypt the session key with the public keys of each of the
+recipients), and allows the bulk of data to be encrypted with
+session keys instead of the hardly-ever-changing
+public keys.
+</p>
+
+<h2> Digital signatures </h2>
+<p>
+<strong>Digital signatures</strong> employing symmetric cryptography must
+turn to a </span><strong>trusted third party</strong>. Messages are encrypted
+with the owner's key and sent to the third party who decrypts the
+contents and re-encrypts them for the recipient. The trusted third
+party avoids the problem of key explosion where every pair of
+communicating parties must have a secret key.
+</p>
+
+<p>
+With public key cryptography, a digital signature is simply the act
+of encrypting a hash of a message with the creator's private key.
+Anyone who has the public key can decrypt the hash and thus validate
+it against the message. Other parties cannot recreate the signature
+since they do not have the private key even though they can create
+the hash.
+</p>
+
+<h1> Authentication </h1>
+<p>
+The three factors of authentication are:
+<em>something you have</em> (such as a key or a card),
+<em>something you know</em> (such as a password or PIN),
+and <em>something you are</em> (biometrics).
+Combining these into a multi-factor
+authentication scheme can increase security against the chance that
+any one of the factors is compromised.
+</p>
+
+<h2> Password Authentication Protocol (PAP) </h2>
+<p>
+The classic authentication method is the use of reusable passwords.
+This is known as the <strong>password authentication protocol</strong>,
+or <strong>PAP</strong>. The
+system asks you to identify yourself (login name) and then enter a
+password. If the password matches that which is associated
+with the login name on the system
+then you’re authenticated.
+</p>
+
+<p>
+One problem with the protocol is that if someone
+gets hold of the password file on the system, then they have all
+the passwords. The common way to thwart this is to store hashes of
+passwords instead of the passwords themselves. This is taking
+advantage of one-way functions. To authenticate a user, check if
+<i>hash(password) = stored_hashed_password</i>. If someone got hold of the
+password file, they’re still stuck since they won’t be able to
+reconstruct the original password from the hash. They’ll have to
+resort to an exhaustive search or a dictionary attack and search
+for a password that hashes to the value in the file.
+</p>
+
+<p>
+The other problem with reusable passwords is that,
+if a network is insecure,
+an eavesdropper may sniff the password from the network. A potential
+intruder may also simply observe the user typing a password. To
+thwart this, we turn to <strong>one-time passwords</strong>. If someone sees you
+type a password (or gets it from the network stream), it won't
+matter because that password will be useless for future logins.
+</p>
+
+<h2> S/Key Authentication </h2>
+<p>
+<strong>S/Key authentication</strong> allows the use of one-time passwords
+by generating a list via one-way functions. The list is created such that
+password <i>n</i> is generated as <i>f(password[n-1])</i>. The list of 
+passwords is used backwards.
+Given a password <i>p</i>, it is impossible
+for an observer to compute the next valid password because a one-way function
+<i>f</i> makes it improbably difficult to compute <i>f<sup>-1</sup>(p)</i>.
+</p>
+
+<h2> SecurID<sup>&reg;</sup> </h2>
+<p>
+RSA's SecureID is a two-factor authentication system that generates
+one-time passwords for response to a user login prompt.
+It relies on a user password
+(Personal ID Number, PIN) and a token (an authenticator card or fob).
+The token generates a new number every 30 seconds. The number is a function of
+a seed that is unique for each card
+and the time of day.
+To authenticate to a server, you send a combination of your
+PIN and the number from the number from
+the token in lieu of a password. 
+A legitimate remote system will have your PIN as well as the token
+seed and will be able to compute the same value to validate your
+password. An intruder would not know your PIN or the token’s seed
+and never see it on the network.
+</p>
+
+<h2> Challenge-Handshake Authentication Protocol (CHAP) </h2>
+<p>
+The <strong>Challenge-Handshake Authentication Protocol</strong>
+(<strong>CHAP</strong>) is an authentication protocol that
+allows a server to authenticate a user without sending a
+password over the network.
+
+Both the client and server share a secret (such as a password). The server
+sends a challenge (a string of random bits) to the client. The
+client creates a hash of the challenge and the password. Since the
+server has the challenge and the user's password as well, it can recreate
+the same hash to validate the user. A potential intruder would not
+be able to get this data from the network. Note that this technique
+requires passwords to be accessible at the server and the security
+rests on the password file remaining secure.
+</p>
+
+<h2> SKID2/3 </h2>
+<p>
+SKID2 and SKID3 authentication introduce us to the use of a <strong>nonce</strong>,
+a random message (e.g. number or string) that is used to challenge
+the other party: “prove to me that you can encrypt this.” If Bob wants
+to validate that Alice knows the shared secret key,
+he creates a nonce and asks Alice to encrypt it using the shared key.
+If Bob can decrypt the result with the key and get the nonce that he
+sent her then he is convinced that Alice really does know the secret key.
+SKID 3 performs <strong>mutual authentication</strong>, where Alice
+validates Bob as well.
+</p>
+
+<h2> Public key authentication </h2>
+<p>
+The use
+of a nonce is also central to <strong>public key authentication</strong>
+(e.g., the kind used in SSL, the secure sockets layer). If I send you a nonce
+and you encrypt it with your private key and give me the results,
+I can decrypt that message using your public key. If the decryption
+matches the original nonce, this will convince me that only you
+could have encrypted the message.
+</p>
+
+<h2> Wide-Mouth Frog authentication </h2>
+<p>
+The <strong>wide-mouth frog</strong> technique uses symmetric cryptography and a
+<strong>trusted third party</strong> (who has everyone’s keys) for passing a random
+session key. If Alice wants to communicate with Bob, she picks a
+random session key, encrypts it with <em>her own</em> secret key, and sends
+it to the trusted third party, Trent. If Trent can decrypt it with
+Alice’s key then he knows the message must have come from Alice.
+He re-encrypts the session key with Bob’s secret key and sends it
+to Bob. Bob can then decrypt it with his key, knowing that the
+message was created by the trusted party since nobody else has his
+secret key.
+</p>
+
+<h2> Kerberos authentication </h2>
+<p>
+<strong>Kerberos</strong> is a trusted third party authentication and key exchange
+scheme using symmetric cryptography. When you want to access a
+service, you first need to ask Kerberos. If access is granted, you
+get two messages. One is encrypted with your secret key and contains
+the session key for your communication with the service. The other
+message is encrypted with the service’s secret key. You cannot read
+this message. It is known as a <strong>ticket</strong> or
+<strong>sealed envelope</strong>. It contains
+the same session key that you received but is encrypted for the
+service. When the service decrypts it, it knows that the message
+must have been generated by an entity that had its secret key –
+Kerberos.
+</p>
+
+<h2> Digital certificates </h2>
+<p>
+While public keys simplify authentication (just decrypt this with
+my public key and you know that I was the only one who could have
+encrypted it), identity binding of the public key must be preserved.
+<strong>X.509 digital certificates</strong> provide a solution for this.
+A certificate
+is a data structure that contains user information and the user’s
+public key. This data structure also contains a signature (hash
+encrypted using a private key) of the <strong>certification authority</strong>. The
+certification authority (CA) is responsible for setting policies to validate
+identity of the person who presents the public key for encapsulation
+in a certificate.
+</p>
+
+<h2> Secure Sockets Layer </h2>
+<p>
+<strong>Secure Sockets Layer</strong>
+(<strong>SSL</strong>, also known as <strong>TLS &ndash Transport Layer
+Security</strong>) is a layer of software designed to provide authentication
+and secure communication over the abstraction of a sockets interface.
+It makes it easy to add a secure transport to insecure socket-based
+protocols (e.g., HTTP and FTP). SSL uses a hybrid cryptosystem and
+relies on public keys for authentication. If both the sender and
+receiver have X.509 digital certificates, SSL can validate them and
+use nonce-based public key authentication to validate that each party has the
+corresponding private key. In some cases, it may validate the server
+only. If the server does not have a certificate, SSL will then use
+a public key simply to allow a symmetric session key to be passed
+securely from client to server. After that, communication takes
+place using a symmetric algorithm and the client-generated session
+key.
+</p>
+
+<h2> Biometric authentication </h2>
+<p>
+<strong>Biometric authentication</strong> differs dramatically from other techniques
+in that it relies on statistical pattern recognition and will never
+yield a 100% true or false answer. Comparisons are based on thresholds.
+The ROC (receiver operator characteristic) plot defines the trade-off
+between <em>false accepts</em> and <em>false rejects</em> for a particular biometric
+system. The authentication process comprises four steps: (1) sensing
+the user’s biometric feature; (2) extracting the features of interest,
+selecting features that are distinctive and repeatable; (3) matching
+the pattern against stored signals, searching for small distances
+between the matches; and (4) deciding if the match is close enough.
+</p>
+
+<h2> CAPTCHA </h2>
+<p>
+<strong>CAPTCHA</strong> (Completely Automated Public Turning test to tell Computers
+and Humans Apart) is <em>not</em> a technique to authenticate users but
+rather a technique to identify whether a system is interacting with
+a human being or with automated software. The idea behind it is
+that humans can recognize highly distorted characters far better
+than character recognition software can.
+</p>
+
+<h1> Steganography </h1>
+<p>
+Cryptography’s goal is to hide the contents of a message. Steganography’s
+goal is to hide the very existence of the message. Classic techniques
+included the use of invisible ink, writing a message on one’s head
+and allowing the hair to cover it, microdots, and carefully-clipped
+newspaper articles that together communicate the message.
+</p>
+<p>
+A <strong>null cipher</strong> is one where the actual message is
+hidden among irrelevant data. For example, the message may comprise
+the first letter of each word (or each sentence, or every second
+letter, etc.). <strong>Chaffing and winnowing</strong> entails the
+transmission of a bunch of messages, of which only certain ones are
+legitimate. Each message is signed with a key known only to trusted
+parties. Intruders can see the messages but can’t validate the
+signatures to distinguish the valid messages from the bogus ones.
+</p>
+<p>
+<strong>Image watermarking</strong> relates to hiding a message in
+an image. A straightforward method is to use low-order bits of an
+image, where the user is unlikely to notice slight changes in color.
+A large number of laser printers embed a serial number and date
+simply by printing very faint color splotches. A frequency-domain
+watermark is one where an image is transformed into the frequency
+domain via a discrete cosine transform (the real part of a fast
+Fourier transform). The steganographic data is then added to certain
+high-frequency regions. High frequency regions correspond to “noisy”
+areas in an image and humans are unlikely to notice slight variations
+there.
+</p>
+<p>
+While the terms “steganography” and “watermarking” are often used
+interchangeably, the primary goal of watermarking is to create an
+indelible imprint on a message such that an intruder cannot remove
+or replace the message. The primary goal of steganography is to
+allow primarily one-to- one communication while hiding the existence
+of a message.
+</p>
+
+<h1> Smart Cards </h1>
+<p>
+The term <strong>smart card</strong> means different things to
+different people. It’s generally considered to be a small device
+(card or key fob) that can communicate with some reader either
+through physical electric contacts or wirelessly over a short
+distance. The most primitive smart cards are simply storage devices,
+containing a few kilobytes of nonvolatile memory. The smarter ones
+often provide various security capabilities, such as on-board
+encryption, hashing, and signing data. They may store your keys and
+present a public key to the reader yet never divulge your private
+key. Instead, they will use the private key internally to generate
+encrypted hashes or encrypt a nonce based on data coming into the
+card.
+</p>
+<p>
+An example of a smart card is a passport. Most of the world’s
+passports now contain electronics and support contactless communication
+with a reader. While they don’t do anything smart (yet), they contain
+data about the owner as well as a digitized image of the owner’s
+face and a digital certificate. This data cannot be accessed until
+a session key is negotiated using the passport number, date of
+birth, and the passport expiration date. A reader has to obtain
+this data from an optical scan of the passport so that it can
+generate a key to communicate with the chip on the passport.
+</p>
+
+<h1> Fault Tolerance </h1>
+<p>
+There are three classes of faults: <strong>transient</strong>,
+<strong>intermittent,</strong> and <strong>permanent</strong>.
+Faults are either <strong>fail-silent</strong> (where the component does not produce
+results) or <strong>Byzantine</strong> (where the component produces faulty results).
+A popular approach to fault tolerance is <strong>redundancy</strong>, which may be
+<strong>information redundancy</strong> (e.g., error correcting codes),
+<strong>time redundancy</strong> (e.g., retransmission), or
+<strong>physical redundancy</strong> (redundant components –
+standby systems or triple-modular redundancy for active voting). A
+technique to deal with components that may exhibit Byzantine faults
+is <strong>Triple Modular Redundancy</strong> (<strong>TMR</strong>). This requires a three-way
+replication of the component with election logic to weed out a
+component that is producing faulty results (the two good components
+will overrule the faulty one).
+</p>
+<p>
+The <strong>two-army problem</strong> demonstrates that reliable
+communication can never be achieved with faulty communication lines.
+The <strong>Byzantine generals problem</strong> illustrates the
+difficulty of achieving reliable communication in the presence of
+faulty processors exhibiting Byzantine faults.
+</p>
+
+<h1> Security </h1>
+<p>
+Most security attacks on systems are not cryptographic – they do
+not find weaknesses in cryptographic algorithms and try to break
+ciphers. Most rely on bugs in software or the trust of individuals.
+</p>
+<p>
+For protocols with no encryption that use a public (or sniffable)
+network, one can sniff the network to extract logins and passwords
+(there’s a lot of software that makes this easy; <em>snort</em>, for example,
+is one of the oldest and most popular). If one cannot find a password
+for a user, one can try guessing it. If one can’t do that then one
+can try all combinations. An exhaustive search through every possible
+password may be time-prohibitive. A <strong>dictionary attack</strong> is one where
+you go through a dictionary of words and names and test them
+as potential passwords, applying common tricks such as prefixing
+and suffixing digits and substituting numbers that look like letters).
+Performing this attack becomes a lot easier if you’re lucky enough
+to get the hash password that you are searching for. Then you can
+perform the search on your own machine without going through the login service
+on the target system.
+</p>
+
+<p>
+A <strong>social engineering attack</strong> is one where you con a person into
+giving you the necessary credentials. You might do this by impersonating
+as a system administrator and simply asking. A <strong>Trojan horse</strong> is a
+program that masquerades as a legitimate program and tricks you
+into believing that you are interacting with the trusted program.
+A common example is a program that masquerades as a login program
+and obtains an unsuspecting user’s login and password. <strong>Phishing</strong> is
+an example of email that purports to come from a trusted party (such
+as your bank) and attempts to convince the user to click on a link
+that will take them to what they believe is the party's web site.
+In reality, it is an intruder's site that is designed to look like
+the legitimate one. The goal here is also to collect data such as
+your login and password or perhaps your bank account, social security,
+or credit card numbers.
+</p>
+
+<p>
+A <strong>buffer overflow</strong> bug is one where software expects
+to read a small amount of data into a fixed-size buffer but never
+checks to see whether the incoming data is bigger than the buffer.
+What ends up happening is that the software continues to append
+data to the buffer but is now writing into memory beyond that which
+is allocated to the buffer. If the buffer was declared within a
+function, then it was allocated memory on the stack. At some point,
+the overflow data may end up clobbering the return address for that
+function. A carefully crafted data stream can ensure that the return
+address gets modified with the address of other code in this data
+stream, which will get executed as soon as the function attempts
+to return.
+</p>
+
+<p>
+A <strong>SYN flooding attack</strong> is a form of a denial of
+service attack where an intruder attempts to render a machine unable
+to accept any TCP/IP connections. Every TCP/IP session consumes a
+certain number of system resources, which are allocated when the
+first connection request is made (via a SYN packet). The intruder
+creates requests that come from unreachable hosts. If enough of
+these are sent to a host, the computer will reach a point where the
+operating system will not accept any more connections. There is a
+window of time before the machine will decide to give up on these
+pending connections. BSD systems typically allot 7.5 seconds for
+this period. Microsoft Windows Server 2003 advised using a value
+of two minute.
+<p>
+
+<p>
+A <strong>rootkit</strong> is code that hides the presence of users
+or additional software from the user. Sometimes, this is done by
+replacing commands that would present this data (e.g., <em>ps</em>,
+<em>ls</em>, <em>who</em>, … on Unix/Linux systems). Other times,
+this may be done within the operating system itself by intercepting
+system calls.
+</p>
+
+<p>
+The four A’s of security are:
+</p>
+<ol class="separated">
+<li>
+<strong>Authentication</strong>: the process of binding an identity
+to the user. Note the distinction between authentication and
+identification. Identification is simply the process of asking you
+to identify yourself (for example, ask for a login name). Authentication
+is the process of proving that the identification is correct.
+</li>
+<li>
+<strong>Authorization</strong>: given an identity, making a decision
+on what access the user is permitted. Authentication is responsible
+for access control.
+</li>
+<li>
+<strong>Accounting</strong>: logging system activity so that any
+breaches can be identified (intrusion detection) or a post facto
+analysis can be performed.
+<li>
+<strong>Auditing</strong>: inspecting the software and system configuration for security flaws. 
+</li>
+</ol>
+
+<h2> Signed Software </h2>
+<p>
+The idea of signing software is to ensure that it has not been
+tampered (for example, a virus is not attached to it). The most
+basic form of signing software is to do the same as we would for
+any other digital data: generate a hash of the entire package,
+encrypt it with the publisher’s private key, and attach it to the
+software as a signature. To validate the signature, you would compute
+the hash and compare it with the decrypted signature. You would
+decrypt the signature using the software publisher’s public key,
+which would be present in a digital certificate obtained from that
+publisher.
+</p>
+<p>
+Computing a hash for software before we run it would involve scanning
+through the entire code base. Demand-paged virtual memory systems
+load pages of the program as needed, so this would greatly increase
+the startup time of the software. Instead, signed software will
+often contain a signature for every memory page. When a particular
+page is loaded, the operating system would check the signature for
+that page.
+</p>
+
+<h2> Sandboxes</h2>
+<p>
+A <strong>sandbox</strong> is an environment designed for running
+programs while restricting their access to certain resources, such
+as disk space, file access, amount of memory, and network connections.
+It was created to allow users to run untrusted code without the
+risk of harming their system. The quintessential example of a sandbox
+is the Java Virtual Machine, initially designed for running Java
+applets, code that would be loaded dynamically upon fetching a web
+page. The Java sandbox has three parts to it: (1) the byte-code
+verifier tries to ensure that the code looks like valid Java byte
+code with no attempts to circumvent access restrictions, convert
+data illegally, or forge pointers; (2)  the class loader enforces
+restrictions on whether a program is allowed to load additional
+applets and that an applet is not allowed to access classes belonging
+to other applets; (3) the security manager is invoked to provide
+run-time verification of whether a program has rights to invoke
+certain methods, such as file I/O or network access.
+</p>
+
+<h2> Firewalls </h2>
+
+<p>
+A <strong>firewall</strong> protects the junction between an untrusted
+network (external) and a trusted network (internal). Two approaches
+to this are <strong>packet filtering</strong> and <strong>proxies</strong>.
+A <strong>packet filter</strong>, or <strong>screening router</strong>,
+determines not only the route of a packet but whether the packet
+should be dropped based on the IP header (as well as TCP/UDP headers)
+and interface the packet came on. With <strong>stateless
+inspection,</strong> a packet is examined on its own. <strong>Stateful
+inspection</strong> allows the router to keep track of TCP connections
+and understand the relationship between packets (for example, a port that 
+needs to be enabled for the FTP data channel once an FTP connection
+has been established or that return packets should be allowed in 
+response to outbound requests).
+</p>
+
+<p>
+<strong>Proxy services</strong> (also known as <strong>application
+proxies</strong>) live on <strong>bastion hosts</strong>. These are
+stripped down machines to give potential intruders as few tools as
+possible (few user accounts, no compilers, minimal commands). An
+application proxy is software that presents the same protocol to
+the outside network as the application for which it is a proxy
+(e.g., a mail server proxy will listen on port 25 and understand
+SMTP, the simple mail transfer protocol). The job of the proxy is
+to validate the application protocol. Valid requests are forwarded
+to the real application that is running on another server and is
+not accessible from the outside network. The bastion hosts on which
+proxies live are <strong>dual-homed hosts</strong>. This means the
+computer has two network cards. This is important since packets
+will not flow directly between the outside network to the inside
+network. It is up to the proxy software to forward requests.
+</p>
+
+<p>
+A typical firewalled environment is a <strong>screened subnet</strong>
+architecture, containing a subnet between the internal and external
+networks called the <strong>DMZ</strong> (<strong>demilitarized
+zone</strong>). The DMZ contains all the bastion hosts that may be
+offering services to the external network (usually the Internet).
+Screening routers on both sides of the DMZ ensure that no packet
+from the outside network is permitted into the inside network.
+</p>
+
+<p>
+All machines within an organization will be either in the DMZ or
+in the internal network. The exterior router will allow IP packets
+only to the machines/ports in the DMZ that are offering valid
+services. It would also reject any packets that are masqueraded to
+appear to come from the internal network. The interior router would
+allow only packets to come from designated machines in the DMZ that
+may need to access services in the internal network. Any packets
+not targeting the appropriate services in the internal network will
+be rejected. Both routers will generally allow traffic to flow from
+the internal network to the Internet, although an organization may
+block certain services (ports) or force users to use a proxy (for
+web access, for example).
+</p>
+
+<h2> VPNs </h2>
+<p>
+<strong>Virtual private networks</strong> (<strong>VPNs</strong>)
+allow disconnected local area networks to be connected together
+securely, saving money by using the shared public network (Internet)
+instead of leased lines. This is achieved by <strong>tunneling</strong> – the
+encapsulation of a packet within another packet. In this case, a
+packet that is destined for a remote subnet (which may have local
+source and destination IP addresses that are not routable over the
+public Internet) will be treated as payload and placed in IP packets
+that go over the public Internet (with source and destination
+addresses being the VPN endpoint at both sides, usually the router).
+When the router receives this encapsulated packet, it extracts the
+data – which is an IP packet – and routes it on the local network.
+This tunneling behavior gives us the <em>virtual network</em> part of the
+VPN.
+
+To achieve security, an administrator setting up a VPN will
+usually be concerned that the data contents are not readable and
+the data has not been tampered with.
+To ensure this, packets can be encrypted and signed. Signing
+a packet ensures that the data is not tampered. Encrypting ensures
+that external parties would not be able to make sense of the packets.
+VPNs usually provide several options for key management: shared
+private keys, Diffie-Hellman key exchange, or RSA public keys.
+</p>
+
+<h1> Clusters </h1>
+<p>
+Clustering is the aggregation of multiple independent computers to
+provide increased reliability and/or performance. There are four
+distinct approaches to clustering: high-performance computing, batch
+processing, load balancing, and high availability.
+</p>
+
+<h2> High-Performance Computing (HPC) </h2>
+<p>
+High-performance clusters are generally custom efforts but there
+are a number of components that are common across many implementations.
+They are designed for traditional supercomputing applications that
+focus on a large amount of computation on large data sets. These
+applications are designed to be partitioned into multiple communicating
+processes. The <strong>Message Passing Interface</strong>
+(<strong>MPI</strong>) is a popular programming interface for sending
+and receiving messages that handles point-to-point and group
+communication and provides support for barrier-based synchronization.
+It is often used together with the <strong>Parallel Virtual
+Machine</strong> (<strong>PVM</strong>), a layer of software that
+provides an interface for creating tasks, managing global task IDs,
+and managing groups of tasks on arbitrary collections of processors.
+<em>Beowulf</em> and <em>Rocks Cluster</em> are examples of a popular
+HPC clusters based on Linux and other libraries. Microsoft offers
+an HPC Server 2008. There are many other HPC systems as well. The
+common thread among them all is that they provide a front-end server
+for scheduling jobs and monitoring processes and offer an MPI library
+for programming.
+</p>
+
+<h2>Batch Processing – Single-Queue Work Distribution </h2>
+<p>
+Batch processing is often used for applications such as renderfarms
+for computer animation, where a central coordinator (dispatcher)
+sends job requests to a collection of machines. When a system
+completes a job (e.g., “<em>render frame #4,178</em>”), the dispatcher will
+send it the next job (e.g., “<em>render frame #12,724</em>”). The dispatcher
+will have the ability to list jobs, delete jobs, dispatch jobs, and
+get notified when a job is complete.
+</p>
+
+<h2> Load Balancing</h2>
+<p>
+Web-services load balancing is a somewhat trivial but very highly
+used technique for distributing the load of many network requests
+among a collection of machines. The simplest form is to have all
+requests go to a single machine that then returns an HTTP REDIRECT
+error. This is part of the HTTP protocol and will lead the client
+to re-issue the request to the machine specified by the REDIRECT
+error.
+</p>
+<p>
+A more sophisticated software-only approach was implemented by IBM’s
+Interactive Network Dispatcher. As with the REDIRECT approach, all
+requests go to one machine. Now, however, the machine forwards the
+entire stream of IP packets to one of several load-balanced back-end
+systems. All of these machines share the same IP address and the
+coordinator has special kernel extensions that allow it to forward
+TCP and UDP packets to different machines by changing the MAC address
+of the packets.
+</p>
+<p>
+Finally, one can turn to hardware and use a load-balancing router
+to map incoming requests to multiple back-end machines.
+</p>
+
+<h2> High Availability </h2>
+<p>
+High-availability clusters strive to provide a high level of system
+uptime by taking into account the fact that machines may fail. In
+such a case, applications running on those machines will be moved
+to other machines that are still up.
+</p>
+<p>
+Low-level software to support high-availability clustering includes
+facilities for <strong>IP address takeover</strong> (allowing a
+machine to listen on multiple IP addresses) and to access shared
+disks (using a distributed lock manager). Mid-layer software includes
+distributed elections to pick a coordinator, propagation of status
+information, and figuring out which systems and applications are
+alive. Higher-layer software includes the ability to restart
+applications, let a user assign applications to machines, and let
+a user see what’s going on.
+</p>
+
+<p>
+The key to detecting machine failure is the <strong>heartbeat
+network</strong>: exchanging messages between machines to ensure
+that they are alive and capable of responding. Since a main network
+may go down, one or more secondary networks (such as direct cable
+connections between two machines) are often used as dedicated
+heartbeat networks.
+</p>
+<p>
+Failed applications may be restarted on a standby machine (active/passive
+configuration) or may be moved to a machine that’s already running
+other services (active/active configuration). A <strong>cold
+failover</strong> is an application restart – the application is
+started from the beginning. A <strong>warm failover</strong> is one
+where the application is checkpointed periodically and is restarted
+from the last checkpoint. In a <strong>hot failover</strong>, a
+copy of the application is always running in lockstep synchrony
+with the main application on another machine. This is difficult and
+not always practical, especially where communications are involved.
+<strong>Cascading failover</strong> refers to the ability of an
+application to fail over even after it already has failed over in
+the past (a double restart). <strong>Multi-directional failover</strong>
+refers to the ability to restart applications from a failed system
+on multiple available systems instead of a specific targeted backup
+machine.
+</p>
+<p>
+Clustered systems may share access to the same disk (e.g., via a
+Y-SCSI connector or via a fibre channel switch or iSCSI configuration).
+This is a <strong>shared-disk configuration</strong>. Having two
+machines access the same disk is not a good idea, of course, since
+that can put the filesystem in an incoherent state. Therefore,
+systems that do this must ensure that they have mutually exclusive
+access to the disk (and flushing their caches when they don’t have
+access). They do this via a <strong>distributed lock manager</strong>
+(<strong>DLM</strong>). A simpler solution is a
+<strong>shared-nothing</strong> architecture where there is no
+shared storage and a system forwards any requests for disk I/O to
+the system that owns the disk. In the case of failure, however, the
+access to such storage may be lost or may have to be gained by using
+a shared link that was simply not used when both systems were up.
+</p>
+<p>
+Some clusters may be tightly coupled via <strong>system area
+network</strong> (<strong>SAN</strong>). This is a switched network
+to allow low-latency I/O between machines without incurring any
+processor intervention. It also avoids the overhead of TCP/IP by
+providing a reliable communication channel. Remote DMA (RDMA) allows
+data to be copied directly to the memory of another processor. SANs
+are often used for HPC clusters, with SAN/RDMA communication
+incorporated into the Message Passing Interface (MPI) library.
+</p>
+<p>
+Storage in a cluster is often separated from the actual machines
+via a <strong>storage area network</strong> (<strong>SAN</strong>).
+This is a network that is dedicated to disk I/O traffic between
+machines and the disks, which reside in separate storage arrays.
+The communications between machines and disks is typically SCSI
+over fibre channel or the iSCSI over ethernet. Because of this
+dissociation, the switch between the machines and the storage can
+be configured to control access and allow specific hosts to read
+and write from/to specific disks.
+</p>
+<p>
+To make storage highly available, <strong>RAID</strong> (<strong>redundant
+array of independednt disks</strong>) is often employed. RAID 1 is
+mirroring. Anything that is written to one disk gets written to a
+secondary disk. If one fails then you still have the other. RAID 5
+stripes the data across several disks and also adds in error
+correcting codes (e.g., parity in the case of allowing one to correct
+for a single failure) so that it data could be reconstructed from
+the available segments if one would die. RAID 0 is a technique used
+to improve performance by striping data across multiple disks. It
+does not improve fault tolerence.
+</p>
+
+<h1> Virtualization</h1>
+<p>
+As a general concept, virtualization is a form of abstraction to
+interfacing with physical devices. With <strong>virtual memory</strong>,
+a process has the impression that it owns the entire memory address
+space. Different processes can all access the same “virtual” memory
+location and the memory management unit (MMU) on the processor maps
+each access to the unique physical memory locations that are assigned
+to the process.
+</p>
+<p>
+With <strong>storage virtualization</strong>, a computer gets a
+logical view of disks connected to a machine. In reality, those
+“disks” may be networked to a computer via a fibre channel switch
+or ethernet interface and may be parts of physical disks or collections
+of disks that appear to the computer as one disk.
+</p>
+<p>
+<strong>CPU virtualization</strong> allows programs to execute on
+a machine that does not really exist. The instructions are interpreted
+by a program that simulates the architecture of the pseudo machine.
+Early pseudo-machines included o-code for BCPL and P-code for Pascal.
+The most popular pseudo-machine today is the Java virtual machine.
+</p>
+<p>
+<strong>Machine virtualization</strong> allows a physical computer
+to act like several real machines with each machine running its own
+operating system (on a virtual machien) and applications that
+interact with that operating system. The key to machine virtualization
+is to not allow each guest operating system to have direct access
+to certain privileged instructions in the processor. These instructions
+would allow an operating system to directly access I/O ports, MMU
+settings, the task register, the halt instruction and other parts
+of the processor that could interfere with the processor’s behavior
+and with other operating systems. Instead, such instructions as
+well as system interrupts are intercepted by the <strong>Virtual
+Machine Monitor</strong> (<strong>VMM</strong>), also known as a
+<strong>hypervisor</strong>. The hypervisor arbitrates access to
+physical resources and presents a set of virtual device interfaces
+to each guest operating system (including the memory management
+unit, I/O ports, disks, and network interfaces).
+</p>
+<p>
+Two configurations of virtual machines are <strong>hosted virtual
+machines</strong> and <strong>native virtual machines</strong>.
+With a hosted virtual machine, the computer has a primary
+operating system installed that has access to the raw machine (all devices,
+memory, and file system). One or more <strong>guest operating
+systems</strong> can be run on virtual machines. The VMM serves as
+a proxy, converting requests from the virtual machine into operations
+that get executed on the <strong>host operating system</strong>. A
+<strong>native virtual machine</strong> is one where there is no
+"primary" operating system that owns the system hardware. The
+hypervisor is in charge of access to the devices and provides each
+operating system drivers for an abstract view of all the devices.
+</p>
+<p>
+The latest processors
+from Intel and AMD support the concept of a virtual machine layer
+and the ability to intercept privileged instructions.
+Prior to that, one of two approaches was used to implement
+virtualization.
+
+<strong>Binary translation</strong> pre-scans the instruction
+stream of any code that has to run in privileged mode and
+replaces all privileged instructions with interrupts to the 
+VMM.
+<strong>Paravirtualization</strong> requires modifiying the
+operating system to replace privileged instructions with
+calls to a VMM API. This, of course, requires access to the
+source code of the operating system.
+</p>
+
+
+</div>
+
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2010 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.
+</p>
+<p> Last updated: August 23, 2010
+</p>
+<img class="stamp" src="../../css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../416/index.html"> Main course page </a> </li>
+	<li> <a href="../../416/news.html"> News </a> </li>
+	<li> <a href="../../416/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../416/hw/index.html"> Homework </a> </li>
+	<li> <a href="../../416/notes/index.html"> Documents </a> </li>
+	<li> <a href="../../416/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../416/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../../416/about.html"> About the course </a> </li>
+	<li> <a href="../../416/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../416/things.html"> Things you need </a> </li>
+	<li> <a href="../../416/policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../../416/../417/index.html"> Main course page </a> </li>
+	<li> <a href="../../416/../417/news.html"> News </a> </li>
+	<li> <a href="../../416/../417/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../416/../417/hw/index.html"> Homework </a> </li>
+	<li> <a href="../../416/../417/notes/index.html"> Documents </a> </li>
+	<li> <a href="../../416/../417/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../416/../417/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../416/../417/about.html"> About the course </a> </li>
+	<li> <a href="../../416/../417/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../416/../417/things.html"> Things you need </a> </li>
+	<li> <a href="../../416/../417/policy.html"> Policy  </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> Belkin F1B0280-V Slimswitch data switch. This is a manual (knob) switch that switches among four DB25 connectors. I can't imagine why anyone would need this; perhaps for switching old printers. I never used it and can't remember how it ended up in my pile of junk.
+</ul>
+-->
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

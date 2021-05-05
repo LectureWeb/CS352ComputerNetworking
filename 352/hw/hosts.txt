@@ -1,0 +1,14 @@
+# a basic hosts file for DNS
+# ignore blank lines, lines containing whitespace (spaces and/or tabs)
+# format: <address> <whitespace> <domain_name> 
+# ignore anything after <domain_name>
+
+# some sample entries below
+
+127.0.0.1        localhost
+1.0.0.1		test.name	# ignore any comments after the address
+
+128.6.4.2	cs.rutgers.edu
+128.42.38.1	ibm.com
+
+123.45.67.8	a.domain.name.with.many.levels.of.hierarchy.net

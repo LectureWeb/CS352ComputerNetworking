@@ -1,0 +1,309 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Distributed Transactions</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Distributed Transactions</h1>
+								<h2>Concurrency control</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>March 24, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Allow multiple transactions to run concurrently but ensure that resource access is controlled to give results that are identical if they ran in some serial sequence. This preserves the &#8220;Isolated&#8221; guarantee of ACID transaction semantics.</p>
+</blockquote>
+
+<p>A <strong>schedule</strong> is a sequence of transactions. A <strong>serial schedule</strong>
+is one where transactions are executed sequentially: a new transaction
+starts when a previous one commits (or aborts). This is inefficient,
+since we are forcing transactions to run one at a time. However, it
+ensures isolation (the I in ACID).</p>
+
+<p>The goal of <strong>concurrency control</strong> is to allow multiple transactions
+to run concurrently (which is great for performance)
+while ensuring that data access is controlled
+such that the net effect is the same as if the transactions all ran
+in some <strong>serial</strong> order. That is, we cannot have the net result
+be one where transactions read an interim state of data from another
+transaction.</p>
+
+<p>There are two categories of concurrency control: pessimistic and optimistic.
+<strong>Pessimistic concurrency control</strong> assumes that there is a high likelihood that
+two or more transactions will try to access the same resources. A transaction will
+lock acces to the resources it needs to keep others from modifying them.
+<strong>Optimistic concurrency control</strong> assumes that it is not likely that multiple
+transactions will access the same resource. Optimistic techniques will not
+lock access to resources. Instead, they will check for conflicts at commit time.
+If it turns out that multiple transactions did indeed access resources concurrently,
+one or more of them will have to abort.</p>
+
+<h2 id="two-phaselocking">Two-phase locking</h2>
+
+<p><strong>Exclusive locks</strong>, via a <strong>lock manager</strong>, help us accomplish this.
+A transaction can grab locks for the resources it needs.
+That ensures mutual exclusion.
+If a transaction T<sub>1</sub> grabs a lock only for the duration that it needs to access the
+resource, another transaction, T<sub>2</sub> may get a lock on a modified resource whose lock
+was released and also access another resource that T<sub>1</sub> will later lock and modify.
+That violates isolation and does not yield serially-equivalent execution.</p>
+
+<p>To ensure serializability,
+it is important that a transaction does <em>not</em> acquire any new locks
+after it has released any lock on a resource.
+This technique is known as <strong>two-phase locking</strong> (<strong>2PL</strong>). The first phase is the
+<strong>growing phase</strong>, during which locks are acquired. The second phase is the
+<strong>shrinking phase</strong>, in which locks are released.</p>
+
+<h2 id="strongstricttwo-phaselocking">Strong strict two-phase locking</h2>
+
+<p>The problem with
+two-phase locking is that, if a transaction that released some
+locks aborts, there is a chance that other transactions have already used
+data that was modified by the transaction. In that case, those transactions
+(and all transactions that depend on them) have to abort as well.
+This condition is called <strong>cascading aborts</strong>.</p>
+
+<p><strong>Strong strict two-phase locking</strong> (<strong>SS2PL</strong>) avoids this problem by requiring all locks
+to be held until the end of the transaction. The <em>shrinking phase</em>, in effect, is an
+atomic operation that occurs at the very end of the transaction.
+You lose concurrency this way but avoid having to process cascading aborts.</p>
+
+<h2 id="exclusiveandsharedlocks">Exclusive and shared locks</h2>
+
+<p>Exclusive locking for every resource access is a bit aggressive.
+Consider a transaction that just reads data. It needs to lock that
+data to ensure that no other transaction modifies it but nothing
+would go wrong if another transaction also wanted to read that same
+data. We can achieve greater concurrency by distinguishing
+<strong>read locks</strong> from <strong>write locks</strong>. Read locks (called <strong>shared locks</strong>)
+need not be
+exclusive: any number of them can be granted. However, if there
+are <em>any</em> read locks on an object, a <strong>write lock</strong> cannot be granted
+and the transaction must wait. Similarly, if there is a <strong>write lock</strong> (called
+an exclusive lock) on an object
+then <em>any</em> read lock requests or write lock requests must wait.</p>
+
+<h2 id="optimisticconcurrencycontrol">Optimistic concurrency control</h2>
+
+<p>Concurrency control techniques that rely on locking force locks
+to be held while the transaction is using the resource, or,
+in some cases, until the end of the transaction.
+This restricts the maximum amount of concurrency that may be achieved
+in the system.
+<strong>Optimistic concurrency control</strong> techniques assume that transactions are more
+likely to complete than not. As such, it is better to put more
+effort on rectifying errors from having used data from aborted
+transactions than to lock access to the data.
+A fully
+optimistic system uses no locks and checks for conflicts at commit
+time. Optimistic concurrency control has three phases of operation:</p>
+
+<ol>
+<li><p><strong>Working phase</strong>. The transaction reads and writes data.
+A private workspace is often, but not always, used to keep
+non-committed results isolated.</p></li>
+<li><p><strong>Validation phase</strong>. When the transaction is ready to commit,
+a check is made to see if there is any conflict with other transactions
+that took place during this time. For example, if some transaction <em>A</em>
+modified data and committed
+but transaction <em>B</em> read data before <em>A</em> modified that data, then
+transaction <em>B</em> cannot be allowed to commit because that would
+violate serializability.</p></li>
+<li><p><strong>Update phase</strong>. Tentative changes are made permanent and the
+transaction commits.</p></li>
+</ol>
+
+<h2 id="two-version-basedconcurrencycontrol">Two-version-based concurrency control</h2>
+
+<p>A way of increasing concurrency even beyond read/write locks is through
+<strong>two-version-based concurrency control</strong>.
+In this case, one transaction
+writes <strong>tentative versions</strong> (private versions) while other transactions
+read existing, previously committed versions of the data.
+This allows transactions to request <em>read locks</em> even if another
+transaction has a <em>write lock</em> on the object. When the transaction
+that has a <em>write lock</em> is ready to commit, it converts its write
+locks to a <strong>commit locks</strong>, waits until any transactions that have a
+<em>read lock</em> for that object complete, and then makes its
+modified version permanent. During a <em>commit lock</em>, no other
+transaction can grab any lock on that object.
+This allows increased concurrency
+but transactions that write data risk waiting when
+they attempt to commit and make their data permanent.</p>
+
+<h3 id="timestampordering">Timestamp ordering</h3>
+
+<p><strong>Timestamp ordering</strong> allows lock-free concurrency control by keeping track of two
+timestamps per object: the timestamp of the last committed that
+read the object and the timestamp of the last committed transaction
+that wrote the object. If a transaction wants to write an object,
+it compares its own timestamp with the object’s write timestamp.
+If the object’s timestamp is older then we have <strong>good ordering</strong> and
+the transaction can proceed. Otherwise the transaction aborts and
+is restarted.</p>
+
+<h3 id="multiversionconcurrencycontrol">Multiversion concurrency control</h3>
+
+<p>We can extend two-version-based concurrency control to support multiple
+versions of an object and apply the concepts of timestamp ordering to create
+<strong>multiversion concurrency control</strong> (<strong>MVCC</strong>).</p>
+
+<p>In multiversion
+concurrency control, no locks are used. The system can maintain multiple versions
+of an object (e.g., a field in a database table).
+Each transaction has a timestamp associated with it that marks
+the start of the transaction. Each version of an object has two
+timestamps: the <strong>read timestamp</strong>, which records the time the object
+was read, and the <strong>write timestamp</strong>, which records the time
+the object was modified.</p>
+
+<p>With MVCC, a transaction will never have to wait to read an object; it
+simply reads an the latest version of the object that has a
+write timestamp earlier than that of the transaction.
+A write cannot take place if the are any other uncommitted transactions that
+read the object and have a timestamp earlier than the read timestamp
+of our transaction. This is because an earlier transaction depends on a
+previous value of the object and we need to consider the possibility that
+the earlier transaction may modify that object. In this case, the transaction will
+abort and restart in the hope that this conflict will not arise again.</p>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Homework 10 (Project 3)</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css?v=1.1"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Homework 10 (Project 3)</h1>
+								<h2></h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>October 24, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<div class="boldbox"> Deadline: Wednesday, November 4, 2020 11:59pm EST </div>
+
+								<p>&rarr; <a href="files/Project-3-overview.pdf">Recitation notes</a>.<br/>
+&rarr; <a href="../notes/videos/Project-3-overview-video.mp4">Recitation video</a><br/>
+&rarr; <a href="files/hw10.zip">Reference programs</a></p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>This assignment contains three parts:</p>
+
+<ol>
+<li>In part 1, you will implement a binary version of the Vigenère polyaplhabetic substitution cipher.</li>
+<li>In part 2, you will implement a stream cipher that uses a linear congruential keystream generator and a hashed key as a seed.</li>
+<li>In part 3, you will modify the cipher in part 2 to operate as a block cipher that will shuffle pairs of bytes within each block based on the keystream and will apply cipher block chaining (CBC) between blocks.</li>
+</ol>
+
+<h1 id="environment">Environment</h1>
+
+<p>This is an individual project. All work should be your own except for the referenced code for the hash function.</p>
+
+<p>You may use Go, Python, Java, C, or C++ in your implementation.</p>
+
+<p>You should be able to implement this on any platform but you are responsible to make sure that the program runs on Rutgers iLab systems with no extra software.</p>
+
+<h1 id="part1:binaryvigenrecipher">Part 1: Binary Vigenère Cipher</h1>
+
+<p>We covered the Vigenère cipher in class. It was designed for manual cryptography (pencil and paper) and used a repeating key on a grid.</p>
+
+<p>![](files/vigenere.png#right width=300px)</p>
+
+<p>Each row contains the alphabet rotated one additional position to the left from the previous alphabet. To encrypt, you:</p>
+
+<ol>
+<li>Find the row indexed by the plaintext letter.</li>
+<li>Find the column indexed by the next character of the key</li>
+<li>The ciphertext letter is the intersection.
+The key is repeated to make it the same length as the message.</li>
+</ol>
+
+<p>Your program will create a <strong>binary version</strong> of this cipher.
+The key can be either text or, preferably, binary data and is stored in a key file.</p>
+
+<p>The usage of the command is:</p>
+
+<pre><code>vencrypt keyfile plaintext ciphertext
+</code></pre>
+
+<p>This encrypts the <em>plaintext</em> file using the key in <em>keyfile</em> and produces the file <em>ciphertext</em>.
+Here’s what you need to do:</p>
+
+<ol>
+<li><p>Create a 256x256 grid.<br/>
+ a. Row 0 contains <code>00</code> .. <code>0xff</code><br/>
+ b. Row 1 contains <code>01</code> .. <code>0xff</code>, <code>00</code><br/>
+ c. Row 2 contains <code>02</code> .. <code>0xff</code>, <code>00</code>, <code>01</code><br/>
+ d. Row 255 contains <code>0xff</code>, <code>00</code> .. <code>0xfe</code> </p></li>
+<li><p>To encrypt a byte <em>n</em> of plaintext, look up its value in the table:<br/>
+ciphertext~n~ = table [<em>row</em>=plaintext~<em>n</em>~][<em>column</em>=keydata~<em>n</em>&nbsp;mod&nbsp;<em>length(ciphertext)</em>~ ] </p></li>
+</ol>
+
+<p>![](files/vigenere-lookup.png#right width=300px)</p>
+
+<p>If you think about the operations that take place, you will discover that you don’t even need a table since you can easily derive the value of the ciphertext from the key byte and plaintext byte. </p>
+
+<p>Then, create a decryption function:</p>
+
+<pre><code>vdecrypt keyfile ciphertext plaintext
+</code></pre>
+
+<p>This reads the key from <em>keyfile</em> and decrypts the contents in <em>cipherfile</em> into the file <em>message</em>.</p>
+
+<h2 id="hintstesting">Hints &amp; testing</h2>
+
+<p>If you find this program getting long, you might be approaching it incorrectly. If you think about the problem, you will realize that you don’t need a table. The entire encryption can be one while loop with one line of code within it! You can implement a table if you’d like but it&#8217;s not necessary.</p>
+
+<p>Test your programs thoroughly. Come up with different test cases and validate them. </p>
+
+<p>With this cipher, a key with bytes of 0 will always produce plaintext. A key with bytes of 1 will produce shifted data. For example, the string <code>ABC</code> will produce the ciphertext <code>BCD</code>.</p>
+
+<p>Printing input &amp; output of data (as hex #s, for example) can help you see what&#8217;s going on in your program.</p>
+
+<p>The Linux (and macOS) <em>od</em> command dumps binary data and may be useful for inspecting your output. The command</p>
+
+<pre><code>od –t x1 keyfile
+</code></pre>
+
+<p>shows the contents of <code>keyfile</code> as a series of hexadecimal bytes.</p>
+
+<h1 id="part2:streamcipher">Part 2: Stream cipher</h1>
+
+<p>We also covered stream ciphers in class. This type of cipher simulates the one-time pad by using a keystream generator to create a keystream that is the same length as the message. </p>
+
+<p>![](files/stream_cipher.png#right width=300px)</p>
+
+<p>The keystream generator is a pseudorandom number generator and the seed will be derived from the password. You will always see the same sequence of numbers for the same seed.</p>
+
+<p>To implement this cipher, you will:</p>
+
+<h3 id="aimplementalinearcongruentialgenerator">(a) Implement a <em>linear congruential generator</em></h3>
+
+<p>This is a trivial formula that is described <a href="https://en.wikipedia.org/wiki/Linear_congruential_generator">here</a>. This is one of the best-known and widely-used pseudorandom number generators. Each pseudorandom number is function of the previous one and defined as:</p>
+
+<p>X~n+1~ = aX~n~ + <em>c</em> mod <em>m</em> </p>
+
+<p>where:<br/>
+ X~n+1~ is the next pseudorandom # in the sequence<br/>
+ X~n~ is the number before that in the sequence<br/>
+ <em>m</em> is a modulus. We will be working only on bytes in this assignment, so you will use 256 for the modulus.</p>
+
+<p>The values <em>a</em> and <em>c</em> are magic parameters. Certain values were found to produce better sequences of data. You will use the same parameters that are used in ANSI C, C99, and many other places:</p>
+
+<p>Modulus, <em>m</em> = 256 (1 byte)<br/>
+ Multiplier, <em>a</em> = 1103515245<br/>
+ Increment, <em>c</em> = 12345</p>
+
+<p>Implementing this generator is only three lines of code!</p>
+
+<p>By using a well-known formula, your output should be the same regardless of the programming language or operating system you use.</p>
+
+<h3 id="bconvertthepasswordtoaseed">(b) Convert the password to a seed</h3>
+
+<p>The seed for a pseudorandom number generator is just a number.
+For this program, instead of asking users to use a number as a key, you will let them use a textual password. You will then apply a hash function to this password to create a seed for the keystream generator.</p>
+
+<p>To create the seed, we will use a hash function that works well and is easy to implement. This is the sbdm hash that is used in gawk, the sbdm database, Berkeley DB, and many other places.
+You can find the C code for it <a href="http://www.cse.yorku.ca/~oz/hash.html">here</a>:</p>
+
+<pre><code>static unsigned long
+sdbm(unsigned char *str) {
+    unsigned long hash = 0;
+    int c;
+    while (c = *str++)
+        hash = c + (hash &lt;&lt; 6) + (hash &lt;&lt; 16) - hash;
+    return hash;
+}
+</code></pre>
+
+<p>You should be able to translate it to whatever language you’re programming in pretty easily. This implementation is also three lines of code!</p>
+
+<p>As with the previous step, this implementation should ensure that your output will be the same regardless of the programmer, programming language, or operating system.</p>
+
+<h3 id="capplythestreamcipher">(c) Apply the stream cipher</h3>
+
+<p>The ciphertext is generated byte by byte and is simply:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ciphertext~i~ = plaintext~i~ &oplus; keytext~i~</p>
+
+<p>Because applying an exclusive-or of the same key a second time undoes the first exclusive-or, you only need to implement one command.</p>
+
+<figure>
+<img src="files/hw10-part2.png" alt="" /></figure>
+
+
+
+<p>Usage:</p>
+
+<pre><code>scrypt password plaintext ciphertext
+scrypt password ciphertext plaintext
+</code></pre>
+
+<p>The <em>password</em> is a text string. The parameters <em>plaintext</em> and <em>ciphertext</em> are files. The same program can be used to encrypt or decrypt messages.</p>
+
+<h2 id="hintstesting">Hints &amp; testing</h2>
+
+<p>Before you even start implementing your cipher, you should test that your seed and keystream generation works as expected. It’s important that different cipher implementations are all compatible – even if they are written by different people in different languages and on different platforms.</p>
+
+<p>You are provided with a program called <code>rand-test</code> that lets you enter a password and see the seed and enter either a password or seed to get a pseudorandom stream of bytes.</p>
+
+<p>The usage is:</p>
+
+<pre><code>prand-test [-p password | -s seed] [-n num]
+</code></pre>
+
+<p>If you supply a password then you can see the seed:</p>
+
+<p><code>$ ./prand-test -p monkey01
+using seed=5423267027848090132 from password=&quot;monkey01&quot;</code></p>
+
+<p>It&#8217;s possible that the seed may be different if you&#8217;re using python, which implements arbitrary-precision arithmetic instead of 64-bit integers but I believe your sequence should be the same since we&#8217;re taking the modulus of the results.</p>
+
+<p>To see a sequence of pseudorandom bytes, use the <code>-n</code> parameter. Here are the first five bytes from the password <code>monkey01</code>:</p>
+
+<p><code>./prand-test -p monkey01 -n 5
+using seed=5423267027848090132 from password=&quot;monkey01&quot;
+189
+178
+3
+128
+185</code></p>
+
+<p>You can also test the sequence from a seed number. Here are the first four bytes from the seen 85:</p>
+
+<p><code>./prand-test -s 85 -n 5
+using seed=85
+106
+91
+248
+209
+54</code></p>
+
+<h1 id="part3:blockencryptionwithcipherblockchainingandpadding">Part 3: Block encryption with cipher block chaining and padding</h1>
+
+<p>This is an enhancement of Part 2 to add the concepts of:</p>
+
+<ul>
+<li>Processing data in 16-byte blocks</li>
+<li>Padding – adding it and removing it correctly,</li>
+<li>Shuffling data</li>
+<li>Cipher block chaining</li>
+</ul>
+
+<p>We modify the stream cipher above to have it operate on 16-byte blocks instead of bytes. This turns it into a form of block cipher. A block cipher normally uses multiple iterations (rounds) through an SP-network (substitutions &amp; permutations) to add confusion &amp; diffusion. Confusion refers to changing bit values as a function of the key and that each bit of the ciphertext is determined by several parts of the key. Diffusion refers to the property that a change in one bit of plaintext will result in many bits of the ciphertext changing (about half).</p>
+
+<p>We will not use multiple rounds of an SP network. Instead, we will keep the mechanisms of the stream cipher in place but enhance it in two ways: cipher block chaining and byte shuffling.</p>
+
+<h3 id="padding">Padding</h3>
+
+<p>Block ciphers is that they work on a block of data at a time. In our case, we will be processing 16-byte blocks.</p>
+
+<p>Not every file is an exact multiple of 16 bytes so we may encounter a partial block at the end.
+To support this, every block cipher needs to support padding, which is the mechanism for adding extra bytes to fill the block. Padding must be added in such a way that we can detect and remove the padding when decrypting a message.</p>
+
+<p>The way you will implement padding is by adding between 1 and 16 extra bytes at the end of the file. Each byte of the padding data is a number that tells you how many bytes were added. This is a technique that allows you to know how much padding needs to be removed when decrypting and writing the plaintext output.</p>
+
+<p>In the case that the file was an exact multiple of 16 bytes, we add an entire extra block of padding. Otherwise we would never know if we had padding. Simply looking at the last byte of the last block of the file will tell us how much padding to ignore.</p>
+
+<p>Here are a few examples. In the first, the text <code>I am done.</code> takes up 10 bytes so we have 6 bytes left over. Each of those bytes will contain a pad byte with a value of 6.
+Note that this is not the ASCII character 6 but the number 6.</p>
+
+<figure>
+<img src="files/hw10-pad-1.png" alt="" /></figure>
+
+
+
+<p>In this example, we have the text <code>This is the end</code>. It takes up 15 bytes so we need to add one byte of padding. This padding byte contains the value 1.</p>
+
+<figure>
+<img src="files/hw10-pad-2.png" alt="" /></figure>
+
+
+
+<p>In the final example, we have the text <code>this is the end.</code> with a period. This message takes up exactly 16 bytes. Because of this, we need to add an extra block filled with bytes containing the number 16.</p>
+
+<p>When you decode the message, you will need to remove the padding.</p>
+
+<figure>
+<img src="files/hw10-pad-3.png" alt="" /></figure>
+
+
+
+<h3 id="cipherblockchaining">Cipher block chaining</h3>
+
+<p>Stream ciphers have no (or low) diffusion. The change of a bit in plaintext will generally affect only that bit in ciphertext. We will enhance diffusion by adding cipher block chaining (CBC). With cipher block chaining, we exclusive-or the previous block with the next block.</p>
+
+<figure>
+<img src="files/hw10-cbc.png" alt="" /></figure>
+
+
+
+<p>We will not use multiple rounds of an SP network. Instead, we will keep the mechanisms of the stream cipher in place but enhance it in two ways</p>
+
+<h3 id="byteshuffling">Byte shuffling</h3>
+
+<p>Confusion is roughly determined by the seed and the pseudorandom output of the keystream generator in this implementation but we will enhance the degree of confusion by shuffling bytes of the block.</p>
+
+<p>We will use the key to determine which sets of bytes in the block to exchange (swap). For each 16-byte block, do the following:</p>
+
+<pre><code>for (i=0; i &lt; blocksize; i=i+1)
+    first = key[i] &amp; 0xf   // lower 4 bits of the keystream
+    second = (key[i] &gt;&gt; 4) &amp; 0xf    // top 4 bits of the keystream
+    swap(block[first], block[second])    // exchange the bytes
+</code></pre>
+
+<h3 id="cipheroperation">Cipher operation</h3>
+
+<p>The flow of the cipher is the following:</p>
+
+<p>Start by creating an initialization vector (IV) for applying CBC to the first block. This will be the first 16 bytes read from the keystream generator. These bytes will not be used for anything else.</p>
+
+<p>Then, for each 16-byte plaintext_block <em>i</em>:</p>
+
+<ol>
+<li><p>If it is the last block, add padding.</p></li>
+<li><p>Apply CBC: temp_block~i~ = plaintext_block~i~ &oplus; ciphertext_block~i&#8211;1~. Use the initialization vector if this is the first block (<em>i</em>=0).</p></li>
+<li><p>Read 16 bytes from the keystream.</p></li>
+<li><p>Shuffle the bytes based on the keystream data.</p></li>
+<li><p>ciphertext_block~i~ = temp_block~i~ &oplus; keystream~i~.</p></li>
+<li><p>Write ciphertext_block~i~.</p></li>
+</ol>
+
+<p>You will use the same password hashing and keystream generator as in Part 2.</p>
+
+<p>You will need to write two programs for this part, one to encrypt and another to decrypt:</p>
+
+<pre><code>    sbencrypt password plaintext ciphertext
+    sbdecrypt password ciphertext plaintext
+</code></pre>
+
+<p>As with Part 2, the program will take a password string, which will be hashed and used as a seed for the keystream generator. The parameters plaintext and ciphertext are both file names.</p>
+
+<h1 id="referenceprograms">Reference programs</h1>
+
+<p>It’s important that encryption software works consistently across multiple systems regardless of author, programming language, or operating system. I should be able to encrypt a message on my Mac and expect you to be able to decrypt it with your program on your Raspberry Pi running Linux.</p>
+
+<p>You are provided with <a href="files/hw10.zip">reference versions</a> of the programs that you can use to compare with yours and, perhaps, help debug your code. Here are the programs provided:</p>
+
+<h2 id="binaryvigenrecipher">Binary Vigenère Cipher</h2>
+
+<pre><code>vencrypt [-d] [keyfile | -k key] plaintext ciphertext
+</code></pre>
+
+<p>Encrypt a plaintext file to create a <em>ciphertext</em> file using key data stored in <em>keyfile</em>. Alternatively, you can specify a textual <em>keyfile</em> with the <code>-k</code> option. For example,</p>
+
+<pre><code>vencrypt -k monkey01 file.txt file.enc
+</code></pre>
+
+<p>Will use the bytes in <code>monkey01</code> as the key. This limits the key space but may be useful for debugging.</p>
+
+<p>The <code>-d</code> flag turns on debugging information and shows you what lookups are taking place (note that you don’t need to implement a table but can do so if you find that easier).</p>
+
+<h2 id="streamcipherkeystreamtest">Stream Cipher – keystream test</h2>
+
+<p>Before you test your cipher, make sure that your password hash and pseudorandom number generator are producing the proper results. You can test this with the <code>prand-test</code> program:</p>
+
+<pre><code>prand-test [-p password | -s seed] [-n num]
+</code></pre>
+
+<p>If the program is supplied a password with the <code>-p</code> parameter, the password will be hashed and the result shown.</p>
+
+<p>The <code>-n</code> parameter lets you specify the number of pseudorandom numbers to be printed. The default is 0.</p>
+
+<p>If you just want to see the list of pseudorandom numbers generated from a specific seed, you can specify a seed number instead of a password with the <code>-s</code> parameter.</p>
+
+<h2 id="streamcipher">Stream Cipher</h2>
+
+<p>When you are confident that your keystream generator is providing the proper output, you can test the stream cipher with the <em>scrypt</em> command:</p>
+
+<pre><code>scrypt [-d] password plaintext ciphertext
+</code></pre>
+
+<p>Encrypts a <em>plaintext</em> file into a <em>ciphertext</em> file using a keystream derived from the <em>password</em> string. The same command decrypts a <em>ciphertext</em> file into a <em>plaintext</em> file:</p>
+
+<pre><code>scrypt [-d] password ciphertext plaintext
+</code></pre>
+
+<p>The -d flag turns on debugging mode and shows the series of xor operations from the source file to the output file.</p>
+
+<h2 id="blockcipher">Block Cipher</h2>
+
+<p>The block cipher reference program is: </p>
+
+<pre><code>sbencrypt [-d] password plaintextfile ciphertextfile
+</code></pre>
+
+<p>This encrypts a <em>plaintext</em> file into a <em>ciphertext</em> file using a <em>keystream</em> derived from the <em>password</em> string. The same command:</p>
+
+<pre><code>sbdecrypt [-d] password ciphertextfile plaintextfile
+</code></pre>
+
+<p>decrypts a <em>ciphertext</em> file into a <em>plaintext</em> file using a keystream derived from the <em>password</em> string.</p>
+
+<p>For both commands, the <code>-d</code> flag enables debugging, showing the sequence of shuffling per block.</p>
+
+<h1 id="whattosubmit">What to submit</h1>
+
+<p>Place your source code into a single zip file. If code needs to be compiled, please include a Makefile that will create the necessary executables.</p>
+
+<p>We don&#8217;t want to figure out how to run your program.</p>
+
+<p>We expect to:</p>
+
+<ol>
+<li>unzip your submission</li>
+<li>run <code>make</code> if there&#8217;s a <code>Makefile</code></li>
+<li>Set the mode of the programs to executable: <code>chmod u+x vencrypt vdecrypt scrypt sbencrypt sbdecrypt</code></li>
+<li>Run the commands as:<br/>
+./vencrypt keyfile plaintext ciphertext
+./sbencrypt password plaintext ciphertext</li>
+</ol>
+
+<p>If you are using python, you can submit either:</p>
+
+<p>A. a <code>vencrypt</code> script that runs the program or</p>
+
+<p>B. (preferably) a program named <code>vencrypt</code> that that starts like: </p>
+
+<pre><code>#!/usr/bin/python    
+print('Hello, world!') ...
+</code></pre>
+
+<p>If you are using java, you will have a simple makefile that compiles the class files and the <code>vencrypt</code> program will be a script that runs the java command with the arguments. The file <code>vencrypt</code> will contain something like this:</p>
+
+<pre><code>#!/bin/bash
+CLASSPATH=. java Vencrypt &quot;$@&quot;
+</code></pre>
+
+<p>Test your scripts on an iLab machine to make sure they work prior to submitting.</p>
+
+							</section>
+							<footer class="main">
+								Last modified December  8, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:pxk@cs@@rutgers@@edu" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>
+	</body>
+</html>

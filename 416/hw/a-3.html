@@ -1,0 +1,831 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Assignment 3 </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+
+.subhead {
+	background-color: #ddd;
+	text-align: center;
+	margin-left: 5em;
+	margin-right: 5em;
+	border: 1px solid #555;
+}
+.note {
+	font-style: italic;
+	color: #444;
+}
+#main .faqlist dd {
+        margin-left: 2em;
+        margin-bottom: 2em;
+}
+#main .faqlist dt {
+        background-color: #D1DBDB;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        padding-top: 0.25em;
+        padding-left: 0.5em;
+        color: black;
+	font-weight: normal;
+}
+#main .faqlist dt strong, #main .faqlist dt b {
+	color: red;
+}
+#main .faqlist dt p + p {
+	padding-top: 1em;
+}
+#main .faqlist dt p {
+	margin-bottom: 0;
+}
+#main .newslist dt {
+        background-color: white;
+        color: #555;
+}
+#main .answer {
+	color: #a00000;
+}
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 416 </a>
+        <li> <a href="../hw/index.html"> Assignments </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Assignment 3 </h1>
+<h2>  </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> February 11, 2015 </p>
+</div>
+<div class="subhead">
+<span class="strike">Due Friday, February 27, 2015 6:00 pm via sakai</span>
+<br/>
+Due Saturday, February 28, 2015 11:59 pm via sakai
+</div>
+
+<h2 id="assignment3faq"><a href="a-3-faq.html">Assignment 3 FAQ</a></h2>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>Your assignment is to download and build the <a href="http://pdos.csail.mit.edu/6.828/2014/xv6.html">xv6</a> operating system and boot it on an x86 emulator. You will add a new system call called <em>trace</em>, which turns console-based system call tracing for the calling process on and off. The system call also reports the total number of system calls called by the process since it started.</p>
+
+<h1 id="groupsize">Group size</h1>
+
+<p>This assignment entails writing only a miniscule amount of code. Given the large class size, however,
+you may work on this assignment in a group comprising up to five members. Be sure to indicate the group members clearly in your report.</p>
+
+<h3 id="groupsoffourormore">Groups of four or more</h3>
+
+<p>If you have over three members in your group, you <strong>must</strong> implement the optional part of the
+assignment: the <em>csinfo</em> system call, which returns the number of context switches that the
+process has experienced so far.</p>
+
+<h1 id="whatisxv6">What is xv6?</h1>
+
+<p>xv6 is a slimmed-down, simplified operating system that is a loosly-based reimplementation of the UNIX sixth edition (v6)
+kernel, written in standard C and for the Intel x86 architecture.
+The original source for UNIX v6 was written in a pre-standardized version of C that uses constructs that will not be
+accepted by today&#8217;s compilers. Moreover, it was written with the PDP&#8211;11 architecture in mind.</p>
+
+<p>It was designed at MIT as a small, easy-to-understand operating system that is suitable for teaching. For information about xv6, take a look at its <a href="http://pdos.csail.mit.edu/6.828/2014/xv6.html">home page at MIT</a>.
+A detailed description of the structure of xv6, including its system calls, file system, and memory management can be
+found in the <a href="http://pdos.csail.mit.edu/6.828/2014/xv6/book-rev8.pdf">xv6 book</a>:</p>
+
+<ul>
+<li><em>Russ Cox, Frans Kaashoek, Robert Morris</em>, <a href="http://pdos.csail.mit.edu/6.828/2014/xv6/book-rev8.pdf">xv6: a simple, Unix-like teaching operating system</a>. Sept 3, 2014.</li>
+</ul>
+
+<h1 id="xv6installationinstructions">xv6 installation instructions</h1>
+
+<p>There are several ways to get xv6 up and running. It can run natively or through one of several x86 simualtors.
+Here, I provide instructions for running it under the QEMU emulator under Linux as well as installing Linux on a
+virtual machine if you are running a system other than Linux or don&#8217;t want to install extra stuff on your Linux installation.</p>
+
+<p><a href="http://wiki.qemu.org/Main_Page">QEMU</a> is an open source machine emulator and virtualizer. It allows you to run software for one machine on a different
+machine architecture. It also makes it easy to run and debug opearating systems since the complete operating system
+just runs as another process on your system.</p>
+
+<p>You&#8217;re welcome to search for other instructions, use other virtual machines, or other simulators. I tested the
+process on my Mac but expect it to work on other operating systems. You&#8217;ll have to search out other instructions if you
+want to compile and run xv6 on an emulator directly on Windows or OS X.
+You can <a href="http://stackoverflow.com/questions/7534388/how-to-compile-and-run-xv6-on-windows">check this out</a> for instructions on running xv6 directly on Windows. I have not tried it.</p>
+
+<h2 id="runningxv6ontheilabmachines">Running xv6 on the iLab machines</h2>
+
+<p>Bill Katsak has modified the Makefile to point to the QEMU installation in
+his directory on the iLab machines. The entire xv6 package can be obtained
+from his posting to github. To install it into a directory called xv6, run:</p>
+
+<pre><code>git clone http://github.com/wkatsak/xv6
+</code></pre>
+
+<p>Then go to step 11 to compile and run it.</p>
+
+<p>This version of xv6 contains:</p>
+
+<p>a. A patch that configures QEMU for iLabs</p>
+
+<p>b. A patch that adds a halt() system call and a shutdown command (this is very useful when running &#8220;make qemu-nox&#8221; in an ssh window, because otherwise there is no way to kill it other than opening up another terminal, finding the pid, and issuing a kill. With this patch, you execute &#8220;shutdown&#8221; and QEMU dies.</p>
+
+<p>c. A patch to the makefile and an extra helper script to pack up the modifications on a particular branch as patches and tar them up for submission. </p>
+
+<h2 id="installinglinuxonavirtualmachinevm">Installing Linux on a virtual machine (VM)</h2>
+
+<p>Skip these steps if you are already running Linux and just want to install <em>git</em> and <em>QEMU</em> directly on Linux.
+Skip these steps also if you plan to use a cross-compiler and run <em>git</em> and <em>QEMU</em> directly on Windows or OS X.
+Go directly to step 8.</p>
+
+<h3 id="step1.installvirtualbox">Step 1. Install VirtualBox</h3>
+
+<p><a href="https://www.virtualbox.org/wiki/Downloads">Download VirtualBox</a>.
+You will be presented with a list of packages.
+Download the version suitable for your system (e.g., <em>VirtualBox 4.3.20 for OS X host</em>).</p>
+
+<p>Run the installer to install VirtualBox.</p>
+
+<h3 id="step2.createavirtualmachine">Step 2. Create a virtual machine</h3>
+
+<p>Run VirtualBox and click on <strong>New</strong> (top left icon) to create a new virtual machine. Select the following options:</p>
+
+<ul>
+<li><p>Name: <em>Linux</em> (or whatever you want)</p></li>
+<li><p>Type: <em>Linux</em></p></li>
+<li><p>Version: <em>Ubuntu 64-bit</em></p></li>
+</ul>
+
+<p>[press Continue]</p>
+
+<ul>
+<li>Memory Size: <em>1024 MB</em></li>
+</ul>
+
+<p>[press Continue]</p>
+
+<ul>
+<li>Virtual Hard Drive: <em>8 GB</em></li>
+</ul>
+
+<p>[press Continue]</p>
+
+<ul>
+<li>Hard drive file type: <em>VDI</em></li>
+</ul>
+
+<p>[press Continue]</p>
+
+<ul>
+<li>Select <em>Dynamically allocated</em></li>
+</ul>
+
+<p>[press Continue]</p>
+
+<ul>
+<li>File location &amp; size: <em>Pick a location &amp; name for the drive</em></li>
+</ul>
+
+<p>You’re done. The virtual machine is set up, powered off, and no operating system is yet installed.</p>
+
+<h3 id="step3.downloadubuntuserver">Step 3. Download Ubuntu Server</h3>
+
+<p>Download <a href="http://www.ubuntu.com/download/desktop">Ubuntu</a>. I downloaded <strong>Ubuntu 14.04.1 LTS
+64-bit - recommended</strong>. xv6 on QEMU will work equally well with other configurations of Ubuntu or
+other Linux distributions. You really won&#8217;t need 95% of the stuff that gets installed.</p>
+
+<p>The next page asks you for money.
+Select the <strong>Not now, take me to the download</strong> link if you don’t want to donate.</p>
+
+<p>You now downloaded a disk image of the server: <strong>ubuntu&#8211;14.04.1-desktop-amd64.iso</strong></p>
+
+<h3 id="step4.preparetoinstalllinuxubuntudistribution">Step 4. Prepare to install Linux (Ubuntu distribution)</h3>
+
+<p>Go back to VirtualBox.</p>
+
+<ul>
+<li>Select your virtual machine (you’ll probably have just one: <strong>Linux - Powered off</strong>).</li>
+<li>Go to Settings (top left, to the right of New).</li>
+<li>Select Storage in the pop-up window (fourth icon from left).</li>
+<li>Select the CD/DVD rom on the left (Empty) and click the CD/DVD icon on the right.</li>
+<li>You’re prompted for a disk file.</li>
+<li>Select the Ubuntu distribution iso file that you just downloaded.</li>
+</ul>
+
+<p>Power on the virtual machine by clicking the <strong>Start</strong> button in the list of top left icons.</p>
+
+<p>A window will appear that shows the console of your virtual machine.</p>
+
+<h3 id="step5.installubuntu">Step 5. Install Ubuntu</h3>
+
+<ul>
+<li>Click <strong>Install Ubuntu</strong></li>
+<li>Select <strong>Erase disk and install Ubuntu</strong> when prompted.</li>
+<li>Go through the prompts on the next few pages and then be patient.</li>
+<li>After several minutes, you’ll be told <strong>Installation is complete</strong>.</li>
+<li>Restart the system by clicking <strong>Restart now</strong>.</li>
+</ul>
+
+<p>When you restart, you’ll see a message about mouse pointer integration.
+You can close it and then press <em>Host-I</em> to turn off mouse pointer integration
+since you don’t need it. The help message will tell you what the <em>Host</em> key
+is (it’s the <em>command</em> key on a Mac).</p>
+
+<h3 id="step6.starttheterminalinlinux">Step 6. Start the terminal in Linux</h3>
+
+<p>You can get a terminal from the Ubuntu desktop by pressing <strong>ctrl-alt-T</strong>.
+For basic info on using the terminal and command line, see
+<a href="https://help.ubuntu.com/community/UsingTheTerminal">here</a></p>
+
+<h3 id="step7.optional-ifyouwanttoremovethedesktop">Step 7. Optional - if you want to remove the desktop</h3>
+
+<p>Edit <code>/etc/default/grub</code> with your favorite text editor (e.g., <strong>vim</strong>).
+GRUB is the bootloader and you&#8217;re telling it to pass a startup environment setting to
+Linux when it boots up.</p>
+
+<p>Change the line from:
+ GRUB_CMDLINE_LINUX_DEFAULT=&#8220;quiet splash&#8221;</p>
+
+<p>to
+ GRUB_CMDLINE_LINUX_DEFAULT=&#8220;text&#8221;</p>
+
+<p>Now update the bootloader and reboot:</p>
+
+<pre><code>sudo update-grub
+sudo reboot
+</code></pre>
+
+<h2 id="starthereifyoujustwanttoinstallgitandqemuonyourexistinglinuxdistribution"><strong>Start here if you just want to install git and QEMU on your existing Linux distribution</strong></h2>
+
+<h3 id="step8.ifyoudonthavegitinstalledinstallgit">Step 8. If you don&#8217;t have git installed, install git</h3>
+
+<p>Start the terminal and run the command:</p>
+
+<pre><code>sudo apt-get install git
+</code></pre>
+
+<h3 id="step9.installthex86emulatorqemu">Step 9. Install the x86 emulator, QEMU</h3>
+
+<p>Start the terminal and run the command:</p>
+
+<pre><code>sudo apt-get install qemu-system-x86
+</code></pre>
+
+<h3 id="step10.installxv6sourcecode">Step 10. Install xv6 source code</h3>
+
+<p>Start the terminal. Create a directory where you want the xv6 source tree to live and
+download the xv6 source.</p>
+
+<pre><code>mkdir src
+cd src
+git clone git://pdos.csail.mit.edu/xv6/xv6.git
+</code></pre>
+
+<p>This will install the source tree in a directory callled xv6.</p>
+
+<p>See <a href="http://pdos.csail.mit.edu/6.828/2014/tools.html">http://pdos.csail.mit.edu/6.828/2014/tools.html</a>.</p>
+
+<h3 id="step11.compileandrunxv6">Step 11. Compile and run xv6</h3>
+
+<p>Start the terminal, go to the place where you installed the xv6 source and run <em>make</em> to compile it,
+start the emulator, and run it. This compiles the kernel as well as the various commands and
+runs the kernel in the emulator. THe first process, <em>init</em>, starts the shell (<em>sh</em>).</p>
+
+<pre><code>cd src/xv6 (or wherever you installed xv6)
+make qemu-nox
+</code></pre>
+
+<p>If all went well, you will see output similar to this:</p>
+
+<pre><code>qemu-system-i386 -nographic -hdb fs.img xv6.img -smp 2 -m 512 
+xv6...
+cpu1: starting
+cpu0: starting
+init: starting sh
+$ 
+</code></pre>
+
+<p>The line with the $ sign is the shell prompt for a command from the shell program (<strong>sh</strong>) running as
+a process under xv6, which is running on an emulated x86 processor.</p>
+
+<p>There are several options for compiling and running xv6</p>
+<dl>
+<dt><strong>make qemu</strong></dt>
+<dd>builds everything. Starts QEMU with the VGA console in a new window and the serial console in your terminal. You can exit this by either closing the VGA window or entering <strong>ctrl-a x</strong> in your terminal.</dd>
+
+<dt><strong>make qemu-nox</strong></dt>
+<dd>builds everying. Runs only the serial console. I use this option since I ssh into my Linux systems. Exit QEMU by pressing <strong>ctrl-a x</strong> in the console.</dd>
+
+<dt><strong>make qemu-gdb</strong> and <strong>make qemu-nox-gdb</strong></dt>
+<dd>Same as the two above but here QEMU waits for a gdb (GNU debugger) connection.</dd>
+</dl>
+
+
+<p>For this assignment, you are unlikely to write code that will cause the kernel to die and you probably will not need to do register-level debugging or setting breakpoints. As such, you can probably do without gdb or QEMU&#8217;s breakpointing and register inspection capabillities.</p>
+
+<p>To switch between the QEMU console (running xv6) and the QEMU emulator command interface, type <strong>ctrl-a c</strong>. This takes to you the QEMU command mode where you can type QEMU commands, such as:</p>
+<dl>
+<dt>info registers</dt>
+<dd>to show CPU registers</dd>
+
+<dt>x/10i $eip</dt>
+<dd>show the next 10 instructions at the current instruction pointer</dd>
+
+<dt>system-reset</dt>
+<dd>reset &amp; reboot the system</dd>
+
+<dt>quit</dt>
+<dd>exit the emulator (quit xv6)</dd>
+</dl>
+
+
+<p>The last of these commmands is probably the only one that you will use. Type ctrl-a c again to get back to the console (unless you ran quit)</p>
+
+<h3 id="step12.testitout">Step 12. Test it out</h3>
+
+<p>Note: commands are really minimal and reside at the root of the file system. They include:
+<em>cat</em>, <em>echo</em>, <em>forktest</em>, <em>grep</em>, <em>init</em>, <em>kill</em>, <em>ln</em>, <em>ls</em>, <em>mkdir</em>, <em>rm</em>, <em>sh</em>, <em>stressfs</em>, <em>usertests</em>, <em>wc</em>, and <em>zombie</em>.</p>
+
+<p>All commands are in the root directory and your shell&#8217;s current working directory is the root as well. Run
+the <em>ls</em> command to see all the files:</p>
+
+<pre><code>ls
+</code></pre>
+
+<p>Try running:
+ cat README | grep xv6</p>
+
+<p>which will search for all lines containing xv6 in the file <em>README</em>. You will note that all the commands are dramatically feature-poor compared with conteporary Linux/BSD/UNIX equivalents. The <em>ls</em> command, for example, accepts no flags.</p>
+
+<p>Exit to the emulator via <strong>control-A C</strong>.
+Exit the emulator with the <strong>quit</strong> command.</p>
+
+<h2 id="tocreateafileforsubmission">To create a file for submission</h2>
+
+<p>Prior to making any changes, create your own branch of the code:</p>
+
+<pre><code>cd xv6
+git checkout -b mods
+</code></pre>
+
+<p>This will create a branch called <em>mods</em>. </p>
+
+<p>Now edit your files. When you are done, commit changes via:</p>
+
+<pre><code>git commit -a
+</code></pre>
+
+<p>If you&#8217;re running this on iLab machines,
+Bill Katsak&#8217;s modified makefile makes it easy to create a tar file containing modified files.
+To get a help message, run</p>
+
+<pre><code>make submit-help
+</code></pre>
+
+<p>To create a submission file, run</p>
+
+<pre><code>make submit netids=NETID1-NETID2 name=SECTION_NAME base=BASE_BRANCH
+</code></pre>
+
+<p>For example, if you have three students with netIDs abc, def, and ghi, use:</p>
+
+<pre><code>make submit netids=abc-def-ghi 3 base=master
+</code></pre>
+
+<p>This will create a gzipped tar file (tgz suffix)</p>
+
+<p>If you get an error that states:</p>
+
+<pre><code>Error:  is an invalid branch!
+</code></pre>
+
+<p>There&#8217;s a good chance that Bill didn&#8217;t fix the Makefile on github yet. You can fix it yourself by editing
+the Makefile with a text editor. Go to line 292 where you&#8217;ll see the line:</p>
+
+<pre><code>@./package_patches.sh $(netid) $(name) $(base)
+</code></pre>
+
+<p>Change &#8220;netid&#8221; to &#8220;netids&#8221;:</p>
+
+<pre><code>@./package_patches.sh $(netids) $(name) $(base)
+</code></pre>
+
+<p>and again run </p>
+
+<pre><code>make submit netids=abc-def-ghi name=3 base=master
+</code></pre>
+
+<p>This will greate a patch file with a name like:</p>
+
+<pre><code>3-abc-def-ghi.tar.gz
+</code></pre>
+
+<p>This is the file that you need to submit along with your write-up.</p>
+
+<p>If you are not using the iLab machines, you can download the <a href="package_patches.sh">package_patches.sh</a> shell script and
+run it as:</p>
+
+<pre><code>bash ./package_patches.sh netids name base
+</code></pre>
+
+<p>for example:</p>
+
+<pre><code>bash ./package_patches.sh abc-def-ghi 3 master
+</code></pre>
+
+<p>package_patches.sh</p>
+
+<h1 id="yourassignment">Your assignment</h1>
+
+<p>Your assignment is to add a new system call called <em>trace</em>. Its syntax is</p>
+
+<pre><code>int trace(int)
+</code></pre>
+
+<p>When called with a non-zero parameter, e.g., <em>trace(1)</em>, system call tracing is turned on for that process. Each system call from that process will be printed to the console in a user-friendly format showing:</p>
+
+<ul>
+<li>the process ID</li>
+<li>the process name</li>
+<li>the system call number</li>
+<li>the system call name</li>
+</ul>
+
+<p>Any other processes will not have their system calls printed unless they also call <em>trace(1)</em>. </p>
+
+<p>Calling <em>trace(0)</em> turns tracing off for that process. System calls will no longer be printed to the console</p>
+
+<p>In all cases, the <em>trace</em> system call also returns the total number of system calls that the process has made since it started. Hence, you can write code such as:</p>
+
+<pre><code>printf(&quot;total system calls so far = %d\n&quot;, trace(0));
+</code></pre>
+
+<h1 id="howtoaddasystemcall">How to add a system call</h1>
+
+<p>You need to touch several files to add a system call in xv6. Look at the implementation of existing system calls for guidance on how to add a new one. The files that you need to edit to add a new system call include:</p>
+<dl>
+<dt>user.h</dt>
+<dd>This contains the user-side function prototypes of system calls as well as utility library functions (<em>stat</em>, <em>strcpy</em>, <em>printf</em>, etc.).</dd>
+
+<dt>syscall.h</dt>
+<dd>This file contains symbolic definitions of system call numbers. You need to define a unique number for
+ your system call. Be sure that the numbers are consecutive. That is, there are no missing number in the
+ sequence. These numbers are indices into a table of pointers defined in <strong>syscall.c</strong> (see next item).</dd>
+
+<dt>syscall.c</dt>
+<dd>This file contains entry code for system call processing. The <strong>syscall(void)</strong> function is the entry
+ function for <em>all</em> system calls. Each system call is identified by a unique integer, which is placed
+ in the processor&#8217;s eax register. The <em>syscall</em> function checks the integer to ensure that it is in the
+ appropriate range and then calls the corresponding function that implements that call by making
+ an indirect funciton call to a function in the <strong>syscalls[]</strong> table. You need to ensure that the
+ kernel function that implements your system call is in the proper sequence in the <strong>syscalls</strong> array.</dd>
+
+<dt>usys.S</dt>
+<dd>This file contains macros for the assembler code for each system call. This is
+ user code (it will be part of a user-level program) that is used to make a
+ system call. The macro simply places the system call number into the eax register and then
+ invokes the system call. You need to add a macro entry for your system call here.</dd>
+
+<dt>sysproc.c</dt>
+<dd>This is a collection of process-related system calls. The functions in this file are called from
+ <em>syscall</em>. You can add your new function to this file.</dd>
+</dl>
+
+
+<p>Per-process state is stored in a proc structure: <strong>struct proc</strong> in <strong>proc.h</strong>. You&#8217;ll need to extend that
+structure to keep track of the metrics required by this assignment.
+You&#8217;ll also need to find where the proc structure is allocated so that you can ensure
+that the elements are initialized appropriately.</p>
+
+<p>When you implement your <em>trace</em> call, you&#8217;ll need to retrieve the incoming parameter. The file sysproc.c defines a few helper functions to do this.
+The functions <em>argint</em>, <em>argptr</em>, and <em>argstr</em> retrieve the n<sup>th</sup> system call argument, as either an integer, pointer, or a string.
+<em>argint</em> uses the <strong>esp</strong> register to locate the argument: esp points at the return address for the system call stub. </p>
+
+<h1 id="implementationhints">Implementation Hints</h1>
+
+<h2 id="step1">Step 1</h2>
+
+<p>Write a test program. Add it to the Makefile so that it will be compiled and built whenever you run <em>make</em>.</p>
+
+<p>In the Makefile, add your program (e.g., <strong>try.c</strong>) to the list of user commands in the <strong>EXTRA=</strong> section. That should be all you need to do to that file.</p>
+
+<p>Beware that programs don&#8217;t have access to the typical stdio library that you expect to find on most systems. You&#8217;ll have many of the functions you expect but some of the behavior might be different. For example, <em>printf</em> accepts an initial parameter that is the output stream: 1 represents the standard output and 2 represents the standard error stream. There is no FILE* type and no <em>fopen</em>, <em>fclose</em>, <em>fgets</em>, etc. calls. Look through <strong>usertests.c</strong> for examples on how all of the system calls provided with xv6 are used.</p>
+
+<h2 id="step2">Step 2</h2>
+
+<p>Add system call tracing to the kernel.
+Print a message identifying <em>every</em> system call that is requested by any process as well
+as the process ID and process name.
+You do not need to print the arguments to the system calls.
+When you run any program, including the shell, you will see output similar to this:</p>
+
+<pre><code>...
+pid: 2 [sh] syscall(5=read)
+pid: 2 [sh] syscall(5=read)
+pid: 2 [sh] syscall(1=fork)
+pid: 2 [sh] syscall(3=wait)
+pid: 3 [sh] syscall(12=sbrk)
+pid: 3 [sh] syscall(7=exec)
+pid: 3 [try] syscall(20=mkdir)
+pid: 3 [try] syscall(15=open)
+pid: 3 [try] syscall(16=write)
+pid: 3 [try] syscall(21=close)
+pid: 3 [try] syscall(2=exit)
+pid: 2 [sh] syscall(16=write)
+pid: 2 [sh] syscall(16=write)
+...
+</code></pre>
+
+<p>Printing messages to the console is easy: use the <strong>cprintf</strong> function, which works just like the normal Linux <strong>printf</strong> function. For example:</p>
+
+<pre><code>cprintf(&quot;hello, I'm number %d\n&quot;, num);
+</code></pre>
+
+<h2 id="step3">Step 3</h2>
+
+<p>Seeing a trace of all system calls for all processes is a bit overwhelming and not particularly useful. In step 2, you will restrict this output to a single process.</p>
+
+<p>Create a new system call called <strong>trace(int)</strong>. This turns console-based system call logging on and off for <strong>only</strong>
+the calling process.</p>
+
+<p>Extend the <strong>proc</strong> structure (the process control block) in <strong>proc.h</strong> to keep track of whether
+tracing for the process is on or off. Be sure that the elements are cleared (initialized) whenever
+a new process is created.</p>
+
+<p>In implementing your system call, you&#8217;ll need to access the single parameter passed by <em>trace</em>. Use the helper
+functions defined in <strong>syscall.c</strong> (<em>argint</em>, <em>argptr</em>, and <em>argstr</em>). Take a look at how other system calls are implemented in xv6. For example, <em>getpid</em> is a simple system call that
+takes no arguments and returns the current process&#8217; process ID; <em>kill</em> and <em>sleep</em> are examples of system calls
+that takes a single integer parameter.</p>
+
+<h2 id="step4">Step 4</h2>
+
+<p>Add system call counting. Be sure to count calls on a per-process basis. You will need to keep
+track of this in the process control block, the <strong>proc</strong> structure.</p>
+
+<h1 id="optionalmandatoryforgroupsof45members">Optional (mandatory for groups of 4 &amp; 5 members)</h1>
+
+<p>You will now add another system call to xv6. This one is called <strong>csinfo</strong>:</p>
+
+<pre><code>int csinfo(void);
+</code></pre>
+
+<p>It returns the number of context switches that took place in the process from the time it started.</p>
+
+<p>Implementing this will require keeping an additional counter in the <strong>proc</strong> structure for the file.</p>
+
+<p>To test it out, try code along the lines of</p>
+
+<pre><code>int cs1, cs2, cs3, cs4;
+cs1 = csinfo();
+cs2 = csinfo();
+sleep(1);
+cs3 = csinfo();
+sleep(1);
+cs4 = csinfo();
+printf(1, context switch counts = %d, %d, %d, %d\n&quot;, cs1, cs2, cs3, cs4&quot;);
+</code></pre>
+
+<p>The values of cs1 and cs2 will <em>usually</em> be the same since there will usually not be
+a context switch between them (the data is available immediately so the operating system
+has no need to block the process). Since a context switch may take place at an arbitrary
+time, it is possible that cs2 might be one greater than cs1 but it will, of course, never
+be more than that. The sleep() call will definitely put the processor to sleep (for one
+second), so cs3 will be one greater than cs2 and cs4 will be one greater than cs3.</p>
+
+<h1 id="submission">Submission</h1>
+
+<p>Be sure to indicate all members of your team in the opening comments in your code.
+If it takes us effort to figure out whose program this is, you will lose points.
+Only one team member should submit the assignment.</p>
+
+<p><strong>Do not</strong> submit the entire set of sources for xv6! Submit <strong>only</strong>:</p>
+
+<ul>
+<li><p>the files that you modified. If you&#8217;d like, you can submit the package patch file as discussed earlier.</p></li>
+<li><p>any new files that you added</p></li>
+<li><p>your test program(s)</p></li>
+<li><p>your modified Makefile</p></li>
+</ul>
+
+<p>Also, prepare and submit a <strong>report</strong> (plain text, pdf, or HTML in sakai only!). The report should</p>
+
+<ul>
+<li><p>Identify the group members</p></li>
+<li><p>Indentify if you did the optional component</p></li>
+<li><p>Explain your implementation</p></li>
+<li><p>Explain how you tested your work</p></li>
+</ul>
+
+<h3 id="checkyoursubmission">Check your submission!</h3>
+
+<p>Before submitting, make sure that all the components
+are there. If I can&#8217;t compile any part, you will get <strong>no</strong> credit. Download the original source
+into a new directory, copy your list of modified files, and run <em>make</em> to ensure that everything
+works. The few minutes you spend doing this will be well worth the time versus the agony of
+getting a zero on an assignment because you forgot a file!</p>
+
+<p>If you created a patch file, untar the package:</p>
+
+<pre><code>tar xvzf 3-abc-def-ghi.tar.gz
+</code></pre>
+
+<p>Find the .patch file that is extracted and apply it:</p>
+
+<pre><code>git apply --stat your-patch-file.patch
+</code></pre>
+
+<p>to make sure that your patches to the source are indeed present.</p>
+
+<h3 id="dontmissthedeadline">Don&#8217;t miss the deadline</h3>
+
+<p>Submit your assignment to sakai.
+Don&#8217;t wait until the final hour! Late submissions will not be accepted.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2015 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: February 22, 2015 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 417 Assignments </h2>
+	<ul>
+	<li> <a href="a-1.html"> Assignment 1 </a>
+	<li> <a href="a-2.html"> Assignment 2 </a>
+	<li> <a href="a-3.html"> Assignment 3 </a>
+	</ul>
+	<h2> Tutorials </h2>
+	<ul>
+<!--
+	<li> <a href="../notes/sockets/index.html"> TCP Sockets tutorial </a> </li>
+	<li> <a href="../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+-->
+	<li> <a href="../notes/c-tutorials/index.html"> C/Unix tutorials </a> </li>
+	<li> <a href="../notes/make/index.html"> Makefile tutorial </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

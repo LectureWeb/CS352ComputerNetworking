@@ -1,0 +1,333 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Precision Time Protocol</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css?v=1.1"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Precision Time Protocol</h1>
+								<h2>Clock synchronization that computes latency and offset</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>February 15, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal:</strong> Synchronize clocks on a local-area network to sub-microsecond precision.</p>
+</blockquote>
+
+<h1 id="precisiontimeprotocol">Precision Time Protocol</h1>
+
+<p>The Precision Time Protocol, PTP, is designed to synchronize clocks on a
+local area network (LAN) to sub-microsecond precision. The underlying assumption is
+that the accurate time source is on the same LAN as the systems that are synchronizing
+their clocks. That differs from NTP, which assumes that the time server is
+remote. An advantage of synchronizing via the LAN is that latency becomes
+far more predictable. There are no queuing delays due to routers (recall
+that routers have to store an entire message before forwarding it to the next router)
+and physical distances tend to be far smaller. Ethernet switches do create
+some latency, of course, and there is a chance that a packet may be queued if
+a destination is receiving other messages. Switch latency, however,
+tend to be on the order of a few microseconds and queuing can be nonexistent
+if there isn&#8217;t much traffic.</p>
+
+<p>To further minimize delay and jitter, high-precision PTP implementations will try to generate timestamps
+at the very lowest levels of the network stack such as at the MAC layer (Ethernet
+transceiver) right before sending the packet out.</p>
+
+<h2 id="bestmasterclock">Best master clock</h2>
+
+<p>In a network of computers running PTP, one system has to be elected as the <strong>master clock</strong>. This
+system is deemed to have the most accurate clock and other systems are <strong>slaves</strong> that
+synchronize from the master.</p>
+
+<p>A <strong>best master clock</strong> selection process is used to determine which system has
+the best clock to use for synchronization. This is done via an election where
+systems present information about their clocks and the best clock is selected
+from the following ranked attributes:</p>
+
+<ol>
+<li>Priority 1 (an admin-defined hint, allowing the administrator to force the use of a certain system as the master)</li>
+<li>Clock class (type of clock)</li>
+<li>Clock accuracy</li>
+<li>Clock variance: an estimate of stability based on past syncs</li>
+<li>Priority 2 (another admin-defined hint, allowing the preference of one system over another if all other values are equivalent)</li>
+<li>Unique ID (serves as a tie-breaker on the chance that all other values are equivalent among systems)</li>
+</ol>
+
+<h2 id="ptpmessages">PTP messages</h2>
+
+<p>PTP synchronizes a clock by exchanging three messages:</p>
+
+<ol>
+<li><p>The master initiates the sync by sending a <strong>sync</strong> message.</p></li>
+<li><p>The slave sends a <strong>delay request</strong> message back to the master.</p></li>
+<li><p>The master responds with a <strong>delay response</strong> message.</p></li>
+</ol>
+
+<p>A <em>delay request</em> message isn&#8217;t quite what it sounds: it is not a query asking
+the master what the network delay is. The master has no clue. Rather, it is an
+additional message that allows the slave to get an accurate estimate of the network delay.</p>
+
+<figure>
+<img src="images/ptp-timeline.png" alt="PTP synchronization" id="ptp" title="PTP synchronization" />
+<figcaption>PTP synchronization</figcaption>
+</figure>
+
+<p>Let&#8217;s look at an example. We&#8217;ll use hours and minutes instead of microseconds to make
+the numbers more tangible and feel like time values.</p>
+
+<p>In our example, the clocks on the two systems are not synchronized. In the figure, we
+note the times for each event with each system&#8217;s local clock.</p>
+
+<h3 id="syncmessage">Sync message</h3>
+
+<p>The master initiates synchronization at T~{1}, which is 10:00 at the master, by sending
+a <strong>sync</strong> message to the slave.
+That time happens to be 8:00 on the slave&#8217;s clock.
+The slave receives the message at
+time T~{2}, which is 8:15 on the slave&#8217;s clock. It happens to be 10:15 on the
+master&#8217;s clock but the slave doesn&#8217;t know that.</p>
+
+<p>The slave now has T~{1} from the master (10:00) and knows its value of T~{2} (8:15). The
+difference between them (ms_difference) is the clock offset plus the delay of sending the message from the
+master to the slave. We can express this as:</p>
+
+<blockquote>
+ms_difference = T<sub>2</sub> - T<sub>1</sub> = offset + ms_delay
+</blockquote>
+
+<p>In our example, we know that the clock offset is -2:00 (the client is behind by two hours)
+and the propagation time, ms_delay, is 0:15. The value of offset + ms_delay is -2:00 + 0:15,
+or -1:45. The slave does not know the delay or offset yet. All it can compute is</p>
+
+<blockquote>
+ms_difference = T<sub>2</sub> - T<sub>1</sub> = 8:15 - 10:00 = -1:45
+</blockquote>
+
+<h3 id="delayrequestandresponsemessages">Delay request and response messages</h3>
+
+<p>Now the slave sends a <strong>delay request</strong> message back to the master. This message
+simply asks the master to tell the slave what time it received this message.
+Suppose the slave sends the message at T~{3} (8:45) and the master receives it
+at T~{4} (10:55).
+The master sends back the value of T~{4} (10:55).</p>
+
+<p>The math is similar to that of the sync message.
+The slave has T~{4} from the master (10:55) and knows its value of T~{3} (8:45). The
+difference between them (sm_difference) is the <em>negative</em> clock offset plus the delay of sending the message from the
+master to the slave. The offset is negative because the message went in the opposite direction.
+We can express this as:</p>
+
+<blockquote>
+sm_difference = T<sub>4</sub> - T<sub>3</sub> = -offset + sm_delay
+</blockquote>
+
+<p>Again, let&#8217;s look at the numbers.
+The clock offset is still -2:00.
+The message propagation time here was now 0:10.
+The value of -offset + sm_delay is 2:00 + 0:10 = 2:10.
+Again, the slave does not know the delay or offset but it can compute:</p>
+
+<blockquote>
+sm_difference = T<sub>4</sub> - T<sub>3</sub> = 10:55 - 8:45 = 2:10
+</blockquote>
+
+<h3 id="twoequationsthreeunknowns">Two equations, three unknowns</h3>
+
+<p>With these messages, the client has two equations and three unknowns to work with:</p>
+
+<blockquote>
+ms_difference: T<sub>2</sub> - T<sub>1</sub> = offset + ms_delay  
+<br/>
+sm_difference: T<sub>4</sub> - T<sub>3</sub> = -offset + sm_delay 
+</blockquote>
+
+<p>That isn&#8217;t solvable, of course. However, LANs have symmetric bandwidth and
+we can assume that the latency of sending a message from the master to the slave
+is the same as that of sending a message from the slave to the master.
+There will be variations due to process and packet scheduling as well as possible
+queuing delays in the Ethernet switch, but these will usually be small - a few microseconds.</p>
+
+<p>Hence, if we assume that ms_delay and sm_delay are equivalent, we have:</p>
+
+<blockquote>
+ms_difference: T<sub>2</sub> - T<sub>1</sub> = offset + delay 
+<br/>
+sm_difference: T<sub>4</sub> - T<sub>3</sub> = -offset + delay  
+</blockquote>
+
+<p>Now, with two equations and two unknowns, we can solve for the offset:</p>
+
+<blockquote>
+offset = (ms_difference - sm_difference) &div; 2 = ((T<sub>2</sub> - T<sub>1</sub>) - (T<sub>4</sub> - T<sub>3</sub>)) &div; 2
+<br/>
+offset = (T<sub>2</sub> - T<sub>1</sub> - T<sub>4</sub> + T<sub>3</sub>) &div; 2
+</blockquote>
+
+<p>In our example, with slightly asymmetric delays, we get:</p>
+
+<blockquote>
+offset = 8:15 - 10:00 - 10:55 + 10:45 = -1:45 - 10:55 + 10:45 = -12:40 + 10:45 = -1:55
+</blockquote>
+
+<p>The way the PTP equations were set up, the offset is subtracted from the current time,
+so the slave will have to decrease its clock by -1:55, or advance it by 1:55. With the
+asymmetric delay, PTP gave averaged out the message latencies, resulting in an offset of -1:55
+instead of the correct value of -2:00.</p>
+
+<p>We can also compute the one-way message delay:</p>
+
+<blockquote>
+delay = (ms_difference + sm_difference) &div; 2 = ((T<sub>2</sub> - T<sub>1</sub>) + (T<sub>4</sub> - T<sub>3</sub>)) &div; 2
+<br/>
+offset = (T<sub>2</sub> - T<sub>1</sub> + T<sub>4</sub> - T<sub>3</sub>) &div; 2
+</blockquote>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><p>Texas Instruments, <a href="http://www.ti.com/lit/an/snla098a/snla098a.pdf">AN-1728 IEEE 1588 Precision Time Protocol Time Synchronization Performance</a>, Application Report, April 2013</p></li>
+<li><p>National Instruments, <a href="http://www.ni.com/newsletter/50130/en/">Special Focus: Understanding the IEEE 1588 Precision Time Protocol</a>, Nov 06, 2015</p></li>
+<li><p>RTA <a href="https://www.rtaautomation.com/technologies/ieee-1588/">IEEE 1588 Unplugged – An introduction to IEEE 1588</a></p></li>
+<li><p><a href="https://en.wikipedia.org/wiki/Precision_Time_Protocol">Precision Time Protocol</a>, Wikipedia</p></li>
+<li><p>Ken Ichikawa (Fujitsu Limited), <a href="https://events.linuxfoundation.org/sites/events/files/slides/lcjp14_ichikawa_0.pdf">Precision Time Protocol on Linux</a>, LinuxCon, Japan 2014.</p></li>
+</ul>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

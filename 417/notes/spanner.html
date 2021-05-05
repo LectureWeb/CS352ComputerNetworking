@@ -1,0 +1,238 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Distributed Transactions</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Distributed Transactions</h1>
+								<h2>Google Spanner</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>March 24, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Design a huge-scale worldwide database that provides ACID semantics, read-free locking, and external consistency.</p>
+</blockquote>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Brewer&#8217;s CAP theorem led to the popularity of an eventual consistency model rather than relying on transactional ACID semantics.</p>
+
+<p>In this model, writes propagate through the system so that all replicated copies of data will <em>eventually</em> be consistent. Prior to the completion of all updates, processes may access old versions of the data if they are reading from a replica that has not been updated yet.</p>
+
+<p>With ACID semantics, this would not happen since the transaction would grab a lock on all the replicas prior to updating them. Eventual consistency is the trade-off in designing a system that is both highly available and can survive partitioning.</p>
+
+<p>The presence of network partitions is, in many environments, a rare event. By using an eventual consistency model, we choose to give up on &#8220;C&#8221; (consistency) in order to gain availability on the slim chance that the network becomes partitioned.</p>
+
+<!-- 
+Moreover, the proof of the CAP theorem relies on a truly asynchronous communication model with
+no centralized clock: nodes can only make decisions based on the messages that they have received.
+-->
+
+<p>Given that partitions are rare in places such as Google data centers, which uses redundant networks both within and outside each center, it is not unreasonable to enforce a strong consistency model (which requires mutual exclusion via locks).</p>
+
+<!-- 
+We can achieve stronger consistency if we have a non-partitioned network and a clock all systems can access.
+-->
+
+<p>Partitioning will rarely affect the entire system but only a subset of computers. As such, it is possible to use a majority consensus algorithm, such as Paxos, to continue operations as long as the majority of replicas are functioning. Spanner takes advantage of an environment where partitions are rare and is willing to be partially unavailable in that rare event when a network becomes partitioned.</p>
+
+<p>Experience with eventual consistency has taught us that it places a greater burden on the programmer. With an eventual consistency model, it is now up to the programmer to reconcile the possibility that some data that is being accessed may be stale while other data might be current. Bigtable, for example, was difficult to use in applications that required strong consistency. Custom code had to be written to coordinate locks for any changes that spanned multiple rows.</p>
+
+<p>With <strong>Spanner</strong>, <a href="https://ai.google/research/pubs/pub39966">Google</a> has built a transactional (ACID) database that spans many systems and widely distributed data centers. Spanner provides the user with a large-scale database that comprises multiple tables, with each table containing multiple rows and columns. The model is semi-relational: each table is restricted to having a single primary key. Unlike Bigtable, transactions can span multiple rows. Also unlike Bigtable, which provided eventually consistent replication, Spanner offers synchronous replication, ACID semantics, and lock-free reads.</p>
+
+<h2 id="datastorage">Data storage</h2>
+
+<p>Spanner gives the user the the ability to manage multiple tables, each with rows and columns. Internally, the data is stored as a large keyspace that is sharded across multiple servers. Like Bigtable, each shard stores a group of consecutive of rows, called a tablet. This sharding is invisible to applications.</p>
+
+<p>Tablets are replicated synchronously using Paxos. One of the replicas is elected to be a leader and runs a transaction manager. Any transactions that span multiple shards use the <strong>two-phase commit protocol</strong>. Replication is performed within a transaction and all replicas remain locked until replication is complete, ensuring a consistent view of the database.</p>
+
+<p>Applications can specify geographic data placement and the amount of replication:</p>
+
+<ul>
+<li><p>Proximity of data to users (impacts read latency)</p></li>
+<li><p>Proximity of replicas to each other (impacts write latency)</p></li>
+<li><p>Amount of replication (impacts availability and read performance)</p></li>
+</ul>
+
+<p>Spanner was designed for a global scale and a database will span multiple data centers around the globe. In a data center, <strong>spanservers</strong> store tablets. A <strong>zonemaster</strong> periodically rebalances tablets across servers to balance load. The zonemaster does not participate in transactions.</p>
+
+<h2 id="transactions">Transactions</h2>
+
+<p>Spanner provides transactions with ACID semantics. Transactions are serialized to satisfy the &#8220;I&#8221; (isolated) property and to create the illusion that one transaction happens after another. <strong>Strict two-phase locking</strong> coupled with two-phase commit is used to accomplish this.</p>
+
+<p>Transactions can be distributed among multiple systems (which may span multiple datacenters). Each transaction is assigned a globally-meaningful timestamp and these timestamps reflect the serialization order of the transactions. Once a transaction has acquired all the locks it needs, it does its work and then picks a commit timestamp. Two-phase locking can reduce overall perfomance because other transactions may need to wait for locks to be released before they can access resources. Spanner uses separate <strong>read</strong> and <strong>write locks</strong> but even these can often block another transaction. A <em>read</em> lock will cause any writers to block and a <em>write</em> lock will cause any other writers or readers to block.</p>
+
+<p>Spanner supports different concurrency control mechanisms based on the operations that take place. Read-write transactions employ pessimistic concurrency control, using strict two-phase locking. Read-only transactions are <strong>lock-free</strong> and use <strong>wound-wait</strong> concurrency control.</p>
+
+<p>Spanner also supports lock-free <strong>snapshot reads</strong>. For this, spanner implements <strong>multiversion concurrency control</strong> by keeping old versions of data. A transaction reads data from a <strong>snapshot</strong>, an earlier point in time, without getting a lock. This is particularly useful for long-running transactions that read that many rows of the database. Any other ongoing transactions that modify that data will not affect the data that the long-running transaction reads since those will be later versions.</p>
+
+<h2 id="externalconsistency">External consistency</h2>
+
+<p>Serialization (isolation, the I in ACID) simply requires that transactions behave as if they executed in <em>some</em> serial order. Spanner implements a stronger consistency model, <strong>external consistency</strong>, which means that the order of transactions reflects their true time order. Specifically, if a transaction T<sub>1</sub> commits before a transaction T<sub>2</sub> starts, based on physical (also called &#8220;wall clock&#8221;) time, then the serial ordering of commits should reflect that and T<sub>1</sub> <em>must</em> get a smaller timestamp than T<sub>2</sub>. Spanner does this by using <strong>physical timestamps</strong>.</p>
+
+<p>It is not possible to get a completely accurate real-world timestamp. Even if we had an accurate time source, there would be synchronization delays that would add a level of uncertainty. The problem is compounded by having the database span data centers around the globe. Spanner tries to minimize the uncertainty in getting a timestamp and make it explicit.</p>
+
+<p>Each datacenter is equipped with one or more highly accurate time servers, called <strong>time masters</strong> (a combination of a GPS receivers and atomic clocks is used). The time master ensures that the uncertainty of a timestamp can be strongly bounded regardless of where a server resides. Each spanserver has access to a <strong>TrueTime API</strong> that provides a narrow time interval that contains the current time, ranging from <strong>TT.now().earliest</strong> up to <strong>TT.now().latest</strong>. The <em>earliest</em> time is guaranteed to be in the past and the <em>latest</em> is guaranteed to be a timestamp in the future when the function was called. These values would typically be only milliseconds apart. Spanner can now use these timestamps to ensure that transactions satisfy the demands of external consistency.</p>
+
+<h2 id="implementingexternalconsistency">Implementing external consistency</h2>
+
+<p>The key to providing external consistency is to ensure that any data committed by the transaction will not be visible until <em>after</em> the transaction&#8217;s timestamp. This means that even other systems that have a different clock should still see a wall clock time that is later than the transaction&#8217;s timestamp. To do this, spanner <em>waits out any uncertainty</em>. Before a transaction commits, it acquires a commit timestamp:</p>
+
+<pre><code>t = TT.now().latest
+</code></pre>
+
+<p>This is the latest possible value of the true time across all servers in the system. It then makes sure that no locks will be released until that time is <em>definitely</em> in the past. This means waiting until the earliest possible current time on any system is greater than the transaction timestamp:</p>
+
+<pre><code>TT.now().earliest &gt; t
+</code></pre>
+
+<p>This wait is called a <strong>commit wait</strong> and ensures that any newer transaction that grabs any of the same resources will definitely get a later timestamp.</p>
+
+<p>Note that there is no issue if multiple transactions have the same timestamp. Timestamps are strictly used for versioning to ensure that we provide a consistent view of the database while supporting lock-free reads. Consider the case of a transaction that needs to read hundreds of millions of rows of data. Many transactions may modify the database since you start your work but the view of the database will be consistent since all data read will be no later than a specified timestamp.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>By making timestamp uncertainty explicit, Spanner could implement a <strong>commit wait</strong> operation that can wait out the inaccuracy of a timestamp and provide external consistency along with full ACID semantics. Coupled with storing multiple versions of data, Spanner provides lock-free reads.</p>
+
+<p>Spanner&#8217;s design was a conscious decision to not sacrifice the strong ACID semantics of a database. Programming without ACID requires a lot of extra thinking about the side effects of eventual consistency and careful programming if one wants to avoid it. Strict two-phase locking and a two-phase commit protocol are implemented within Spanner so programmers do not have to reinvent it.</p>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

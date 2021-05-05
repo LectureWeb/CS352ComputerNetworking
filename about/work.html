@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Paul's Work  </title>
+
+<link href="../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+</head>
+
+<body id="s_about">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../css/images/small-logo.png" alt="pk.org" name="logo" width="97" height="45"/>
+  </div>
+  <div id="title">  </div>
+
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../about/index.html">About</a></li>
+    <li class="separator"><a href="../about/contact.html">Contact</a></li>
+    <li><a href="../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="../index.html"> Home </a> 
+ 	<li> <a href="index.html"> About </a> 
+ 	<li> <a href="work.html"> Work </a> 
+</ul>
+</div>
+  
+<!-- --------------------------------------- CONTENT WRAPPER --------------------------------------- -->
+<div id="content-wrapper">
+<!-- --------------------------------------- MAIN --------------------------------------- -->
+
+<div id="main">
+<div id="headline">
+<h1> My work</h1>
+<h2> Paul Krzyzanowski&#8217;s projects</h2>
+</div>
+
+<p>
+You can take a look at a list of my
+<a href="pubs.html">patents &amp; publications</a>. Please contain your excitement!
+</p>
+<p>
+I currently work at <a href="http://www.xevo.com">Xevo Inc.</a>, a global leader in data-driven user experiences
+for the automotive and cruise industries. 
+Now we are at the leading edge of the biggest change in automotive technology as we introduce
+AI into vehicles, not just for autonomous driving but also for improving driver safety and the
+infotainment experience. Since a car will never have the computing power of the cloud, we
+create an environment where machine learning models run at the edge (in the car) and selectively
+upload data to the cloud. Machine learning models are developed and tested in the cloud, with new
+models pushed back to the edge.
+</p>
+<p>
+My reasearch interests are in operating systems, mobile computing
+(including wireless networking, and computing in disconnected and
+loosely connected environments), computer system architecture, and
+playing with cool and/or cute hardware and software.
+</p>
+<p>
+These are a few of the larger or more interesting projects that I've worked on. Most
+were during my time at Bell Labs research:
+</p>
+<dl>
+<dt>	Kernel-less operating systems </dt>
+	<dd> Operating systems take on quite a lot of work. Even
+	microkernel systems take on quite a bit of responsibility
+	in providing rudimentary I/O access, process scheduling,
+	and resource management. Can we make things even simpler?
+	This project created a "kernel" whose entire role is merely
+	switching execution between protected spaces. Basically,
+	each "process" requests a certain amount of memory and
+	gets a protected address space <i>and</i> an interrupt
+	table. The mechanism for switching between these spaces is
+	by invoking the appropriate interrupt. Some spaces may	
+	have the privileges to operate in kernel mode or to access
+	certain devices. All that the kernel does is accept the
+	traps and perform this extended context switch to a new
+	protected domain. It was sad to see how long the interrupt
+	latency on an intel Pentium-class CPU was, largely due to the
+	fact that the processor doesn't support tagged TLBs in its MMU.
+	</dd>
+
+<dt>	Wireless ATM networking  </dt>
+	<dd> We built a small circuit board that contains a wireless modem, microprocessor,
+	and a bunch of memory and is interfaced via a PCMCIA interface. This system
+	formed the basis of a wireless ATM network.  The interesting part was
+	getting quality-of-service reservations to work well.  In the wireless
+	world, we were faced with a bandwidth considerably lower than one typically
+	gets in the wired world and, worse yet, periods of disconnection.
+	We designed drivers to handle service reservation requests and provide
+	the ability to interrupt applications to tell them if reservations
+	can no longer be met. This allows for quality of service control and
+	for applications to be self-adjusting to changes in operating conditionss.
+	</dd>
+
+<dt>	TeleWeb - Web surfing anytime, anywhere </dt>
+	<dd> We like to web surf, but are not always connected to the
+	Internet. Sometimes we could connect but it would be over a slow
+	and/or expensive connection (e.g. dial-up modem or an airplane phone).
+	TeleWeb runs as a local proxy that can make you aware (if you choose)
+	of what is cached and what isn't by rewriting web pages on the fly.
+	If you are not connected or connected over a costly link, TeleWeb
+	will intercept access to non-cached pages and ask you whether you
+	really want to load the page or if you'd like to put it in a queue
+	that will be processed when you're on a better connection.  Each page
+	also gives you a small bar of buttons that enables you to turn
+	a few TeleWeb options on or off, and schedule timed events via
+	a VCR-style timer (great for precaching pages over a slow connection).
+	</dd>
+
+<dt>	Programming your telephone  </dt>
+	<dd> Telephones used to be simple. Now they're not.
+	All too often you'll hear someone say "I'll try to transfer
+	you but here's the number in case it doesn't work".
+	We also want conferencing and call screening and possibly
+	custom features. Many office phones
+	are essentially simple terminals. The user interface parts
+	(display, buttons, ringing) can be dissociated from the
+	signalling information (ISDN or SIP). What I did was separate
+	the signalling and the user interface and have a computer
+	snoop on both and control the UI.
+	You can now set up a call screening file which tells the
+	computer what the phone (and the computer) should do for
+	particular incoming calls. You can also write little scripts
+	to do things like "keep dialing this number until someone answers"
+	or "conference in a new user". Click to dial becomes really
+	simple and does what you want &mdash; it dials the phone.
+	</dd>
+
+<dt>	Personal mobile terminal </dt>
+	<dd> This research was putting a new spin on an old idea - the dumb
+	terminal. This time the terminal is a Walkman-size handheld
+	device containing a large LCD display, a few buttons, a microphone
+	and a speaker, and a barcode reader. It has a radio interface
+	and communicates with a nearby host. The personal mobile
+	terminal (PMT) sends messages such as "here's some voice data",
+	"button 2 was pressed", or "here's a barcode scan". It receives
+	messages containing audio and display directives.
+	The server is <em>entirely</em> responsible for the PMT's functionality
+	as perceived by its user. For example, a user may go into a record
+	store and use the barcode scanner to scan CD barcodes to be
+	presented with a menu of preview choices. The same PMT may be
+	taken to a warehouse and used for inventory control. It may
+	be taked to a supermarket, allowing the customer to scan
+	products for information and use the on-screen display to
+	get information on sales. The same device can also be used for
+	guided tours. Simple yet amazingly powerful.
+	</dd>
+
+<dt>	High-definition TV </dt>
+	<dd> My contribution to this project was mininscule, but
+	when the computer systems research lab committed to building
+	an HDTV prototype (to compete for the FCC HDTV standard)
+	many of us had to help out.  Having lost most of my hardware
+	design skills, I worked on writing software for the
+	perceptual coder and the motion estimator. This was later
+	used to validate the custom HDTV hardware. Perceptual
+	coding deals with the realization that you can compress
+	an image only so far by squeezing out redundancy. After
+	that, you have to introduce noise into the system. The
+	question is where to put the noise so that it is least
+	perceived by the human viewer?  Our system was based on
+	taking a DCT (discrete cosine transform) and applying
+	perceptual weights to the resulting matrix. The second
+	component of HDTV was motion estimation. This involved
+	splitting the image into a number of rectangular chunks
+	and comparing each chunk with a previous frame. If a match
+	is found, then the image in the chunk need not be sent
+	and we only need to send the ID and a vector telling the
+	receiver where that chunk is currently located. Motion
+	estimation itself was a two-step process, with an initial search
+	for big chunks (coarse) and a second search for small
+	image chuncks (fine).
+	</dd>
+	
+<dt>	Intelligent memory </dt>
+	<dd> In the computer systems research laboratory, I worked on
+	exploring the concept of <em>intelligent memory</em>. The bandwidth
+	between memory and the CPU has not been increasing as rapidly
+	as the two components it connects. Cache memory is a great
+	solution, but it does not solve the problem completely. Sometimes
+	large linked lists or other structures without spatial locality
+	must be traversed or several CPUs need access to the same synchronous
+	memory. The SWIM (Structured Wafer-based Intelligent Memory)
+	project was our attempt at building a smarter memory chip.
+	Instead of having a memory chip sit idle or serve a word of memory
+	at a time, we augmented it with a <em>small</em> processor, optimized
+	for memory-intensive operations. Now operations such as list
+	traversals, pattern searches, and even disk I/O can be done by
+	the memory without wasting bandwidth on the bus. 
+	</dd>
+
+<dt>	Exploiting program parallelism - dynamically at the object level</dt>
+	<dd> 
+	Writing parallel programs is difficult. Having a compiler discover
+	parallelism is also difficult. This experiment focussed on 
+	exploiting object level parallelism. Suppose you have an environment
+	where each object can be loaded on a different processor (in
+	this case, intelligent memory was used). Executing a method
+	now becomes analogous to a remote procedure call.
+	However, if there is no immediate need for the return value,
+	the program can continue running.  Each method can do the same
+	kind of aggressive scheduling.
+	We run into problems when a method starts using future results.
+	To handle this, all method invocations go to a commit manager
+	which ensures serializability. No method will commit unless
+	it gets an OK from the commit manager. We ensure serializability
+	and achieve optimal object-level parallelism.
+	</dd>
+
+<dt>	Parallel computing </dt>
+	<dd>
+	We built a machine named SMOKE, optimized for parallel numeric
+	processing. I wrote a C compiler for this system as well as
+	other tools to enable applications to be written for this. The architecture was
+	a grid topology (4-way communication) with half the address space
+	of each processor being global shared memory and
+	the other half local to a processor.
+	</dd>
+
+<dt>	Unix </dt>
+	<dd> I spent the first several years of my Bell Labs career working
+	in the Unix System lab.
+	My work focussed on the initial development of remote file sharing 
+	and on writing the administrative commands for distributed
+	file systems for system V release 4 (share, /etc/dfs, and all that
+	crud). After that, I developed an
+	intelligent consultant for system administration (no - nothing as
+	demeaning as the Microsoft paper clip!). I also played with
+	high-speed regular expression parsers and rule-based email systems.
+	</dd>
+
+</dl>
+
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+
+<div id="sidebar1">
+    <h1 class="first">Contents </h1>
+	<h2> About </h2>
+	<ul>
+	<li> <a href="index.html"> About me </a> </li>
+	<li> <a href="work.html"> My past work </a> </li>
+	<li> <a href="pubs.html"> Publications </a> </li>
+	<li> <a href="contact.html"> Contact me </a> </li>
+	<li> <a href="periph.html"> Peripheral portraits </a> </li>
+	</ul>
+
+</div>
+
+
+<div id="sidebar2">
+</div>
+
+
+
+</div>
+</div>
+</body>
+</html>

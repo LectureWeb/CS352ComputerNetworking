@@ -1,0 +1,502 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Distributed Systems</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Distributed Systems</h1>
+								<h2>Introduction</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>January 26, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<p>Why are distributed systems more interesting now than they
+may have been one or two dozen years ago? Several advances in various areas of computing
+technology had a profound effect on the value and design of distributed systems.
+Since computer networking went mass market in the 1980s, local area network speeds
+increased by a factor of a thousand and wide-area (Internet) speeds by even more.
+Connectivity within a
+local area network (LAN) moved from shared to switched networking, allowing the
+network to scale without increasing congestion. On the wide area, Internet
+access has become available to the population at large, not just to researchers
+on Department of Defense projects.
+In 1965, Intel co-founder Gordon Moore predicted that the number of
+transistors on integrated circuits, and hence processor performance,
+would double approximately every two years. This prediction, known as
+<strong>Moore&#8217;s Law</strong> has turned out to hold (approximately) true for the past fifty years.
+Processor performance, system memory, and
+disk capacity has also increased by more than a thousandfold over the past
+couple of decades.</p>
+
+<p>Even though these improvements make it easier to store,
+process, and move data between systems, what are the motivations for
+distributing computing?
+There are several. Performance does not scale
+linearly with an increase in price with a single computer; with a collection of
+computers this scaling may be possible. Secondly, distributing systems makes
+sense in certain environments: databases may reside in different locations than
+the user, for example. Thirdly, we may need to interact with other people or
+remote data that are geographically dispersed. <strong>Metcalfe&#8217;s &#8220;Law&#8221;</strong> states that
+<em>the value of a telecommunications network is proportional to the square
+of the number of connected users of the system</em>. As with
+Moore&#8217;s Law, this isn&#8217;t a real law, of course.
+The &#8220;square&#8221; part comes from the fact that the number of edges
+in a fully-connected graph is proportional to the square of the number of
+vertices. A vertex represents a person and an edge represents the communication path
+from one person to another. Simply put, there&#8217;s a lot of value in being able
+to communicate with a lot of people. Without it, services such as TikTok,
+Twitter, eBay, Instagram, Facebook, and countless others would not be nearly
+as useful.</p>
+
+<h2 id="taxonomy">Taxonomy</h2>
+
+<p>One way of classifying system architectures is via Flynn&#8217;s
+taxonomy, proposed by Michael J. Flynn way back in 1966. He categorized computers based
+on the number of concurrent instruction streams and the number of data streams.</p>
+
+<dl>
+<dt><strong>SISD</strong></dt>
+<dd> <em>Single instruction stream, single data stream.</em> Refers to conventional single processor systems.</dd>
+
+<dt><strong>SIMD</strong></dt>
+<dd> <em>Single instruction stream, multiple data streams</em>.
+Refers to single processor computers where each instruction may process a
+collection of data. Vector and array processors fall into this category. SIMD
+includes graphics processors, cell processors,
+Intel&#8217;s Streaming SIMD Extensions (SSE4) in Intel&#8217;s
+Core microarchitecture and AMD&#8217;s K10 family of processors,
+Intel and AMD processors supporrt Advanced Vector Extensions (AVX) and Streaming SIMD Extensions (SSE2),
+both of which add support for vector processing.
+ARM<sup>&reg;</sup> architectures support the NEON&trade; SIMD engine.</dd>
+
+<dt><strong>MISD</strong></dt>
+<dd> <em>Multiple instruction streams, single data stream</em>. This category does not really make a lot of sense
+since it implies that multiple processors all process the same data. The term
+has occasionally been used to refer to used to replicated fault-tolerant systems.</dd>
+
+<dt><strong>MIMD</strong></dt>
+<dd> <em>Multiple instruction streams, multiple data streams</em>. Refers to any computers with multiple
+processors, where each processor operates on its own stream of data. This category covers
+both parallel (multiprocessor) and distributed systems.</dd>
+</dl>
+
+<p>MIMD can be further categorized by identifying whether the
+system has shared memory or not. Systems with shared memory are known
+as <strong>multiprocessor systems</strong>. Examples are conventional PCs
+with multiple processors on a single system bus
+or multi-core systems.</p>
+
+<p>An architecture where multiple identical processors communicate
+with a single shared memory is called a <strong>multiprocessor</strong>.
+Systems without shared memory are collections of separate computers, each
+with its own memory. They have to rely on a network to communicate and are
+sometimes referred to as <strong>networked computers</strong> or <strong>multicomputers</strong>.</p>
+
+<p>Multiprocessor systems are characterized by three features: (1) the processors
+all share the same memory, (2) they all share the same clock, and (3) they exhibit
+an <strong>all-or-nothing</strong> property to system failure. What this last item means is that
+if the system is dead, none of the processes are running. With a multicomputer
+system, it is certainly possible to have one computer functioning while another is not. This is called <strong>partial failure</strong>.</p>
+
+<p>The most common architecture for a multiprocessor system is <strong>symmetric
+multiprocessing</strong>, or <strong>SMP</strong>. In this kind of system, all processors
+are connected to the same shared memory and run the same operating system.
+No one processor has faster or prioritized access to memory or system peripherals than any other.</p>
+
+<h2 id="distributedsystems">Distributed systems</h2>
+
+<p>When we think of what a distributed system may be, we often think of it as a bunch of computers that work together to provide some kind of service. In many cases, we think of a huge collection of servers at data centers, since we know that Google search is not handled by a single server. Neither are interactions with Amazon, Twitter, Facebook, or any large-scale service. This view of distributed systems is not wrong but distributed systems need not be large scale. A home file server is a part of a distributed system. So is a wireless Bluetooth keyboard that interacts with a laptop.</p>
+
+<p>More formally, we define a <strong>distributed system</strong> as a <em>collection of independent hosts connected through a communication network</em>. By <em>independent hosts</em>, we refer to multiple stand-alone computers. Each runs as a separate system, booting its own operating system and running its own programs. None of these computers is dependent on any other one to function. Specifically, the computers in a distributed system have:</p>
+
+<ol>
+<li>No shared memory.</li>
+<li>No shared clock.</li>
+</ol>
+
+<p>Because processors no longer have access to common memory, they need a way to communicate. This requires using a <strong>communication network</strong> &#8211; a network interconnect.</p>
+
+<p>More often than not, as far as software is concerned, they also have no shared operating system, allowing each computer to function truly independently. In some cases, however, an operating system or supporting libraries may provide services to start processes on different computers, allow processes on different computers to communicate easily, or even migrate processes from one computer to another. Processes may also require the availability of certain remote resources, such as file servers. However, the case where processes expect services from remote computers does not take away from the fact that the computers themselves are i</p>
+
+<h2 id="faulttolerance">Fault tolerance</h2>
+
+<p>While we do not expect our personal computers to fail at any given time, failure is
+a fact of life in distributed systems. It&#8217;s simply a matter of statistics: if you
+have a collection of thousands of systems, it is very likely that on any given day
+something goes wrong: a computer or disk dies, a switch goes bad, a network cable
+is unplugged, or something loses power.</p>
+
+<p>Should our local computer die, it is an <em>all-or-nothing failure</em>: the entire system
+is dead. In distributed systems, one system may fail while others continue to
+work. This is a <strong>partial failure</strong>. Partial failures can be insidious. If one
+computer sends a message to another and does not get a reply, what happened?
+It could be any or all of several things: the system is slow to respond, the receiving
+process failed, the entire receiving computer failed, a network connection
+was broken, or a routing issue incurred huge delays.</p>
+
+<p>Handling failure is one of the central themes of distributed system design.
+We need to be able to handle <strong>detection</strong>, <strong>recovery</strong>, and <strong>restart</strong>.</p>
+
+<dl>
+<dt>Detection</dt>
+<dd> Identify the cause of the failure</dd>
+
+<dt>Recovery</dt>
+<dd> Services - the distributed algorithms - need to work around the failure and continue to function properly. This might involve starting a service on a different system, electing a new coordinator, or stopping any attempts at communicating with the failed system.</dd>
+
+<dt>Restart</dt>
+<dd> At some point, the failed element may be brought back into the distributed system. It may be moments
+later, when a network cable is reinserted, or a far longer time if, for example, a failed processor needs
+to be replaced. Regardless of the elapsed time. the restarted system needs to reintegrate itself into
+the whole system. It may have missed messages and its knowledge of the world is outdated. For example,
+it may have hosted a replicated object store and missed getting information about new, updated, and deleted objects.</dd>
+</dl>
+
+<p>Fault tolerance needs to address both <strong>availability</strong> and <strong>reliability</strong>. <strong>Availability</strong>
+refers to the fraction of time that the system as a whole is usable. Since individual
+systems may fail, we achieve high availability via <strong>redundancy</strong>: deploying
+duplicate, triplicate (and more) systems. The design of redundant systems has to consider
+all of the three aforementioned points. Failure to properly address the restart of a system
+may create consistency problems, where one replicated server returns different data than another one.</p>
+
+<p>Redundancy assumes that the overall system is designed to tolerate the failure of some
+components. For instance, we have two systems, each with a downtime probability of 5% and
+need only one to be functioning, the probability that both systems will be down at the same
+time is P(A and B) = P(A) &times; P(B), or 5% &times; 5% = 0.25%. <strong>Uptime</strong> is simply 100%-downtime.
+By adding a redundant component, we increased the uptime from 95% to 100%-0.25%=99.75%.</p>
+
+<p>The converse to redundancy is when we design a system that requires all components to be
+funcitoning. With the same 5% downtime as in the previous example, the probability that both systems
+are down is 100% - P(system A is up AND system B is up), which is 1-(1&#8211;5%)&times;(1&#8211;5%), or
+1 - 0.95 &times; 0.95 = 9.75%. Uptime is 1-downtime, so in this case we have an uptime of 90.25% versus 90% for a single system. As we depend on more and more systems, the probability of any system being down approaches 100%.</p>
+
+<p>These examples illustrate <em>series systems</em>* versus <strong>parallel systems</strong>.
+A <strong>series system</strong> failes if <em>any</em> of its components fail while a <strong>parallel system</strong>
+failes only if <em>all</em> of its components fail. We want to avoid designing series systems.</p>
+
+<p><strong>Reliability</strong> deals with the integrity of data. We can have systems that appear to be
+functioning well but transmit garbled data. Or we might have malicious interference where
+an intruder is sending messages to confuse the systems. We will can address message integrity with
+error detection but will also need to address issues of message authentication.</p>
+
+<p>Failure can manifest itself in different ways:</p>
+
+<dl>
+<dt><strong>Fail-stop</strong></dt>
+<dd> With fail-stop failure, the failed component simply stops functioning.
+Ideally, it will be able to detect its own failure and notify other members of the system
+first but this is most often not possible. <strong>Halting</strong> refers to the explicit
+case where a component stops without any notice. We can try to detect failed components
+by sending messages over a network and setting timeouts for a response. Unfortunately,
+this is not foolproof because network latency is variable and the response might arrive
+after our timeout. Moreover, we can have problems with network connectivity between
+some hosts.</dd>
+
+<dt><strong>Fail-restart</strong></dt>
+<dd> Fail-restart is when a component restarts after a failure. The restart may be nearly
+instantaneous, so other systems didn&#8217;t notice, or it may be after a long interval.
+As we discussed earlier, the danger is <strong>stale state</strong>. The restarted component
+may have missed messages and hence has a view of the world that is obsolete.</dd>
+
+<dt><strong>Omission</strong></dt>
+<dd> Omission failure deals with networking. It is the failure to send or receive messages.
+This can be due to data corruption, queue overflows in routers, or overflows in the
+receive buffer in the operating system. An omission failure may cause a query or its
+response to get dropped, resulting in one system assuming that another one has failed.</dd>
+
+<dt><strong>Timing</strong></dt>
+<dd> With asynchronous networks such as IP, messages may take longer to arrive than
+we might expect. This can lead us to assume that a system is not responding and hence
+not functioning when it acturally is operating. Another problem that is based on
+timing is that each system has its own clock and hence its own concept of time of
+day. This can create undesirable behavior with process coordination, message ordering,
+and system logs.</dd>
+
+<dt><strong>Partition</strong></dt>
+<dd> A network of computers may be working but a link between two groups of systems may
+fail. For example, an Ethernet switch connecting two racks may fail or a cable may
+be disconnected. In this case, the network effectively fragments into two or more
+sub-networks that cannot communicate with each other. Each group of systems thinks
+the other group is dead.</dd>
+
+<dt><strong>Byzantine</strong></dt>
+<dd> Byzantine failures cover any failures where a component does not cease to function but
+instead produces faulty data. This can be due to bad hardware, software logic errors, network
+problems or it can be due to malicious interference. To a large extent, we will
+address byzantine failures on the network with the use of cryptography.</dd>
+</dl>
+
+<p>Regardless of the type of failure, a basic goal in distributed systems is to design
+a system that avoids a <strong>single point of failure</strong>.
+This is the case where one component is crucial to the functioning of the entire system.
+For example, we might have one process on one system that serves as a coordinator to
+dispatch and check on computation taking place on thousands of other systems (or
+keeps track where various blocks of data live in a distributed storage system). A
+failure of the coordinator effectively causes the entire system to fail.</p>
+
+<h2 id="globalstate">Global state</h2>
+
+<p>In a distributed environment, it helps helps for one process to know what other systems
+are doing. For instance, a process may need to know the currently active members of
+a group of processes that hold replicated data. A problem with distributed systems
+design is that <em>nobody has the true global state of a system</em>. Because we lack
+shared memory, we cannot instantaneously see the data or liveness of other processes.
+Any data that changes over the execution of a program is referred to as <strong>state</strong>.
+For example, state may be lists of live processes, group members, contents of a database,
+computation progress, lists of processes that have remote files open, etc.</p>
+
+<p>A process obviously knows its own state. It can periodically report its state to other
+processes via network messages and it may receive updates from other processes over the
+network. However, these updates are neither continuous nor instantaneous. A process will
+only know the last reported state of other processes, which may not be equivalent to
+the current state of those processes.</p>
+
+<p>One type of state is not just information about group membership or the status of processes
+but the data stored by network file systems, databases, and object stores. This data
+is shared among systems that are designed to act as <strong>replicas</strong> &#8211; redundant systems
+that will give us instantaneous backups in case one system dies or allow us to load balance
+requests among multiple systems. Here we also have to deal with the fact that not
+all processes will be updated instantaneously.</p>
+
+<p>A restricted form of replication is a <strong>cache</strong>. A cache is simply local storage of
+frequency-accessed data to reduce access latency. Instead of making a network request,
+a process can have a stored copy of the results. For example, a process may store the
+result set of common database queries. Caching can do a wonderful job in improving
+performance but also poses the risk of <strong>stale data</strong> &#8211; cached copies of data that are
+no longer valid since the original data has been modified.</p>
+
+<h2 id="software">Software</h2>
+
+<p>One goal in some distributed systems software is providing a <strong>single-system image</strong>.
+This is software that makes a
+collection of independent computers appear as a single system to the users.
+This involves hiding the fact that system or computation is distributed. The software
+should &#8220;just work.&#8221; A few areas when we want to provide transparency include:</p>
+
+<dl>
+<dt>Location</dt>
+<dd> The user should not be aware of where the software is actually running or where resources reside.</dd>
+
+<dt>Migration</dt>
+<dd> The user should not be aware of the fact that the location of resources may have moved from one
+place to another or that a process was restarted on another computer, possibly in another data center.</dd>
+
+<dt>Replication</dt>
+<dd> The user should not be aware that data might be replicated for fault tolerance or for
+proximity in order to provide faster access.</dd>
+
+<dt>Concurrency</dt>
+<dd> The user should not be aware that multiple processes might be accessing resources
+at approximately the same time. Results should appear as if all the processes ran one
+after another in some order. This means that some processes might be temporarily locked
+from being able to access a set of resources while another process is using them.</dd>
+</dl>
+
+<h2 id="servicemodels">Service models</h2>
+
+<p>In software design, we often turn to <strong>layered architectures</strong>,
+where we break up application functionality into multiple layers of abstraction.
+each layer presents well-defined interfaces and hides the specifics of its
+implementation. For example, a typical computer system has an operating
+system that provides well-defined access to system resources, middleware that
+is linked to the application as a set of libraries that abstract things
+such as message encoding, communication, encryption, and database access, and
+various layers of abstraction created by the application designer.</p>
+
+<p>With network systems, we often experience similar layers of abstraction but
+this time across systems.
+When our network-based software architecture mimics a layered design, we
+use autonomous processes that
+communicate with each other via a network interface rather than
+procedure calls. Each such layer of
+abstraction is known as a <strong>tier</strong> in a <strong>multi-tier</strong>
+model. It is a generalization of a client-server model.</p>
+
+<dl>
+<dt>Centralized</dt>
+<dd> The original, non-networking, computing model is a <strong>centralized one</strong>,
+where all computing takes place on a single system.</dd>
+
+<dt>Client-server</dt>
+<dd> This is the dominant model of interaction in a networked system.
+One application, called the <strong>client</strong>
+(and usually run by the end user), requests
+something from another application, called a <strong>server</strong>.
+The server provides a <strong>service</strong>.
+Examples of this are a web browser (client) requesting a
+web page from a web server, aa mail application
+(client) accessing a mail server to get mailbox contents, or a print
+server being given content to print. In this model, clients communicate
+with the server and not with other clients. The model can be enhanced
+with multiple &#8220;layers,&#8221; or services, to mimic a layered architecture,
+resulting in a build a <strong>multi-tier</strong> system.</dd>
+
+<dt>Peer-to-peer</dt>
+<dd> A peer-to-peer architecture employs a collection of applications,
+any of which can talk to any other.These applications are <strong>peers</strong>
+and are generally run by a collection of end users rather than
+some service provider. The name <strong>peer</strong> implies that there is no
+leader: applications all have equal capabilities. An appealing
+aspect of a peer to peer design is <strong>self-scalability</strong>. As more
+and more computers join the collection of peers, the system has more
+peers to do the work and can hence handle a large workload. Examples
+of peer-to-peer architectures are BitTorrent and Skype.</dd>
+
+<dt>Hybrid</dt>
+<dd> A difficulty with peer-to-peer architectures is that one often needs
+to do things such as keep track of peers, identify which system can
+take on work or has specific content, and handle user lookup and
+authentication. This led to a variation of the peer-to-peer model
+where a <strong>coordinator</strong>, a central server, is in place
+to deal with these centralized needs. However, the peers still
+handle all the bandwidth-intensive or compute-intensive work.</dd>
+</dl>
+
+<h1 id="referencespartial">References (partial)</h1>
+
+<ul>
+<li>Andrew S. Tanenbaum, Maarten Van Steen, <em>Distributed Systems: Principles and Paradigms</em> (2nd Edition). &copy; 2006 Prentice Hall</li>
+<li>B. Clifford Neuman. <em>Scale in Distributed Systems</em>. In Readings in Distributed Computing Systems. IEEE Computer Society Press</li>
+<li>George Coulouris, Jean Dollimore, Tim Kindberg, Gordon Blair, <em>Distributed Systems: Concepts and Design</em> (5th edition). &copy; 2011 Addison Wesley</li>
+<li><a href="https://www.intel.com/content/www/us/en/support/articles/000005779/processors.html">Intel Streaming SIMD Extensions Technology</a>, Intel, September 10, 2018.</li>
+</ul>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

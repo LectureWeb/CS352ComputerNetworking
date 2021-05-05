@@ -1,0 +1,759 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Command Injection</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Command Injection</h1>
+								<h2>Forcing commands to run</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>October 1, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<p>We looked at buffer overflow and printf format string attacks that enable the modification of
+memory contents to change the flow of control in the program and, in the case of buffer overflows,
+inject executable binary code (machine instructions). Other injection attacks enable you
+to modify inputs used by command processors, such as interpreted languages or databases.
+We will now look at these attacks.</p>
+
+<h2 id="sqlinjection">SQL Injection</h2>
+
+<p>It is common practice to take user input and make it part of a database query. This is particularly
+popular with web services, which are often front ends for databases.
+For example, we might ask the user for a login name and password and then create a SQL
+query:</p>
+
+<pre><code>sprintf(buf,
+    ”SELECT * from logininfo WHERE username = '%s' AND password = '%s’;&quot;,
+    uname, passwd);
+</code></pre>
+
+<p>Suppose that the user entered this for a password:</p>
+
+<pre><code>' OR 1=1 --
+</code></pre>
+
+<p>We end up creating this query string<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a>:</p>
+
+<pre><code>SELECT * from logininfo WHERE username = 'paul' AND password = '' OR 1=1 -- ';
+</code></pre>
+
+<p>The &#8220;--&#8221; after &#8220;1=1&#8221; is a SQL comment, telling it to ignore everything else on the line.
+In SQL, OR operations have precendence over AND so the query checks for a null password (which the user probably does not have) or the condition 1=1, which is always true. In essence, the user&#8217;s &#8220;password&#8221; turned the query
+into one that ignores the user&#8217;s password and unconditionally validates the user.</p>
+
+<p>Statements such as this can be even more destructive as the user can use semicolons to add multiple
+statements and perform operations such as dropping (deleting) tables or changing values in the database.</p>
+
+<p>This attack can take place because the programmer blindly allowed user input to
+become part of the SQL command without validating that the user data does not change
+the quoting or tokenization of the query. A programmer can avoid the problem
+by carefully checking the input. Unfortunately, this can be difficult. SQL
+contains too many words and symbols that may be legitimate in other contexts (such
+as passwords) and escaping special characters, such as prepending backslashes or
+escaping single quotes with two quotes can be error prone as these escapes
+differ for different database vendors. The safest defense is to use parameterized queries,
+where user input never becomes part of the query but is brought in as parameters to it.
+For example, we can write the previous query as:</p>
+
+<pre><code>uname = getResourceString(&quot;username&quot;);
+passwd = getResourceString(&quot;password&quot;);
+query = &quot;SELECT * FROM users WHERE username = @0 AND password = @1&quot;;
+db.Execute(query, uname, passwd);
+</code></pre>
+
+<p>A related safe alternative is to use stored procedures. They have the same property that the
+query statement is not generated from user input and parameters are clearly identified.</p>
+
+<p>While SQL injection is the most common code injection attack, databases are not the only
+target. Creating executable statements built with user input is common in interpreted
+languages, such as Shell, Perl, PHP, and Python. Before making user input part of any
+invocable command, the programmer must be fully aware of parsing rules for that command
+interpreter.</p>
+
+<h2 id="shellattacks">Shell attacks</h2>
+
+<p>The various POSIX<a href="#fn:2" id="fnref:2" title="see footnote" class="footnote">[2]</a> shells (sh, csh, ksh, bash, tcsh, zsh) are commonly used as scripting tools
+for software installation, start-up scripts, and tying together workflow that involves processing
+data through multiple commands. A few aspects of how many of the shells work and the underlying
+program execution environment can create attack vectors.</p>
+
+<!--
+### IFS
+
+The shell variable **IFS**, **Internal Field Separator**, defines set of characters that
+will be used as separators when parsing
+arguments. By default, IFS is set to space, tab, and newline. However, it can be set to
+anything else. This can change how the shell parses its input data without modifying
+the shell code. IFS can also affect output, depending on what is used to generate it. 
+If a shell uses `"$*"` to expand a list of arguments, it will replace white space
+with the first character in the IFS variable. 
+
+More dangerously, IFS can cause the pathname separator character / to be treated 
+as whitespace. A program might use a function such as this to send an email alert:
+
+    FILE *fp = popen("/usr/bin/mail –s \"system alert\"  user", "w");
+
+The _popen_ function simply launches a shell to execute the supplied string as a command
+and allows input to the command to be written to the FILE pointer `fp`.
+If the IFS variable is set to `/`, then instead of executing the command /usr/bin/mail, 
+the shell will try to execute the command `usr` with parameters of `bin`, `mail`, ...
+If an attacker can place a command called `usr` somewhere in the user's search path then
+that command would be run instead.
+-->
+
+<h3 id="systemandpopenfunctions">system() and popen() functions</h3>
+
+<p>Both <em>system</em> and <em>popen</em> functions are part of
+the Standard C Library and are common
+functions that C programmers use to execute shell commands. The <em>system</em> function
+runs a shell command while the <em>popen</em> function also runs the shell command but
+allows the programmer to capture its output and/or send it input via the returned
+FILE pointer.</p>
+
+<p>Here we again have the danger of turning improperly-validated data into a command.
+For example, a program might use a function such as this to send an email alert:</p>
+
+<pre><code>char command[BUFSIZE];
+snprintf(command, BUFSIZE, &quot;/usr/bin/mail –s \&quot;system alert\&quot; %s&quot;, user);
+FILE *fp = popen(command, &quot;w&quot;);
+</code></pre>
+
+<p>In this example, the programmer uses <em>snprintf</em> to create
+the complete command with the desired user name into a buffer. This incurs the possibility
+of an injection attack if the user name is not carefully validated.
+If the attacker had the option to set the user name, she could enter a string
+such as:</p>
+
+<pre><code>nobody; rm -fr /home/*
+</code></pre>
+
+<p>which will result in <em>popen</em> running the following command:</p>
+
+<pre><code>sh -c &quot;/usr/bin/mail -s \&quot;system alert\&quot; nobody; rm -fr /home/*&quot;
+</code></pre>
+
+<p>which is a sequence of commands, the latter of which deletes all user directories.</p>
+
+<h3 id="otherenvironmentvariables">Other environment variables</h3>
+
+<p>The shell PATH environment variable controls how the shell searches for commands.
+For instance, suppose</p>
+
+<pre><code>PATH=/home/paul/bin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games
+</code></pre>
+
+<p>and the user runs the <code>ls</code> command. The shell will search through the PATH sequentially
+to find an executable filenamed <code>ls</code>:</p>
+
+<pre><code>/home/paul/bin/ls
+/usr/local/bin/ls
+/usr/sbin/ls
+/usr/bin/ls
+/bin/ls
+/usr/local/games/ls
+</code></pre>
+
+<p>If an attacker can either change a user&#8217;s PATH environment variable or if one of the
+paths is publicly writable and appears before the &#8220;safe&#8221; system directories,
+then he can add a booby-trapped command in one of those directories. For example,
+if the user runs the <strong>ls</strong> command, the shell may pick up a booby-trapped version
+in the <code>/usr/local/bin</code> directory. Even if a user has trusted locations, such
+as /bin and /usr/bin foremost in the PATH, an intruder may place a misspelled
+version of a common command into another directory in the path. The safest remedy
+is to make sure there are no untrusted directories in PATH.</p>
+
+<p>Some shells allow a user to set an ENV or BASH_ENV variable that contains the name
+of a file that will be executed as a script whenever a non-interactive shell is
+started (when a shell script is run, for example). If an attacker can change
+this variable then arbitrary commands may be added to the start of every shell script.</p>
+
+<h3 id="sharedlibraryenvironmentvariables">Shared library environment variables</h3>
+
+<p>In the distant past, programs used to be fully linked, meaning that all the code
+needed to run the program, aside from interactions with the operating system,
+was part of the executable program. Since so many programs use common libraries,
+such as the Standard C Library, they are not compiled into the code of an executable
+but instead are dynamically loaded when needed.</p>
+
+<p>Similar to PATH, <strong>LD_LIBRARY_PATH</strong> is an environment variable used by the
+operating system&#8217;s <a href="http://man7.org/linux/man-pages/man8/ld.so.8.html">program loader</a>
+that contains a colon-separated list of directories where
+libraries should be searched.
+If an attacker can change a user&#8217;s LD_LIBRARY_PATH, common library functions
+can be overwritten with custom versions.
+The <strong>LD_PRELOAD</strong> environment variable allows one to explicitly specify shared
+libraries that contain functions that override standard library functions. </p>
+
+<p>LD_LIBRARY_PATH and LD_PRELOAD will not give an attacker root access but they can be
+used to change the behavior of program or to log library interactions.
+For example, by overwriting standard functions, one may change how a program
+generates encryption keys, uses random numbers, sets delays in games,
+reads input, and writes output.</p>
+
+<p>As an example, let&#8217;s suppose we have a trial program that checks the current
+time against a hard-coded expiration time:</p>
+
+<pre><code>#include &lt;time.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int
+main(int argc, char **argv)
+{
+    unsigned long expiration = 1483228800;
+    time_t now;
+
+    /* check software expiration */
+    now = time(NULL);
+    if (time(NULL) &gt; (time_t)expiration) {
+        fprintf(stderr, &quot;This software expired on %s&quot;, ctime(&amp;expiration));
+        fprintf(stderr, &quot;This time is now %s&quot;, ctime(&amp;now));
+    }
+    else
+        fprintf(stderr, &quot;You're good to go: %lu days left in your trial.\n&quot;,
+            (expiration-now)/(60*60*24));
+    return 0;
+}
+</code></pre>
+
+<p>When run, we may get output such as:</p>
+
+<pre><code>$ ./testdate
+This software expired on Sat Dec 31 19:00:00 2016
+This time is now Sun Feb 18 15:50:44 2018
+</code></pre>
+
+<p>Let us write a replacement <em>time</em> function that always returns a fixed value
+that is less than the one we test for. We&#8217;ll put it in a file called <code>time.c</code>:</p>
+
+<pre><code>unsigned long time() {
+    return (unsigned long) 1483000000;
+}
+</code></pre>
+
+<p>We compile it into a shared library:</p>
+
+<pre><code>gcc -shared -fPIC time.c -o newtime.so
+</code></pre>
+
+<p>Now we set LD_PRELOAD and run the program:</p>
+
+<pre><code>$ export LD_PRELOAD=$PWD/newtime.so
+$ ./testdate
+You're good to go: 2 days left in your trial.
+</code></pre>
+
+<p>Note that our program now behaves differently and we never had to recompile
+it or feed it different data!</p>
+
+<h2 id="inputsanitization">Input sanitization</h2>
+
+<p>The important lesson in writing code that uses any user input in forming commands is
+that of <strong>input sanitization</strong>. Input must be carefully <strong>validated</strong> to make sure it conforms
+to the requirements of the application that uses it and does not try to execute additional
+commands, escape to a shell, set malicious environment variables, or specify out-of-bounds
+directories or devices.</p>
+
+<h2 id="filedescriptors">File descriptors</h2>
+
+<p>POSIX systems have a convention that programs expect to receive three open file descriptors
+when they start up: </p>
+
+<ul>
+<li><p>file descriptor 0: standard input</p></li>
+<li><p>file descriptor 1: standard output</p></li>
+<li><p>file descriptor 2: standard error</p></li>
+</ul>
+
+<p>Functions such as <em>printf</em>, <em>scanf</em>, <em>puts</em>, <em>getc</em> and others expect these file desciptors
+to be available for input and output.
+When a program opens a new file, the operating system searches through the file descriptor table
+and allocates the first available unused file descriptor. Typically this will be file descriptor 3.
+However, if any of the three standard file descriptors are closed, the operating system will
+use one of those as an available, unused file descriptor.</p>
+
+<p>The vulnerability lies in the fact that we may have a program running with elevated privileges
+(e.g., setuid root) that modifies a file that is not accessible to regular users.
+If that program also happens to write to the user via, say, <em>printf</em>, there is an
+opportunity to corrupt that file. The attacker simply needs to close the standard output
+(file descriptor 1) and run the program. When it opens its secret file, it will be
+given file descriptor 1 and will be able to do its read and write operations on the
+file. However, whenever the program will print a message to the user, the output
+will not be seen by the user as it will be directed to what <em>printf</em> assumes is
+the standard output: file descriptor 1. Printf output will be written onto the secret
+file, thereby corrupting it.</p>
+
+<p>The shell command (bash, sh, or ksh) for closing the standard output file is
+an obscure-looking <code>&gt;&amp;-</code>. For example:</p>
+
+<pre><code>./testfile &gt;&amp;-
+</code></pre>
+
+<h2 id="comprehensionerrors">Comprehension Errors</h2>
+
+<p>The overwhelming majority of security problems are caused by bugs or misconfigurations.
+Both often stem from <strong>comprehension errors</strong>. These are mistakes created when someone &#8211;
+usually the programmer or administrator &#8211; does not understand the details and every nuance
+of what they are doing. Some example include:</p>
+
+<ul>
+<li><p>Not knowing all possible special characters that need escaping in SQL commands.</p></li>
+<li><p>Not realizing that the standard input, output, or error file descriptors may be closed.</p></li>
+<li><p>Not understanding how access control lists work or how to configure mandatory access control mechanisms such as type enforcement correctly.</p></li>
+</ul>
+
+<p>If we consider the Windows <em>CreateProcess</em> function, we see it is defined as:</p>
+
+<pre><code>BOOL WINAPI CreateProcess(
+  _In_opt_    LPCTSTR               lpApplicationName,
+  _Inout_opt_ LPTSTR                lpCommandLine,
+  _In_opt_    LPSECURITY_ATTRIBUTES lpProcessAttributes,
+  _In_opt_    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+  _In_        BOOL                  bInheritHandles,
+  _In_        DWORD                 dwCreationFlags,
+  _In_opt_    LPVOID                lpEnvironment,
+  _In_opt_    LPCTSTR               lpCurrentDirectory,
+  _In_        LPSTARTUPINFO         lpStartupInfo,
+  _Out_       LPPROCESS_INFORMATION lpProcessInformation);
+</code></pre>
+
+<p>We have to wonder whether a programmer who does not use this frequently will take the time
+to understand the ramifications of correctly setting process and thread security attributes,
+the current directory, environment, inheritance handles, and so on. There&#8217;s a good chance
+that the programmer will just look up an example on places such as github.com or stackoverflow.com
+and copy something that seems to work, unaware that there may be obscure side effects that
+compromise security.</p>
+
+<p>As we will see in the following sections, comprehension errors also apply to the proper understanding
+of things as basic as various ways to express characters.</p>
+
+<h2 id="directoryparsing">Directory parsing</h2>
+
+<p>Some applications, notably web servers, accept hierarchical filenames from a
+user but need to ensure that they restrict access only to files within a specific
+point in the directory tree. For example, a web server may need to ensure that
+no page requests go outside of <code>/home/httpd/html</code>.</p>
+
+<p>An attacker may try to gain access by using paths that include <code>..</code> (dot-dot), which
+is a link to the parent directory. For example, an attacker may try to download
+a password file by requesting</p>
+
+<pre><code>http://poopybrain.com/../../../etc/passwd
+</code></pre>
+
+<p>The hope is that the programmer did not implement parsing correctly and might try
+simply suffixing the user-requested path to a base directory:</p>
+
+<pre><code>&quot;/home/httpd/html/&quot; + &quot;../../../etc/passwd&quot;
+</code></pre>
+
+<p>to form</p>
+
+<pre><code>/home/httpd/html/../../../etc/passwd
+</code></pre>
+
+<p>which will retrieve the password file, <code>/etc/passwd</code>.</p>
+
+<p>A programmer may anticipate this and check for dot-dot but has to
+realize that dot-dot directories can be anywhere in the path. This
+is also a valid pathname but one that should be rejected for trying
+to escape to the parent:</p>
+
+<pre><code>http://poopybrain.com/419/notes/../../416/../../../../etc/passwd
+</code></pre>
+
+<p>Moreover, the programmer cannot just search for <code>..</code> because that can be a valid part of
+a filename. All three of these should be accepted:</p>
+
+<pre><code>http://poopybrain.com/419/notes/some..other..stuff/
+http://poopybrain.com/419/notes/whatever../
+http://poopybrain.com/419/notes/..more.stuff/
+</code></pre>
+
+<p>Also, extra slashes are perfectly fine in a filename, so this is acceptable:</p>
+
+<pre><code>http://poopybrain.com/419////notes///////..more.stuff/
+</code></pre>
+
+<p>The programmer should also track where the request is in the hierarchy. If dot-dot doesn&#8217;t escape
+above the base directory, it should most likely be accepted:</p>
+
+<pre><code>http://poopybrain.com/419/notes/../exams/
+</code></pre>
+
+<p>These are not insurmountable problems but they illustrate that a quick-and-dirty
+attempt at filename processing may be riddled with bugs.</p>
+
+<h2 id="unicodeparsing">Unicode parsing</h2>
+
+<p>If we continue on the example of parsing pathnames in a web server, let us consider a bug
+in early releases of Microsoft&#8217;s IIS (Internet Information Services, their web server).
+IIS had proper pathname checking to ensure that attempts to get to a parent are blocked:</p>
+
+<pre><code>http://www.poopybrain.com/scripts/../../winnt/system32/cmd.exe
+</code></pre>
+
+<p>Once the pathname was validated, it was passed to a decode function that decoded any
+embedded <a href="https://en.wikipedia.org/wiki/Unicode">Unicode</a> characters and then processed the request.</p>
+
+<p>The problem with this technique was that non-international characters (traditional
+<a href="https://en.wikipedia.org/wiki/ASCII">ASCII</a>) could also be written as Unicode characters.
+A &#8220;/&#8221; could also be written in HTML as its hexadecimal value, %2f (decimal 47). It could also
+be represented as the two-byte Unicode sequence %c0%af.</p>
+
+<p>The reason for this stems from the way Unicode was designed to support compatibility with
+one-byte ASCII characters. This encoding is called UTF&#8211;8. If the first bit of a character
+is a 0, then we have a one-byte ASCII character (in the range 0..127). However, if the first
+bit is a 1, we have a multi-byte character. The number of leading 1s determine the number of
+bytes that the character takes up. If a character starts with 110, we have a two-byte
+Unicode character.</p>
+
+<p>With a two-byte character, the UTF&#8211;8 standard defines a bit pattern of </p>
+
+<pre><code>110a bcde   10fg hijk
+</code></pre>
+
+<p>The values <em>a-k</em> above represent 11 bits that give us a value in the range 0..2047.
+The &#8220;/&#8221; character, 0x2f, is 47 in decimal and <code>0010 1111</code> in binary. The
+value represents offset 47 into the character table (called <strong>codepoint</strong> in Unicode parlance).
+Hence we can represent the &#8220;/&#8221; as 0x2f or as the two byte Unicode sequence:</p>
+
+<pre><code>1100 0000   1010 1111
+</code></pre>
+
+<p>which is the hexadecimal sequence %c0%af. Technically, this is disallowed. The standard
+states that codepoints less than 128 must be represented as one byte but the two byte
+sequence is supported by most Unicode parsers. We can also construct a valid three-byte
+sequence too.</p>
+
+<p>Microsoft&#8217;s bug was that they ignored parsing %c0%af as being equivalent to a <code>/</code> because
+it should not have been used to represent the character. However, the Unicode parser
+was happy to translate it and attackers were able to use this to access <em>any</em> file in
+on a server running IIS. This bug also gave attackers the ability to invoke <code>cmd.com</code>, the
+command interpreter, and execute any commands on the server.</p>
+
+<p>After Microsoft fixed the multi-byte Unicode bug, another problem came up.
+The parsing of escaped characters was recursive, so if the resultant string looked
+like a Unicode hexadecimal sequence, it would be re-parsed.</p>
+
+<p>As an example of this, let&#8217;s consider the backslash (<code>\</code>), which Microsoft treats
+as equivalent to a slash (<code>/</code>) in URLs since their native pathname separator is
+a backlash<a href="#fn:3" id="fnref:3" title="see footnote" class="footnote">[3]</a>.</p>
+
+<p>The backslash can be written in a URL in hexadecimal format as %5c.
+The &#8220;%&#8221; character can be expressed as %25.
+The &#8220;5&#8221; character can be expressed as %35.
+The &#8220;c&#8221; character can be expressed as %63.
+Hence, if the URL parser sees the string <code>%%35c</code>, it would expand the <code>%35</code> to the character &#8220;5&#8221;, which would result in <code>%5c</code>, which would then be converted to a <code>\</code>.
+If the parser sees <code>%25%35%63</code>, it would expand each of the <code>%nn</code> components to get the string <code>%5c</code>, which would then be converted to a <code>\</code>.
+As a final example, if the parser comes across <code>%255c</code>, it will expand <code>%25</code> to <code>%</code> to get the string <code>%5c</code>, which would then be converted to a <code>\</code>.</p>
+
+<p>It is not trivial to know what a name relates to but it is clear
+that all conversions have to be done before the validity of the
+pathname is checked. As for checking the validity of the pathname
+in an application, it is error-prone. The operating system itself
+parses a pathname a component at a time, traversing the directory
+tree and checking access rights as it goes along. The application
+is trying to recreate a similar action without actually traversing
+the file system but rather by just parsing the name and mapping it
+to a subtree of the file system namespace.</p>
+
+<!--
+## Homograph (or homoglyph) attacks
+
+While we have been looking at issues resulting from Unicode, let us take a brief
+digression from system attacks and consider some deception attacks that are enabled 
+by Unicode.
+
+Unicode was designed to represent practically all of the world's glyphs[^footnote_glyphs] and
+contains over 128,000 characters. It includes scripts for
+Latin, Greek, Cyrillic, Armenian, Hebrew, Arabic, Syriac, Thaana,
+Devanagari, Bengali, Gurmukhi, Oriya, Tamil, Telugu, Kannada,
+Malayalam, Sinhala, Thai, Lao, Tibetan, Myanmar, Georgian, Hangul,
+Ethiopic, Cherokee, Canadian Aboriginal Syllabics, Khmer, Mongolian,
+Han (Japanese, Chinese, Korean ideographs), Hiragana, Katakana, and
+Yi, as well as emojis and ancient scripts.
+
+[^footnote_glyphs]: a _glyph_ is a printable character. Unicode is designed around the concept of _scripts_ rather than _languages_ since multiple languages often share the same set of scripts.
+
+If we consider the lowly slash character, there are several variations with different representations:
+
+     / = solidus (slash) = U+002F
+     ⁄ = fraction slash = U+2044
+     ∕  = division slash = U+2215
+     ̷  = combining short solidus overlay = U+0337
+     ̸  = combining long solidus overlay = U+0338
+    ／ = fullwidth solidus = U+FF0F
+
+Only one of these is a valid pathname separator (the solidus). Using
+others will create strings that look like pathnames but are not.
+Some characters may have multiple representations. For example, an
+accented a (á) is a distinct Unicode character, U+00C1, but also
+a two-character sequence, U+0041, U+0301. This is not a two-byte
+Unicode character but rather a combining accent followed by an "a".
+
+Situations like this make string comparisons a nightmare.
+
+Moreover, some characters look similar. In the Latin alphabet, depending
+on the font, certain characters may look identical or similar. The
+number one (1), lowercase L (l), and capital i (I) can look virtually
+identical in some fonts. Zero (0) and the letter O may be confusing. 
+
+A **homograph attack** (sometimes more accurately called a **homoglyph attack**)
+is deception based on the fact that different characters may look similar to a user.
+
+We can create a simple deception attack by registering the website
+paypai.com and writing the last letter as a capital I to create
+paypaI.com, which may confuse people with paypal.com in a phishing message.
+
+The deception attack became more insidious with the introduction of internationalized
+domain names (IDN), which made Unicode characters valid elements of a 
+domain name. While Unicode represents virtually all of the world's scripts,
+may characters look identical in those scripts. For example the Greek
+letters A, B, and E (and many others!) look identical to the Latin A, B, and E
+as well as to the Cyrillic A, B, and E but have different encodings:
+
+|   | Latin | Greek | Cyrillic |
+------- | :---: | :---: | :---: |
+ A  | U+0041 | U+0391 | U+0410 |
+ B  | U+0042 | U+0392 | U+0412 |
+ E  | U+0045 | U+0395 | U+0415 |
+ K  | U+004B | U+039A | Ua041A |
+ X  | U+0058 | U+03A7 | U+0425 |
+
+As an example, we can spell out [wikipedia.org](https://en.wikipedia.org/wiki/IDN_homograph_attack)
+using the following non-Latin characters:
+
+    Cyrillic a (U+0430), e (U+435), p (U+0440)
+    Belarusian-Ukranian i (U+0456)
+
+Or we can spell out paypal.com using Cyrillic lookalikes for p, a, and y.
+-->
+
+<h2 id="tocttouattacks">TOCTTOU attacks</h2>
+
+<p><strong>TOCTTOU</strong> stands for <strong>Time of Check to Time of Use</strong>. If we have code of the form:</p>
+
+<pre><code>if I am allowed to do something
+    then do it
+</code></pre>
+
+<p>we may be exposing ourselves to a race condition. There is a window of time between
+the test and the action. If an attacker can change the condition after the check then
+the action may take place even if the check should have failed.</p>
+
+<p>One example of this is the print spooling program, <em>lpr</em>. It runs as a setuid
+program with root privileges
+so that it can copy a file from a user&#8217;s directory into a privileged spool directory
+that serves as a queue of files for printing. Because it runs as root, it can
+open any file, regardless of permissions. To keep the user honest, it will check
+access permissions on the file that the user wants to print and then, only
+if the user has legitimate read access to the file, it will copy it over to the
+spool directory for printing. An attacker can create a link to a readable file
+and then run <em>lpr</em> in the background. At the same time, he can change the link
+to point to a file for which he does not have read access. If the timing is just
+perfect, the <em>lpr</em> program will check access rights before the file is re-linked
+but will then copy the file for which the user has no read access.</p>
+
+<p>Another example of the TOCTTOU race condition is the set of temporary filename
+creation functions (<em>tempnam, tempnam, mktemp, GetTempFileName</em>, etc.).
+These functions create a unique filename when they are called but there
+is no guarantee that an attacker doesn’t create a file with the same name
+before that filename is used. If the attacker creates and opens a file with
+the same name, she will have access to that file for as long as it is open,
+even if the user&#8217;s program changes access permissions for the file later on.</p>
+
+<p>The best defense for the temporary file race condition is to use the <strong>mkstemp</strong>
+function, which creates a file based on a template name and opens it as well,
+avoiding the race condition between checking the uniqueness of the name
+and opening the file.</p>
+
+<!-- 
+## Metrics
+
+It is challenging to establish just how secure a piece of software is. We can
+search for bugs that we know about but we don't know where the next bug that can
+compromise security is lurking. In general, the fewer opportunities for attack
+that we give the adversary, the more likely our code is to be secure. We
+want to **minimize** interactions  with outside elements: with
+users, files, and sockets. Any interactions may be attack targets, such
+as improper access controls, changed files, bad inputs, and network protocol
+attacks. All interactions must be given special attention and carefully
+validated and monitored.
+
+Microsoft attempted to create a general metric to assess whether one piece
+of software is more likely to be vulnerable than another.
+It is called the **Relative Attack Surface Quotient**, or **RASQ**.
+Very roughly, this is a weighted measure of the various interactions of a program.
+An **attack surface** identifies how exposed a system is to attacks: it is the 
+set of all possible interactions in a program with the outside. 
+An **attack vector** is the set of software by which an attacker may carry out an attack
+(e.g., a web application).
+
+RASQ looks at "data elements" that may pose security risks, such as open ports, named 
+pipes, RPC endpoints, number of installed services, number of services running as
+SYSTEM (_root_ in Unix terms), number of users, etc. Each of these is treated as the
+**root vector**, the primary mechanism by which an adversary may attack the system.
+
+RASQ basically multiplies each of these root vectors by a **bias**, an estimate
+of how harmful that particular attack may be to the system. It then sums up all of
+these products for all possible vectors in the system to get a final score. The higher
+the score, the more likely it is that the system will have vulnerabilities.
+
+For example, _open sockets_ has the highest possible value of 1.0 since it is 
+an easy target for remote attacks. _Enabled accounts_ have a bias of 0.7 since 
+default accounts on a system make brute-force password attacks easier, but you 
+still need to get past password authentication to carry out an attack. 
+_Weak ACLs_ in a local file system, on the other hand, have a bias of only 0.2
+since files in a system become targets only _after_ a system is compromised.
+
+-->
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>Note that <em>sprintf</em> is vulnerable to buffer overflow. We should use <em>snprintf</em>, which allows one to specify the maximum size of the buffer. <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:2">
+<p>Unix, Linux, macOS, FreeBSD, NetBSD, OpenBSD, Android, etc. <a href="#fnref:2" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:3">
+<p>the official Unicode name for the slash and backslash characters are solidus and reverse solidus, respectively. <a href="#fnref:3" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+
+							</section>
+							<footer class="main">
+								Last modified November 25, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Processes </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 416 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/04-processes.html"> Processes </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Processes </h1>
+<h2> Process creation and states </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> February 5, 2014 </p>
+</div>
+<div class="blockquote">
+<em>To be awake is to be alive
+<br/>
+    &mdash; Walden, Henry David Thoreau</em>
+</div>
+
+<h1 id="introduction">Introduction</h1>
+
+<figure>
+<img src="images/04-memory_map.png" alt="Process memory map" id="memory_map" title="Process memory map" style="height:245;width:150;" />
+<figcaption>Process memory map</figcaption></figure>
+
+
+
+<p>We tend to use the words <em>program</em> and <em>process</em> interchangeably
+much of the time. For instance, we might say <em>&#8220;my program died&#8221;</em>
+or <em>&#8220;my program is generating too much output&#8221;</em>. There is a
+distinction, however. A <strong>program</strong> refers to the code and static
+data that is stored in a file (a program can also refer to the raw,
+uncompiled source code). A <strong>process</strong>, on the other hand, is an
+executing (or ready to execute) program in the computer. A process
+is the program <em>plus</em> its execution context. The <strong>execution context</strong>
+includes the state of the processor (<strong>processor context</strong>), which
+is the value of its program counter and all of its registers. It
+also includes the process&#8217; <strong>memory map</strong>, which identifies the various
+regions of memory that have been allocated to the process.</p>
+
+<p>The program stored on the disk contains the compiled code (called the
+<strong>text</strong>) as well as initialized <strong>data</strong> (for example, initialized
+global integers, strings, and string constants).
+When the program is loaded into memory and additional space needs
+to be allocated to hold dynamically-allocated data and the stack.
+The memory map of a process includes:</p>
+
+<ul>
+<li><strong>text</strong>: the machine instructions (the compiled program)</li>
+<li><strong>data</strong>: initialized static and global data</li>
+<li><strong>bss</strong>: uninitialized static data (e.g., global uninitialized strings, numbers, structures). The size of this region is contained within the program</li>
+<li><strong>heap</strong>: dynamically allocated memory (obtained through memory allocation requests, such as <em>malloc</em> or <em>new</em>)</li>
+<li><strong>stack</strong>: the call stack, which holds not just return addresses but also local variables, temporary data, and saved registers</li>
+</ul>
+
+<div style="page-break-after:always"></div>
+
+<h1 id="processstates">Process states</h1>
+
+<figure>
+<img src="images/04-proc_states_1.png" alt="Process states" id="process_states" title="Process states" style="height:128;width:250;" />
+<figcaption>Process states</figcaption></figure>
+
+
+
+<p>At any point in time, a process can be in one of several states:</p>
+
+<ol>
+<li>A process is <strong>running</strong> if it currently has the CPU and is executing code.</li>
+<li>A process is <strong>ready</strong> if it could run if only it had the CPU.</li>
+<li>A process is <strong>blocked</strong> when it cannot run because it is waiting for some event to occur (for example, for an I/O operation to complete).</li>
+</ol>
+
+<p>On a single processor machine, only one process may be running at
+a time, but multiple processes may be ready to run and several may
+be blocked. The operating system will maintain a list of ready
+processes and the <strong>scheduler</strong> is responsible for prioritizing
+this list based on which processes deserve to run next. The operating
+system maintains a separate list for blocked processes (unordered
+because we don&#8217;t know what event will occur next).</p>
+
+<p>A newly created process is placed at the back of the ready list,
+which is commonly called the <strong>run queue</strong> (we will look at how this list is managed later when we consider process
+scheduling). Eventually it moves to the head of the list and gets
+a chance to run. After a while, it may, for example, perform a <em>read</em> system call
+to get some data.
+The operating system has to request the data to be read from the disk and
+hence this data is not immediately available to be returned to the process.
+Since the data is not ready, the process
+is placed in a <em>blocked</em> state and another process is allowed to run. When the
+operating system completes the read operation, the process is no
+longer blocked and is put back on the run queue</p>
+
+<p>If a running process does not get blocked (for example, it is compute
+intensive), a hardware timer will eventually interrupt the operating
+system and cause the operating system to stop (preempt) the process,
+put it on the run queue, and give someone else a chance to run.
+This is known as <strong>preemptive multitasking</strong>. Systems that do not
+do this, such as the old Microsoft Windows 3.1 operating systems,
+rely on the process to be well-behaved and decide to give up the
+CPU every once in a while. These systems are <strong>non-preemptive</strong>.</p>
+
+<h1 id="processesintheoperatingsystem">Processes in the operating system</h1>
+
+<p>The scheduler is responsible for deciding what process gets to run
+and for saving and restoring the state of a process as it gets
+stopped and when it gets to run again.</p>
+
+<p>The <strong>context</strong> of a process is its state. As we saw, this is its
+text (the program code), all global variables and data structures
+(data and bss), all dynamic memory (heap) that was allocated to the
+process, the contents of the user and kernel stacks, and all machine
+registers.</p>
+
+<p>When a process is running, the system is said to be in the context
+of that process. When the kernel decides to execute another process,
+it does a <strong>context switch</strong>, causing the system to execute in a different
+process’ context. When doing a context switch, the kernel has to
+save enough information so that it can switch back to the earlier process
+and continue executing exactly where it left off. When a process executes
+a system call and has to change from user to kernel mode, the kernel
+also has to save enough information so that it can later return to
+user mode and continue executing the program.</p>
+
+<h1 id="processlistprocesscontrolblocks">Process list &amp; Process Control Blocks</h1>
+
+<p>To keep track of processes, the operating system maintains a process
+table (or list). Each entry in the process table corresponds to a particular
+process and contains fields with information that the kernel needs
+to know about the process. This entry is called
+a <strong>Process Control Block</strong> (<strong>PCB</strong>)
+Some of these fields on a typical Linux/Unix system PCB are:</p>
+
+<ul>
+<li>Machine state (registers, program counter, stack pointer)</li>
+<li>Parent process and a list of child processes</li>
+<li>Process state (ready, running, blocked)</li>
+<li>Event descriptor if the process is blocked</li>
+<li>Memory map (where the process is in memory)</li>
+<li>Open file descriptors</li>
+<li>Owner (user identifier). This determines access privileges &amp; signaling privileges</li>
+<li>Scheduling parameters</li>
+<li>Signals that have not yet been handled</li>
+<li>Timers for accounting (time &amp; resource utilization)</li>
+<li>Process group (multiple processes can belong to a common group)</li>
+</ul>
+
+<p>A process is identified by a unique number called the <strong>process ID</strong>
+(<strong>PID</strong>). Some operating systems (notably UNIX-derived systems) have
+a notion of a process group. A process group is just a way to lump
+related processes together so that related processes can be signaled.
+Every process is a member of some process group. This group membership
+is inherited from the parent. If a process wishes to become a member
+of a new group, it can run the <em>setpgrp</em> system call, which returns
+a new group ID (if it is not already a group leader) and sets the
+process’ group to that ID. When a process is a group leader, its
+process ID is the same as its process group ID.</p>
+
+<h1 id="processstates:moredetail">Process states: more detail</h1>
+
+<figure>
+<img src="images/04-proc_states_2.png" alt="Process states and transitions in more detail" id="process_states_2" title="Process states and transitions in more detail" style="height:216;width:350;" />
+<figcaption>Process states and transitions in more detail</figcaption></figure>
+
+
+<dl>
+<dt>Created</dt>
+<dd>(a) Temporary state when a process is created. When the initial memory is allocated, stack is set up,
+ and the PCB is fully initialized, the process is then ready to run and is moved to the <em>ready</em>
+ state and placed on the run queue.</dd>
+
+<dt>Running in user mode</dt>
+<dd>Running in user mode is the normal execution of a program: the CPU is
+ executing the instructions that constitute your program: the compiled
+ code and the various libraries that make up the program.</dd>
+
+<dd>
+<p>(b) Performing a system call invokes a <em>mode switch</em>, causing the
+ process&#8217; flow of control to switch to the kernel and causing the
+ processor to run in kernel mode. At this point, the operating
+ system kernel code is executing but the operating system is still
+ aware that the process is currently active and the flow of control
+ is on behalf of the process.</p></dd>
+
+<dd>
+<p>Note that a hardware interrupt, such as that from the system
+ timer, will also cause the state transition to kernel mode. This,
+ however is, is not something that is part of the flow of control
+ of the process. It represents a context switch into an <strong>interrupt
+ context</strong>: a temporary kernel context for servicing interrupts.</p></dd>
+
+<dt>Running in kernel mode</dt>
+<dd>(c) The kernel may decide that it is time to schedule another
+ process to execute and preempts the current process.
+ The process is placed in the <em>ready</em> state and its process
+ ID is put on the run queue.</dd>
+
+<dd>
+<p>(d) A process death (an exit or an abnormal termination)
+ causes it to become a <strong>zombie</strong>. The process lingers in this
+ state until the parent process executes a <em>wait</em> system call to get
+ the state of this dead process (e.g., exit value). If there is no
+ active parent process, then the zombie is eventually cleaned up by
+ the <em>init</em> process (the very first process) and disappears.</p></dd>
+
+<dd>
+<p>(e) If a process needs to wait on an event (e.g. read data, wait for a message,
+ sleep), it will be placed in a <em>blocked</em> state since it is not ready to
+ run at this point.</p></dd>
+
+<dd>
+<p>(f) Once the process is rescheduled to run again, the kernel
+ code restores the user state of the process and returns the process
+ to user-mode running. Note that if no context switch took place
+ on a system call (b), then the kernel simply returns to user mode (f) and
+ the process continues to run.</p></dd>
+
+<dt>Blocked</dt>
+<dd>(g) If whatever it was that caused a process to become
+ blocked occurs, the process is moved to the <em>ready</em> state and
+ put on the run queue. For example, the process may have requested a <em>read</em> of
+ data from the disk and the data has now been transferred to memory.</dd>
+
+<dt>Ready to run</dt>
+<dd>(h) When it is time for another process to run, the next scheduled process
+ is taken off the run queue. If it is time for a preempted process
+ to run again, the kernel completes the return from the interrupt
+ that caused it to preempt the process.</dd>
+</dl>
+
+
+<h1 id="programmingprocessesunderposixunixlinuxbsdandroidsunososx">Programming processes under POSIX (UNIX/Linux/BSD/Android/SunOS/OS X)</h1>
+
+<p>Please consult the <a href="c-tutorials/index.html">C/UNIX Programming Tutorials</a> for programming examples.</p>
+
+<h2 id="howdoifindtheprocessidandgroup">How do I find the process’ ID and group?</h2>
+
+<p>A process can find its process ID with the <em>getpid</em> system call.
+It can find its <em>process group number</em> with the <em>getpgrp</em> system call,
+and it can find its parent&#8217;s process ID with <em>getppid</em>. For example:</p>
+
+<div class="codeblock-box">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+main() {
+	printf("my pid is %d\n", getpid());
+	printf("my parent’s pid is %d\n", getppid());
+	printf("I’m in group %d\n", getpgrp());
+}
+
+</div>
+
+<p><a href="files/getpid.c">Download this file</a></p></p>
+
+<h1 id="creatingaprocess">Creating a process</h1>
+
+<p>The <em>fork</em> system call clones a process into two processes
+running the same code. <em>Fork</em> returns a value of 0 to the child and
+a value of the process ID number (pid) to the parent. A value of
+&#8211;1 is returned on failure.</p>
+
+<div class="codeblock-box">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+main(int argc, char **argv) {
+	switch (fork()) {
+	case 0:
+		printf("I'm the child: pid=%d\n", getpid());
+		break;
+	default:
+		printf("I'm the parent: pid=%d\n", getpid());
+		break;
+	case -1:
+		perror("fork");
+	}
+}
+</div>
+
+<p><a href="files/fork.c">Download this file</a></p></p>
+
+<h3 id="algorithmforfork">Algorithm for fork</h3>
+
+<ol>
+<li>Check for available resources.</li>
+<li>Allocate a slot in the process table/list.</li>
+<li>Assign a unique process ID number.</li>
+<li>Check whether the user is running too many processes.</li>
+<li>Set child state to <em>created</em>.</li>
+<li>Copy data from parent process control block to child block.</li>
+<li>Increment counts on current directory.</li>
+<li>Increment counts on open files.</li>
+<li>Copy parent context in memory (this can be a <em>copy on write</em>).</li>
+<li>Push a system level context on child, allowing it to recognize itself when it runs.</li>
+<li>Change child state to <em>ready to run</em>.</li>
+</ol>
+
+<h1 id="runningotherprograms">Running other programs</h1>
+
+<p><em>fork</em> is fine, but all It gives us is a set of essentially
+identical clones to the original process. How do we run new programs?</p>
+
+<p>The <em>execve</em> system call replaces the current process with a new
+program. The syntax to <em>execve</em> is:</p>
+
+<pre><code>execve(char *filename, char **argv, char **envp)
+</code></pre>
+
+<p>This system call returns only if the named program could not run.
+<em>argv</em> is the argument list that is passed to main. The last item on
+the list is 0 and the first, <em>argv[0]</em>, is ignored and expected to
+contain the command name. <em>filename</em> contains the name of the program
+to load and run. <em>envp</em> contains character strings representing the
+environment in the form <em>name=value</em>. <em>envp</em> is also stored in the
+global variable <em>char **environ</em> (<em>getenv</em> is a library function to
+search the environment for a particular name).</p>
+
+<p>In addition to the system call <em>execve</em>, there are a number of library
+routines that are front-ends to <em>execve</em>. These are described in the
+<em>exec</em> manual page. A couple of
+useful ones are:</p>
+
+<ul>
+<li><p><em>execlp</em>, which allows you to specify all the arguments on
+the command line (the first parameter is the command and the last
+must be a null pointer) and uses the search path set by the <em>PATH</em>
+environment variable to find the command. For example,</p>
+
+<p><code>execlp(&#8220;ls&#8221;, &#8220;ls&#8221;, &#8220;-al&#8221;, &#8220;/usr/paul&#8221;, 0)</code></p></li>
+<li><p><em>execvp</em>, which is almost like <em>execve</em> except that the <em>PATH</em>
+environment variable is user as a search path for the command and
+the default environment is used. Here&#8217;s an example:</p>
+
+<p>char **av[] = { &#8220;ls&#8221;, &#8220;-al&#8221;, &#8220;/home/paul&#8221;, 0};
+execvp(&#8220;ls&#8221;, av);</p></li>
+</ul>
+
+<h1 id="exitingaprocess">Exiting a process</h1>
+
+<p>A process exits by default after it finished executing <em>main</em>. However,
+the <em>exit</em> call may be used to force a program to exit and/or to
+specify a return value on exit (a number in the range of 0..255).</p>
+
+<div class="codeblock-box">#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+main(int argc, char ** argv)
+{
+	printf("I'm outta here!\n");
+	exit(5);
+}
+</div>
+
+<p><a href="files/exit.c">Download this file</a></p></p>
+
+<p>After compiling and running this program, run the shell command:</p>
+
+<pre><code>echo $?
+</code></pre>
+
+<p>to see the exit code from the program.</p>
+
+<h1 id="algorithmforexit">Algorithm for exit</h1>
+
+<ol>
+<li>Ignore all signals.</li>
+<li>If the process is associated with a controlling terminal:
+
+<ol>
+<li>Send a hang-up signal to all members of the process group.</li>
+<li>Reset process group for all members to 0.</li>
+</ol></li>
+<li>Close all open files.</li>
+<li>Release current directory.</li>
+<li>Release current changed root, if any.</li>
+<li>Free memory associated with the process.</li>
+<li>Write an accounting record (if accounting).</li>
+<li>Make the process state zombie.</li>
+<li>Assign the parent process ID of any children to be 1 (init).</li>
+<li>Send a death of child signal to parent process.</li>
+<li>Context switch.</li>
+</ol>
+
+<h1 id="signals">Signals</h1>
+
+<p>Signals inform processes of the occurrence of asynchronous events.
+Processes can send signals to other processes owned by the same
+user (<em>root</em>, also known as the <em>superuser</em>, can send signals to anyone). The
+UNIX kernel may also send signals to a process to notify it of
+certain events.</p>
+
+<h1 id="sendingasignal">Sending a signal</h1>
+
+<p>A process can send a signal to another process with the kill system call. The syntax for this call is:</p>
+
+<pre><code>kill(int pid, int signal_number)
+</code></pre>
+
+<p>where <em>pid</em> is the process ID and <em>signal_number</em> is
+the signal that you want to send. Symbolic names for the signals
+are defined in the include file <em>signal.h</em> and may be obtained via
+the manual page (<em>man signal</em>). If the process ID is 0, then
+the signal is sent to all processes in the same process group. It
+pid is 1, the signal is sent to all processes with the same user
+ID.</p>
+
+<p>Here is an example. Let&#8217;s write a program to fork itself into two
+processes: the parent will just look forever, printing <em>&#8220;I&#8217;m the
+parent&#8221;</em>. The child will wait three seconds, kill the parent, and
+exit. The signal that one sends to kill a process is SIGKILL (signal 9),
+which forces the process to terminate.
+The program looks like this:</p>
+
+<div class="codeblock-box">#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;signal.h&gt;
+
+main(int argc, char **argv)
+{
+	if (fork())		<span class="comment">/* fork, assume it always works */</span>
+		for (;;)	<span class="comment">/* parent prints a message forever */</span>
+			printf("I’m the parent\n");
+	else {	<span class="comment">/* we’re the child */</span>
+		sleep(3);	<span class="comment">/* do nothing for three seconds */</span>
+		kill(getppid(), SIGKILL);	<span class="comment">/* kill the parent */</span>
+	}
+}
+</div>
+
+<p><a href="files/kill.c">Download this file</a></p></p>
+
+<h1 id="detectingsignals">Detecting signals</h1>
+
+<p>One of three things can happen when receiving a signal:</p>
+
+<ul>
+<li>The process may be able to ignore it (some signals, like KILL, cannot be ignored.</li>
+<li>The process can take whatever the system decided was the default action for the signal, which is usually killing the program.</li>
+<li>The process can ask that a user-defined function be run when the signal is detected.</li>
+</ul>
+
+<p>We can specify what a function does when it gets a signal with the
+<em>signal</em> system call. This call accepts two parameters: the first is
+the signal number and the second is a pointer to a function that
+will be run when the signal is detected. In place of a pointer to
+a function, you can specify SIG_IGN to ignore the signal or SIG_DFL
+to take the default action. <em>signal</em> returns a pointer to the function
+that was the action that would have been taken if that signal would
+have been received before you called signal. On some versions of
+UNIX (SunOS in particular, not Linux or OS X), you have to reset the
+signal request after a signal has been
+received (call <em>signal</em> again).</p>
+
+<p>Let’s use the program from the previous example and modify it so
+that the parent will catch a signal that is sent by the child. This
+time we&#8217;ll send a signal called SIGUSR1, a signal that does not
+correspond to any event and is reserved for use by user programs.</p>
+
+<div class="codeblock-box">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;signal.h&gt;
+
+main(int argc, char **argv)
+{
+	if (fork())	{	<span class="comment">/* fork, assume it always works here */</span>
+		<span class="comment">/* --------- parent --------- */</span>
+		void catchme();			<span class="comment">/* signal handling function */</span>
+		signal(SIGUSR1, catchme);	<span class="comment">/* call catchme if we get SIGUSR1 */</span>
+		for (;;)	<span class="comment">/* parent prints a message forever */</span>
+			printf("I’m the parent\n");
+	}
+	else {	<span class="comment">/* we’re the child */</span>
+		sleep(3);	<span class="comment">/* do nothing for 3 seconds */</span>
+		kill(getppid(), SIGUSR1);	<span class="comment">/* send SIGUSR1 to the parent */</span>
+	}
+}
+
+void
+catchme() {	<span class="comment">/* signal handler */</span>
+	printf("got the signal!\n");
+	exit(0);
+}
+
+</div>
+
+<p><a href="files/signal.c">Download this file</a></p></p>
+
+<p>The code is not a lot different. The parent calls <em>signal</em> to request
+that anytime the process gets the signal SIGUSR1, it should run the
+function <em>catchme</em>. The function <em>catchme</em> prints a message and exits.
+If it did not exit, then the program would continue executing where
+it left off after <em>catchme</em> returns, printing &#8220;<em>I&#8217;m the parent</em>&#8221;
+<em>ad infinitum</em>.</p>
+
+<h1 id="howdoesthekernelcheckforsignals">How does the kernel check for signals?</h1>
+
+<p>Signals may occur asynchronously and often occur when the process
+is not running (i.e., it may be blocked or ready). When either the
+kernel or another user process decides to send a signal to another
+process, all the kernel does is note the fact and set a bit in the
+process control block for that process that there is a signal. When
+the process is brought from the ready state to the running state,
+the kernel takes a look to see whether the process has to receive
+a signal when it starts running. Here are the essentials of this
+signal detector in the kernel (in pseudocode):</p>
+
+<pre><code>while (&quot;received signal&quot; field in PCB is not zero) {
+    find a signal number set to the process
+    if (signal == death of child)
+        if ignoring death of child
+            free PCBs of zombies for this parent
+        else
+            return the signal
+    else if not ignoring the signal
+        return the signal
+    turn off the &quot;received signal&quot; bit in the process control block
+}
+return &quot;no signal&quot;
+</code></pre>
+
+<h1 id="waitingforaprocesstodie">Waiting for a process to die</h1>
+
+<div class="right-sidetext">
+<em>Nota bene:</em> 
+ If a process explicitly ignores SIGCHLD (death of a child), then the dead child is cleared as soon as it terminates
+rather than remaining in the zombie state.
+</div>
+
+<p>When a child process dies, it sends a signal to the parent notifying
+it of its death. The signal is known as SIGCHLD and is defined in
+the include file <em>signal.h</em>. We can catch this signal with the <em>signal</em>
+system call that allows us to assign a function to catch this
+software interrupt. Once we get this interrupt, we can run the wait
+system call to suspend the process until we get the death notification.
+If we fail to do a wait and just exit, then the pending notification
+would get inherited by the init process. The dead child remains a
+zombie process until the process waits for it or it gets inherited
+by process 1, init (the mother of all processes), who waits for all
+processes.</p>
+
+<p>The wait system call returns the process ID of a dead process. It also can fill an integer with the exit status that can be retrieved with the macro <em>WEXITSTATUS</em>.</p>
+
+<pre><code>int pid, my_pid, status;
+switch (my_pid=fork()) {
+case 0:         /* do child stuff */ break;
+case -1:        /* do error stuff */ break;
+default:        /* wait for child to exit */
+    while (pid=wait(&amp;status))
+        if (pid==my_pid)
+            printf(&quot;got exit of %d\n&quot;, WEXITSTATUS(status));
+            break;
+}
+</code></pre>
+
+<h1 id="algorithmforwait">Algorithm for wait</h1>
+
+<p>Here’s what the kernel does for a process that&#8217;s sleeping doing a wait:</p>
+
+<pre><code>loop forever {
+    if waiting process has a zombie child
+        pick any zombie child
+        add its CPU usage to the parent
+        free child process control block
+        return child ID and the exit code of the child
+    if process has no children
+        return error
+    sleep at an interruptible priority
+}
+</code></pre>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><p><a href="http://www.linux.org/docs/ldp/howto/KernelAnalysis-HOWTO-6.html" class="external">Linux Multitasking</a>, Linux KernelAnalysis-HOWTO, Chapter 6.</p></li>
+<li><p><a href="http://www.ualberta.ca/CNS/RESEARCH/LinuxClusters/mem.html" class="external">Understanding Memory</a>,
+AICT Linux Cluster Architecture, Academic Information &amp; Communication Technologies, University of Alberta</p></li>
+<li><p>Bach, Maurice J., <em>The Design of the UNIX&#8482; Operating System</em>. Prentice-Hall, &copy;1986.</p></li>
+<li><p>McKusick, M.K., Bostic, K., Karels, M.J., Quarterman, J.S.,
+<em>The Design and Implementation of the 4.4 BSD Operating System</em>.
+Addison-Wesley Publishing Co., &copy;1996.</p></li>
+<li><p>Leffer, S.J., McKusick, M.K., Karels, M.J., Quarterman, J.S.,
+<em>The Design and Implementation of the 4.3 BSD UNIX&reg; Operating System</em>.
+Addison-Wesley Publishing Co., &copy;1989.</p></li>
+<li><p>Sun Microsystems, <em>SunOS 5.8 Programmers Manual</em>, &copy;2001.</p></li>
+<li><p>Tanenbaum, Andrew S., <em>Modern Operating Systems</em>. Prentice Hall, &copy;1992.</p></li>
+</ul>
+
+<p>This is an updated version of the original document, which was written on September 20, 2010.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2014 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: February 15, 2014 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

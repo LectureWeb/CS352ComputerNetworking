@@ -1,0 +1,391 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 old exams: Exam 3 Spring 2011 </title>
+
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+#main ol h1 {
+	font-size: 140%;
+	margin-left: -1.3em;
+}
+#main ol li {
+	margin-bottom: 1em;
+}
+</style>
+</head>
+
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> 416 </a> 
+ 	<li> <a href="../../exam/index.html"> Exam info </a> 
+ 	<li> <a href="../../exam/old/index.html"> Old exams </a> 
+ 	<li> <a href="../../exam/old/exam3-2011-s.html"> Exam 3 Spring 2011 </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> CS 416 Exam 3 </h1>
+<h2>Spring 2011</h2>
+</div>
+
+<p>
+See the <a href="exam3-review-2011-s.pdf">solutions</a>
+(<a href="exam3-review-2011-s-6.pdf">6 per page</a>).
+</p>
+
+<ol>
+<h1>Part I &ndash; 11 Points</h1>
+
+<li> 4 points<br/>
+Why does an IP driver need to use ARP, the address resolution protocol?
+</li>
+
+<li> 3 points <br/>
+Why is the use of the socket buffer (sk_buff) crucial for the efficient implementation of a network stack?
+</li>
+
+<li> 4 points <br/>
+Why is file sharing problematic under AFS?
+</li>
+
+<h1>
+PART II &ndash; 69 points &ndash; 3 points each </h1>
+<p>
+For each statement, select the most appropriate answer.
+You may omit one question. Please clearly indicate the question you choose to omit.
+</p>
+
+<li>A loop device is a:
+<br/>(a) network driver that echoes every packet sent to it.
+<br/>(b) block device driver that makes any regular file look like a block device.
+<br/>(c) file system driver that makes any file look like a file system.
+<br/>(d) character driver that echoes any byte written to it (a read returns the results of the write).
+
+</li><li>The device file system (devfs):
+<br/>(a) presents a file system view of all registered block & character devices.
+<br/>(b) is a special file system that allows the user to create device files.
+<br/>(c) allows network interfaces to be accessed as regular files.
+<br/>(d) is a file system that contains all the device drivers for an operating system.
+
+</li><li>CSMA/CD (Carrier Sense Multiple Access with Collision Detection) is a technique for:
+<br/>(a) an Ethernet controller to send multiple packets concurrently.
+<br/>(b) an Ethernet controller to manage multiple physical Ethernet connections.
+<br/>(c) an Ethernet controller to send a packet out onto the network.
+<br/>(d) multiple processors to share a single Ethernet controller.
+
+</li><li>In the Internet Protocol (IP), a port number is present at the:
+<br/>(a) network layer.
+<br/>(b) transport layer.
+<br/>(c) presentation layer.
+<br/>(d) application layer.
+
+</li><li>Which socket-related system call is not needed in a connection-oriented client?
+<br/>(a) socket
+<br/>(b) bind
+<br/>(c) accept
+<br/>(d) connect
+
+</li><li>TCP/IP differs from UDP/IP in that TCP/IP:
+<br/>(a) requires the use of port numbers.
+<br/>(b) detects errors in a packet.
+<br/>(c) provides guaranteed bandwidth.
+<br/>(d) provides in-order packet delivery to the application.
+
+</li><li>In contrast to the older non-NAPI implementation, the Linux NAPI approach to getting data from a network interface card:
+<br/>(a) coalesces multiple packets into a single socket buffer (sk_buff).
+<br/>(b) generates a single socket buffer (sk_buff) for each received packet.
+<br/>(c) uses interrupts from the network controller for instant response instead of relying on polling.
+<br/>(d) uses a combination of interrupts and polling.
+
+</li><li>The network device driver is responsible for which layer of the OSI stack?
+<br/>(a) Data link.
+<br/>(b) Network.
+<br/>(c) Transport.
+<br/>(d) Presentation.
+
+</li><li>The interface definition language (IDL) was created to:
+<br/>(a) enable the use of remote procedure calls with languages such as C, C++, Java, etc.
+<br/>(b) extend the syntax of conventional languages (such as C, C++, Java) to support remote procedure calls.
+<br/>(c) serve as a high-level programming language that understands remote procedure calls.
+<br/>(d) serve as a system call interface between user processes and kernel RPC facilities.
+
+</li><li>Remote procedure calls rely on marshaling parameters. Marshaling means:
+<br/>(a) transforming the parameters into a form suitable for network transmission.
+<br/>(b) sending the parameters over the network to a remote server.
+<br/>(c) having the remote server extract the parameters from the network message.
+<br/>(d) having the remote server place the parameters on the stack to make a procedure call.
+
+</li><li>What facilities does the operating system kernel provide to allow user processes to use remote procedure calls?
+<br/>(a) Interface definition language.
+<br/>(b) Remote procedure system call.
+<br/>(c) Sockets.
+<br/>(d) All of the above.
+
+</li><li>An NFS client invalidates locally-cached data via:
+<br/>(a) callbacks: receiving a message from the server informing it to invalidate the data.
+<br/>(b) tokens: getting tokens from a server telling the client how it may cache data.
+<br/>(c) disabling caching for all remote data.
+<br/>(d) validation: checking the timestamp on a remote file.
+
+</li><li>Privilege separation is when:
+<br/>(a) users on a system get unique user IDs and privilege levels.
+<br/>(b) a process is split into components with limited privileges.
+<br/>(c) a process cannot create data that processes running at lower privilege levels can access.
+<br/>(d) a process cannot interact with any other process or data at another privilege level.
+
+</li><li>A capability list is a list of:
+<br/>(a) per-user permissions associated with an object.
+<br/>(b) permissible operations on objects associated with a user.
+<br/>(c) system capabilities associated with a process. 
+<br/>(d) permissible operations for a  specific user and object.
+
+</li><li>A Multi-Level Secure model:
+<br/>(a) uses multi-factor authentication to access system objects.
+<br/>(b) allows a process to assign a classification level to objects that it creates.
+<br/>(c) allows a process to assign multiple classification levels to objects it creates.
+<br/>(d) limits the ability of a process to create objects that another process can access.
+
+</li><li>The Bell-LaPadula model is an example of:
+<br/>(a) applications using cryptographically secure communications.
+<br/>(b) an access control matrix.
+<br/>(c) mandatory access control.
+<br/>(d) discretionary access control.
+
+</li><li>To authenticate himself to Alice, Bob would encrypt a nonce sent by Alice with:
+<br/>(a) his private key.
+<br/>(b) his public key.
+<br/>(c) Alice’s private key.
+<br/>(d) Alice’s public key.
+
+</li><li>To send a secure message to Alice, Bob would encrypt the message with:
+<br/>(a) his private key.
+<br/>(b) his public key.
+<br/>(c) Alice’s private key.
+<br/>(d) Alice’s public key.
+
+</li><li>Which is NOT a technique that the operating system can use to guard against buffer overflow attacks?
+<br/>(a) Address space layout randomization (ASLR).
+<br/>(b) Non-executable stacks.
+<br/>(c) Stack canaries.
+<br/>(d) All of the above are viable operating system techniques to guard against buffer overflow attacks.
+
+</li><li>A DES key is 56 bits. A triple-DES key is:
+<br/>(a) 56 bits.
+<br/>(b) 112 bits.
+<br/>(c) 168 bits.
+<br/>(d) Any of the above.
+
+</li><li>The Diffie-Hellman algorithm is:
+<br/>(a) a public key encryption algorithm.
+<br/>(b) a combined key exchange and public key encryption algorithm.
+<br/>(c) a symmetric encryption algorithm.
+<br/>(d) not an encryption algorithm but allows two parties to compute a common key.
+
+</li><li>Which of the following is FALSE about the Secure Sockets Layer (or Transport Layer Security)?
+<br/>(a) Public key cryptography is used for authentication.
+<br/>(b) Symmetric cryptography is used for data communication.
+<br/>(c) A one-way hash function is used to store keys.
+<br/>(d) A session key is established for data exchange.
+
+</li><li>What best describes Kerberos?
+<br/>(a) A database that keeps track of malicious IP addresses/machines.
+<br/>(b) An authentication service that uses a trusted third party that holds all the passwords.
+<br/>(c) A program developed in 1989 that used SYN flooding to attack specific machines.
+<br/>(d) The first anti-virus program that used virus-scanning to find a signature of a virus.
+
+</li><li>A digital certificate is:
+<br/>(a) a hash of a digital document that is encrypted with your private key.
+<br/>(b) a digital document that is encrypted with your public key.
+<br/>(c) your identity and your private key, digitally signed.
+<br/>(d) your identity and your public key, digitally signed.
+</li>
+
+
+
+<h1>
+PART III &ndash; 20 points &ndash; 2 point each </h1>
+<p>
+For each statement, specify whether it is true or false by circling the correct choice. 
+</p>
+
+<li> Ethernet is an example of a broadband network.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> FUSE, the file system in user space, uses a loop device to bridge the VFS layer to a user process.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> Sockets support the ability to use file system read and write system calls because sockets are implemented under the VFS layer.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> NFS uses the download/upload model for remote file access.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> The Password Authentication Protocol with stored hashed passwords provides network-safe authentication.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> A prominent feature of the original NFS design is that the servers keep no state.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> Secure Sockets Layer (SSL, or Transport Layer Security) is an example of a hybrid cryptosystem.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> A Kerberos ticket (sealed envelope) contains the session key.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> Kerberos uses public key cryptography to provide secure communication on insecure networks.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> A socket is simply a number included at the start of each IP packet.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+</li>
+
+</ol>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> Exam Info </h2>
+	<ul>
+	<li> <a href="../index.html#list">List of topics</a>
+	<li> <a href="../study-guide-1.html">Exam 1 Study Guide</a> </li>
+	<li> <a href="../study-guide-2.html">Exam 2 Study Guide</a> </li>
+	<li> <a href="../study-guide-3.html">Exam 3 Study Guide</a> </li>
+	</ul>
+		<h2> Old exams </h2>
+	<ul>
+	<li> <a href="exam1-2012-s.html"> Spring 2012 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2012-s.html"> Spring 2012 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2012-s.html"> Spring 2012 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2011-s.html"> Spring 2011 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2011-s.html"> Spring 2011 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2011-s.html"> Spring 2011 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2010-f.html"> Fall 2010 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2010-f.html"> Fall 2010 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2010-f.html"> Fall 2010 &ndash; Exam 3</a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

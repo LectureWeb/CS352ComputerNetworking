@@ -1,0 +1,482 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Assignment 6 (Project 2)</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css?v=1.1"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Assignment 6 (Project 2)</h1>
+								<h2></h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>October 6, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<div class="boldbox"> Deadline: Wednesday, October 21, 2020 11:59pm </div>
+
+								<p>&rarr; <a href="files/Project-2-overview.pdf">Recitation notes</a></p>
+
+<p>Updated October 9 to add extra credit support for multiple filenames in <em>hidefile</em>.</p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>We looked at the ability to do function interposition, where we can create an alternate version of a library function and force a program to load and use that version instead. This allows us to alter the behavior of library functions and, thus, the programs that use them.</p>
+
+<p>This assignment requires you to write two small functions that interpose two standard library functions. The assignment comprises two parts. Each function is relevant to one part of the assignment.</p>
+
+<h1 id="groups">Groups</h1>
+
+<p>This is an <strong>individual</strong> assignment. You are expected to do this on your own and submit your own version of the code.</p>
+
+<h1 id="environment">Environment</h1>
+
+<p>Your submission will be tested on Rutgers iLab Linux systems. You can most likely develop this on any other Linux system but you are responsible for making sure that it will work on the iLab systems. You cannot do this assignment on macOS; the BSD functions it uses for dynamic linking are somewhat different.</p>
+
+<p>Download the file <a href="files/hw-6.zip">hw&#8211;6.zip</a>. It contains makefiles, which compile the code and also run small tests, as well as a driver program for part 2 of this assignment. The instructions below will refer to these files.</p>
+
+<p>When you unzip the file, you will see a directory called <code>hw-6</code> with three subdirectories:</p>
+<dl>
+<dt><code>random</code></dt>
+<dd>
+<p>contains the example of replacing the random number generator that we covered in class. The file <code>random.c</code> is the main program that prints a set of 10 random numbers and the file <code>myrand.c</code> is our custom implementation of the <em>rand</em> library function. The <code>Makefile</code> has targets to compile both of these and run a small test. You can run </p>
+
+<pre><code>make
+</code></pre>
+
+<p>to compile the shared library or run</p>
+
+<pre><code>make test
+</code></pre>
+
+<p>to compile (if needed) and run a test. You should run this to ensure that your environment is set up correctly and you have no problems preloading libraries.</p></dd>
+
+<dt><code>hidefile</code></dt>
+<dd>contains files you need for part 1 of this assignment.</dd>
+
+<dt><code>unexpire</code></dt>
+<dd>contains files you need for part 2 of the assignment.</dd>
+</dl>
+
+
+<h1 id="part1:hidingfiles">Part 1: Hiding files</h1>
+
+<p>In discussing malware, we covered the concept of a <em>rootkit</em>. This was malware that is designed to stay hidden on the victim&#8217;s computer. If victims don&#8217;t see the software then they don&#8217;t know it&#8217;s there.</p>
+
+<p>There are various ways of hiding content. It could be placed in obscure parts of the file system that might not be searched regularly. A file might be set to be hidden, but this attribute can be changed easily. On Linux systems, files whose names begin with a dot are not listed by default unless you use a -a option to the <em>ls</em> command. Clearly, this isn&#8217;t a good way of hiding files.
+The ideal way of hiding files is to modify the kernel to never report of their existence but this requires getting privileges to modify the kernel.</p>
+
+<p>A way of hiding files in user space is to modify library functions that read directory contents. This way, programs that show directory contents will not see the file but someone who knows about it can open it.</p>
+
+<p>In this assignment, you will use function interposition to hide the presence of files from commands such as <em>ls</em> and <em>find</em>.</p>
+
+<h2 id="goal">Goal</h2>
+
+<p>The standard library function for reading directories on Linux is <a href="https://www.man7.org/linux/man-pages/man3/readdir.3.html">readdir</a>, which is built on top of the <a href="https://www.man7.org/linux/man-pages/man2/getdents.2.html">getdents</a> system call. Programs such as <em>ls</em>, <em>find</em>, <em>sh</em>, <em>zsh</em>, and others use <em>readdir</em> to read contents of directories.</p>
+
+<p>Your program will interpose <em>readdir</em> so that it will hide a secret file whose name is set by an environment variable. You do this by setting the <code>LD_PRELOAD</code> environment variable:</p>
+
+<pre><code>export LD_PRELOAD=$PWD/hidefile.so
+</code></pre>
+
+<p>This tells the system to load the functions in the specified shared library before loading any others and to give these functions precedence.</p>
+
+<p>For example, you can run the command <em>ls</em> to list all files in a directory:</p>
+
+<pre><code>$ ls -l
+total 408
+-rw------- 1 pxk allusers    115 Oct  6 12:26 present.pptx
+-rw------- 1 pxk allusers    141 Oct  6 12:35 secretfile-zzz
+-rw------- 1 pxk allusers  94698 Oct  6 12:33 status-report-1.txt
+-rw------- 1 pxk allusers 166518 Oct  6 12:33 status-report-2.txt
+-rw------- 1 pxk allusers  77166 Oct  6 12:33 status-report-3.txt
+-rw------- 1 pxk allusers  48858 Oct  6 12:33 status-report-4.txt
+-rw------- 1 pxk allusers     14 Oct  6 12:34 testfile.c
+</code></pre>
+
+<p>But if you set the environment variable <code>HIDDEN</code> to a specific file name, that file will not be visible:</p>
+
+<pre><code>$ export HIDDEN
+$ HIDDEN=secretfile-zzz
+$ ls -l
+total 404
+-rw------- 1 pxk allusers    115 Oct  6 12:26 present.pptx
+-rw------- 1 pxk allusers  94698 Oct  6 12:33 status-report-1.txt
+-rw------- 1 pxk allusers 166518 Oct  6 12:33 status-report-2.txt
+-rw------- 1 pxk allusers  77166 Oct  6 12:33 status-report-3.txt
+-rw------- 1 pxk allusers  48858 Oct  6 12:33 status-report-4.txt
+-rw------- 1 pxk allusers     14 Oct  6 12:34 testfile.c
+</code></pre>
+
+<p>Note that <code>secretfile-zzz</code> is no longer displayed.
+Other commands that use <em>readdir</em>, such as <em>find</em>, will not show the file either:</p>
+
+<pre><code>$ find .
+.
+./status-report-1.txt
+./status-report-4.txt
+./status-report-2.txt
+./status-report-3.txt
+./present.pptx
+./testfile.c
+</code></pre>
+
+<p>If you set <code>HIDDEN</code> to another name then files with that name will be hidden:</p>
+
+<pre><code>$ HIDDEN=status-report-1.txt  
+$ ls -l
+total 308
+-rw------- 1 pxk allusers    115 Oct  6 12:26 present.pptx
+-rw------- 1 pxk allusers    141 Oct  6 12:35 secretfile-zzz
+-rw------- 1 pxk allusers 166518 Oct  6 12:33 status-report-2.txt
+-rw------- 1 pxk allusers  77166 Oct  6 12:33 status-report-3.txt
+-rw------- 1 pxk allusers  48858 Oct  6 12:33 status-report-4.txt
+-rw------- 1 pxk allusers     14 Oct  6 12:34 testfile.c
+</code></pre>
+
+<p>And, of course, if you delete HIDDEN then all files should be visible:</p>
+
+<pre><code>$ unset HIDDEN
+$ ls -l
+total 408
+-rw------- 1 pxk allusers    115 Oct  6 12:26 present.pptx
+-rw------- 1 pxk allusers    141 Oct  6 12:35 secretfile-zzz
+-rw------- 1 pxk allusers  94698 Oct  6 12:33 status-report-1.txt
+-rw------- 1 pxk allusers 166518 Oct  6 12:33 status-report-2.txt
+-rw------- 1 pxk allusers  77166 Oct  6 12:33 status-report-3.txt
+-rw------- 1 pxk allusers  48858 Oct  6 12:33 status-report-4.txt
+-rw------- 1 pxk allusers     14 Oct  6 12:34 testfile.c
+</code></pre>
+
+<h2 id="whatyouneedtodo">What you need to do</h2>
+
+<p>Your assignment is to create an alternate version of the <em>readdir</em> Linux library function that will:</p>
+
+<ul>
+<li>Call the real version of <em>readdir</em></li>
+<li>Check if the returned file name matches the name in the environment variable <code>HIDDEN</code></li>
+<li>If it does, call <em>readdir</em> again to skip over this file entry.</li>
+<li>Return the file data to the calling program.</li>
+</ul>
+
+<p>You will use Linux&#8217;s <code>LD_PRELOAD</code> mechanism. This is an environment variable that forces the listed shared libraries to be loaded for programs you run. The dynamic linker will search these libraries first when it resolves symbols in the program. This allows you to take control and replace library functions that programs use with your own versions.</p>
+
+<p>For this part, you need to write just one function in a file that you will name <code>hidefile.c</code>.</p>
+
+<p>The function will be your implementation of <em>readdir</em>. You&#8217;ll give it the same name and it should take the same parameters as the real <a href="https://www.man7.org/linux/man-pages/man3/readdir.3.html">readdir</a>. It returns the same data type as the original version.</p>
+
+<p>Because you need to call the real version of <em>readdir</em> from your <em>readdir</em>, you will need to have your function dynamically link the original <em>readdir</em> function and pass the request to that function. Read the references below for instructions on how to use the <em>ldsym</em> function to load the real version of the function from your code.</p>
+
+<p>You will then compile this file into a shared library named <code>hidefile.so</code>. You can then preload this shared library by setting the environment variable:</p>
+
+<pre><code>    export LD_PRELOAD=$PWD/readdir.so
+</code></pre>
+
+<p>Then you can run programs such as <em>ls</em> or <em>find</em> as in the above examples and test whether it works.</p>
+
+<h2 id="compilingandtesting">Compiling and Testing</h2>
+
+<p>The assignment file <a href="files/hw-6.zip">hw&#8211;6.zip</a> contains a directory <code>hidefile</code>.
+Inside, you will find a placeholder for your <code>hidefile.c</code> code and a Makefile. If you run</p>
+
+<pre><code>    make
+</code></pre>
+
+<p>the make program will compile the file hidefile.c into a shared library <code>hidefile.so</code>. If you run</p>
+
+<pre><code>    make test
+</code></pre>
+
+<p>the <em>make</em> program will compile the files (if necessary), create two sample files named <code>secret-1.txt</code> and <code>secret-2.txt</code> and test the program by setting the environment variable HIDDEN to <code>secret-1.txt</code>, then <code>secret-2.txt</code>, and then deleting it &#8211; running the <em>ls</em> command each time with the shared library preloaded.</p>
+
+<h2 id="anoteaboutsettingld_preloadandhidden">A note about setting LD_PRELOAD and HIDDEN</h2>
+
+<p>When you set environment variables in your shell, you need to export them so they will be passed to any processes created by the shell (i.e., any commands the shell runs).</p>
+
+<p>For example, in bash, zsh, and sh, if you run</p>
+
+<pre><code>LD_PRELOAD=test.so
+command
+</code></pre>
+
+<p>LD_PRELOAD will not preload libraries for the command.</p>
+
+<p>If you run:</p>
+
+<pre><code>export LD_PRELOAD=./test.so
+command
+</code></pre>
+
+<p>Then LD_PRELOAD will be visible to all sub-processes. However, it will be also be loaded by your shell and you might experience unexpected behavior if your shell or other programs (like your editor) are using libraries that you are modifying. You will need to exit the shell or unset the variable:</p>
+
+<pre><code>unset LD_PRELOAD
+</code></pre>
+
+<p>Alternatively, you can set the environment variable on the command line. The shell will pass it to the command but it will not be used in the context of your shell. This is convenient for testing:</p>
+
+<pre><code>LD_PRELOAD=./test.so command
+</code></pre>
+
+<p>The same applies to HIDDEN. You can export it and set it to whatever you&#8217;d like:</p>
+
+<pre><code>export HIDDEN
+HIDDEN=myfile1
+command
+HIDDEN=myfile2
+HIDDEN=
+</code></pre>
+
+<p>Or set it for the one command:</p>
+
+<pre><code>HIDDEN=myfile1 command
+</code></pre>
+
+<p>In which case the shell will not set it in its environment but only for the command it runs.</p>
+
+<h2 id="hints">Hints</h2>
+
+<p>The program should be quite short. My implementation was just nine lines of C statements.</p>
+
+<p>Some of you will no doubt finish this assignment in well under an hour &#8230; but don&#8217;t count on it. Others of you, however, may not have much experience with C programming or the Linux enviornment and have more of a struggle. Allow yourself sufficient time.</p>
+
+<p>Develop in steps. Don&#8217;t hesitate to put <em>printf</em> statements for debugging &#8230; but remove them before submission! </p>
+
+<h2 id="extracredit">Extra credit</h2>
+
+<p>For extra credit, you can add support to hide multiple file names. </p>
+
+<p>Environment variables don&#8217;t support arrays. One way to implement this would be to have a sequence of HIDDENn variables, such as HIDDEN0, HIDDEN1, etc. The confusion would be to know the limits and decide whether to support names such as HIDDEN00, HIDDEN000, etc. </p>
+
+<p>Instead, you will implement this in a similar manner to how the shell implements specifying sequences of pathnames in search paths and library paths &#8211; by separating names with a colon. For this assignment, you can assume that file names will not contain a colon. In a real implementation, you would support an escape character for a colon.</p>
+
+<p>To hide a single file, set HIDDEN as before:</p>
+
+<pre><code>HIDDEN=myfile
+</code></pre>
+
+<p>To hide multiple files, set hidden to a colon-separated list:</p>
+
+<pre><code>HIDDEN=myfile1:myfile2:myfile3:myfile4
+</code></pre>
+
+<h1 id="part2">Part 2</h1>
+
+<p>You are given a Linux program called <strong>unexpire</strong> that runs on the Rutgers iLab Linux systems.
+It&#8217;s in the same <a href="files/hw-6.zip">hw&#8211;6.zip</a> zip package as the first part of the assignment.</p>
+
+<p>Imagine that this is a program that you received for evaluation and it has an expiration time coded into it. This program exits (expires) if the date is after October 1, 2020. It will also refuse to run on any date earlier than January 1, 2020. However, you want to continue using this program and you want to defeat its check for the time. </p>
+
+<h2 id="goal">Goal</h2>
+
+<p>Your assignment is to replace the program&#8217;s call to a system library to get the time of day with one of your own &#8211; an alternate version that will return a suitable date for the program&#8217;s time check. This is a use of <strong>function interposition</strong>. </p>
+
+<p><em>After the time-based check for validity is done, you want the program to use the actual time so that it will return the correct time of day.</em></p>
+
+<h2 id="whatyouneedtodo">What you need to do</h2>
+
+<p>This program uses the standard C library (glibc) <a href="http://man7.org/linux/man-pages/man2/time.2.html"><em>time</em></a> function to get the system time. The <em>time</em> function returns the number of seconds since the Linux Epoch (the start of January 1, 1970 UTC).</p>
+
+<p>Your assignment is to create an alternate version of the <em>time()</em> C library function that will return a value within a time window that will pass the program&#8217;s validation check.</p>
+
+<p>You will use Linux&#8217;s <code>LD_PRELOAD</code> mechanism to take control and replace the standard <em>time</em> library function with your own version.</p>
+
+<p>You need to write just one function in a file <code>newtime.c</code>. There&#8217;s a stub for this under the <code>unexpire</code> directory.</p>
+
+<p>The function will be your implementation of <em>time</em>. You&#8217;ll give it the same name and it should take the same parameters and return the same data type as the original version. The main program validates the time <strong>only the first time</strong> it calls <em>time</em>. After that, you want calls to <em>time</em> to return the correct system time. Unfortunately, your <em>time</em> function will continue to be called by the program so you will need to have your function dynamically link the original <em>time</em> function and pass successive calls to that. </p>
+
+<p>You will then compile this file into a shared library called <code>newtime.so</code>. You can run</p>
+
+<pre><code>make
+</code></pre>
+
+<p>to compile the library. You can then preload this shared library by setting the environment variable:</p>
+
+<pre><code>export LD_PRELOAD=$PWD/newtime.so
+</code></pre>
+
+<p>and then run the program normally:</p>
+
+<pre><code>./unexpire
+</code></pre>
+
+<p>If your implementation is correct, you will see a message stating:</p>
+
+<pre><code>PASSED! You reset the time successfully!
+</code></pre>
+
+<p>If not, you will see a message stating what part of your implementation failed. You can also test the program by running</p>
+
+<pre><code>make test
+</code></pre>
+
+<p>If you set LD_PRELOAD, don&#8217;t forget to</p>
+
+<pre><code>unset LD_PRELOAD
+</code></pre>
+
+<p>You may find that programs such as the <em>vi</em> editor call time() and may behave differently.</p>
+
+<h2 id="hints">Hints</h2>
+
+<p>As with the first part, this program should be quite short: perhaps 15 lines of code if you use <em>strptime</em> to set the time from a user-friendly time string (which I recommend; it makes it easier to understand the program and makes it more maintainable). With a hardcoded time value, your program might be down to six or lines of functional code.</p>
+
+<p>Test an initial version of your program that does not link in the original <em>time</em> function just to make sure you have that first part working before you move on.</p>
+
+<p>As with part 1, some of you will no doubt finish this assignment incredibly quickly while others of you might struggle a bit figuring out how to convert a date. Allow yourself sufficient time to avoid last-minute panic.</p>
+
+<h1 id="references">References</h1>
+
+<p><a href="files/hw-6.zip">hw&#8211;6.zip</a>. </p>
+
+<p>There are many tutorials on function interposition on the web. You&#8217;ll want to follow the instructions for dynamically linking original functions as well as the proper flags to use to compile the shared libraries (<code>hidefile.so</code> for part 1 and <code>newtime.so</code> for part 2).</p>
+
+<p>Some reference you may find useful are:</p>
+
+<ul>
+<li><p>man page for the <a href="https://www.man7.org/linux/man-pages/man3/readdir.3.html">readdir</a> function.</p></li>
+<li><p>man page for the <a href="https://www.man7.org/linux/man-pages/man3/getenv.3.html">getenv</a> function.</p></li>
+<li><p><a href="http://man7.org/linux/man-pages/man2/time.2.html">man page</a> for the <em>time</em> function</p></li>
+<li><p>man page for <a href="http://man7.org/linux/man-pages/man3/dlsym.3.html">ldsym</a>.</p></li>
+<li><p>NetSPI Blog, <a href="https://blog.netspi.com/function-hooking-part-i-hooking-shared-library-function-calls-in-linux/">Function Hooking Part I</a></p></li>
+<li><p>CatonMat, <a href="https://catonmat.net/simple-ld-preload-tutorial">A Simple LD_PRELOAD Tutorial</a></p></li>
+<li><p>CatonMat, <a href="https://catonmat.net/simple-ld-preload-tutorial-part-2">A Simple LD_PRELOAD Tutorial, Part 2</a></p></li>
+</ul>
+
+<h1 id="whattosubmit">What to submit</h1>
+
+<p>When you have completed your assignment, you will need to submit a zip file containing <code>hidefile/hidefile.c</code> and <code>unexpire/newtime.c</code>. You can create this by running:</p>
+
+<pre><code>make zip
+</code></pre>
+
+<p>from the top-level directory (<code>hw-6</code>).</p>
+
+<p><strong>Make sure your name, netID, and RUID are in the comments of both files</strong>.
+ Validate that the file is correct before submitting.</p>
+
+							</section>
+							<footer class="main">
+								Last modified October 20, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:pxk@cs@@rutgers@@edu" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>
+	</body>
+</html>

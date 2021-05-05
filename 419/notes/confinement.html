@@ -1,0 +1,726 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Confinement</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Confinement</h1>
+								<h2>Isolating programs</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>October 1, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<p>Two lessons we learned from experience are that applications can be compromised and
+that applications may not always be trusted. Server applications, in particular, such
+as web servers and mail servers have been compromised over and over again. This is
+particularly harmful as they often run with elevated privileges and on systems on which
+normal users do not have accounts. The second category of risk is that we may not
+always trust an application. We trust our web server to work properly but we cannot
+necessarily trust that the game we downloaded from some unknown developer will not
+try to upload our files, destroy our data, or try to change our system configuration.
+In fact, unless we have the ability to scrutinize the codebase of a service, we will
+not know for sure if it tries to modify any system settings or writes files to unexpected
+places. </p>
+
+<p>With this resignation to security in mind, we need to turn our attention to
+limiting the resources available to an application and making sure that a
+misbehaving application cannot harm the rest of the system. These are the
+goals of <strong>confinement</strong>.</p>
+
+<p>Our initial thoughts to achieving confinement may involve proper use
+of access controls. For example, we can run server applications as low-privilege
+users and make sure that we have set proper read/write/execute permissions on
+files, read/write/search permissions on directories, or even set up role-based
+policies. </p>
+
+<p>However, access controls usually do not give us the ability to set permissions
+for &#8220;<em>don&#8217;t allow access to anything else</em>.&#8221; For example, we may want our web
+server to have access to all files in <code>/home/httpd</code> but nothing outside of
+that directory. Access controls do not let us express that rule. Instead, we
+are responsible for changing the protections of every file on the system
+and making sure it cannot be accessed by &#8220;other&#8221;.
+We also have to hope that
+no users change those permissions. In essence, we must disallow the ability
+for anyone to make files publicly accessible because we never want
+our web server to access them. We may be able to use mandatory access control
+mechanisms if they are available but, depending on the system, we
+may not be able to restrict access properly either. More likely, we will
+be at risk of comprehension errors and be likely to make a configuration
+error, leaving parts of the system vulnerable. To summarize, even if we
+can get access controls to help, we will not have <em>high assurance</em> that
+they do.</p>
+
+<p>Access controls also only focus on protecting access to files and devices.
+A system has other resources, such as CPU time, memory, disk space,
+and network. We may want to control how much of all of these an application
+is allowed to use.
+POSIX systems provide a <a href="https://linux.die.net/man/2/setrlimit">setrlimit</a>
+system call that allows one to set limits on certain resources for the current process
+and its children. These controls include the ability to set file size limits, CPU time limits,
+various memory size limits, and maximum number of open files.</p>
+
+<p>We also may want to control the network identity for an application.
+All applications share the same IP address on a system but this may
+allow a compromised application to exploit address-based access controls.
+For example, you may be able to connect to or even log into system that
+believe you are a trusted computer. An exploited application may
+end up confusing network intrusion detection systems.</p>
+
+<p>Just limiting access through resource limits and file permissions is
+also insufficient for services that run as root.
+If an attacker can compromise an app and get root access to execute
+arbitrary functions, she can change resource limits (just call <em>setrlimit</em>
+with different values), change any file permissions, and even change
+the IP address and domain name of the system.</p>
+
+<p>In order to truly confine an application, we would like to create
+a set of mechanisms that enforce access controls to <em>all</em> of a system&#8217;s
+resources, are easy to use so that we have high assurance in knowing
+that the proper restrictions are in place, and work with a large class
+of applications. We can&#8217;t quite get all of this yet but we can come close.</p>
+
+<h2 id="chroot">chroot</h2>
+
+<p>The oldest app confinement mechanism is Unix&#8217;s <a href="https://en.wikipedia.org/wiki/Chroot">chroot</a>
+system call and command, originally introduced in 1979 in the seventh edition<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a>.
+The <a href="http://man7.org/linux/man-pages/man2/chroot.2.html">chroot</a> system call changes the root
+directory of the calling process to the directory specified as a parameter.</p>
+
+<pre><code>chroot(&quot;/home/httpd/html&quot;);
+</code></pre>
+
+<p>Sets the root of the file system to <code>/home/httpd/html</code> for the process and any processes it creates.
+The process cannot see any files outside that subset of the directory tree. This isolation is
+often called a <strong>chroot jail</strong>.</p>
+
+<h3 id="jailkits">Jailkits</h3>
+
+<p>If you run <em>chroot</em>, you will likely get an error along the lines of:</p>
+
+<pre><code># chroot newroot
+chroot: failed to run command ‘/bin/bash’: No such file or directory
+</code></pre>
+
+<p>This is because /bin/bash is not within the root (in this case, the <em>newroot</em> directory).
+You&#8217;ll then create a <code>bin</code> subdirectory and try running <em>chroot</em> again and get the
+same error:</p>
+
+<pre><code># mkdir newroot/bin
+# ln /bin/bash newroot/bin/bash
+# chroot newroot
+chroot: failed to run command ‘/bin/bash’: No such file or directory
+</code></pre>
+
+<p>You&#8217;ll find that is also insufficient and that you&#8217;ll need to bring in
+the shared libraries that /bin/bash needs by mounting <code>/lib</code>, <code>/lib64</code>, and
+<code>/usr/lib</code> within that root just to enable the shell to run. Otherwise, it
+cannot load the libraries it needs since it cannot see above its root (i.e., outside
+its jail). To simplify this process, a <a href="https://linux.die.net/man/8/jailkit">jailkit</a>
+simplifies the process of setting up a chroot jail by providing a set of utilities
+to make it easier to create the desired environment within the jail and populate
+it with basic accounts, commands, and directories.</p>
+
+<h3 id="problemswithchroot">Problems with chroot</h3>
+
+<p>Chroot only limits access to the file system namespace. It does not restrict access
+to resources and does not protect the machine&#8217;s network identity. Applications
+that are compromised to give the attacker root access make the entire system vulnerable
+since the attacker has access to all system calls.</p>
+
+<p>Chroot is available only to administrators. If this was not the case then
+any user would be able to get root access within the chroot jail. You
+would:</p>
+
+<ol>
+<li>Create a chroot jail</li>
+<li>Populate it with the shell program and necessary support libraries</li>
+<li>Create a link inside your jail to the <strong>/bin/su</strong> command (<em>set user</em>, which allows you to authenticate to become any user)</li>
+<li>Create password files within the jail with a known password for root. On Linux systems, you would typically create an <code>etc/passwd</code> file that contains information about the user account (name, user ID, home directory, startup shell) and an <code>etc/shadow</code> file that contains the actual passwords.</li>
+<li>Use the <strong>chroot</strong> command to enter the jail.</li>
+<li>Run <strong>su root</strong> to become the root user. The command will prompt you for a password and validate it against the password file. Since all processes run within the jail, the password file is the one you set up in your jail, so you knwo the password.</li>
+</ol>
+
+<p>You&#8217;re still in the jail but you have root access. Now you will need to escape from the jail.</p>
+
+<h3 id="escapingfromchroot">Escaping from chroot</h3>
+
+<p>If someone manages to compromise an application running inside a chroot jail and become
+root, they are still in the jail but have access to all system calls. For example,
+they can send signals to kill all other processes or shut down the system. This
+would be an attack on availability.</p>
+
+<p>Attaining root access also provides a few
+ways of escaping the jail. On POSIX systems, all non-networked devices are accessible
+as files within the filesystem. Even memory is accessible via a file (<code>/dev/mem</code>).
+An intruder in a jail can create a memory device (character device, major number = 1,
+minor number = 1):</p>
+
+<pre><code>mknod mem c 1 1
+</code></pre>
+
+<p>With the memory device, the attacker can patch system memory to change the root
+directory of the jail. More simply, an attacker can create a block device with
+the same device numbers as that of the main file system. For example, the root
+file system on one of my Linux systems is /dev/sda1 with a major number of 8 and a minor
+number of 1. An attacker can recreate that in the jail:</p>
+
+<pre><code>mknod rootdisk b 8 1
+</code></pre>
+
+<p>and then mount it as a file system within the jail:</p>
+
+<pre><code>mount -t ext4 rootdisk myroot
+</code></pre>
+
+<p>Now the attacker, still in the jail, has full access to the entire file system,
+which is as good as being out of the jail. He can add user accounts, change
+passwords, delete log files, run any commands, and even reboot the system to get a clean login.</p>
+
+<h2 id="freebsdjails">FreeBSD Jails</h2>
+
+<p>Chroot was good in confining the namespace of an application but useless against
+providing security if an application had root access and did nothing to restrict
+access to other resources.</p>
+
+<p><strong>FreeBSD Jails</strong> are an enhancement to the idea of <em>chroot</em>. Jails provide
+a restricted filesystem namespace, just like chroot does, but also place
+restrictions on what processes are allowed to do within the jail, including
+selectively removing privileges from the root user in the jail. For example,
+processes within a jail may be configured to:</p>
+
+<ul>
+<li>Bind only to sockets with a specified IP address and specific ports</li>
+<li>Communicate only with other processes within the jail and none outside</li>
+<li>Not be able to load kernel modules, even if root</li>
+<li>Have restricted access to system calls that include:
+
+<ul>
+<li>Ability to create raw network sockets</li>
+<li>Ability to create devices</li>
+<li>Modify the network configuration</li>
+<li>Mount or unmount filesystems</li>
+</ul></li>
+</ul>
+
+<p>FreeBSD Jails are a huge improvement over chroot since known escapes,
+such as creating devices and mounting filesystems and even rebooting the
+system are disallowed. Depending on the application, policies may be
+coarse. The changed root provides all or nothing access to a part of
+the file system. This does not make Jails suitable for applications
+such as a web browser, which may be untrusted but may need access to
+files outside of the jail. Think about web-based applications such as
+email, where a user may want to upload or download attachments. Jails
+also do not prevent malicious apps from accessing the network and
+trying to attack other machines &#8230; or from trying to crash the host
+operating system. Moreover, FreeBSD Jails is a BSD-only solution.
+With an <a href="https://en.wikipedia.org/wiki/Usage_share_of_operating_systems">estimated</a>
+0.95&#8230;1.7% share of server deployments, it is a great solution on
+an operating system that is not that widely used.</p>
+
+<h2 id="linuxnamespacescgroupsandcapabilities">Linux namespaces, cgroups, and capabilities</h2>
+
+<p>Linux&#8217;s answer to FreeBSD Jails was a combination of three elements:
+control groups, namespaces, and capabilities.</p>
+
+<h3 id="controlgroupscgroups">Control groups (cgroups)</h3>
+
+<p>Linux <strong>control groups</strong>, also called <strong>cgroups</strong>,
+allow you to allocate resources such as
+CPU time, system memory, disk bandwidth, network bandwidth,
+and the ability to monitor resource usage among user-defined
+groups of processes.
+This allows, for example, an administrator to allocate a larger share
+of the processor to a critical server application. </p>
+
+<p>An administrator creates one or more cgroups and assigns resource limits to each of them.
+Then any application can be assigned to a control group and will not be able to use more
+than the resource limits configured in that control group.
+Applications are unaware of these limits.
+Control groups are organized in a hierarchy similar to processes. Child cgroups
+inherit some attributes from the parents. </p>
+
+<h3 id="linuxnamespaces">Linux namespaces</h3>
+
+<p>Chroot only restricted the filesystem namespace. The filesystem
+namespace is the best known namespace in the system but not the only one.
+Linux <a href="http://man7.org/linux/man-pages/man7/namespaces.7.html">namespaces</a>
+Namespaces provide control over how processes are isolated in the following
+namespaces:</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Namespace</th>
+	<th style="text-align:left;">Description</th>
+	<th style="text-align:left;">Controls</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">IPC</td>
+	<td style="text-align:left;">System V IPC, POSIX message queues</td>
+	<td style="text-align:left;">Objects created in an IPC namespace are only visible to other processes in that namespace (CLONE_NEWIPC)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">Network</td>
+	<td style="text-align:left;">Network devices, stacks, ports</td>
+	<td style="text-align:left;">Isolates IP protocol stacks, IP routing tables, firewalls, socket port numbers ( CLONE_NEWNET)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">Mount</td>
+	<td style="text-align:left;">Mount points</td>
+	<td style="text-align:left;">A set of processes can have their own distinct mount points and view of the file system (CLONE_NEWNS)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">PID</td>
+	<td style="text-align:left;">Process IDs</td>
+	<td style="text-align:left;">Processes in different PID namespaces can have their process IDs &#8211; the child cannot see parent processes or other namespaces (CLONE_NEWPID)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">User</td>
+	<td style="text-align:left;">User &amp; group IDs</td>
+	<td style="text-align:left;">Per-namespace user/group IDs. Also, you can be root in a namespace but have restricted privileges ( CLONE_NEWUSER )</td>
+</tr>
+<tr>
+	<td style="text-align:left;">UTS</td>
+	<td style="text-align:left;">host name and domain name</td>
+	<td style="text-align:left;">setting hostname and domainname will not affect rest of the system (CLONE_NEWUTS)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">Cgroup</td>
+	<td style="text-align:left;">control group</td>
+	<td style="text-align:left;">Sets a new control group for a process (CLONE_NEWCGROUP)</td>
+</tr>
+</tbody>
+</table>
+<p>A process can dissociate any or all of these namespaces from its parent via the
+<a href="http://man7.org/linux/man-pages/man2/unshare.2.html">unshare</a> system call. For example,
+by unsharing the PID namespace, a process gets a no longer sees other processes and will only
+see itself and any child processes it creates. </p>
+
+<p>The Linux <a href="http://man7.org/linux/man-pages/man2/clone.2.html">clone</a> system call
+is similar to <a href="http://man7.org/linux/man-pages/man2/fork.2.html">fork</a> in that
+it creates a new process. However, it allows you to pass flags that will specify
+which parts of the execution context will be shared with the parent. For example,
+a cloned process may choose to share memory and open file descriptors, which
+will make it behave like threads. It can also choose to share &#8211; or not &#8211; any of
+the elements of the namespace.</p>
+
+<h3 id="capabilities">Capabilities</h3>
+
+<p>A problem that FreeBSD Jails tackled was that of restricting the power of root inside a Jail.
+You could be a root user but still disallowed from executing certain system calls.
+POSIX (Linux) capabilities<a href="#fn:2" id="fnref:2" title="see footnote" class="footnote">[2]</a> tackle this issue as well.</p>
+
+<p>Traditionally,
+Unix systems distinguished <strong>privileged</strong> versus <strong>unprivileged</strong> processes. Privileged
+processes were those that ran with a user ID of 0, called the <em>root</em> user. When running
+as root, the operating system would allow access to all system calls and all access permission
+checks were bypassed. You could do anything.</p>
+
+<p>Linux <a href="http://man7.org/linux/man-pages/man7/capabilities.7.html">capabilities</a>
+identify groups of operations, called <em>capabilities</em>, that can be controlled independently
+on a per-thread basis. The list is somewhat long, 38 groups of controls, and includes capabilities such as:</p>
+
+<ul>
+<li><strong>CAP_CHOWN</strong>: make arbitrary changes to file UIDs and GIDs</li>
+<li><strong>CAP_DAC_OVERRIDE</strong>: bypass read/write/execute checks</li>
+<li><strong>CAP_KILL</strong>: bypass permission checks for sending signals</li>
+<li><strong>CAP_NET_ADMIN</strong>: network management operations</li>
+<li><strong>CAP_NET_RAW</strong>: allow RAW sockets</li>
+<li><strong>CAP_SETUID</strong>: arbitrary manipulation of process UIDs</li>
+<li><strong>CAP_SYS_CHROOT</strong>: enable chroot</li>
+</ul>
+
+<p>The kernel keeps track of four capability sets for each thread. A capability set
+is a list of zero or more capabilities. The sets are:</p>
+
+<ul>
+<li><p><strong>Permitted</strong>: If a capability is not in this set, the thread or its children can never require that capability. This limits the power of what a process and its children can do.</p></li>
+<li><p><strong>Inheritable</strong>: These capabilities will be inherited when a thread calls <em>execve</em> to execute a program (POSIX programs are executed with the same thread; we are not creating a new process)</p></li>
+<li><p><strong>Effective</strong>: This is the current set of capabilities that the thread is using. The kernel uses these to perform permission checks.</p></li>
+<li><p><strong>Ambient</strong>: This is similar to <em>Inheritable</em> and contains a set of capabilities that are preserved across an <em>execve</em> of a program that is not privileged. If a setuid or setgid program is run, will clear the ambient set. These are created to allow a partial use of root features in a controlled manner. It is useful for user-level device drivers or software that needs a specific privilege (e.g., for certain networking operations).</p></li>
+</ul>
+
+<p>A child process created via <em>fork</em> (the standard way of creating processes) will inherit copies
+of its parent&#8217;s capability sets following the rules of which capabilities have been marked as <em>inheritable</em>.</p>
+
+<p>A set of capabilities can be assigned to an executable file by the administrator. They are stored
+as a file&#8217;s <em>extended attributes</em> (along with access control lists, checksums, and arbitrary user-defined name-value pairs).
+When the program runs, the executing process may further restrict the set of capabilities under
+which it operates if it chooses to do so (for example, after performing an operation that required the
+capability and knowing that it will no longer need to do so).</p>
+
+<p>From a security point of view, the key concept of capabilities is that they allow us to provide
+<strong>limited elevation of privileges</strong> to a process. A process does not need to run as root (user ID 0) but
+can still be granted very specific privileges.
+For example, we can grant the <a href="https://linux.die.net/man/8/ping">ping</a> command the ability to access raw sockets
+so it can send an ICMP ping message on the network but not have any other administrative powers. The application
+does not need to run as root and even if an attacker manages to inject code, the opportunities for attack will be restricted.</p>
+
+<p>The Linux combination of <em>cgroups</em>, <em>namespaces</em>, and <em>capabilities</em> provides a powerful set of mechanisms to</p>
+
+<ol>
+<li><p>Set limits on the system resources (processor, disk, network) that a group of processes will use.</p></li>
+<li><p>Constrain the namespace, making parts of the filesystem or the existence of other processes or users invisible.</p></li>
+<li><p>Give restricted privileges to specific applicatiosn so they do not need to run as root.</p></li>
+</ol>
+
+<p>This enables us to create stronger jails and have a fine degree of control as to what processes
+are or are not allowed to do in that jail.</p>
+
+<p>While bugs have been found these mechanisms, the more serious problem is that of
+<strong>comprehension</strong>. The system has become far, far more complex than it was in the
+days of <em>chroot</em>. A user has to learn quite a lot to use these mechanisms properly.
+Failure to understand their behavior fully can create vulnerabilities.
+For example, namespaces do not prohibit a process from making privileged system calls. They
+simply limit what a process can see. A process may not be able to send a kill signal to
+another process only because it does not share the same process ID namespace.</p>
+
+<p>Together with capabilities, namespaces allow a restricted environment that also places limits on the
+abilities to perform operations even if a process is granted root privileges. This enables
+ordinary users to create namespaces. You can create a namespace and even create a process running as
+a root user (UID 0) within that namespace but it will have no capabilities beyond
+those that were granted to the user; the user ID of 0 gets mapped by the kernel to a non-privileged user.</p>
+
+<!--
+# App Confinement
+
+We examined several mechanisms created to handle compromised applications and
+limit the amount of damage they can do. Confinement assumes that these mechanisms
+may fail or that an application be be malicious or buggy and seeks to **isolate**
+one set of processes from others on a system.
+
+The earliest of these, the
+_chroot_ mechanism, constrains the namespace (the directory tree it could access)
+but made it easy for an
+application to bypass that if it was able to get elevated privileges
+and run as _root_.
+FreeBSD Jails were a substantial improvement in
+that they not only restrict the namespace to a given subtree of the file system
+but allow an administrator to give processes in a Jail a different hostname and IP address
+and limit which resources they can mount even if they are root.
+
+
+to limit which system calls a process can invoke even with root
+privileges. FreeBSD Jails also allow a group of processes in a jail
+to have separate IP addresses from the main computer, a separate hostname,
+
+Linux followed up with three distinct mechanisms:
+
+- **Control groups**: allowed processes to be grouped together and control the amount of system resources (e.g., CPU percentage, file system space) that the group could use.
+
+- **Capabilities**: restricted the system calls a process could execute as root.
+
+- **Namespaces**: restricted what parts of the file system, process IDs, user IDs. mount points, and network that a process group could see.
+
+-->
+
+<h2 id="containers">Containers</h2>
+
+<p>Software rarely lives as an isolated application. Some software requires multiple applications and most software relies on the installation of other libraries, utilities, and packages. Keeping track of these dependencies can be difficult. Worse yet, updating one shared component can sometimes cause another application to break. What was needed was a way to isolate the installation, execution, and management of multiple software packages that run on the same system.</p>
+
+<p>Various attempts were undertaken to address these problems.</p>
+
+<ol>
+<li><p>The most basic was to fix problems when they occurred. This required carefully following instructions for installation, update, and configuration of software and extensive testing of all services on the system when anything changed. Should something break, the service would be unavailable until the problems were fixed. </p></li>
+<li><p>A drastic, but thorough, approach to isolation was to simply run each service on its own computer. That avoids conflicts in library versions and other dependencies. However, it is an expensive solution, is cumbersome, and is often overkill in most environments. </p></li>
+<li><p>Finally, administrators could deploy <em>virtual machines</em>. This is a technology that allows one to run multiple operating systems on one computer and gives the illusion of services running on distinct systems. However, this is a heavyweight solution. Every service needs its own installation of the operating system and all supporting software for the service as well as standard services (networking, device management, shell, etc.). It is not efficient in terms of CPU, disk, or memory resources &#8211; or even administration effort.</p></li>
+</ol>
+
+<p><strong>Containers</strong> are a mechanism that were originally created not for security but to
+make it easy to package, distribute, relocate, and deploy collections
+of software. The focus of containers is not to enable end users to install and run their favorite apps but rather for administrators to be able to deploy a variety of services on a system. A container encapsulates all the necessary software for a service, all of its dependencies, and its configuration into one package that can be easily passed around, installed, and removed.</p>
+
+<p>In many ways, a container feels like a virtual machine. Containers provide a service with a private process namespace, its own network interface, and its own set of libraries to avoid problems with incompatible versions used by other software. Containers also allow an administrator to give the service restricted powers even if it runs with root (administrator) privileges. Unlike a virtual machine, however, multiple containers on one system all share the same operating system and kernel modules.</p>
+
+<p>Containers are not a new mechanism. They are implemented using Linux&#8217;s control groups, namespaces, and capabilities to provide resource control, isolation, and privilege control, respectively. They also make use of a <strong>copy on write</strong> (CoW) file system. This makes it easy to create new containers where the file system can track the changes made by that container over a clean base version of a file system. Having multiple containers running the same services becomes extremely efficient. Containers can also take advantage of <strong>AppArmor</strong>, which is a Linux kernel module that provides a basic form of mandatory access controls based on the pathnames of files. It allows an administrator to restrict the ability of a program to access specific files even within its file system namespace.</p>
+
+<p>The best-known container framework is
+<a href="http://www.docker.com">Docker</a>. A <strong>Docker Image</strong> is a file format that creates a package of applications, their supporting libraries, and other needed files. This image can be stored and deployed on many environments. Docker made it easy to deploy containers using git-like commands (<em>docker push</em>, <em>docker commit</em>) and also to perform incremental updates. By using a copy on write file system, Docker images can be kept immutable (read-only) while any changes to the container during its execution are stored separately.</p>
+
+<p>As people found Docker to be useful, the next design goal was to make it easier to manage containers across a network of many computers. This is called <strong>container orchestration</strong>. There are many solutions for this, including <em>Apache Mesos</em>, <em>Kubernetes</em>, <em>Nomad</em>, and <em>Docker Swarm</em>. The best known of these is <a href="https://kubernetes.io">kubernetes</a>, which was designed by Google. It coordinates storage of containers, failure of hardware and containers, and dynamic scaling: deploying the container on more machines to handle increased load. Kubernetes is coordination software, not a container system; it uses the Docker framework to run the actual container. </p>
+
+<p>Even though containers were designed to simplify software deployment rather than provide security to services, they do offer several benefits in the area of security:</p>
+
+<ul>
+<li><p>They make use of namespaces, cgroups, and capabilities with
+restricted capabilities configured by default. This provides isolation among containers.</p></li>
+<li><p>Containers provide a strong separation of policy (defined by the container
+configuration) from the enforcement mechanism (handled
+by the operating system).</p></li>
+<li><p>They improve availability by
+providing the ability to have a <strong>watchdog timer</strong> monitor the
+running of applications and restarting them if necessary. With orchestration systems such as Kubernetes, containers can be re-deployed on another system if a computer fails.</p></li>
+<li><p>The environment created by a container is <strong>reproducible</strong>. The same container can be deployed on multiple systems and tested in different environments. This provides consistency and aids in testing and ensuring that the production deployment matches the one used for development and test. Moreover, it is easy to inspect exactly how a container is configured. This avoids problems encountered by manual installation of components where an administrator may forget to configure something or may install different versions of a required library.</p></li>
+<li><p>While containers add nothing new to security, they help avoid
+<strong>comprehension errors</strong>. Even default configurations will provide improved security over the defaults in the operating system and configuring
+containers is easier than learning and defining the rules
+for capabilities, control groups, and namespaces. Administrators
+are more likely to get this right or import containers that
+are already configured with reasonable restrictions.</p></li>
+</ul>
+
+<p>Containers are not a security panacea. Because all containers run under the same operating system, any kernel exploits can affect the security of all containers. Similarly, any denial of service attacks, whether affecting the network or monopolizing the processor, will impact all containers on the system. If implemented and configured properly, capabilities, namespaces, and control groups should ensure that privilege escalation cannot take place. However, bugs in the implementation or configuration may create a vulnerability. Finally, one has to be concerned with the integrity of the container itself. Who configured it, who validated the software inside of it, and is there a chance that it may have been modified by an adversary either at the server or in transit?</p>
+
+<h2 id="virtualmachines">Virtual Machines</h2>
+
+<p>As a general concept, virtualization is the addition of a layer of abstraction
+to physical devices. With <em>virtual memory</em>, for example,
+a process has the impression that it owns the entire memory address
+space. Different processes can all access the same virtual memory
+location and the memory management unit (MMU) on the processor maps
+each access to the unique physical memory locations that are assigned
+to the process.</p>
+
+<p><strong>Process virtual machines</strong> present a <strong>virtual CPU</strong> that
+allows programs to execute on
+a processor that does not physically exist. The instructions are interpreted
+by a program that simulates the architecture of the pseudo machine.
+Early pseudo-machines included o-code for BCPL and P-code for Pascal.
+The most popular pseudo-machine today is the Java Virtual Machine (JVM).
+This simulated hardware does not even pretend to access the underlying
+system at a hardware level. Process virtual machines will often allow
+&#8220;special&#8221; calls to invoke system functions or provide a simulation
+of some generic hardware platform.</p>
+
+<p><strong>Operating system virtualization</strong> is provided by containers, where
+a group of processes is presented with the illusion of running on a separate
+operating system but in reality shares the operating system with other groups
+of processes &#8211; they are just not visible to the processes in the container.</p>
+
+<p><strong>System virtual machines</strong> allow a physical computer
+to act like several real machines with each machine running its own
+operating system (on a virtual machine) and applications that
+interact with that operating system. The key to this machine virtualization
+is to not allow each operating system to have direct access
+to certain privileged instructions in the processor.
+These instructions
+would allow an operating system to directly access I/O ports, MMU
+settings, the task register, the halt instruction and other parts
+of the processor that could interfere with the processor&#8217;s behavior
+and with the other operating systems on the system.
+Instead, a <strong>trap and emulate</strong>
+approach is used. Privileged instructions, as
+well as system interrupts, are caught by the <strong>Virtual
+Machine Monitor</strong> (<strong>VMM</strong>), also known as a
+<strong>hypervisor</strong>. The hypervisor arbitrates access to
+physical resources and presents a set of virtual device interfaces
+to each guest operating system (including the memory management
+unit, I/O ports, disks, and network interfaces). The hypervisor also
+handles preemption. Just as an operating system may suspend a process
+to allow another process to run, the hypervisor will suspend an operating
+system to give other operating systems a chance to run.</p>
+
+<p>The two configurations of virtual machines are <strong>hosted virtual
+machines</strong> and <strong>native virtual machines</strong>.
+With a <strong>hosted virtual machine</strong> (also called a <strong>type 2 hypervisor</strong>),
+the computer has a primary
+operating system installed that has access to the raw machine (all devices,
+memory, and file system). This host operating system does not run
+in a virtual environment. One or more <strong>guest operating
+systems</strong> can then be run on virtual machines. The VMM serves as
+a proxy, converting requests from the virtual machine into operations
+that get sent to and executed on the <strong>host operating system</strong>. A
+<strong>native virtual machine</strong> (also called a <strong>type 1 hypervisor</strong>)
+is one where there is no
+&#8220;primary&#8221; operating system that owns the system hardware. The
+hypervisor is in charge of access to the devices and provides each
+operating system drivers for an abstract view of all the devices.</p>
+
+<!-- 
+Earlier Intel and AMD processors (prior to 2006), as well as ARM processors (prior to 2011) did not generate a trap when privileged were executed by non-privileged users; the instructions were simply ignored. This made implementing a virtual machine challenging. Two mechanisms were employed:
+
+**Binary Translation**
+: Kernel code is translated to replace non-virtualizable privileged instructions with new sequences of instructions that act on the virtual hardware. Everything else is executed directly. This is transparent to the operating system; it does not know it's being virtualized. VMware used this for Intel platforms.
+
+**Paravirtualization**
+: With paravirtualization, the operating system is written in a way that it does not use non-virtualizable instructions. Any privileged operations are invoked as direct calls to the hypervisor. While this is straightforward, it does require modifying the operating system and precludes virtualizing closed-source systems, such as Windows. Xen is an example of a system that uses paravirtualization.
+
+The latest processors
+from Intel and AMD support the concept of a virtual machine layer
+and the ability to intercept privileged instructions.
+Prior to that, one of two approaches was used to implement
+virtualization.
+-->
+
+<h3 id="securityimplications">Security implications</h3>
+
+<p>Unlike app confinement mechanisms such as jails, containers, or sandboxes,
+virtual machines enable isolation all the way through the operating system.
+A compromised application, even with escalated privileges, can wreak havoc
+only within the virtual machine. Even compromises to the operating system
+kernel are limited to that virtual machine. However, a compromised virtual
+machine is not much different form having a compromised physical machine
+sitting inside your organization: not desirable and capable of attacking
+other systems in your environment. </p>
+
+<p>Multiple virtual machines are usually deployed on one physical system. In cases
+such as cloud services (e.g., such as those provided by Amazon), a single
+physical system may host virtual machines from different organizations or
+running applications with different security requirements.
+If a malicious application on a highly secure system
+can detect that it is co-resident on a computer
+that is hosting another operating system and that operating system
+provides fewer restrictions, the malware may be able to create a <strong>covert channel</strong>
+to communicate between the highly secure system with classified data
+and the more open system. A <strong>covert channel</strong> is a general term to describe the the ability for processes to communicate via some hidden mechanism when they are forbidden by policy to do so. In this case, the channel can be created via a <strong>side channel</strong> attack. A <strong>side channel</strong> is the ability to get or transmit information using some aspects of a system&#8217;s behavior, such as changes in power consumption, radio emissions, acoustics, or performance. For example, processes on both systems, even though they
+are not allowed to send network messages, may create a means of communicating by
+altering and monitoring system load. The malware on the classified VM
+can create CPU-intensive task at specific times. Listener software
+on the unclassified VM can do CPU-intensive tasks at a
+constant rate and periodically measure their completion times.
+These completion times may vary based on whether the classified system
+is doing CPU-intensive work. The variation in completion times creates
+a means of sending 1s and 0s and hence transmitting a message.</p>
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>Note that Wikipedia and many other sites refer to this as &#8220;Version 7 Unix&#8221;. Unix has been under continuous evolution at Bell Labs from 1969 through approximately 1989. As such, it did not have <em>versions</em>. Instead, an updated <a href="https://en.wikipedia.org/wiki/Research_Unix">set of manuals</a> was published periodically. Installations of Unix have been referred to by the editions of their manuals.  <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:2">
+<p>Linux capabilities are not to be confused with the concept of <em>capability lists</em>, which are a form of access control that Linux does not use). <a href="#fnref:2" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+
+							</section>
+							<footer class="main">
+								Last modified November 25, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

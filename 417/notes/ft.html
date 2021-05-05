@@ -1,0 +1,562 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Fault Tolerance </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 417 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/ft.html"> Fault Tolerance </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Fault Tolerance </h1>
+<h2> Dealing with an imperfect world </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> September 14, 2012 </p>
+</div>
+<h1 id="introduction">Introduction</h1>
+
+<p>If we look at the words <em>fault</em> and <em>tolerance</em>, we can define the <em>fault</em> as a malfunction or deviation from expected behavior and <em>tolerance</em> as the capacity for enduring or putting up with something. Putting the words together, <strong>fault tolerance</strong> refers to a system&#8217;s ability to deal with malfunctions.</p>
+
+<h2 id="faults">Faults</h2>
+
+<p>A <strong>fault</strong> in a system is some deviation from the expected
+behavior of the system: a malfunction. Faults may be due to a variety of
+factors, including hardware failure, software bugs, operator (user) error,
+and network problems.</p>
+
+<p>Faults can be classified into one of three categories:</p>
+<dl>
+<dt>Transient faults</dt>
+<dd>These occur once and then disappear, possibly never to
+ occur again. For example, a network
+ message doesn&#8217;t reach its destination but does when the message
+ is retransmitted.</dd>
+
+<dt>Intermittent faults</dt>
+<dd>Intermittent faults are characterized by a fault occurring, then
+ vanishing again, then reoccurring, then vanishing, &#8230; These
+ can be the most annoying of component faults. A loose connection
+ is an example of this kind of fault. In software, it might be
+ a fault that is the result of a race condition or a specific
+ pattern of memory allocation.</dd>
+</dl>
+
+
+<p>Permanent faults
+: This type of failure is persistent: it continues to exist until
+ the faulty component is repaired or replaced. Examples of this
+ fault are disk head crashes, software bugs, and burnt-out power
+ supplies.</p>
+
+<p>Any of these faults may be either a <strong>fail-silent failure</strong>
+(also known as a <strong>fail-stop</strong>) or a
+<strong>Byzantine failure</strong>.</p>
+
+<p>A fail-silent fault is one where the faulty unit stops functioning
+and produces no bad output. More precisely, it either produces no
+output or produces output that clearly indicates that the component
+has failed. A Byzantine fault is one where the faulty unit
+continues to run but produces incorrect results. Dealing with Byzantine
+faults is obviously more troublesome.</p>
+
+<p>[The term <em>Byzantine fault</em> is inspired by the
+<a href="#byzantine">Byzantine Generals Problem</a>]</p>
+
+<p>When we discuss fault tolerance, the familiar terms
+<em>synchronous</em> and <em>asynchronous</em> take on different
+meanings.</p>
+
+<p>By a <strong>synchronous system</strong>, we refer to one that responds
+to a message within a known, finite amount of time. An
+<strong>asynchronous</strong> system does not. Communicating via a
+serial port is an example of a synchronous system. Communicating via
+IP packets is an example of an asynchronous system.</p>
+
+<h2 id="approachestofaults">Approaches to faults</h2>
+
+<p>We can try to design systems that minimize the presence of faults.
+<strong>Fault avoidance</strong> is a process where we go through
+design and validation steps to ensure that the system avoids being
+faulty in the first place. This can include formal validation,
+code inspection, testing, and using robust hardware.</p>
+
+<p><strong>Fault removal</strong> is an <em>ex post facto</em> approach where faults
+were encountered in the system and we managed to remove those faults.
+This could have been done through through testing, debugging,
+and verification as well as replacing failed components with
+better ones, adding heat sinks to fix thermal dissipation problems, et cetera.</p>
+
+<p><strong>Fault tolerance</strong> is the realization that we will always have
+faults (or the potential for faults) in our system and that we have to
+design the system in such a way that it will be tolerant of those faults.
+That is, the system should compensate for the faults and continue to function.</p>
+
+<h2 id="achievingfaulttolerance">Achieving fault tolerance</h2>
+
+<p>The general approach to building fault tolerant systems is redundancy.
+Redundancy may be applied at several levels.</p>
+
+<p><strong>Information redundancy</strong> seeks to provide fault tolerance through replicating or coding the data. For example, a Hamming code can provide extra bits in data to recover a certain ratio of failed bits. Sample uses of information redundancy are parity memory, ECC (Error Correcting Codes) memory, and ECC codes on data blocks.</p>
+
+<p><strong>Time redundancy</strong> achieves fault tolerance by performing an operation several times. Timeouts and retransmissions in reliable point-to-point and group communication are examples of time redundancy. This form of redundancy is useful in the presence of transient or intermittent faults. It is of no use with permanent faults. An example is TCP/IP&#146;s retransmission of packets.</p>
+
+<p><strong>Physical redundancy</strong> deals with devices, not data. We add extra equipment to enable the system to tolerate the loss of some failed components. RAID disks and backup name servers are examples of physical redundancy.</p>
+
+<p>When addressing physical redundancy, we can differentiate <em>redundancy</em> from <em>replication</em>. With <strong>replication</strong>, we have several units operating concurrently and a voting (quorum) system to select the outcome.
+With <strong>redundancy</strong>, only one unit is functioning while
+the redundant units are standing by to fill in in case the unit ceases to work.</p>
+
+<h2 id="levelsofavailability">Levels of availability</h2>
+
+<p>In designing a fault-tolerant system, we must realize that 100% fault tolerance can never be achieved. Moreover, the closer we try to get to 100%, the more costly our system will be.</p>
+
+<p>To design a practical system, one must consider the degree of replication needed. This will be obtained from a statistical analysis for probable acceptable behavior. Factors that enter into this analysis are the average worst-case performance in a system without faults and the average worst-case performance in a system with faults.</p>
+
+<p><strong>Availability</strong> refers to the mount of time that a system
+is functioning (&#8220;available&#8221;). It is typically expressed as a percentage that
+refers to the fraction of time that the system is available to users. A system that is available 99.999% of the time (referred to as &#8220;five nines&#8221;) will, on average, experience at most 5.26 minutes of downtime per year. This includes planned (hardware and software upgrades) and unplanned (network outages, hardware failures, fires, power outages, earthquakes) downtime.</p>
+
+<p>Five nines is the classic standard of availability for telephony. Achieving it entails intensive software testing, redundant processors, backup generators, and earthquake-resilient installation. If all that ever happens you your system is that you lose power for a day once a year then your reliability is at 99.7% (&#8220;two nines&#8221;).
+You can compute an availability percentage by dividing the minutes of uptime by the minutes in a year
+(or hours of uptime by
+hours in a year, or anything similar). For example, if a system is
+expected to be down for three hours a year on average then the uptime
+percentage is 1-(180 minutes / 525600 minutes) = 99.97%. The following table shows some availability levels, their
+common terms, and the corresponding annual downtime.</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:right;"/>
+<col style="text-align:right;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Class</th>
+	<th style="text-align:right;">Availability</th>
+	<th style="text-align:right;">Annual Downtime</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">Continuous</td>
+	<td style="text-align:right;">100%</td>
+	<td style="text-align:right;">0</td>
+</tr>
+<tr>
+	<td style="text-align:left;">Fault Tolerant</td>
+	<td style="text-align:right;">99.999%</td>
+	<td style="text-align:right;">5 minutes</td>
+</tr>
+<tr>
+	<td style="text-align:left;">Fault Resilient</td>
+	<td style="text-align:right;">99.99%</td>
+	<td style="text-align:right;">53 minutes</td>
+</tr>
+<tr>
+	<td style="text-align:left;">High Availability</td>
+	<td style="text-align:right;">99.9%</td>
+	<td style="text-align:right;">8.3 hours</td>
+</tr>
+<tr>
+	<td style="text-align:left;">Normal Availability</td>
+	<td style="text-align:right;">99 - 99.5%</td>
+	<td style="text-align:right;">44&#8211;87 hours</td>
+</tr>
+</tbody>
+</table>
+<h2 id="howmuchredundancy">How much redundancy?</h2>
+
+<p>A system is said to be <em>k</em>-fault tolerant if it can withstand <em>k</em> faults.
+If the components fail silently, then it is sufficient to have <em>k</em>+1 components to achieve <em>k</em> fault tolerance: <em>k</em> components can fail and one will still be working. This, of course, refers to each individual component &#8211; a single point
+of failure. For example, three power supplies will be 2-fault tolerant: two power
+supplies can fail and the system will still function.</p>
+
+<p>If the components exhibit Byzantine faults, then a minimum of 2_k<em>+1 components are needed to achieve </em>k_ fault tolerance. This provides a sufficient number
+of working components that will allow the good data to out-vote the bad data that
+is produced by the Byzantine faults. In the worst case, <em>k</em> components will fail (generating false results) but <em>k</em>+1 components will remain working properly, providing a majority vote that is correct.</p>
+
+<h2 id="activereplication">Active replication</h2>
+
+<p><strong>Active replication</strong> is a technique for achieving fault
+tolerance through physical redundancy.
+A common instantiation of this is <strong>triple modular redundancy</strong>
+(<strong>TMR</strong>). This design handles 2-fault tolerance with fail-silent
+faults or 1-fault tolerance with Byzantine faults.</p>
+
+<figure>
+<img src="images/ft-no-redundancy.png" alt="Figure 1. No redundancy" id="ft-no-redundancy" title="No redundancy" style="width:200px;" />
+<figcaption>Figure 1. No redundancy</figcaption></figure>
+
+
+
+<p>Under this system, we provide threefold replication of a component
+to detect and correct a single component failure. For example, consider
+a system where the output of A goes to the output of B and the output of B
+goes to C (Figure 1).
+Any single component failure will cause the entire system to fail.</p>
+
+<figure>
+<img src="images/ft-tmr.png" alt="Figure 2. Triple Modular Redundancy (TMR)" id="ft-tmr" title="Triple Modular Redundancy (TMR)" style="width:400px;" />
+<figcaption>Figure 2. Triple Modular Redundancy (TMR)</figcaption></figure>
+
+
+
+<p>In a TMR design, we replicate each component three ways and place voters after
+each stage to pick the majority outcome of the stage (Figure 2).
+The voter is responsible for picking the majority winner of the three inputs.
+A single Byzantine fault will be overruled by two good votes.
+The voters themselves are replicated because they too can malfunction.</p>
+
+<p>In a software implementation, a client can replicate (or multicast) requests to each server. If requests are processed in order, all nonfaulty servers will yield the same replies. The requests must arrive reliably and in the same order on all servers. This requires the use of an atomic multicast.</p>
+
+<h2 id="primarybackupactive-standbyapproach">Primary Backup (Active-Standby) approach</h2>
+
+<p>With a <strong>primary backup</strong> approach, one server
+(the <em>primary</em>) does all the work.
+When the server fails, the <em>backup</em> takes over.</p>
+
+<p>To find out whether a primary failed, a backup may periodically ping the primary with
+<em>&#8220;are you alive&#8221;</em> messages. If it fails to get an acknowledgement,
+then the backup may assume that the primary failed and it will take over
+the functions of the primary.</p>
+
+<p>If the system is asynchronous, there are no upper bounds on a timeout value for
+the pings. This is a problem. Redundant networks can help ensure that a
+working communication channel exists.
+Another possible solution is to use a hardware mechanism to forcibly stop the primary.</p>
+
+<p>This system is relatively easy to design since requests do not have to go be
+multicast to a group of machines and there are no decisions to be made on who
+takes over.</p>
+
+<p>An important point to note is that once the backup machine takes over
+another backup is needed immediately.
+Backup servers work poorly with Byzantine faults, since the backup may not
+be able to detect that the primary has actually failed.</p>
+
+<p>Recovery from a primary failure may be time-consuming and/or complex depending
+on the needs for continuous operation and application recovery. Application
+failover is referred to by temperature grades.
+The easiest form of failover is known as <strong>cold failover</strong>.
+Cold failover entails application restart on the backup machine. When a backup
+machine takes over, it starts all the applications that were previously
+running on the primary system. Of course, any work that the primary may
+have done is now lost. With <strong>warm failover</strong>, applications
+periodically write checkpoint files onto stable storage that is shared with
+the backup system. When the backup system takes over, it reads the checkpoint
+files to bring the applications to the state of the last checkpoint.
+Finally, with <strong>hot failover</strong>, applications on the backup
+run in lockstep synchrony with applications on the primary, taking the
+same inputs as on the primary. When the backup takes over, it is in the exact
+state that the primary was in when it failed. However, if the failure was
+caused by software then there is a good chance that the backup died from
+the same bug since it received the same inputs.</p>
+
+<h2 id="agreementinfaultysystems">Agreement in faulty systems</h2>
+
+<p>Distributed processes often have to agree on something.
+For example, they may have to elect a coordinator,
+commit a transaction, divide tasks, coordinate a critical section, etc.
+What happens when the processes and/or the communication lines are imperfect?</p>
+
+<h3 id="twoarmyproblem">Two Army Problem</h3>
+
+<p>We&#8217;ll first examine the case of good processors but faulty communication lines.
+This is known as the <strong>two army problem</strong> and can be summarized as follows:</p>
+
+<p>Two divisions of an army, A and B, coordinate an attack on enemy army, C.
+A and B are physically separated and use a messenger to communicate.
+A sends a messenger to B with a message of &#8220;<em>let&#8217;s attack at dawn</em>&#8221;.
+B receives the message and agrees, sending back the messenger with an
+&#8220;<em>OK</em>&#8221; message. The messenger arrives at A, but A realizes that B did
+not know whether the messenger made it back safely.
+If B does is not convinced that A received the acknowledgement, then it will not be confident that the attack should take place since the army will not win on its own.
+A may choose to send the messenger back to B with a message of
+&#8220;<em>A received the OK</em>&#8221; but A will then be unsure as to
+whether B received this message. This is also known as the
+<em>multiple acknowledgment problem</em>. It demonstrates that even with non-faulty processors, ultimate agreement between two processes is <em>not</em>
+ possible with unreliable communication. The best we can do is hope that it usually works.</p>
+
+<h3 id="byzantinegeneralsproblem">Byzantine Generals Problem</h3>
+
+<div class="right-sidetext">
+Solutions to the Byzantine Generals problem are _not_ obvious, intuitive,
+or simple. They are not presented in these notes.
+You can read Lamport's paper on the
+problem
+<a href="http://research.microsoft.com/en-us/um/people/lamport/pubs/byz.pdf"
+target="_blank">
+here</a>. You can also check out the brief summary
+and various solutions -- which go beyond the Lamport paper -- 
+<a href="http://pages.cs.wisc.edu/~sschang/OS-Qual/reliability/byzantine.htm"
+target="_blank">here</a>.
+</div>
+
+<p><a name="byzantine"> </a>
+The other case to consider is that of reliable communication lines but faulty
+processors. This is known as the <strong>Byzantine Generals Problem</strong>.
+In this problem, there are <em>n</em> army generals who head different divisions. Communication is reliable (radio or telephone) but
+<em>m</em> of the generals are traitors (faulty) and are trying to prevent others from reaching agreement by feeding them incorrect information. The question is:
+can the loyal generals still reach agreement? Specifically, each general knows the size of his division. At the end of the algorithm can each general know the troop strength of every other loyal division?</p>
+
+<p>Lamport demonstrated a solution that works for certain cases. His answer to this
+problem is that any solution to the problem of overcoming <em>m</em> traitors
+requires a minimum of 3_m<em>+1 participants (2_m</em>+1 loyal generals).
+This means that more than 2/3 of the generals must be loyal. Moreover, it was demonstrated that no protocol can overcome <em>m</em> faults with
+fewer than <em>m</em>+1 rounds of message exchanges and O(<em>mn</em><sup>2</sup>) messages.</p>
+
+<p>Clearly, this is a rather costly solution. While the Byzantine model may be applicable to certain types of special-purpose hardware, it will rarely be useful in general purpose distributed computing environments.</p>
+
+<h1 id="examplesoffaulttolerance">Examples of fault tolerance</h1>
+
+<h2 id="eccerrorcorrectioncodememory">ECC (Error Correction Code) memory</h2>
+
+<p>ECC memory contains extra logic that implements Hamming codes to detect
+and correct bit errors that are caused by fabrication errors, electrical
+disturbances, or neutron and cosmic ray radiation.
+A simple form of error detection is a <strong>parity</strong> code: one
+extra bit indicates whether the word has an odd or even number of bits. A
+single bit error will cause the parity to report an incorrect value and
+hence indicate an error. Most implementations of ECC memory use a Hamming
+code that detects two bit errors and corrects any single bit error per
+64-bit word.
+In the general case, Hamming codes can be created for any number of bits
+(see the <a href="http://en.wikipedia.org/wiki/Hamming_code" 
+target="_blank">wikipedia article</a> for a description of the algorithm).</p>
+
+<p>This is an example of information redundancy. Information coding is used
+to provide fault tolerance for the data in memory (and, yes, the coding
+requires additional memory).</p>
+
+<h2 id="machinefailoverviadnssrvrecords">Machine failover via DNS SRV records</h2>
+
+<p>The fault tolerance goal here is to allow a client to connect to
+one functioning machine that represents a given hostname. Some machines
+may be inaccessible because they are out of service or the network connection
+to them is not functioning.</p>
+
+<p>Instead of using DNS (Domain Name System) to resolve a hostname to
+one IP address, the client will use DNS to look up SRV records for that name.
+The SRV record is a somewhat generic record in DNS that allows one to
+specify information on available services for a host
+(see <a href="http://tools.ietf.org/html/rfc2782" target="_blank">RFC 2782</a>).
+Each SRV record contains a priority, weight, port, and target hostname.
+The priority field is used to prioritize the list of servers. An additional
+weight value can then be used to balance the choice of several servers
+of equal priority. Once a server is selected, DNS is used to look up the
+address of the target hostname field. If that server doesn&#8217;t respond then
+the client tries another machine in the list. </p>
+
+<p>This approach is commonly used in voice over IP (VoIP) systems to pick
+a SIP server (or SIP proxy) among several available SIP servers for a
+specific hostname. DNS MX records (mail servers for a hostname) take
+the same approach: use DNS to look up the list of mail servers for a host
+and then connect to one that works.</p>
+
+<p>This is an example of physical redundancy.</p>
+
+<h2 id="raid1diskmirroring">RAID 1 (disk mirroring)</h2>
+
+<p><strong>RAID</strong> stands for Redundant Array of Independent Disks (it
+used to stand for <em>Redundant Array of Inexpensive Disks</em> but that
+did not make for a good business model selling expensive RAID systems).
+RAID supports different configurations, known as levels. RAID 0, for
+example, refers to disk striping, where data is spread out across two
+disks. For example, disk 0 holds blocks 0, 2, 4, 6, &#8230; and disk 1 holds
+blocks 1, 3, 5, 7, &#8230; This level offers no fault tolerance and is designed
+to provide higher performance: two blocks can often be written or read
+concurrently.</p>
+
+<p>RAID 1 is a <strong>disk mirroring</strong> configuration. All data
+that is written to one disk is also written to a second disk. A block
+of data can be read from either disk. If one disk goes out of service,
+the remaining disk will have all the data.</p>
+
+<p>RAID 1 is an example of an <strong>active-active</strong> approach to
+of physical redundancy. As opposed to the primary-server (active-passive)
+approach, both systems are in use at all times.</p>
+
+<h2 id="raid4raid5diskparity">RAID 4/RAID 5 (disk parity)</h2>
+
+<p>RAID 4 and RAID 5 use block-level striping together with parity to provide
+1-fault tolerance.
+A <em>stripe</em> refers to a set of blocks that is spread out across
+a set of <em>n</em> disks, with one block per disk.
+A parity block is written to disk <em>n</em>+1.
+The parity is the exclusive-or of the set of blocks
+in each stripe.
+If one disk fails, its contents are recovered by computing an exclusive-or of all the blocks in that stripe set together with the parity block.</p>
+
+<p>RAID 5 is the exact same thing but the parity blocks are distributed among all the disks so that writing parity does not become a bottleneck. For example, in a four disk configuration, the parity block may be on disk 0 for the first stripe, disk 1 for the
+second stripe, disk 2, for the third stripe, disk 3 for the fourth stripe, disk 0
+for the fifth stripe, etc.</p>
+
+<p>RAID 4 and RAID 5 are examples of information redundancy. As with ECC, we need
+additional physical hardware but we are achieving the fault tolerance through
+information coding, not by having a standby disk that contains a replica of the
+data.</p>
+
+<h2 id="tcpretransmission">TCP retransmission</h2>
+
+<p>TCP/IP (Transmission Control Protocol) is the reliable virtual circuit service
+transport layer protocol provided on top of the unreliable network layer
+Internet Protocol.
+TCP relies that the sender receives an acknowledgement from the receiver whenever a packet is received.
+If the sender does not receive that acknowledgment within a certain amount of time, it assumes that the packet was lost. The sender then retransmits the packet.</p>
+
+<p>In Windows, the retransmission timer is initialized to three seconds. The default maximum number of retransmissions is five.
+The retransmission time is adjusted based on the usual delay of a specific connection.
+(See <a href="http://www.ietf.org/rfc/rfc2581.txt" target="_blank">
+RFC 2581, TCP Congestion Control</a>.)</p>
+
+<p>TCP is an example of time redundancy.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2017 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: October  2, 2017 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/9cbf3407-e64c-4dd9-b644-238d707b91b3"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

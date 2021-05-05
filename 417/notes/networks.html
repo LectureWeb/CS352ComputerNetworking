@@ -1,0 +1,597 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Networking</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Networking</h1>
+								<h2>A quick intro</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>January 26, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Enable computers to communicate with each other; create the illusion of machine-to-machine and process-to-process communication channels.</p>
+</blockquote>
+
+<p>Without shared memory, we need a way for collections of systems
+(computers or other endpoint devices) to communicate. To do so,
+they use a <strong>communication network</strong>.
+If every communicating pair of hosts would have a dedicated physical
+connection between them, then there would be no sharing of the network
+infrastructure and we have a true <strong>physical circuit</strong>.
+This is not practical since it limits the ability for arbitrary computers to talk with
+each other concurrently. It is also incredibly wasteful in terms of resource use: the circuit would be present even if no data is flowing.</p>
+
+<p>What is needed is a way to <strong>share</strong> the network infrastructure among
+all connected systems.
+The challenge in doing so is to allow these systems to talk but
+avoid <strong>collisions</strong>, the case when two nodes on a network
+transmit at the same time, on the same channel, and on the same connection. Both
+signals then get damaged and data does is not transmitted, or is garbled. This is the
+<strong>multiple access problem</strong>: <em>how do you coordinate multiple transmitters on a network
+to ensure that each of them can send their messages?</em></p>
+
+<p>There are three broad approaches that enable us to do this:</p>
+
+<ol>
+<li><p><strong>Channel partitioning</strong> divides the communication channel into &#8220;slots&#8221;.
+If the network is divided into short, fixed-length time slots, we have
+<strong>Time Division Multiplexing</strong>, or <strong>TDM</strong>.
+Each host must communicate only during its assigned time slot. Routers
+may connect multiple networks together. When two hosts need to communicate,
+they establish an end-to-end route called a <strong>virtual circuit</strong>.
+It is called a <em>virtual</em> circuit because the setup of this route
+configures routers and assigns communication slots.
+This provides the <em>illusion</em> of a true circuit switched network in
+that all messages are guaranteed to arrive in order with constant latency
+and a guaranteed bandwidth.
+The switched telephone network is an example of virtual circuit
+switching, providing a maximum delay of 150 milliseconds and digitizing voice to a
+constant 64 kbps data rate.</p>
+
+<p>If the network is partitioned into frequency bands, or channels,
+then we have <strong>Frequency Division Multiplexing</strong>, or <strong>FDM</strong>.
+This defines a <strong>broadband</strong> network.
+Cable TV is an example of a broadband network, transmitting
+many channels simultaneously, each in using a well-defined frequency band.</p>
+
+<p>The problem with a channel partitioning approach is that it
+is wasteful. Network bandwidth is allocated even if there is
+nothing to transmit.</p></li>
+<li><p><strong>Taking turns</strong> requires that we create some means of granting
+permission for a system to transmit. A polling protocol
+uses a master node to poll other nodes in sequence, offering
+each a chance to transmit their data. A token passing protocol
+circulates a special message, called a <em>token</em>, from machine
+to machine. When a node has a token, it is allowed to transmit
+and must then pass the token to its neighbor.</p>
+
+<p>The problem with the taking turns approach is that a dead
+master or lost token can bring the network to a halt.
+Handling failure cases is complex. This method was used
+by networks such as IBM&#8217;s Token Ring Network but is largely dead now.</p></li>
+<li><p>A <strong>random access</strong> protocol does not use scheduled time slots and
+allows nodes to transmit at arbitrary times in variable size time slots.
+This technique is known as <strong>packet switching</strong>. Network access is
+accomplished via <strong>statistical multiplexing</strong>.
+A data stream is segmented into multiple variable-size packets.
+Since these packets will be intermixed with others, each packet must be identified
+and addressed. Packet switched networks generally cannot provide guaranteed bandwidth or
+constant latency. Ethernet is an example of a packet-switched network.</p></li>
+</ol>
+
+<p>Packet switching
+is the dominant means of data communication today. The packets in a packet-switched
+network are called <strong>datagrams</strong> and are characterized by unreliable delivery
+with no guarantees on arrival time or arrival order.
+Each datagram is fully self-contained with no reliance on previous
+or future datagrams.
+This form of communication is also
+known as <strong>connectionless service</strong>. There is no need to set up
+a communication session and hence no concept of a connection.
+Neither routers nor endpoints need to maintain any state as they
+have to do with a virtual circuit; there is no concept of
+where a system is in its conversation.</p>
+
+<!--
+Note that Internet service offered by cable providers is confined to two sets of those
+channels (a set of one or more channels for downstream traffic and another set for upstream), making IP
+access effectively baseband within a broadband network. Don't confuse these terms with
+the marketing community's use of _broadband_ to refer to any relatively
+high-speed home networking.
+-->
+
+<h2 id="osireferencemodel">OSI reference model</h2>
+
+<p>Data networking is generally implemented as a layered stack of
+several <strong>protocols</strong> &#8212; each responsible for a specific aspect of
+networking. The <strong>OSI reference model</strong> defines seven layers of network protocols.
+Some of the more interesting ones are: the network, transport, and presentation
+layers.</p>
+
+<dl>
+<dt>&nbsp;1. Physical</dt>
+<dd>Deals with hardware, connectors, voltage levels, frequencies, etc.</dd>
+
+<dt>&nbsp;2. Data link</dt>
+<dd> Sends and receives packets on the physical network. Ethernet packet transmission is an example of this layer.
+Connectivity at the link layer defines the <strong>local area network</strong> (<strong>LAN</strong>).</dd>
+
+<dt>&nbsp;3. Network</dt>
+<dd>Relays and routes data to its destination. This is where networking gets interesting
+because we are no longer confined to a single physical network but can route traffic
+between networks. IP, the Internet Protocol, is an example of this layer.</dd>
+
+<dt>&nbsp;4. Transport</dt>
+<dd>Provides a software endpoint for networking. Now we can talk application-to-application
+instead of machine-to-machine. TCP/IP and UDP/IP are examples of this layer.</dd>
+
+<dt>&nbsp;5. Session</dt>
+<dd>Manages multiple logical connections over a single communication link. Examples
+are SSL (Secure Sockets Layer) tunnels, remote procedure call connection management, and HTTP 1.1.</dd>
+
+<dt>&nbsp;6. Presentation</dt>
+<dd>Converts data between machine representations. Examples are data representation
+formats such as
+XML, JSON, XDR (for ONC remote procedure calls), NDR (for Microsoft COM+ remote procedure calls),
+and ASN.1 (used for encoding cryptographic keys and digital certificates).</dd>
+
+<dt>&nbsp;7. Application</dt>
+<dd> This is a catch-all layer that includes every application-specific communication
+protocol. For example, SMTP (sending email), IMAP (receiving email), FTP (file transfer),
+HTTP (getting web pages).</dd>
+</dl>
+
+<h2 id="datalinklayer">Data link layer</h2>
+
+<p>Ethernet and Wi-Fi (the 802.11 family of protocols) are the most widely used link-layer
+technologies for local area networks. Both Wi-Fi and Ethernet
+use the same addressing format and were designed to freely interoperate at the link layer.</p>
+
+<p>Ethernet provides packet-based, in-order, unreliable, connectionless communications.
+It occupies layers one and two of the OSI model. There is no acknowledgement of
+packet delivery. This means that a packet may be lost or mangled and the sender will not
+know. Communication is <strong>connectionless</strong>, which means that there is no need to
+set up a path between the sender and receiver and no need for either the sender
+or receiver to maintain any information about the state of communications; packets
+can be sent and received spontaneously. Messages are delivered in the order they
+were sent. Unlike IP-based wide-area networking, there are no multiple paths
+that may cause a scrambling of the sequence of messages.</p>
+
+<p>Interfaces communicating at the link layer must use link-layer addressing.
+A <strong>MAC address</strong> (for example, an
+Ethernet address) is different from, and unrelated to, an IP address. An Ethernet MAC address
+is globally unique to a device and there is no expected grouping of such addresses within
+a local area network. IP addresses on a LAN, on the other hand, will share a common network prefix.</p>
+
+<!--
+An Ethernet controller on a shared network uses **carrier sense multiple access with
+collision detection** (CSMA/CD) to access the network. 
+The network interface
+card monitors the network. Only when it detects no traffic does it send out its
+packet. While doing so, it still monitors the network to detect a collision ---
+the case where another transceiver decided to send a packet out simultaneously. If a
+collision took place, the packets have been garbled and the transmission is reattempted
+again at a later time.  Progressively longer back-off times, known as
+_exponential backoff_, are used when
+collisions are encountered to
+ensure that overall performance degrades gracefully.
+
+On a wireless network, the transceiver cannot listen while transmitting, so a different 
+form of network access is used called **carrier sense multiple access
+with collision avoidance** (**CSMA/CA**). Here, a 
+transceiver listens on a channel to see if it is idle.
+If the channel is busy, the transceiver waits until the transmission stops and then
+delays for a random to try to avoid contention. It then checks again.
+Once the channel is idle, the packet is transmitted. Since the transceiver does not
+know if a collision took place, it expects to get an acknowledgement from the
+immediate receiver (the access point, not the destination computers). If no
+acknowledgement is received then it tries again.
+-->
+
+<h2 id="networklayer:ipnetworking">Network layer: IP Networking</h2>
+
+<p>The <strong>Internet Protocol</strong> (IP) is a network layer protocol that handles the
+interconnection of multiple local and wide-area networks and the routing
+logic between the source and destination.
+It is a logical
+network whose data is transported by physical networks (such as Ethernet, for
+example). The IP layer provides unreliable, connectionless datagram delivery of packets between nodes (e.g., computers).</p>
+
+<p>The key principles that drove the design of the Internet are:</p>
+
+<ol>
+<li><p>Support the <strong>interconnection of networks</strong>.
+The Internet is a <em>logical</em> network that spans
+multiple physical networks, each of which may have different characteristics. IP demands
+nothing of these underlying networks except an ability to try to deliver packets.</p></li>
+<li><p>IP assumes <strong>unreliable</strong> communication. That does <em>not</em> mean that most packets
+will get lost! It means that delivery is not guaranteed. If reliable delivery is needed,
+software on the receiver will have to detect lost data and ask the sender to
+retransmit it. Think of mail delivery: most mail gets to its destination but once in
+a while, a letter gets lost or takes a really long time to arrive.</p></li>
+<li><p><strong>Routers</strong> connect networks together. A router is essentially a dedicated computer
+with multiple network links. It receives packets from one network and decides which
+outgoing link to send the packet.</p></li>
+<li><p><strong>No central control</strong> of the network. The precursor of the Internet was
+the ARPAnet, built to connect companies and universities working on Department of
+Defense projects. As such, it was important that there wouldn&#8217;t be a single
+point of failure &#8211; a key element that could be taken out of service to cause
+the entire network to stop functioning.</p></li>
+</ol>
+
+<!--
+Each computers on an IP network must have an IP address. The addressing
+scheme for IP divided addresses into two segments: a **network** part of the
+address, which is used in determining where to route the packet, and a **host**
+part, which is used in identifying the specific host within that local area
+network.
+
+Instead of using a single network-host partition, IP was designed to use 32-bit
+addresses to support
+three distinct **classes** of networks: A, B, and C. This
+allowed for a small number of huge networks and a large number of networks with
+a small number of computers. However, the allocation of computers to networks was
+still inefficient. An organization that needed addresses for 300 computers would
+be allocated a class B network, and over 65,000 addresses would go unused (a
+class C network, accommodating only 254 computers, would have been too small).
+Class-based partitioning led to us running out of network addresses.
+**Classless
+Inter-Domain Routing** (CIDR) was created to alleviate this inefficiency.
+Hosts and addresses in an an IP address can be partitioned arbitrarily, 
+enabling the allocation of networks to an organization in any power of two value.
+This requires that routing tables have to store
+an extra datum: the number of leading bits that constitute the
+network part of the address. Class-based addresses are no longer used.
+ 
+Another approach to the problem of running out of addresses was to
+realize that generally only a few computers offer services on the
+Internet (that is, need to be addressed by others). These include
+an organization's mail servers, web servers, and FTP servers.
+A lot of other computers, such as user laptops and printers, do not
+need to be connected to the public Internet.  **Network Address
+Translation** (**NAT**) allows for a private
+IP address space within an organization. NAT-aware routers translate
+between internal and a smaller number of external addresses for
+those computers that need to communicate outside the organization.
+**Port address translation** (**PAT**)
+translates port numbers from internal to external networks, allowing
+multiple computers to share the same external address concurrently.
+
+Even with these measures, we were running out of addresses. A new
+version of the IP protocol, called **IPv6**, was created. This uses
+128-bit addresses instead of the 32-bit addresses in its predecessor (IPv4).
+-->
+
+<p>Since IP is a logical network, any computer that needs to
+send out IP packets must do so via the physical network,
+using the data link layer.
+Often, this is Ethernet, which uses a 48-bit Ethernet address that is
+completely unrelated to a 32-bit IP
+address (or a 128-bit IPv6 address).
+To send an IP packet out, the system needs to identify the <strong>link layer</strong>
+destination address (MAC, or Media Access Control address)
+on the local area network that corresponds to
+the desired IP destination (it may be the address of a router if the
+packet is going to a remote network). The <strong>Address Resolution Protocol</strong>, or <strong>ARP</strong>,
+accomplishes this. It works by broadcasting a request containing an IP address
+(the message asks, <em>do you know the corresponding MAC address for this IP address?</em>) and then
+waiting for a response from the computer with the
+corresponding IP address. To avoid doing this for every outgoing packet, ARP
+maintains a cache of most recently used addresses.</p>
+
+<h2 id="transportlayer:tcpandudp">Transport layer: TCP and UDP</h2>
+
+<p>IP is responsible for transporting packets between computers. The
+transport layer enables applications to communicate with each other
+by providing logical communication channels so that related messages
+can be abstracted as a single stream at an application.</p>
+
+<p>There are two transport-layer protocols on top of IP: TCP
+and UDP.</p>
+
+<p>TCP (<strong>Transmission Control Protocol</strong>) provides <strong>reliable byte stream</strong>
+(<strong>connection-oriented</strong>) service. This layer of software ensures that
+packets arrive at the application in order and lost or corrupt packets are
+retransmitted. The transport layer keeps track of the destination so that the
+application can have the illusion of a connected data stream.</p>
+
+<p>UDP (<strong>User
+Datagram Protocol</strong>) provides <strong>datagram</strong> (<strong>connectionless</strong>)
+service. While UDP drops packets with corrupted data, it does not ensure in-order
+delivery or reliable delivery.</p>
+
+<p><strong>Port numbers</strong> in both TCP and UDP are used
+to allow the operating system to direct the data to the appropriate application
+(or, more precisely, to the communication endpoint, or <strong>socket</strong>,
+that is associated with the communication stream).</p>
+
+<p>TCP tries to give a datagram
+<em>some</em> of the characteristics of a virtual circuit network.
+The TCP layer will
+send packet sequence numbers along with the data, buffer received data in memory so they
+can be presented to the application in order, acknowledge received packets,
+and request a retransmission of missing or corrupt packets.
+The software will also keep track
+of source and destination addresses (this is <em>state</em> that is maintained
+at the source and destination systems). We now have the <em>illusion</em>
+of having a network-level virtual circuit with its preset connection and
+reliable in-order message delivery. What we <em>do not</em> get is constant latency or guaranteed
+bandwidth. TCP also implements <strong>flow control</strong> to ensure that the sender does not send more data than
+the receiver can receive. To implement this, the receiver simply sends the amount of
+free buffer space it has when it sends responses.
+Finally, TCP tries to be a good network citizen and implements
+<strong>congestion control</strong>. If the sender gets notification of a certain level
+of packet loss, it assumes that some router&#8217;s queue must be getting congested.
+It then lowers its transmission rate to relieve the congestion.</p>
+
+<p>The design of the Internet employs the <strong>end-to-end principle</strong>. This is
+a design philosophy that states that application-specific functions should,
+whenever possible, reside in the end nodes of a network and not in intermediary nodes, such
+as routers. Only if the functions cannot be implemented &#8220;completely
+and correctly,&#8221; should any logic migrate to the network elements.
+An example of this philosophy in action is TCP.
+TCP&#8217;s reliable, in-order delivery and flow control are all is implemented via software on the
+sender and receiver: routers are blissfully unaware of any of this.</p>
+
+<p>A related principle is <strong>fate sharing</strong>, which is also a driving
+philosophy of Internet design. Fate sharing states that it is acceptable
+to lose the state information associated with an entity if, at the
+same time, the entity itself is lost. For example, it is acceptable
+to lose a TCP connection if a client or server dies. The argument is
+that the connection has no value in that case and will be reestablished
+when the computer recovers. However, it is <em>not</em> acceptable to lose
+a TCP connection if a router in the network dies. As long as alternate
+paths for packet delivery are available, the connection should remain alive.</p>
+
+<!--
+## Delay
+
+One huge difference in moving from a local area to a wide area environment
+is that network delays become substantially longer, **jitter** (the variation
+in delay) increases, packet loss is more likely, and packets may occasionally
+arrive out of order. 
+
+Network delay is due to four factors:
+
+1.**Processing delay**.
+The processing delay is the work that a router has to do to
+examine the header, check for packet errors, figure out the outbound port (route), and
+move data around. It is usually not a significant contributor to the overall delay
+and consumes a few microseconds.
+
+4.**Queuing delay**.
+We can only transmit one packet onto a link at a time. Any other packets
+that need to go out on that link will need to wait in a queue. 
+The queuing delay is a function
+of the amount of bits that are ahead of the packet
+(number of packets &times; the size of each packet)
+and the transmission rate of the outbound link. Queuing delay can vary a lot depending on how much
+data traffic is flowing over any particular link. It is dependent on how much traffic arrives at
+a router at approximately the same time that needs to go out on the same link and on how quickly the
+router can transmit the data out (see _transmission delay_).
+
+2.**Transmission delay**.
+The transmission delay is the time that it takes to get a complete packet out onto the network.
+This is a function of the speed of the link (e.g., 1 Gbps) and the number of bits in the packet:
+_(packet size &divide; transmission speed)_. If the packet size is _L_ and the
+transmission rate is _R_, the transmission delay is **_L/R_**. For example the
+transmission delay of a 1,500-byte packet on a gigabit per second link is approximately
+(1500*8)&div;(10^9), or 12 microseconds.
+
+3.**Propagation delay**.
+The propagation delay is the time it actually takes the signal to move from one end of the medium to
+the other. While we might transmit the bits onto the network at, say, 100 megabits per second, there
+is a delay between the time that the signal is sent and the signal is received. This is the speed
+of signal propagation in the medium. For electrical signals in unshielded twisted pair or
+for light pulses in fiber optics, this value is approximately 2&times;10^{8} m/s (about
+67% of the speed of light in a vacuum). An
+electrical signal propagates in air on a wireless network at approximately 3&times;10^{8}
+m/s. Depending on the distance the packet needs to travel, the delay may be from a few nanoseconds
+to a few tens of milliseconds. It might be considerably longer for satellite transmission due to the longer distance covered.
+-->
+
+<h2 id="acknowledgements">Acknowledgements</h2>
+
+<p>To achieve reliable delivery on an unreliable network, we rely on detecting lost or
+corrupted packets and requesting retransmissions.</p>
+
+<p>The simplest possible mechanism is to send a packet and wait for the receiver
+to acknowledge it &#8230; then send the next one and wait for that to get acknowledged.
+This, unfortunately, is horribly inefficient since only a single packet is
+on the network at any time. It is more efficient to use <strong>pipelining</strong> and
+send multiple packets before receiving any acknowledgements. Acknowledgements
+can arrive asynchronously and the sender needs to be prepared
+to retransmit any lost packets.</p>
+
+<p>It would be a waste of network resources for the TCP layer to send back a packet containing
+nothing an acknowledgement number. While this is inevitable in some cases,
+if the receiver happens to have data to transmit back to the sender, the acknowledgement
+number is simply set in the TCP header of the transmitted segment, completely
+avoiding the need to send a separate acknowledgement. Using an outgoing
+data segment to transmit an acknowledgement is known as a <strong>piggybacked acknowledgement</strong>.</p>
+
+<p>TCP also uses <strong>cumulative acknowledgements</strong>. Instead of sending an acknowledgement
+per received message, TCP can acknowledge multiple messages at once.</p>
+
+<h2 id="sockets">Sockets</h2>
+
+<p><strong>Sockets</strong> are a general-purpose interface to the network provided to
+applications by the operating system. By this, we mean that they were not designed
+to support one specific network but rather provide a generic mechanism for
+inter-process communication. They are the only way that an application can
+interact with the network.</p>
+
+<p>They are created with the <strong>socket</strong>
+system call and assigned an address and port number with the <strong>bind</strong> system
+call. For connection-oriented protocols (e.g., TCP), a socket on the server can be set to
+listen for connections with the <strong>listen</strong> system call. The <strong>accept</strong>
+call blocks until a connection is received, at which point the server receives
+a socket dedicated to that connection. A client establishes a connection with
+the <strong>connect</strong> system call. The &#8220;connection&#8221; is not a a configuration
+of routers as with virtual circuits; it is just state that is maintained by the transport
+layer of the network stack in the operating system at both endpoints.
+After this, sending and receiving data is
+compatible with file operations: the same <strong>read/write</strong> system calls can be
+used. When communication is complete, the socket can be closed with the <strong>shutdown</strong>
+or <strong>close</strong> system calls.</p>
+
+<p>With sockets that use a connectionless protocol (e.g., UDP),
+there is no need to establish a connection or to close one.
+Hence, there is no need for the <em>connect</em>, <em>listen</em>, or <em>shutdown</em>
+system calls. The <strong>sendto</strong> and <strong>recvfrom</strong> system
+calls were created to send and receive datagrams since
+the <em>read</em> and <em>write</em> system calls do not enable you to specify
+the remote address. <em>sendto</em> allows you to
+send a datagram and specify its destination. <em>recvfrom</em> allows you to
+receive a datagram and identify who sent it.</p>
+
+<h2 id="protocolencapsulation">Protocol encapsulation</h2>
+
+<p>We saw that if we want to send an IP packet out on an Ethernet network (IP is a logical
+network, so there is no physical IP network), we needed to send out an Ethernet packet.
+The entire IP packet becomes the payload (data) of an Ethernet packet. Similarly, TCP and
+UDP have their own headers, distinct from IP headers (they need a port number, for example).
+A TCP or UDP packet is likewise treated as data by the IP layer. This wrapping
+process is known as <strong>protocol encapsulation</strong>.</p>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

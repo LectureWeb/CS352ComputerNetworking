@@ -1,0 +1,580 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Assignment 3 Addendum</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css?v=1.1"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+
+<style type="text/css">
+.subhead {
+	background-color: #ddd;
+	text-align: center;
+	margin-left: 5em;
+	margin-right: 5em;
+	border: 1px solid #555;
+}
+.note {
+	font-style: italic;
+	color: #444;
+}
+#main blockquote {
+        background-color: #bae1ff;
+	border-radius: 8px;
+	margin: 0;
+	margin-bottom: 1em;
+}
+
+#main > p {
+	margin-left: 1em;
+}
+
+#main dd {
+        margin-left: 2em;
+        margin-bottom: 2em;
+}
+#main dt {
+        background-color: #bae1ff;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        padding-top: 0.25em;
+        padding-left: 0.5em;
+        color: black;
+	font-weight: normal;
+}
+#main dt strong, #main dt b {
+	color: red;
+}
+#main dt p + p {
+	padding-top: 1em;
+}
+#main dt p {
+	margin-bottom: 0;
+}
+
+#main .answer {
+	color: #a00000;
+}
+
+#main table.doclist {
+	width: 80%;
+}
+
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+#main figure {
+	float: left; 
+	display: block
+}
+
+</style>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Assignment 3 Addendum</h1>
+								<h2>FAQ and additional information on Assignment 3</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>September 18, 2019</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<div class="boldbox"> Deadline: Wednesday September 30, 2020 11:59pm </div>
+
+								<h1 id="faqandadditionalinformationonassignment3">FAQ and additional information on Assignment 3</h1>
+
+<p>Latest update: September 30, 2020</p>
+
+<blockquote>
+<p>Running the program</p>
+</blockquote>
+
+<p>We need to be able to run your program without figuring out how to invoke it.
+Depending on the language and your build process, we expect the following.</p>
+
+<pre><code>if an executable named &lt;em&gt;portal&lt;/em&gt; is built then run
+    ./portal AddUser user-1 password-1
+else if an object file named &lt;em&gt;portal.java&lt;/em&gt; is created then run
+    CLASSPATH=.:$CLASSPATH java portal AddUser user-1 password-1
+else if a file named &lt;em&gt;portal.py&lt;/em&gt; exists then run
+    python portal.py AddUser user-1 password-1
+else if a file named &lt;em&gt;portal.go&lt;/em&gt; exists then run
+    go run AddUser portal.go user-1 password-1
+</code></pre>
+
+<blockquote>
+<p>Input to the program</p>
+</blockquote>
+
+<p>All input to the program must be from command-line arguments. You cannot prompt the user for commands or wait for user input. This means that the command runs, generates its output, and updates any data changes to a file so it can be available to the next command.</p>
+
+<blockquote>
+<p>Output</p>
+</blockquote>
+
+<p>Avoid extraneous output. Do not print extra blank lines or header information. </p>
+
+<p>If the output is a <code>Success</code> message, simply print</p>
+
+<pre><code>Success
+</code></pre>
+
+<p>If the output is an <code>Error</code> message, simply print <code>Error:</code> followed by a space and a description of the error.</p>
+
+<pre><code>Error: error message here
+</code></pre>
+
+<p>If the output is a list from DomainInfo or TypeInfo and you&#8217;re not generating an error then print each string one per line.</p>
+
+<pre><code>alice
+bob
+charles
+</code></pre>
+
+<p>Do not use any no leading spaces or tabs in your output.</p>
+
+<blockquote>
+<p>Can I use a csv file and pandas to go through and manipulate the data?</p>
+</blockquote>
+
+<p>Yes, you may, as long as you include and document any necessary package or if the package is available on the iLab machines. </p>
+
+<blockquote>
+<p>For SetDomain, when you say &#8220;If a user does not exist, the function should return an error.&#8221;, do you mean if the user does not exist in general or in the group? Or both?</p>
+</blockquote>
+
+<p>I expect the user to not be in the group - that’s why you’re doing the SetDomain. Duplicating that action should have no consequences. You should fail if the user isn’t defined at all (AddUser was never run for that user). </p>
+
+<blockquote>
+<p>Can there be multiples of the same name access permission in the system?
+For example, if we have: <code>&quot;view&quot;: (premium_user, premium_content)</code>
+Can we also have: <code>&quot;view&quot;: (alternate_user, premium_content)</code></p>
+</blockquote>
+
+<p>Yes, any permission can be assigned to any (domain, type) and it doesn&#8217;t have to be a unique assignment.</p>
+
+<blockquote>
+<p>Do we also have to be able to remove permissions, domains, users, types? Is removing to be included as one of the commands?</p>
+</blockquote>
+
+<p>No, you don&#8217;t need to remove anything. That would be important if you were building this for real deployment but you don&#8217;t need it for this assignment.</p>
+
+<blockquote>
+<p>For SetDomain, what should happen if the user is already in the domain?</p>
+</blockquote>
+
+<p>Nothing. It’s already in the group. Just make sure you’re not adding it twice and won&#8217;t list it twice.</p>
+
+<blockquote>
+<p>Should CanAccess report an error if the operation does not exist? Or we can assume AddAccess will always create the operation file before CanAccess is called? </p>
+</blockquote>
+
+<p>If the operation doesn’t exist, you should report an error.
+<strong>CORRECTION</strong>: CanAccess should provide an answer to the question, _can user A access object B?_ If the operation does not exist, the answer is no. You don&#8217;t need to provide an error message.</p>
+
+<blockquote>
+<p>For SetDomain the program should report:
+<code>Error: user exists</code> - if the user already exists
+<code>Error: username missing</code> - if the username is an empty string
+What is printed in the case that the user does not exist AND the domain name is an empty string? One or both of those errors? If the former, then which error message?
+Also assuming the former, ideally we&#8217;d check the missing domain first rather than opening and reading a file to check if the user exists only to later recognize that the domain was an empty string the whole time. Then, the empty domain string error should take precedence over the user not existing and in the event that the user does not exist AND the domain is missing, the program would output &#8220;Error: missing domain&#8221;. Is this expected/allowed?</p>
+</blockquote>
+
+<p>You can print either message. As you mention, it makes more sense to check that the domain name looks valid (i.e., is non-empty) before doing more work.</p>
+
+<blockquote>
+<p>I have a question concerning how do we check for empty strings/null values. I am using python and run python portal.py then give the commands. For example, when i give the command portal AddAccess operation domain_name type_name, how would i know if domain_name was null?</p>
+</blockquote>
+
+<p>Regardless of what language you&#8217;re using, first check the # of arguments. If you have at least one argument on the command line then you can look up that string and see if you have the right number of additional arguments. For example,
+ portal Authenticate alice bob charles<br/>
+should obviously produce an error since there&#8217;s a mismatch between the # of args provided and the number expected.
+After that, can check to see that the user, domain, or whatever you&#8217;re getting is a non-empty string. That is, it&#8217;s not equal to &quot;&quot;.</p>
+
+<blockquote>
+<p>Can we assume that there will there be any space in the username? How about the password? If there is a space in the password, it will be in quotes?</p>
+</blockquote>
+
+<p>You can assume there will be no spaces in user, domain, and type names but you can certainly be more general and permit it.
+For passwords, you may have spaces. Remember that the shell processes the quotes, so you don&#8217;t need to parse them. The shell will give you four arguments:</p>
+
+<pre><code>argv[0] = &quot;portal&quot;
+args[1] = &quot;AddUser&quot;
+argv[2] = &quot;paul&quot;
+args[3] = &quot;monkey brains&quot;
+</code></pre>
+
+<p>If you&#8217;re not sure how command line arguments work, write a tiny program to print them out.</p>
+
+<blockquote>
+<p>Is it mandatory to store data in separate files or we can just use some data structures like a dictionary (for Python) ??</p>
+</blockquote>
+
+<p>You definitely don&#8217;t need to store data in separate files. That was just an example of a super-simple way of doing this in any language. You&#8217;re welcome to use any storage structure you&#8217;d like. A more elegant solution would use a single or two files.</p>
+
+<blockquote>
+<p>Just to clarify, when the project specifications say:
+<strong>Applications that use this service can be assumed to be trusted and trustworthy: they will not try to use the interfaces incorrectly or subvert the system in any way.</strong>
+Does it mean that we need not account for an incorrect number of arguments provided? Otherwise, for something like AddUser, if we were given only one argument as opposed to two, how will we know that that argument is supposed to be the username or the password? Plus, no specific error messages were specified in the instructions to display in this event.</p>
+</blockquote>
+
+<p>You should do the basics: check that the command is valid and the number of arguments is correct.
+What this statement refers to is that there is no need to isolate and protect your validation and storage structures from the programs that use them. </p>
+
+<p>You should always fail gracefully. There should be no cases where your program will crash or produce unexpected results.</p>
+
+<blockquote>
+<p>So should the program do and output nothing when the number of arguments is incorrect?</p>
+</blockquote>
+
+<p>That doesn&#8217;t seem user-friendly. How about errors like:</p>
+
+<pre><code>Error: too few arguments - usage: AddUser name password
+Error: invalid command - blahblah
+Error: too many arguments
+</code></pre>
+
+<blockquote>
+<p>Do the input commands need to be case sensitive? For example, if a user runs the program: ./portal adduser username password, instead of ./portal AddUser username password, do we reject the command?</p>
+</blockquote>
+
+<p>Up to you. We&#8217;ll test it with the cases specified but you&#8217;re welcome to be flexible.</p>
+
+<blockquote>
+<p>If there is a user named Bob, and their password is &#8220;Alice&#8221;, and then we try to add a new user Alice: <strong>&#8220;AddUser Alice password&#8221;</strong>, then if our program searches the file containing our users and passwords, it would incorrectly give an error saying &#8220;error: user exists&#8221;.
+Can we assume a situation like this would not happen?</p>
+</blockquote>
+
+<p>You should not be searching through passwords if you&#8217;re looking for a user name. Those are distinct fields regardless of the storage structure you choose.</p>
+
+<blockquote>
+<p>And for a related note, what if we try to add a user &#8220;Bo&#8221; when a user &#8220;Bob&#8221; already exists in the system? </p>
+</blockquote>
+
+<p>&#8220;Bo&#8221; and &#8220;Bob&#8221; are two different strings. You should be able to handle them as distinct users.</p>
+
+<blockquote>
+<p>I was wondering what would be considered correct behavior as a print out for project 1
+If I do:
+ portal SetType file my_type
+ portal SetType file my_type
+ portal TypeInfo my_type</p>
+
+<p>Should the correct output be:
+ [&#8216;file&#8217;, &#8216;file&#8217;]</p>
+
+<p>or should something like the second command be reported as an error?</p>
+
+<p>Also is there a specific format we should follow when printing out every object assigned to a type?
+The same issue can arise with SetDomain and DomainInfo so I was wondering if that should follow the same format for those as well.</p>
+</blockquote>
+
+<p>If you invoke</p>
+
+<pre><code>portal SetType file my_type
+</code></pre>
+
+<p>several times in a row, no harm done. my_type is essentially an attribute of the file. Think of it like setting read access for a file that already has read access set.</p>
+
+<p>When you list files containing a certain attribute via TypeInfo (or when you list users), you should list unique objects and unique users. That is, if you set a file to my_type 50 times, TypeInfo will show only one occurrence.</p>
+
+<p>As for output format, the preferred output format is one file name per line with no other junk. That fits into the Unix tools philosophy, which makes the output suitable for input in a pipeline of commands.
+portal TypeInfo my_type |grep temp
+Will show all the files that of type my_type that contain the word temp in it. If all the files are on one line and separated by commas, the output becomes a pain to process with linux tools.</p>
+
+<pre><code>file_1
+file_2
+file_3
+</code></pre>
+
+<blockquote>
+<p>Is it safe to trim trailing spaces off of the inputs? Also, passwords could have trailing spaces, right? What would be a safe practice for this project? Thanks</p>
+</blockquote>
+
+<p>You shouldn&#8217;t be concerned with leading and trailing spaces in arguments. The shell parses out whitespace. If a user intends to insert a space and quotes the string, just use that string. For example</p>
+
+<pre><code>portal AddUser &quot;ravi &quot; letmein
+</code></pre>
+
+<p>Means that the user name is the string &#8220;ravi &#8221; - with a space at the end. It&#8217;s just whatever string is <code>argv[2]</code>. You won&#8217;t see the quotes, of course; the shell parses that out.</p>
+
+<blockquote>
+<p>Will we be receiving any test cases?</p>
+</blockquote>
+
+<p>Probably not. You should be able to write some and document them.
+For example:</p>
+
+<pre><code>for i in `seq 50`;do ./portal AddUser user-$i password-$i;done
+for i in `seq 50`;do ./portal Authenticate user-$i password-$i;done
+for i in `seq 50`;do ./portal Authenticate user-$i bad-password-$i;done
+</code></pre>
+
+<blockquote>
+<p>Are we required to submit documentation on our test cases? The recitation slides indicated that it&#8217;s not part of the grading.</p>
+</blockquote>
+
+<p>The test cases are for yourself to validate that what you have works.
+Your documentation should be brief but provide a clear example of how to build and run your program.
+Documenting a few test cases and sample uses will allow us to take a closer look if things don&#8217;t work on our end. Without examples, we will just assume that your program does not work.</p>
+
+<p>Your goal in this program is to make my life easy. If I&#8217;m confused and it takes me more than a few seconds to figure out what you submitted, how to build it, and how to run it, you will lose points.</p>
+
+<blockquote>
+<blockquote>
+<p>So what did the instructions mean check for empty string? I thought it would have been like ./portal AddUser “ “ password or something like that. Or just “”.</p>
+</blockquote>
+</blockquote>
+
+<p>An empty string would be something like:</p>
+
+<pre><code>portal AddUser &quot;&quot; password
+</code></pre>
+
+<p>An empty string is not a valid username. A space is not an empty string. I won&#8217;t check whether you allow a space to be a valid username so you can decide whether to allow usernames that contain whitespace.</p>
+
+<blockquote>
+<p>How do we know which argument doesn&#8217;t exist? For example, AddAccess takes in an operation, domain name, type name, where the domain and type name cannot be empty strings. If the command is &#8220;AddAccess(commandA)&#8221;, how do we know if &#8220;commandA&#8221; is the operation, domain name, or type name? Do we assume it&#8217;s the operation since it&#8217;s the 1st argument?</p>
+</blockquote>
+
+<p>If the user supplied the wrong # or too many arguments you won&#8217;t know what&#8217;s missing given the positional syntax. To fix that, we&#8217;d need to use flags, like:</p>
+
+<pre><code>portal AddUser -u name -p password
+</code></pre>
+
+<p>but this implementation is lax so all you can do is check to see if there command has the number of arguments you expect and they&#8217;re not empty strings.</p>
+
+<blockquote>
+<p>Are empty parameters denoted by quotation marks &quot;&#8220; ? Or will they be blank? For example, if the password in AddUser is missing, would it be: AddUser(&#8221;username&#8220;, &#8221;&#8220;) or AddUser(&#8221;username&quot;)?</p>
+</blockquote>
+
+<p>Write yourself a little program that loops through command-line arguments and prints them out so you can see that the shell strips out quotes from a quoted string. Just take each argument as you get it. There&#8217;s no parsing needed - just compare it to an empty string in case the user passes in a &quot;&quot; (or &#8217;&#8217;).</p>
+
+<blockquote>
+<p>Can we assume our program will live in an empty directory at first? And if a &#8220;users&#8221; file does not exist in the same directory than is it safe to assume there are no users?</p>
+</blockquote>
+
+<p>I don&#8217;t know what storage structures you are using for storing your data. If you&#8217;re using subdirectories or files, you can assume they will be in the current directory (don&#8217;t use hard-coded full pathnames, like /home/user/etc/portal) but you cannot assume that the subdirectories or files have been created or exist. Your program can easily create them (e.g., the mkdir() system call).</p>
+
+<blockquote>
+<p>I used Python3 for my program. Can I mention that in my documentation so the command would be: python3 portal.py AddUser user&#8211;1 password&#8211;1</p>
+</blockquote>
+
+<p>It&#8217;s a bummer that python 2 &amp; 3 are so different. 
+Please document the version you&#8217;re using. </p>
+
+<p>It would also help if you put something like this in your code:</p>
+
+<pre><code>import sys
+
+if sys.version_info[0] &lt; 3:
+    raise Exception(&quot;python 3 is required for this program&quot;)
+</code></pre>
+
+<blockquote>
+<p>Can we use Json file to store data? or does it have to be .txt file only. Also will there be an issue if we write some of our code using list comprehension?</p>
+</blockquote>
+
+<p>You can store your data in a json file if you provide the reading/writing libraries (or use ones available on iLab systems).</p>
+
+<p>I don&#8217;t see a problem with using list comprehensions if you feel that will make your code easier to write. As long as it works, feel free to implement data management any way you&#8217;d like.</p>
+
+<blockquote>
+<p>Should CanAccess report an error if the operation does not exist? Or we can assume AddAccess will always create the operation file before CanAccess is called? =&gt; Instructor Answer: If the operation doesn’t exist, you should report an error.</p>
+</blockquote>
+
+<p>That answer was a mistake on my part. You should stick to the assignment instructions.</p>
+
+<p>CanAccess should provide an answer to the question, _can user A access object B?_ If the operation does not exist, the answer is no. You don&#8217;t need to provide an error message.</p>
+
+<blockquote>
+<p>Is there any limit on how many files we can use max to store data ?? Because I am up to using six separate files??</p>
+</blockquote>
+
+<p>No. You can use however many files you need. To keep things neat, you might want to put them all in some subdirectory (e.g., portal_data).</p>
+
+<blockquote>
+<p>Is it guaranteed that our program will be run independently of other students? For instance, my program creates a file named &#8220;Users&#8221; in the current directory the program is run in. However, if there is already a Users file, it will just read from it. </p>
+</blockquote>
+
+<p>You can assume that your files will be loaded into an empty directory. Then we will run your build process (e.g., make, shell script, copy &amp; paste instructions). After that, your program should be ready to run.</p>
+
+<p>It should not use absolute pathnames and if it needs any directories or files, the program is responsible for creating them.</p>
+
+<p>Do we submit files individually or as a zip file?</p>
+
+<p>The  Readme and source files should be sufficient.</p>
+
+<p>Canvas&#8217;s submission downloads are uglier than sakai. Sakai would create a directory structure and produce a zip file containing that structure. Canvas provides a flat list with each file name prefixed by the students name a bunch of numbers (not an ID). </p>
+
+<p>The cleanest submission would be a zip file that contains the README file and any files necessary to build the program. Do not submit any files needed to store the data. Those should be created by your program as needed.</p>
+
+<blockquote>
+<p>Does our program need to output exact outputs as specified. For example, if the username or password is an empty string, could we print out an error message like &#8220;The username can&#8217;t be empty string&#8221; or &#8220;The password can&#8217;t be empty string&#8221;, or should it be exactly &#8220;Error: Username Missing&#8221; and &#8220;Error: Password Missing&#8221;.</p>
+</blockquote>
+
+<p>Please follow the instructions. You can change the message but have it start with an &#8220;Error: &#8221; string or a &#8220;Success&#8221; so the response can be parsed.</p>
+
+<blockquote>
+<p>For example &#8220;./portal SetDomain &#8221;&#8220; admin&#8221;, admin doesn&#8217;t exist yet. Do we only need to print the error about the user or do we need to print the error and create the admin domain? Does this also pertain to AddAccess? </p>
+</blockquote>
+
+<p>Check for errors first.  If the user is invalid or doesn&#8217;t exist, that&#8217;s an error.
+There&#8217;s no need to create the domain admin but there&#8217;s no harm done if you do so as there are no users in the domain.</p>
+
+<blockquote>
+<p>will any of the inputs contains new line character(&#8216;\n&#8217;), tab character(&#8216;\t&#8217;), and space inside?</p>
+</blockquote>
+
+<p>You may assume that names, domains, types, and operations will not contain whitespace if that makes your implementation easier.</p>
+
+<blockquote>
+<p>In AddAccess if an access for an operation for a particular domain for a particular type already exists in the matrix, but the same command is input again, do we print an error saying that the access already exists, or do nothing?</p>
+</blockquote>
+
+<p>There&#8217;s no need to print any warning. Do you expect Linux to complain that a file already has read access when you try to set read access?</p>
+
+<blockquote>
+<p>Do we need to paste all the test cases that we used to test the program in the README because the point 3 under &#8220;Documentation and components&#8221; says to provide example error cases and success cases?</p>
+</blockquote>
+
+<p>You can make the README as good or as crummy as you want. That&#8217;s up to you. At the very least, I&#8217;d expect a README file to contain examples of how you built and run your software. I&#8217;d expect it to be as in the project write-up. However, if your program doesn&#8217;t run, you&#8217;ll get a grade of 0. If your README file contains examples that show a slightly different usage than we expect, we can replicate that and give you partial credit.</p>
+
+<p>The quality of your presentation is important - both in academia and in industry. In my eyes, a beautifully coded assignment (with comments where helpful) coupled with a beautiful writeup deserves a better grade than a bunch of code and cryptic documentation.</p>
+
+<p>I reserve the right to deduct points for sloppy work - whether it&#8217;s code or documentation. Submit your best work.</p>
+
+							</section>
+							<footer class="main">
+								Last modified September 30, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:pxk@cs@@rutgers@@edu" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>
+	</body>
+</html>

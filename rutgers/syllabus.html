@@ -1,0 +1,501 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Distributed Systems Syllabus </title>
+
+<link href="../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+#main .schedule {
+	border: none;
+	text-align: left;
+}
+#main .schedule .name, #main .schedule .value {
+	vertical-align: baseline; /* for opera */
+}
+#main .schedule tr {
+	vertical-align: baseline;
+}
+#main .schedule tr.lecture {
+	vertical-align: baseline;
+	/* background: url(images/green-gradient.jpg) repeat-x left top; */
+	background-color: #f4f2f1;
+}
+#main .schedule tr.recitation {
+	vertical-align: baseline;
+	/* background: url(images/pink-gradient.jpg) repeat-x left top; */
+	background-color: #e0d8d8;
+}
+#main .schedule th.week {
+	text-align: right;
+	color: #008080;
+}
+#main .schedule th.week, #main .schedule th.date, #main .schedule th.topic {
+	text-align: left;
+	color: #008080;
+}
+#main td.date {
+	white-space:nowrap;
+}
+#main .schedule td.week {
+	text-align: right;
+}
+#main .schedule td.date, #main .schedule td.topic {
+	text-align: left;
+}
+#main .schedule .week, #main .schedule .date, #main .schedule .topic{
+	vertical-align: baseline; /* for opera */
+}
+</style>
+</head>
+
+<body id="s_ru">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../css/images/small-logo.png" alt="pk.org" name="logo" width="97" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <ul>
+    <li class="separator"><a href="../about/index.html">About</a></li>
+    <li class="separator"><a href="../about/contact.html">Contact</a></li>
+    <li><a href="../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../about/index.html">About</a></li>
+-->
+	<li class="ru416"><a href="../rutgers/index.html">Rutgers</a></li>
+	<li class="ru416"><a href="../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../cs/index.html">Computing</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="../index.html"> Home </a> 
+ 	<li> <a href="index.html"> Rutgers CS 417 </a> 
+ 	<li> <a href="syllabus.html"> Syllabus </a> 
+</ul>
+</p>
+</div>
+<!-- --------------------------------------- CONTENT WRAPPER --------------------------------------- -->
+<div id="content-wrapper">
+<!-- --------------------------------------- MAIN --------------------------------------- -->
+<!-- --------------------------------------- MAIN --------------------------------------- -->
+<div id="main">
+<div id="headline">
+<h1> Course Syllabus </h1>
+<h2> Spring 2009 </h2>
+</div>
+
+<table class="schedule">
+<tr>
+	<th class="week"> week  </th>
+	<th class="date"> date </th>
+	<th class="topic"> topic </th>
+</tr>
+
+<tr class="recitation"><td class="week"> 0 </td>
+	<td class="date"> Jan 21 </td><td class="topic">
+	<strong>recitation canceled</strong>
+	</td> </tr>
+
+<tr class="lecture"><td class="week"> 1 </td>
+	<td class="date"> Jan 26 </td><td class="topic">
+	<a href="./lectures/l-intro.html">
+	introduction,
+	interconnections, distributed system taxonomy, service models</a>
+	<br/>
+	<a href="./lectures/l-net.html">
+	client-server computing, network protocols </a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 1.5 </td>
+	<td class="date"> Jan 28 </td><td class="topic">
+	<strong>recitation canceled</strong>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 2 </td>
+	<td class="date"> Feb 2 </td><td class="topic">
+	<a href="./lectures/l-net.html">
+	network protocols, IP and ATM networking
+	communication models</a>
+	<br/>
+	<a href="./lectures/l-naming.html">naming and binding</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 2.5 </td>
+	<td class="date"> Feb 4 </td><td class="topic">
+	<a href="./lectures/l-net.html">
+	sockets programming: C/Unix, Java 
+	</a>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 3 </td>
+	<td class="date"> Feb 9 </td><td class="topic">
+	<a href="./lectures/l-rpc.html">remote procedure calls (RPC), object brokers</a>
+	<br/>
+	<a href="./lectures/l-rpc.html">RPC case studies:
+	Sun RPC, DCE RPC
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 3.5 </td>
+	<td class="date"> Feb 11 </td><td class="topic">
+	<a href="http://www.cs.rutgers.edu/~badri/553dir/papers/Intro/googlecluster-ieee.pdf">
+	Google Cluster Architecture</a>,
+	<a href="http://labs.google.com/papers/gfs.html">Google File System</a>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 4 </td>
+	<td class="date"> Feb 16 </td><td class="topic">
+	<a href="./lectures/l-rpc.html">RPC case studies:
+ 	Microsoft DCOM/ORPC,
+	Java RMI, XML RPC, 
+	<br/>
+	XML-RPC, SOAP, REST, protocol buffers.
+	</a>
+	<br/>
+	<a href="./lectures/l-dfs.html">
+	distributed file system design
+	</a>
+	<br/>
+	<a href="./lectures/l-dfs.html">
+	distributed file system case studies: NFS, AFS, 
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 4.5 </td>
+	<td class="date"> Feb 18 </td><td class="topic">
+	Review for exam 1
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 5 </td>
+	<td class="date"> Feb 23 </td><td class="topic">
+	<a href="./lectures/l-dfs.html">
+	distributed file system case studies: Coda, DFS,
+	SMB/CIFS, Google FS (GFS), GmailFS, xFS
+	<br/>
+	<a href="./exam/index.html"><strong>EXAM 1</strong></a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 5.5 </td>
+	<td class="date"> Feb 25 </td><td class="topic">
+	<a href="http://research.microsoft.com/apps/pubs/default.aspx?id=68692">
+	Scalability Terminology</a> &mdash; Devlin, Gray, et al. </a>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 6 </td>
+	<td class="date"> Mar 2 </td><td class="topic">
+	<strong>Snow day &mdash; classes canceled</strong>
+	<br/>
+	<a href="./lectures/l-clocks.html">logical clocks, vector clocks</a>
+	<br/>
+	<a href="./lectures/l-clocks.html">clock synchronization</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 6.5 </td>
+	<td class="date"> Mar 4 </td><td class="topic">
+	<a href="./lectures/l-dht.html">Distributed lookup services/hash tables</a>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 7 </td>
+	<td class="date"> Mar 9 </td><td class="topic">
+	Exam review <br/>
+	<a href="./lectures/l-groups.html">group communication:
+	message ordering and message delivery </a>
+	<br/>
+	<a href="./lectures/l-groups.html">IP multicasting</a>
+	<br/>
+	<a href="./lectures/l-mutex.html">mutual exclusion, election algorithms</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 7.5 </td>
+	<td class="date"> Mar 11 </td><td class="topic">
+<a href="http://discolab.rutgers.edu/browser/papers/acsac2008.pdf">
+Mashup applications,
+<a href="./lectures/l-openid.html">identity management (OpenID)</a>,
+authorization (OAuth)</a>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 8 </td>
+	<td class="date"> Mar 16 </td><td class="topic">
+	<strong>No lecture: Spring break</strong>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 8.5 </td>
+	<td class="date"> Mar 18 </td><td class="topic">
+	<strong>No recitation: Spring break</strong>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 9 </td>
+	<td class="date"> Mar 23 </td><td class="topic">
+	<a href="./lectures/l-dsm.html">distributed shared memory
+	and memory consistency models</a>
+	<br/>
+	<a href="./lectures/l-crypto.html">intro to cryptography:
+	terminology, classic cryptosystems,
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 9.5 </td>
+	<td class="date"> Mar 25 </td><td class="topic">
+	<strong>recitation canceled</strong>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 10 </td>
+	<td class="date"> Mar 30 </td><td class="topic">
+	<a href="./lectures/l-crypto.html">
+	key exchange, secure communication,
+	hybrid cryptosystems, digital signatures</a>
+	</a>
+	<br/>
+	<a href="exam/index.html"><strong>EXAM 2</strong></a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 10.5 </td>
+	<td class="date"> Apr 1 </td><td class="topic">
+	<a href="./lectures/l-transactions.html">distributed transactions</a>
+	<br/>
+	<a href="./lectures/l-concurrency.html"> concurrency control </a>
+	<!--
+	<a href="./lectures/l-deadlocks.html">distributed deadlocks</a>
+	-->
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 11 </td>
+	<td class="date"> Apr 6 </td><td class="topic"> 
+	Exam review, <br/>
+	<a href="./lectures/l-auth.html">
+	authentication: protocols, digital certificates,
+	Kerberos, SSL
+	</a>
+	<br/>
+	<a href="./lectures/l-auth.html">
+	smart cards,
+	biometrics,
+	authenticating humans.
+	</a>
+	<br/>
+	<a href="./lectures/l-steganography.html"> steganography </a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 11.5 </td>
+	<td class="date"> Apr 8 </td><td class="topic">
+	<a href="./lectures/l-sandbox.html">
+	sandboxing and code signing</a>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 12 </td>
+	<td class="date"> Apr 13 </td><td class="topic"> 
+	<a href="./lectures/l-protection.html">
+	<a href="./lectures/l-protection.html">protection and security,
+	<br/>
+	Firewalls and Virtual Private Networks</a>
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 12.5 </td>
+	<td class="date"> Apr 15 </td><td class="topic"> 
+	<a href="./lectures/l-fault_tol.html">
+	fault tolerance</a>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 13 </td>
+	<td class="date"> Apr 20 </td><td class="topic">
+	<a href="./lectures/l-clusters.html">
+	clustering: scalable performance, load balancing, and reliability
+	</a>
+	<br/>
+	<a href="./lectures/l-virtualization.html">storage virtualization</a>
+	<br/>
+	<a href="./lectures/l-virtualization.html">processor virtualization</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 13.5 </td>
+	<td class="date"> Apr 22 </td><td class="topic">
+	Pre-exam review
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 14 </td>
+	<td class="date"> Apr 27 </td><td class="topic">
+	<a href="./lectures/l-serverless.html">
+	serverless networking</a>
+	<br/>
+	<a href="exam/index.html"><strong>EXAM 3</strong></a>
+	<br/>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 14.5 </td>
+	<td class="date"> Apr 29 </td><td class="topic">
+	<strong>recitation canceled</strong>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 15 </td>
+	<td class="date"> May 4 </td><td class="topic">
+	<a href="./lectures/l-pmigrate.html"> process migration and processor allocation </a>
+	<br/>
+	Review
+	</td></tr>
+
+<tr><td class="week"> 16 </td>
+	<td class="date"> May 11 </td><td class="topic">
+	<strong>FINAL EXAM: 8:00-10:00pm</strong>
+	</td></tr>
+</table>
+<p>
+Go
+<a href="./notes/index.html"> here </a>
+to get lecture notes and other course documentation.
+</p>
+<div id="footnotes">
+<sup>*</sup>Subject to change without notice.
+</div>
+
+</div> <!-- main -->
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2010 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.
+</p>
+<p> Last updated: August 23, 2010
+</p>
+<img class="stamp" src="../css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../416/index.html"> Main course page </a> </li>
+	<li> <a href="../416/news.html"> News </a> </li>
+	<li> <a href="../416/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../416/hw/index.html"> Homework </a> </li>
+	<li> <a href="../416/notes/index.html"> Documents </a> </li>
+	<li> <a href="../416/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../416/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../416/about.html"> About the course </a> </li>
+	<li> <a href="../416/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../416/things.html"> Things you need </a> </li>
+	<li> <a href="../416/policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../416/../417/index.html"> Main course page </a> </li>
+	<li> <a href="../416/../417/news.html"> News </a> </li>
+	<li> <a href="../416/../417/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../416/../417/hw/index.html"> Homework </a> </li>
+	<li> <a href="../416/../417/notes/index.html"> Documents </a> </li>
+	<li> <a href="../416/../417/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../416/../417/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../416/../417/about.html"> About the course </a> </li>
+	<li> <a href="../416/../417/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../416/../417/things.html"> Things you need </a> </li>
+	<li> <a href="../416/../417/policy.html"> Policy  </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> Belkin F1B0280-V Slimswitch data switch. This is a manual (knob) switch that switches among four DB25 connectors. I can't imagine why anyone would need this; perhaps for switching old printers. I never used it and can't remember how it ended up in my pile of junk.
+</ul>
+-->
+</div>
+
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

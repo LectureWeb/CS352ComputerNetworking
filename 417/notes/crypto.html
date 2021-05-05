@@ -1,0 +1,341 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Distributed Systems Security</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css?v=1.1"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Distributed Systems Security</h1>
+								<h2>Cryptographic systems</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>April 20, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal:</strong> Use symmetric cryptography, public key cryptography, random numbers, and hash functions to enable exchange encryption keys, provide secure communication, and ensure message.</p>
+</blockquote>
+
+<p>Security encompasses many things, including authenticating users and data, hiding data contents while they are at rest (e.g., stored in files) or in motion (moving over a network), destruction of data, masquerading as another server or user, providing false data (e.g., the wrong IP address for a DNS query), and physical premises security. We will focus only on a few topics here.</p>
+
+<p>Security in distributed systems introduces two specific concerns that centralized systems do not have. The first is the use of a network where contents may be seen by other, possibly malicious, parties. The second is the use of servers. Because clients interact with services (applications) running on a server, the application rather than the operating system is responsible for authenticating the client and controlling access to services. Moreover, physical access to the system and the security controls configured for the operating system may be unknown to the client.</p>
+
+<p>Computer security is about keeping systems, programs, and data secure. It addresses three broad areas: <strong>confidentiality</strong>, <strong>integrity</strong>, and <strong>availability</strong>. Together, these are referred to as the <strong>CIA Triad</strong>.</p>
+
+<dl>
+<dt>Confidentiality</dt>
+<dd> Confidentiality deals with keeping resources and data hidden from, or inaccessible to, unauthorized individuales. It is addressed by access control mechanisms in operating systems or application software. If the data may be accesseed through the file system or visible over a network, confidentiality is addressed by encrypting the data. An application&#8217;s decisions on whether data should be made accessible to a user depends on identification and authentication of the user or service.</dd>
+
+<dt>Integrity</dt>
+<dd> Integrity deals with the trustworthiness of the data or the resources. Integrity mechanisms are responsible for preventing unauthorized changes to data or detecting that changes have been made. Integrity mechanisms are used to validate the identity of users, systems, and services through authentication algorithms.</dd>
+
+<dt>Availability</dt>
+<dd> Availability is about having access to the data or computing services. It&#8217;s the property that a system is accessible and properly functioning. Accessibility includes fault tolerance, recovery, and restoration.</dd>
+</dl>
+
+<p>Security is a systems issue and pervades the design of an entire system. It&#8217;s not a module or add-on component. Security spans the hardware, firmware, and perating system up through the applicationsoftware. It includes all the networking and even the users. Security also includes the processes, procedures, and policies that are defined and implemented to ensure proper access, availability, and recovery.</p>
+
+<h2 id="theoperatingsystem">The operating system</h2>
+
+<p>Traditionally, the operating system took on much of the responsibility for providing security to the system. The operating system is the gatekeeper for any process to access any resource; it validates and authorizes all access. The operating system handles user authentication via the login process and manages access control via file permissions and mechanisms that restrict access to system calls. The operating system&#8217;s memory management system and process scheduler control acces to memory and the processor, respectively.</p>
+
+<p>However, an operating system can only control the resoources that it owns. It has no control of what other systems are doing. With network-based services, it&#8217;s very likely that the remote service you are accessing runs on a system on which you don&#8217;t even have an account. When a process communicates with remote services, the data will flow on a non-secured network where bad actors may attempt to capture data or modify it.</p>
+
+<h2 id="risksintroducedbytheinternet">Risks introduced by the Internet</h2>
+
+<blockquote>
+<p>“The internet was designed to be open, transparent, and interoperable. Security and identity management were secondary objectives in system design. This lower emphasis on security in the internet’s initial design not only gives attackers a built-in advantage. It can also make intrusions difficult to attribute, especially in real time. This structural property of the current architecture of cyberspace means that we cannot rely on the threat of retaliation alone to deter potential attackers. Some adversaries might gamble that they could attack us and escape detection.”
+&#8212; <em>William J. Lynn III, Deputy Defense Secretary, 2010</em></p>
+</blockquote>
+
+<p>The Internet provides us with a powerful mechanism for communicating with practically any other computer in the world. It also provides a way for attackers to target systems from practically any other computer in the world. Even though the Internet was a direct descendent of the ARPANET, a project funded by the U.S. Defense Advanced Research Projects Agency (DARPA), its design priority was to interconnect multiple disparate networks and create a decentralized architecture. Security was not a design consideration of the Internet.</p>
+
+<p>The network itself is &#8220;dumb&#8221;; it is responsible for routing packets from one system to another. As we&#8217;ll see later, even this is problematic since no one entity owns the Internet or is responsible for defining the routing rules. The intelligence of the Internet is at the endpoints. Protocols such as TCP run on endpoint computers to provide the in-order reliable delivery of messages. Any system can join the Internet and start sending and receiving messages. Systems can even offer routing services, allowing new networks to extend the Internet. This provides opportunities for redirecting messages and impersonating other systems.</p>
+
+<p>The Internet introduces several security risks:</p>
+
+<ul>
+<li><p><strong>Action at a distance</strong>. Attackers do not need to be physically present by the computer to attack it. They can also be in a different state or even a different country.</p></li>
+<li><p><strong>Asymmetric power</strong>. Actors can project or harness significant force for attack. This differs dramatically from the physical world where, for example, a small nation would not risk attacking a large one that could easily overpower it. Offense can be much more effective than defense. The person or people who started Conflicker were able to harness the power of millions of computers worldwide that they could use to launch attacks or crack passwords. A <strong>Distributed Denial of Service</strong> (<strong>DDoS</strong>) attack is an example of the use of asymmetric force. A company has only so many servers on the network. If an attacker can harness a large number of computers to send requests to the company&#8217;s servers, the servers will get overloaded and be unable to process legitimate requests. With a DDoS attack, the attacker will assemble a <strong>botnet</strong> by attacking a large set of computers and infectious them with malicious software (<strong>malware</strong>). These computers, owned by innocent people, will periodically contact a <strong>command &amp; control server</strong> to receive directions on what attack to carry out.</p></li>
+<li><p><strong>Actors can be anonymous</strong>. Actors can be anonymous. No one knows with any certainty who ran some of the biggest attacks that the world has ever experienced. Trust becomes a big challenge. When you&#8217;re. Interacting with your bank or you really communicating with your bank? How do you know and how does the bank know that it&#8217;s really you?</p></li>
+<li><p><strong>There are no borders</strong>. There are no checkpoints. With very few exceptions, countries have many ISPs and many points of connection to other countries. You can neither shut down nor filter all the data.</p></li>
+<li><p><strong>Indistinctive data</strong>. It is difficult to distinguish valid data from malicious attacks. A malicious user logging in may look the same as a legitimate user. Code is a bunch of bits and it is not always possible to tell whether it is harmful until it is executed. The network will just route packets to their desired destination.</p></li>
+</ul>
+
+<p><strong>Automation</strong> enables attacks on a large scale. It is easy to cast a wide net via scripting. You can try thousands or millions of potential targets and see if any of them have security weaknesses that can you exploit. Attacks that have even minuscule rates of return or small chances of success are now profitable. This includes email scams, transferring fractional cents from bank accounts, and attempts to exploit known weaknesses.</p>
+
+<h2 id="cryptography">Cryptography</h2>
+
+<p>Cryptography on its own is not a panacea. Its use will not ensure that a system is secure. However, it is an important component in building secure distributed systems.</p>
+
+<p>It is used to implement mechanisms for:</p>
+
+<ul>
+<li><strong>Confidentiality</strong>: encrypting data so that others cannot read the contents of a message (or file).</li>
+<li><strong>Authentication</strong>: proving the origin of a message (or the entity sending that message).</li>
+<li><strong>Integrity</strong>: validating that the message has not been modified, either maliciously or accidentally.</li>
+<li><strong>Nonrepudiation</strong>: ensuring that senders cannot falsely deny that they authored a message.</li>
+</ul>
+
+<p>A good cryptography algorithm (<strong>cryptosystem</strong>) has three properties:</p>
+
+<ol>
+<li><p>Ciphertext should look random. There should be no discernable statistical patterns in it and no hints on what content is in the original message.</p></li>
+<li><p>There is no way to extract the original plaintext or key from the ciphertext. The only way to find the message and the key should be through a brute-force attack, which is an exhaustive search through all possible keys.</p></li>
+<li><p>Keys should be long enough to make a brute-force attack not feasible. A &#8220;short&#8221; AES key is 128 bits. With the fastest supercomputer, it will take
+a <a href="https://www.eetimes.com/how-secure-is-aes-against-brute-force-attacks/">billion billion</a> years to crack that key. If you harness a billion computers, then you can crack it in a billion years.
+Each additional bit of a key doubles the number of possible keys (a key of length <em>n</em> has <em>2<sup>n</sup>~</em> possible keys).
+The more common AES key size is 256 bits, which will take 2<sup>128</sup>, or 3.4x10<sup>38</sup> times as long as cracking a 128-bit key.</p></li>
+</ol>
+
+<h2 id="confidentiality:encryption">Confidentiality: encryption</h2>
+
+<p>Confidentiality is the classic application of cryptography: obscuring the contents of a message so that it looks like a random bunch of bits that can only be decoded by someone with the proper knowledge. To do this, we start with our <strong>plaintext</strong> message, <em>P</em> (the term <em>plaintext</em> refers to unencrypted content; it does not need to be text). By applying an <strong>encryption</strong> algorithm, or <strong>cipher</strong>, to it, we convert the plaintext to ciphertext, <em>C=E(P)</em>. We can <strong>decrypt</strong> this message to recover the plaintext: <em>P=D(C)</em>.</p>
+
+<p>There are two classes of ciphers: symmetric and public key.</p>
+
+<h3 id="symmetriccryptography">Symmetric cryptography</h3>
+
+<p>A <strong>symmetric</strong> cipher uses the same to decrypt a message as was used to encrypt it: <em>C=E<sub>K</sub>(P)</em> and <em>P=D<sub>K</sub>(C)</em>.
+Examples of popular symmetric encryption algorithms include AES (Advanced Encryption Standard), DES (Data Encryption Standard), and Blowfish.</p>
+
+<h3 id="publickeycryptography">Public key cryptography</h3>
+
+<p>A <strong>public key</strong> cipher uses two mathematically-related keys, called a <strong>key pair</strong>.
+Knowing one key does not enable you to derive the other key of the pair.
+One of these keys is called the <strong>private key</strong> because it is never shared.
+The other key is called the <strong>public key</strong> because it is freely shared.
+A message encrypted with one of the keys can only be decrypted with the other key of the pair.
+For a pair of keys <em>(a, A)</em>, where <em>a</em> is the private key and <em>A</em> is the public key, if <em>C=E<sub>a</sub>(P)</em> then <em>P=D<sub>A</sub>(C)</em>.</p>
+
+<p>A message encrypted with your private key can be decrypted only with your public key.
+Anyone can do the decryption but you are the only one who could perform the encryption.
+This becomes the basis for authentication.</p>
+
+<p>Conversely, if <em>C=E<sub>A</sub>(P)</em> then <em>P=D<sub>a</sub>(C)</em>.
+A message encrypted with your public key can be decrypted only with your private key.
+Anyone can now perform the encryption but you are the only one can decrypt the message.
+This becomes the basis for confidentiality and secure communication.
+Examples of popular public key encryption algorithms include RSA and ECC (Elliptic Curve Cryptography).</p>
+
+<h3 id="communicationwithsymmetriccryptography">Communication with symmetric cryptography</h3>
+
+<p>Communicating with symmetric key encryption requires both parties to share the same secret key.
+Alice encrypts a message for Bob using that shared secret key and Bob decrypts it with the same key.</p>
+
+<h3 id="communicationwithpublickeycryptography">Communication with public key cryptography</h3>
+
+<p>Public key cryptography does not require the parties to share a secret key.
+If Alice and Bob have each other&#8217;s public keys, which are not secret, they can securely send data to each other.
+Alice will encrypt a message with Bob&#8217;s public key. Anybody can do this but only Bob will be able to decrypt the
+data using his private key.
+Similarly, Bob can encrypt a message with Alice&#8217;s private key, which only Alice can decypt with her private key.</p>
+
+<h3 id="keydistribution">Key distribution</h3>
+
+<p>Symmetric encryption algorithms are the dominant means of encrypting files and large streams of data. They are much faster than public key algorithms and key generation is far easier: a key is just a random set of bits rather than two huge numbers with specific properties. The biggest problem with symmetric cryptography is <strong>key distribution</strong>: ensuring that both sides get the key in a way that no eavesdropper can observe it. For instance, you cannot just send it as a network message containing the key. There are several techniques to handle the problem of key distribution.</p>
+
+<ol>
+<li><p>Manually, by using <strong>pre-shared keys</strong> (<strong>PSK</strong>). This requires setting up the keys ahead of time, such as registering a password or PIN among all the parties that will communicate.</p></li>
+<li><p>Using a <strong>trusted third party</strong>. A trusted third party is a trusted server that knows everyone&#8217;s keys. If two systems, let&#8217;s call them Alice and Bob, want to communicate, the third party will help both of them get the key they need. To communicate, they will use a <strong>session key</strong>. This is the name for a throw-away key that will be used for one communication session. One way of sharing it is for Alice to create it (it&#8217;s just a random number), encrypt it with her secret key, and send it to the trusted third party, which we will name Trent. Since Trent has all the keys, he can decrypt the message with Alice&#8217;s secret key to extract the session key. He can then encrypt it for Bob using Bob&#8217;s secret key and send it to Bob.</p></li>
+</ol>
+
+<p>Alternatively, Alice can ask Trent to create a session key that both Alice and Bob will share. Trent will generate the key, encrypt it for Alice, and send it to Alice. He will take the same key, encrypt it for Bob, and send it to Bob. Now they both share a key.</p>
+
+<ol>
+<li><p>Using the <strong>Diffie-Hellman key exchange</strong> algorithm. Diiffie-Hellman is a key distribution algorithm, not en encryption algorithm. It uses a <strong>one-way function</strong>, which is a mathematical function where there is no known way of computing the inverse function to do this. Unfortunately, the algorithm uses the terms <em>public key</em> and <em>private key</em> even though it is not an encryption algorithm; the keys are just numbers, one of which is kept private. Two parties can apply the one-way function to generate a <strong>common key</strong> that is derived from one public key and one private key. Alice generates a common key that is <em>f(Alice_private_key, Bob_public_key)</em> and Bob generates a common key that is <em>f(Bob_private_key, Alice_public_key)</em>. The magic of the mathematics in Diffie-Hellman is that both common keys will be identical and can be used as a symmetric encryption key.</p></li>
+<li><p>Avoid symmetric cryptography and just use <strong>public key cryptography</strong>. Life becomes easy. If Alice wants to send a message to Bob, she simply encrypts it with Bob&#8217;s public key. Only Bob will be able to decrypt it using his private key. If Bob wants to send a message to Alice, he will encrypt it with her public key. Only she will be able to decrypt it using her private key.
+There are several concerns with using this. First, we need to ensure that everyone has trusted copies of public keys (Alice needs to be sure she has Bob&#8217;s public key rather than that of an imposter saying he&#8217;s Bob).
+Second, we need to be mindful of the fact that public key cryptography and key generation are both much slower than symmetric cryptography.
+Third, public key cryptography is considered to be less secure for encrypting large amounts of data. The algorithms have been shown to be vulnerable to chosen plaintext attacks &#8211; where an attacker can get you to put certain content in your message &#8211; and it gives them a certain edge in trying to recover the key.</p></li>
+</ol>
+
+<h3 id="hybridcryptosystem">Hybrid cryptosystem</h3>
+
+<p>To get the best of both worlds &#8211; the convenience of public key cryptography and the speed of symmetric cryptgraphy &#8211; we often rely on <strong>hybrid cryptography</strong>: we use public key cryptography only to encrypt a symmetric session key (a small amount of data). From then on, we use symmetric cryptography and encrypt data with that session key.</p>
+
+<p>In use, we often distinguish between <strong>long-term</strong> (<strong>permanent</strong>) keys versus <strong>ephemeral</strong> keys. Long-term keys are stored and used over and over. A user&#8217;s password is an example of a long-term key. Public keys are often long-term keys. They are not changed frequently because of the hassle of generating new key pairs and distributing the updates. Ephemeral keys are thosse that are spontaneously created when needed. The use of ephemeral keys minimizes the amount of data we encrypt with the same key. This provides less data for the cryptanalyst; if a key is ever discovered, it will not result in the ability to decode a lot of data.
+Ephemeral keys are also important in cases where we need to generate a key spontaneously for two parties to be able to communicate. For instance, Alice and Bob can use the Diffie-Hellman algorithm to come up with a common key and use it to encrypt a random key that will be used only for that communication session. This type of key is called a <strong>session key</strong>.</p>
+
+<h2 id="messageintegritynon-repudiation">Message Integrity &amp; Non-repudiation</h2>
+
+<p>Without cryptography, we often resort to various error detecting functions to detect whether there is any data corruption. For example, ethernet uses CRC (cyclic redundancy checksums) and IP headers use 16-bit checksums. A <strong>cryptographic hash function</strong> is similar in purpose: a function that takes an arbitrary amount of data and generates a fixed set of bits. The hash is far longer than typical checksums &#8211; typically 256 or 512 bits &#8211; and hence is highly unlikely to result in collisions, where multiple messages result in the same hash value.
+A cryptographic hash of a message, <em>H=hash(M)</em> should have the following properties:</p>
+
+<ul>
+<li><p>It produces a <strong>fixed-length output</strong>. Regardless of the input, the output of a hash function is a fixed size. Common hash sizes are 256 or 512 bits.</p></li>
+<li><p>It is deterministic. A hash of the smae message will always yield the same output.</p></li>
+<li><p>It is a <strong>one-way function</strong>. Given a hash value <em>H</em>, it should be difficult to figure out what the input is. (<em>N.B.: in cryptography, the term &#8220;difficult&#8221; means that there are no known shortcuts other that trying every possible input</em>).</p></li>
+<li><p>It is <strong>collision resistant</strong>. Given a hash value <em>H</em>, it should be difficult to find another message <em>M’</em>, such that <em>H=hash(M’)</em></p></li>
+<li><p>The <strong>output does not give any information about the input</strong>. This is a property called <em>diffusion</em>, which is also important for cryptographic algorithms. Changing even a single bit in a message should, on average, change half of the bits in the resulting hash. There will be no detectable correspondence between any input data and any part of the resulting hash.</p></li>
+<li><p>It is efficient. We want to be able to generate these easily to validate file contents and messages.</p></li>
+</ul>
+
+<p>Hash functions serve as the basis of message integrity. By providing a hash of a message along with the message, you can detect that the message has not been modified. If even a bit of the message is modified, the provided hash will no longer match the hash of this modified message.</p>
+
+<h3 id="messageauthenticationcodesmac">Message authentication codes (MAC)</h3>
+
+<p>Just augmenting a message with its hash is not sufficient to ensure message integrity. It will allow us to detect that a message was accidentally modified but an attacker who modifies a message can easily recompute a hash function. To prevent the hash from being modified, we add a secret ingredient to the message we are hashing.</p>
+
+<p>A <strong>message authentication code</strong> (<strong>MAC</strong>) is a hash of a message that is combined with a symmetric (secret) key. In the simplest form, one can concatenate the key with the message and hash the result.
+Various MAC functions implement different forms of this. For example, the <a href="https://en.wikipedia.org/wiki/HMAC">HMAC</a> function hashes a key exclusive-ored with a bit pattern that is concatenated with the same key exclusive-ored with another bit pattern and then concatenation with the message.</p>
+
+<p>If Alice and Bob share a key, <em>K</em>, Alice can send Bob a message along with a hash created from <em>M</em> and <em>K</em>.
+Bob can hash <em>M</em> and <em>K</em> and compare the result with Alice&#8217;s MAC.
+If an intruder modifies the message, she will not be able to create a valid MAC since she would not know what the key is.</p>
+
+<h3 id="digitalsignatures">Digital signatures</h3>
+
+<p>A <strong>digital signature</strong> is similar to a MAC but the hash is encrypted with the sender&#8217;s private key. Here, Alice will send Bob a message along with a hash that is encrypted with her private key. Bob can validate the message and signature by decrypting the signature using Alice&#8217;s public key and comparing the result with a hash of the message. A digital signature provides <strong>non-repudiation</strong>: Alice cannot claim that she did not create the message since only Alice knows her private key. Nobody but Alice could have created the signature.</p>
+
+<p>We can combine covert messaging together with message integrity to ensure that a recipient can detect if a message has been modified. One way of doing this is:</p>
+
+<ol>
+<li>Alice creates a session key, S (a random number).</li>
+<li>She encrypts the session key with Bob&#8217;s public key, <em>B</em>: <em>E<sub>B</sub>(S)</em> and sends it to Bob.</li>
+<li>Bob decrypts the session key using his private key, <em>b</em>: <em>S = D<sub>b</sub>(E<sub>B</sub>(S))</em>. He now knows the session key.</li>
+<li>Alice encrypts the message with the session key: <em>E<sub>S</sub>(M)</em>.</li>
+<li>Alice creates a signature by encrypting the hash of the message with her private key, <em>a</em>: <em>E<sub>a</sub>(H(M))</em>.</li>
+<li>She sends both the encrypted message and signature to Bob.</li>
+<li>Bob decrypts the message using the session key: <em>M = D<sub>S</sub>(E<sub>S</sub>(M))</em>.</li>
+<li>Bob decrypts the signature using Alice&#8217;s public key <em>A</em>: D<sub>A</sub>(E<sub>a</sub>(H(M)))_</li>
+<li>If the decrypted hash matches the hash of the message, <em>H(M)</em>, Bob is convinced that the message has not been modified since Alice sent it.</li>
+</ol>
+
+							</section>
+							<footer class="main">
+								Last modified April 21, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

@@ -1,0 +1,579 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Firewalls & VPNs</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Firewalls & VPNs</h1>
+								<h2>Protecting the network</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>November 18, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<h1 id="firewalls">Firewalls</h1>
+
+<p>A <strong>firewall</strong> protects the junction between an untrusted
+network (e.g., external Internet) and a trusted network (e.g., internal network).
+Two approaches
+to firewalling are <strong>packet filtering</strong> and <strong>proxies</strong>.</p>
+
+<p>A <strong>packet filter</strong>, or <strong>screening router</strong>,
+determines not only the route for a packet but also whether the packet
+should be dropped based on contents in its IP header, TCP/UDP header, and the interface on which the packet arrived. This function is usually implemented inside a <strong>border router</strong>, also known as the <strong>gateway router</strong> that manages the flow of traffic between the ISP and internal network. The basic principle of firewalls is to <em>never have a direct inbound connection from the originating host from the Internet to an internal host</em>; all traffic must flow through a firewall and be inspected.</p>
+
+<p>The packet filter evaluates a set of rules to determine whether to <strong>drop</strong> or <strong>accept</strong> a packet. This set of rules forms an <strong>access control list</strong>, often called a <strong>chain</strong>. Strong security follows a <strong>default deny</strong> model, where packets are dropped unless some rule in the chain specifically permits them.</p>
+
+<p><strong>First-generation packet filters</strong> implemented <strong>stateless
+inspection</strong>. A packet is examined on its own with no context based on previously-seen packets.</p>
+
+<h2 id="second-generationpacketfilters">Second-generation packet filters</h2>
+
+<p><strong>Second-generation packet filters</strong> track TCP connections and other information from previously-seen packets. These <strong>stateful packet inspection</strong> (<strong>SPI</strong>) firewalls enable the router to track sessions and accept or reject packets based on them. For instance:</p>
+
+<ul>
+<li><p>They can block TCP data traffic if a connection setup did not take place to avoid sequence number prediction attacks.</p></li>
+<li><p>They can track that a connection has been established by a client to a remote server and allow return traffic to that client (which is essential for any interaction by someone inside the network with external services).</p></li>
+<li><p>They can track connectionless UDP and ICMP messages and allow responses to be sent back to clients in the internal network. DNS queries and pings (ICMP echo-reply messages) are examples of services that need this.</p></li>
+<li><p>They also and understand the relationship between packets. For example, when a client establishes an FTP (file transfer protocol) connection to a server on port 21 from some random source port, the server establishes a connection back to the client on a different port when it needs to send data. Some media servers do this as well: data might be requested via a TCP connection but a media stream might be returned on a different port via UDP packets.</p></li>
+</ul>
+
+<h2 id="third-generationpacketfilters">Third-generation packet filters</h2>
+
+<p>Packet filters traditionally do not look above the transport layer (UDP and TCP protocols and port numbers). <strong>Third-generation packet filters</strong> incorporate <strong>deep packet inspection</strong>(<strong>DPI</strong>), which allows a firewall to not only examine headers but also examine application data and make decisions based on its contents.</p>
+
+<p>Deep packet inspection can validate the protocol of an application as well as check for malicious content such as malformed URLs or other security attacks. DPI is generally considered to be part of Intrusion Prevention Systems. Examples are detecting application-layer protocols such as HTTP and then applying application-specific filters, such as checking for suspicious URLs or disallowing the download of certain ActiveX or Java applets.</p>
+
+<p>Deep Packet Inspection (DPI) firewalls evolved to <strong>Deep Content Inspection</strong> (<strong>DCI</strong>) firewalls. These use the same concept but are capable of buffering large chunks of data from multiple packets that contain an entire object and acting on it, such as unpacking base64-encoded content from web and email messages and performing a signature analysis for malware.</p>
+
+<h3 id="applicationproxies">Application proxies</h3>
+
+<p>An <strong>application proxy</strong> is software that presents the same protocol to the outside network as the application for which it is a proxy.
+For example, a mail server proxy will listen on port 25 and understand SMTP, the <em>Simple Mail Transfer Protocol</em>. The primary job of the proxy is
+to <strong>validate</strong> the application protocol and thus guard against protocol attacks (extra commands, bad arguments) that may exploit bugs in the service. Valid requests are then regenerated by the proxy to the real application that is running on another server and is not accessible from the outside network.</p>
+
+<p>Application proxies are usually installed on <strong>dual-homed hosts</strong>. This is a term for a system that has two &#8220;homes,&#8221; or network interfaces: one for the external network and another for the internal network. Traffic never passes between the two networks. The proxy is the only one that can communicate with the internal network. Unlike DPI, a proxy may modify the data stream, such as stripping headers, modifying machine names, or even restructuring the commands in the protocol used to communicate with the actual servers (that is, it does not have to relay everything that it receives).</p>
+
+<h3 id="dmzs">DMZs</h3>
+
+<p>A common firewalled environment is a <strong>screened subnet</strong> architecture, with a separate subnet for systems that run externally-accessible services (such as web servers and mail servers) and another one for internal systems that do not offer services and should not be accessed from the outside.</p>
+
+<p>The subnet that contains externally-accessible services is called the <strong>DMZ</strong> (<strong>demilitarized zone</strong>). The DMZ contains all the hosts that may be offering services to the external network (usually the Internet).
+Machines on the internal network are not accessible from the Internet. All machines within an organization will be either in the DMZ or in the internal network.</p>
+
+<p>Both subnets are protected by a screening router, which will make decisions based on the interface on which a packet arrives as well as its header values.</p>
+
+<p>The router access control policy will control packet flow from each of the interfaces:</p>
+
+<h4 id="fromtheoutsidenetworkinternet">From the outside network (Internet)</h4>
+
+<ul>
+<li>No packets from the outside network are permitted into the inside network (unless it&#8217;s a response an internal request, such as a DNS response or TCP return traffic).</li>
+<li>Allows packets only to the IP addresses, protocols &amp; ports in the DMZ that are offering valid services.</li>
+<li>The firewall would also reject any packets that are masqueraded to appear to come from the internal network.</li>
+</ul>
+
+<h4 id="fromthedmzsubnet">From the DMZ subnet</h4>
+
+<ul>
+<li>Allows packets to only come from designated machines in the DMZ that need to access services in the internal network. Any packets
+not targeting the appropriate services in the internal network will
+be rejected. This reduces the attack surface - should intruders gain access to a machine in the DMZ, they will be severely limited in their ability to reach and attack systems on the internal subnet.</li>
+<li>Outbound traffic to the internet can be permitted but administrators may want to restrict it to limit the ability of attackers to connect back to the Internet to download tools or malware.</li>
+</ul>
+
+<h4 id="fromtheinternalnetwork">From the internal network</h4>
+
+<p>The internal network is considered to be a higher security network than the Internet, so we generally are not concerned about traffic flowing from the internal network to the Internet, although administrators may block certain external services (to disallow employees from accessing the web, for example, or downloading torrent files).</p>
+
+<p>Access to the DMZ from the internal network is generally not restricted. Employees may access to the same set of DMZ services plus some additional services, such as login services.</p>
+
+<h3 id="host-basedfirewalls">Host-based firewalls</h3>
+
+<p>Firewalls intercept all packets entering or leaving a local area network.
+A <strong>host-based firewall</strong>, on the other hand, runs on a user&#8217;s computer.
+Unlike network-based firewalls, a host-based firewall can associate network traffic with individual applications.
+Its goal is to prevent malware from accessing the network. Only approved applications will be allowed to send or receive network data.
+Host-based firewalls are particularly useful in light of <strong>deperimiterization</strong>:
+the boundaries of external and internal networks have become fuzzy
+as people connect their mobile devices to different networks and import data on flash drives. A concern with host-based firewalls is that
+if malware manages to get elevated privileges, it may be able to shut off the firewall or change its rules.</p>
+
+<h3 id="intrusiondetectionpreventionsystems">Intrusion detection/prevention systems</h3>
+
+<p>An enhancement to screening routers is the use of <strong>intrusion detection systems</strong> (<strong>IDS</strong>). Intrusion
+detection systems are often parts of DPI firewalls and try to identify malicious behavior. There are three forms of IDS:</p>
+
+<ol>
+<li><p>A <strong>protocol-based IDS</strong> validates specific network protocols for
+conformance. For example, it can implement a state machine to ensure that messages
+are sent in the proper sequence, that only valid commands are sent, and that replies match
+requests.</p></li>
+<li><p>A <strong>signature-based IDS</strong> is similar to a PC-based virus checker. It
+scans the bits of application data in incoming packets to try to discern if there
+is evidence of &#8220;bad data&#8221;, which may include malformed URLs, extra-long strings
+that may trigger buffer overflows, or bit patterns that match known viruses.</p></li>
+<li><p>An <strong>anomaly-based IDS</strong> looks for statistical aberrations in network activity.
+Instead of having predefined patterns, normal behavior is first measured and used
+as a baseline. An unexpected use of certain protocols, ports, or even amount of
+data sent to a specific service may trigger a warning.</p></li>
+</ol>
+
+<p>Anomaly-based detection implies that we know <em>normal behavior</em> and flag
+any unusual activity as bad. This is difficult since it is hard to
+characterize what normal behavior is, particularly since normal behavior
+can change over time and may exhibit random network accesses (e.g., people
+web surfing to different places). Too many false positives will annoy
+administrators and lead them to disregard alarms.</p>
+
+<p>A signature-based system employs <strong>misuse-based detection</strong>.
+It knows bad behavior: the rules that define invalid packets or invalid
+application layer data (e.g., ssh root login attempts). Anything else is
+considered good.</p>
+
+<p>Intrusion Detection Systems (IDS) monitor traffic entering and leaving the network and report any discovered problems.
+<strong>Intrusion Prevention Systems</strong> (<strong>IPS</strong>) serve the same function but are positioned to sit between two networks like a firewall and can actively block traffic that is considered to be a threat or policy violation.</p>
+
+<table>
+<colgroup>
+<col />
+<col />
+</colgroup>
+
+<thead>
+<tr>
+	<th> Type </th>
+	<th> Description </th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td> Firewall (screening router) </td>
+	<td> 1<sup>st</sup> generation packet filter that filters packets between networks. Blocks/accepts traffic based on IP addresses, ports, protocols </td>
+</tr>
+<tr>
+	<td> Stateful inspection firewall </td>
+	<td> 2<sup>nd</sup> generation packet filter. Like a screening router but also takes into account TCP connection state and information from previous connections (e.g., related ports for TCP) </td>
+</tr>
+<tr>
+	<td> Deep Packet Inspection firewall </td>
+	<td> 3<sup>rd</sup> generation packet filter. Examines application-layer protocols </td>
+</tr>
+<tr>
+	<td> Application proxy </td>
+	<td> Gateway between two networks for a specific application. Prevents direct connections to the application from outside the network. Responsible for validating the protocol </td>
+</tr>
+<tr>
+	<td> IDS/IPS </td>
+	<td> Can usually do what a stateful inspection firewall does + examine application-layer data for protocol attacks or malicious content </td>
+</tr>
+<tr>
+	<td> Host-based firewall </td>
+	<td> Typically screening router with per-application awareness. Sometimes includes anti-virus software for application-layer signature checking </td>
+</tr>
+<tr>
+	<td> Host-based IPS </td>
+	<td> Typically allows real-time blocking of remote hosts performing suspicious operations (port scanning, ssh logins) </td>
+</tr>
+</tbody>
+</table>
+
+<!--
+## Snort
+
+Snort is an example of a widely used network intrusion detection system.
+Snort sniffs all traffic on the network and
+parses each packet to extract fields that can be matched by rules.
+A set of rules is then applied to the data extracted from each pocket.
+These include tests of the form performed by stateful screening routers on network
+and transport layer fields as well as searching for patterns
+in the data payload of the packets.
+These rules enable one to test for known protocol attacks (e.g., bad URLs, 
+root logins) as well as access to services. Violations can be logged or raised as alerts.
+-->
+
+<h1 id="virtualprivatenetworksvpns">Virtual Private Networks (VPNs)</h1>
+
+<p>Suppose we want to connect two local area networks in geoagraphically-separated
+areas together. For instance, we might have a company with locations in New York
+and in San Francisco. One way of doing this is to get a dedicated private network
+link between the two points. Many phone companies and network providers offer a
+private line service but it can be extremely expensive and is not feasible in many
+circumstances, such as if one of your endpoints is in the Amazon cloud rather
+than at your physical location.o</p>
+
+<p>Instead, we can use the public Internet to communicate between the two locations.
+Our two subnets will often have private IP addresses (such as 192.168.x.x), which
+are not routable over the public internet. To overcome this, we can use
+a technique called <strong>tunneling</strong>.
+Tunneling is the process of encapsulating an IP datagram within another IP
+datagram. An IP datagram in one subnet (a local area network in one of our locations)
+that is destined to an address on the remote subnet will be directed to a gateway
+router. There, it will be treated as payload (data) and packaged within an IP datagram
+whose destination is the IP address of the gateway router at our other location.
+This datagram is now routed over the public Internet. The source and destination
+addresses of this outer datagram are the gateway routers at both sides.</p>
+
+<p>IP networking relies on store-and-forward routing.
+Network data passes through routers, which are often unknown and may be untrustworthy.
+We have seen that
+routes may be altered to pass data through malicious hosts or directed to malicious
+hosts that accept packets destined for the legitimate host.
+Even with TCP connections, data can be modified or redirected and sessions can be hijacked.
+We also saw that there is no source authentication on IP packets: a host
+can place any address it would like as the source.
+What we would like is the ability to communicate securely, with the assurance
+that our traffic cannot be modified and that we are truly communicating
+with the correct endpoints.</p>
+
+<p><strong>Virtual private networks</strong> (<strong>VPNs</strong>) take the concept of tunneling
+and safeguard the encapsulated data by adding a MAC (message authentication code)
+so that we can detect if the data is modified and encrytion so that others
+cannot read the data. This way, VPNs
+allow separate local area networks to communicate
+securely over the public Internet.</p>
+
+<p><strong>IPsec</strong> is a popular VPN protocol that is really a set of two protocols.</p>
+
+<ol>
+<li><p>The IPsec <strong>Authentication Header</strong> (<strong>AH</strong>) is an IPsec protocol that does <em>not</em> encrypt data but simply
+affixes a message authentication code to each datagram. It ensures the integrity of the each datagram.</p></li>
+<li><p>The <strong>Encapsulating Security Payload</strong> (<strong>ESP</strong>), which provides integrity checks and also encryts
+the payload, ensuring secrecy.</p></li>
+</ol>
+
+<p>IPsec can operate in tunnel mode or transport mode. In both cases, IPsec communciates at the same
+layer as the Internet Protocol. That is, it is not used by applications to communciate with one another
+but rather by routers or operating systems to direct an entire stream of traffic.</p>
+
+<p><strong>Tunnel mode VPNs</strong> provide network-to-network or host-to-network communication.
+The communication takes place between either two VPN-aware gateway routers or from a host to a VPN-aware router.
+The entire datagram is treated like payload and encapsulated within a datagram that is sent over the Internet
+to the remote gateway. That gateway receives this VPN datagram, extracts the payload, and routes it on the internal network
+where it makes its way to the target system.</p>
+
+<p><strong>Transport mode VPNs</strong> provide communication between two hosts. In this case, the IP header is not modified
+but data is protected. Note that, unlike transport layer security (TLS), which we examine later, setting up
+a transport mode VPN will protect all data streams between the two hosts. Applications are unaware that a VPN is
+in place.</p>
+
+<h2 id="authenticationheaderah">Authentication Header (AH)</h2>
+
+<p>The <strong>Authentication Header</strong> (<strong>AH</strong>) protocol guarantees the integrity and authenticity of IP packets.
+AH adds an extra chunk of data (the authentication header) with a MAC to the IP datagram.
+Anyone with knowledge of the key can create the MAC or verify it.
+This ensures message integrity since an attacker will not be
+able to modify message contents and have the HMAC remain valid. Attackers will also not be able to
+forge messages because they will not know the key needed to create a valid MAC. Every AH
+also has a sequence number that is incremented for each datagram that is transmitted, ensuring
+that messages are not inserted, deleted, or replayed.</p>
+
+<p>Hence, IPsec AH protects messages from tampering, forged addresses, and replay attacks.</p>
+
+<h2 id="encapsulatingsecuritypayloadesp">Encapsulating Security Payload (ESP)</h2>
+
+<p>The <strong>Encapsulating Security Payload</strong> (<strong>ESP</strong>) provides the same integrity assurance but also adds <strong>encryption</strong> to the payload to ensure confidentiality. Data is encrypted with a symmetric cipher (usually AES).</p>
+
+<h2 id="ipseccryptographicalgorithms">IPsec cryptographic algorithms</h2>
+
+<h3 id="authentication">Authentication</h3>
+
+<p>An IPsec session begins with authenticating the endpoints. IPsec supports the use of X.509 digital
+certificates or the use of pre-shared keys. Digital certificates contain the site&#8217;s public key
+and allow us to validate the identity of the certificate if we trust the issuer (the certification
+authority, or CA). We authenticate by proving that can take a nonce that the other side encrypted with
+our public key and decrypt it using our private key. A pre-shared key means that both sides configured
+a static shared secret key ahead of time. We prove that we have the key in a similar manner: one side
+creates a nonce and asks the other side to encrypt it and send the results. THen the other side does
+the same thing.</p>
+
+<h3 id="keyexchange">Key exchange</h3>
+
+<p>HMAC message authentication codes and encryption algorithms both require the use of secret keys.
+IPsec uses Diffie-Hellman to create random shared session keys. Diffie-Hellman makes it quick to
+generate a public-private key pair that is needed to derive a common key ao there is no dependence
+on long-term keys, assuring forward secrecy.</p>
+
+<h3 id="confidentiality">Confidentiality</h3>
+
+<p>In IPsec ESP, the payload is encrypted using either AES-CBC or 3DES-CBC. CBC is cipher-block chaining, which
+has the property that the ciphertext of each datagram is dependent on all previous datagrams, ensuring that
+datagrams cannot be substituted from old messages.</p>
+
+<h3 id="integrity">Integrity</h3>
+
+<p>IPsec uses HMAC, a form of a message authentication code that
+uses a cryptographic hash function and a shared secret key.
+It supports either SHA-1 or SHA-2 hash functions.</p>
+
+<p>IPsec Authentication Header mode is rarely used since the overhead of encrypting data these days is quite low and ESP provides both encryption in addition to authentication and integrity.</p>
+
+<h1 id="transportlayersecuritytls">Transport Layer Security (TLS)</h1>
+
+<p>Virtual Private Networks were designed to operate at the network layer.
+They were designed to connect networks together. Even with transport mode connectivity,
+they tunnel all IP traffic and do not differentiate one data stream from another.
+They do not solve the problem of an application needing authenticated, tamper-proof,
+and encrypted communications to another application.</p>
+
+<p><strong>Secure Sockets Layer</strong> (<strong>SSL</strong>) was created as a layer of software above TCP
+that provides authentication, integrity, and encrypted communication while preserving
+the abstraction of a sockets interface to applications. An application sets up an SSL session
+to a service. After that, it simply sends and receives data over a socket just like it would
+with the normal sockets-based API that operating systems provide. The programmer
+does not have to think about network security. As SSL evolved, it morphed into a new version called <strong>TLS</strong>, <strong>Transport
+Layer Security</strong>. While SSL is commonly used in conversation and names of APIs, all current implementations are TLS.</p>
+
+<p>Any TCP-based application that may not have addressed network security can be
+security-enhanced by simply using TLS. For example, the standard email protocols,
+SMTP, POP, and IMAP, all have TLS-secured interfaces. Web browsers use
+HTTP, the Hypertext Transfer
+Protocol, and also support HTTPS, which is the exact same protocol but uses
+A TLS connection.</p>
+
+<p>TLS has been designed to provide:</p>
+
+<dl>
+<dt>Data encryption</dt>
+<dd> Symmetric cryptography is used to encrypt data.</dd>
+
+<dt>Data integrity</dt>
+<dd> Ensure that we can detect if data in transit has not been modified. TLS includes a MAC with transmitted data.</dd>
+
+<dt>Authentication</dt>
+<dd> TLS provides mechanisms to authenticate the endpoints prior to sending data. Authentication is optional and can be unidirectional (the client may just authenticate the server), unidirectional (each side authenticates the other), or none (in which case we just exchange keys but do not validate identities).</dd>
+
+<dt>Key exchange</dt>
+<dd> After authentication, TLS performs a key exchange so that both sides can obtain random shared session keys. TLS creates separate keys for each direction of communication (encryption keys for client-to-server and server-to-client data streams) and separate keys for data integrity (MAC keys for client-to-server and server-to-client streams).</dd>
+
+<dt>Interoperability &amp; evolution</dt>
+<dd> TLS was designed to support many different key exchange, encryption, integrity, &amp; authentication protocols. The start of each session enables the protocol to negotiate what protocols to use for the session.</dd>
+</dl>
+
+<h2 id="tlssub-protocols">TLS sub-protocols</h2>
+
+<p>These features are implemented in two sub-protocols within TLS:</p>
+
+<dl>
+<dt>(1) Authentication and key exchange</dt>
+<dd> Authentication uses public key cryptography with X.509 certificates to authenticate a system. Both the client and
+server can present their X.509 digital certificates. TLS validates the signature of the certificate. A user authenticates by signing a hash of a set of messages with their private key.</dd>
+
+<dd> Key exchange supports several options. Ephemeral Diffie-Hellman key exchange is the most common since it supports the efficient generation of shared keys and there is no long-term key storage, providing <strong>forward secrecy</strong>. TLS can accommodate other key exchange techniques as well, including Diffie-Hellman with static keys, RSA public key-based key exchange, and pre-shared static keys but the latest standard requires forward secrecy.</dd>
+
+<dt>(2) Communication</dt>
+<dd> Data encryption uses symmetric cryptography and supports a variety of algorithms, including AES GCM, AES CBC, ARIA (GCM/CBC), and ChaCha20. AES is the Advanced Encryption Standard. CBC is cipher block chaining, which makes each ciphertext block a function of the preceding one. GCM is Galois/Counter Mode, an alternative to CBC that encrypts an incrementing counter and exclusive-ors it with a block of plaintext. ARIA is a South Korean standard encryption algorithm that is similar to AES. ChaCha20 is an encryption algorithm that is generally more efficient than AES on low-end processors.</dd>
+
+<dd> Data integrity is provided by a message authentication code (MAC) that is attached to each block of data. TLS allows the choice of several, including HMAC-MD5, HMAC-SHA1, HMAC-SHA256/384, and Poly1305.</dd>
+</dl>
+
+<h2 id="tlsprotocol">TLS protocol</h2>
+
+<p>The steps in a TLS session are:</p>
+
+<h4 id="1.clienthello">1. Client Hello</h4>
+
+<p>The client connects to the server and sends information about its version and the ciphers it supports. It also sends a a nonce - a random number called <code>ClientRandom</code>.</p>
+
+<h4 id="2.serverhello">2. Server Hello</h4>
+
+<p>The server responds with a Server Hello, agrees to use the highest mutually-supported version of the protocol, presents a list of ciphers to use for the session, and sends its X.509 digital certificate. The server hello message also contains <code>ServerRandom</code> — a nonce generated by the server.<br />
+The server may choose to ask the client for a certificate as well if it wants to perform mutual authentication and authenticate the client. This is rarely done.</p>
+
+<h4 id="3a.serverkeyexchange">3a. Server key exchange</h4>
+
+<p>If Diffie-Hellman key exchange is used, the server generates a Diffie-Hellman public/private key pair (this is an ephemeral key; it will be used only once). It sends the public key to the client. It also sends the Diffie-Hellman parameters that will be used – the base of the exponent and the modulus, so the client can generate a compatible key.</p>
+
+<h4 id="3b.serversendsauthenticationinfo">3b. Server sends authentication info</h4>
+
+<p>The server needs to prove that it has the private key that corresponds to the public key in the certificate it sent to the client. It computes a digital signature of all the messages exchanged up to this point. The client was involved in this communication too, so it can compute a hash of these messages as well. This is why we had the ClientRandom number in the first step. It ensures that this signature contains data that will be different for each session and a masquerading server cannot just replay old data.</p>
+
+<h4 id="4a.clientauthenticatesserver">4a. Client authenticates server</h4>
+
+<p>The client verifies the integrity of the certificate by checking its signature using the public key of the certification authority, the CA, who issued the certificate. It also checks that the certificate has not expired and is not revoked.<br />
+Now the client validates the signature sent by the server by decrypting it with the public key in the server’s certificate and comparing it with the hash of all the messages used in setting up the session so far.</p>
+
+<h4 id="4b.clientsendsacommonkey">4b. Client sends a common key</h4>
+
+<p>The client computes a Diffie-Hellman common key by generating its own public-private key pair and using the server&#8217;s Diffie-Hellman public key sent by the server. The client sends this Diffie-Hellman public key to the server. The server will be able to generate the same common key using its Diffie-Hellman private key and the public key from the client.</p>
+
+<h4 id="4c.clientsendsamastersecret">4c. Client sends a master secret</h4>
+
+<p>The client creates a master secret. The <strong>master secret</strong> is a 48-byte value from which both the client and server derive up to six keys that will be used for communication:</p>
+
+<blockquote>
+<p>a.	The client write IV<br />
+b.	The client write key<br />
+c.	The client write MAC key<br />
+d.	The server write IV<br />
+e.	The server write key<br />
+f.	The server MAC key</p>
+</blockquote>
+
+<p>Segregating keys for different purposes is good security practice. Should one get broken, it limits the amount of damage an attacker can do.</p>
+
+<h4 id="5.clientsendscertificate">5. Client sends certificate</h4>
+
+<p>If the server requested mutual authentication, then the client will send its X.509 certificate to the server.</p>
+
+<h4 id="6.serverauthenticatesclient">6. Server authenticates client</h4>
+
+<p>The server can validate the client’s certificate and validate the signature to be convinced that the client has the private key that corresponds to the one in the certificate.</p>
+
+<h4 id="7.clienthandshakedone">7. Client handshake done</h4>
+
+<p>The handshake is complete. The client says it’s done.</p>
+
+<h4 id="8.serverhandshakedone">8. Server handshake done</h4>
+
+<p>The server says it’s done.</p>
+
+<p>The client and server can now exchange data. Each message is first compressed and then encrypted with a symmetric algorithm. An HMAC (hash MAC) for the message is also sent to allow the other side to validate message integrity.</p>
+
+<p>TLS is widely used and generally considered secure if strong cryptography is used. Until the bug was fixed, its biggest problem was a man-in-the-middle attack where the attacker would be able to send a message to renegotiate the protocol and choose one that disables encryption. Another attack was a denial-of-service attack where an attacker initiates a TLS connection but keeps requesting a regeneration of the encryption key, using up the server&#8217;s resources in the process. Both of these have been fixed.</p>
+
+<h2 id="unidirectionalvs.mutualauthentication">Unidirectional vs. mutual authentication</h2>
+
+<p>TLS supports <strong>mutual authentication</strong>.
+To implement authentication, the server sends the client its X.509 digital certificate so the client can authenticate the server by having the server prove it knows the private key. TLS also supports <strong>mutual authentication</strong>: the client will send its X.509 certificate to the server so the server can authenticate the client.</p>
+
+<p>One notable aspect of TLS sessions is that, in most cases, only the server will present a certificate.
+Hence, the server will not authenticate or know the identity of the client.
+Client-side certificates have been problematic.
+Generating keys and obtaining trustworthy certificates is not an easy process for users.
+A user would have to install the certificate and the corresponding private
+key on every system she uses. This would not be practical for shared systems.
+Moreover, if a client did have a certificate, any server can request it during
+TLS connection setup, thus obtaining the identity of the client. This could
+be desirable for legitimate banking transactions but not for sites where a user would like
+to remain anonymous.
+We generally rely on other authentication mechanisms, such as the password
+authentication protocol, but carry them out over TLS&#8217;s secure communication channel.</p>
+
+							</section>
+							<footer class="main">
+								Last modified April 21, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

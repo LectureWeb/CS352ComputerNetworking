@@ -1,0 +1,2114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 352 Exam 2 Study Guide </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+.rqbox {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+        position: relative;
+	width: 15em;
+        background-color: #FDF5B6;
+        border-style: double; border-width: 3px;
+        padding: 0.5em 0.5em 0.5em 0.5em;
+}
+</style>
+</head>
+
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<P>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a>  </li>
+ 	<li> <a href="../../index.html"> Rutgers </a>  </li>
+ 	<li> <a href="../index.html"> CS 352 </a>  </li>
+ 	<li> <a href="../exam/index.html"> Exam info </a>  </li>
+ 	<li> <a href="../exam/study-guide-2.html"> Exam 2 study guide </a>  </li>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main"> <div id="headline">
+<h1> Exam 2 study guide </h1>
+<h2> The one-hour study guide for exam 2 </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> Latest update: Fri May  6 12:14:08 EDT 2016
+ </p>
+</div>
+
+<p class="first">
+
+Disclaimer: 
+This study guide attempts to touch upon the most
+important topics that may be covered on the exam but does not claim to
+necessarily cover everything that one needs to know for the exam. Finally,
+don't take the <i>one hour</i> time window in the title literally.</p>
+
+<h1 id="transportlayer">Transport Layer</h1>
+
+<p>The network layer (layer 3 of the OSI stack) is responsible for machine-to-machine
+communication. The transport layer, one layer higher (layer 4), provides logical
+communication channels between applications. An application can create an
+arbitrary number of these channels, each of which has another endpoint on some process
+running on some host. Writing data onto this channel delivers it to the
+application that is reading data on the other end of this channel.
+The transport layer is responsible for implementing this abstraction.
+Routers in the network are unaware of this concept since they only provide
+network layer (machine-to-machine) services.</p>
+
+<p>There are multiple transport protocols available on top of IP, including TCP,
+UDP, and SCTP. TCP and UDP are by far the most popular of these.
+Two responsibilities of the transport layer are multiplexing and demultiplexing
+communication channels on the network and, in some cases, implementing
+reliable data transfer.</p>
+
+<p>Incidentally, a packet at the transport layer is called a <strong>segment</strong>; it
+is called a <strong>datagram</strong> at the network layer and a <strong>frame</strong> at the datalink layer.
+We send Ethernet frames, which contain datagrams that are routed by routers. These
+datagrams, in turn, contain segments that the transport layer of the operating
+system&#8217;s network stack processes.</p>
+
+<h2 id="transportlayermultiplexinganddemultiplexing">Transport layer multiplexing and demultiplexing</h2>
+
+<p><strong>Multiplexing</strong> and <strong>demultiplexing</strong> are the software mechanisms in place
+to combine data from multiple logical communication channels on a machine into
+a single stream of packets on the network
+and then separate a stream of incoming datagrams into the appropriate
+communication channels. This is important since communication on
+multiple sockets shares the same network connection. We can have multiple
+distinct streams at the transport layer that appear as a single stream of data
+to the network layer.</p>
+
+<p><strong>Multiplexing</strong> is the process of taking data from multiple
+communication channels (sockets) and sending it out of the machine as
+a stream of datagrams. <strong>Demultiplexing</strong> is the opposite process:
+separating the incoming stream of datagrams into the individual messages for the
+individual sockets to which each segment is targeted. </p>
+
+<p>The key to IP transport layer multiplexing and demultiplexing is the
+use of port numbers. Each transport layer segment contains source and destination
+port numbers. A <strong>port number</strong> is a 16-bit number that has a unique association
+to a socket (a communication endpoint) on each host.
+Naming a socket, also known as <strong>binding</strong>, is the process of associating
+a socket with a specific port number and address. The address is the local host&#8217;s
+IP address, of course. In the case where a host has several network
+interfaces, it will have that many IP addresses and it is possible to make the
+socket available on only one of these interfaces. More commonly, though,
+a special address, INADDR_ANY, is used to associate a socket with all available
+network interfaces. Port numbers are usually specified explicitly for server
+programs since clients will need to know where to contact them. For example,
+an SMTP mail server will typically listen for client connections on TCP port 25.
+A client, on the other hand, will generally not care what port it uses and
+specifying port 0 is a request for the operating system to pick any available unused port number.</p>
+
+<h2 id="udpmultiplexinganddemultiplexing">UDP multiplexing and demultiplexing</h2>
+
+<p>UDP is an extremely lightweight transport layer protocol on top of IP.
+Unlike TCP, it does not offer reliable message delivery and it does not guarantee
+that messages will be received in the order that they were sent.</p>
+
+<p>An incoming frame (e.g., ethernet packet) contains a protocol identifier
+that identifies the payload (the data part of the frame) as IP data.
+When that payload is passed to the
+IP layer, a field in the header of the IP datagram identifies the
+higher layer protocol as UDP. The UDP layer reads the destination port
+field in the UDP header and delivers the segment to the socket that
+is associated with that port number. The kernel maintains a hash table
+of socket structures that is indexed by a key that is created from the
+UDP destination port.
+With UDP, any segments addressed to
+a specific port number will be delivered to the socket that is identified
+with that port. We will see that this is different from TCP, which takes
+performs full demultiplexing based on the source <em>and</em> destination.</p>
+
+<p>While UDP does not have the reliability and in-order delivery
+advantages of TCP (or, as we shall see, rate adjustment to deal with congestion),
+there are several reasons that make it attractive for certain applications:</p>
+
+<ul>
+<li><p><strong>Segments are sent immediately</strong>. When a user writes data to a UDP socket,
+it immediately goes down the layers of the network stack and is transmitted
+onto the network. TCP may wait for an acknowledgement or
+for sufficient data in its transmit buffer instead of transmitting immediately.</p></li>
+<li><p><strong>Message boundaries are preserved</strong>. TCP treats a communication stream
+as a sequence of bytes. The number of writes to a socket does not necessarily
+correspond to the number of messages that will be received at the other end.</p></li>
+<li><p><strong>No connection setup overhead</strong>. With UDP, the first segment that is
+sent on the network can contain application data. With TCP, we first need to
+establish a connection with a three-way handshake, which requires an overhead of
+sending a segment and receiving an acknowledgement before we can send a segment
+with data.</p></li>
+<li><p><strong>UDP is stateless</strong>. The kernel has to keep track of sockets, of course, but
+does there is no need to keep track of sequence numbers, buffer for
+out-of-order data, acknowledgements, etc. This uses less kernel memory and
+makes error recovery and load balancing easier: requests can be redirected to
+other hosts spontaneously.</p></li>
+<li><p><strong>Smaller headers</strong>. UDP has an eight byte header compared to TCP&#8217;s 20-byte
+header. This leads to smaller packets on the network.</p></li>
+</ul>
+
+<h2 id="udpheaderandchecksum">UDP header and checksum</h2>
+
+<figure>
+<img src="images/UDP-sm.png" alt="Figure 1. UDP header with IP pseudo header" id="udp_fig" title="UDP header with IP pseudo header" style="width:350px;" />
+<figcaption>Figure 1. UDP header with IP pseudo header</figcaption></figure>
+
+
+
+<p>The UDP header (Figure 1) is eight bytes long. It contains the source and destination
+ports, segment length and a checksum. The <strong>checksum</strong> is a simple error-detecting code
+that allows the UDP layer to check
+for segment corruption. If the received segment contains an error, it is dropped and not
+delivered to the socket. The checksum is computed over the UDP header, application
+data, and a <strong>pseudo IP header</strong>. The pseudo IP header contains a subset of fields
+from the IP header (source address, destination address, transport protocol ID,
+and UDP segment length). It is included in the checksum computation to ensure
+that the UDP layer will not get any misrouted segments (this is a safeguard but
+the IP header has its own checksum, which is computed in the same way). </p>
+
+<p>The checksum is a 16-bit value. If the data being summed does not contain
+an even number of bytes (i.e., it does not have an integral multiple of 16-bit values),
+it is padded with a zero byte. The same <strong>ones&#8217; complement</strong> algorithm is used to compute checksums
+for IP headers, UDP headers, and TCP headers.
+The value of the checksum field is set to zero during
+the computation. To compute the checksum, all 16-bit chunks of data are added
+together. Each time the addition of two numbers results in an overflow, a one is added to the
+result.
+Finally, the bits of the final result are inverted.</p>
+
+<p>To validate the checksum, the receiver performs the same arithmetic,
+generating a checksum for the segment and pseudo IP header. Since the
+segment checksum is included in the header for this computation, the result for an
+error-free packet will be all ones (0xffff). This computation reliably
+detects single bit errors in the segment.</p>
+
+<h2 id="tcpmultiplexinganddemultiplexing">TCP multiplexing and demultiplexing</h2>
+
+<p>UDP offers only limited demultiplexing. Segments from multiple sockets
+(sources) that are directed to the same host address and port number
+are received by the socket on that host that is associated with
+that port number.</p>
+
+<p>With TCP, a connected socket is associated is associated with four values:</p>
+
+<ol>
+<li>the sender&#8217;s source address</li>
+<li>recipient&#8217;s (destination) address</li>
+<li>source port</li>
+<li>destination port</li>
+</ol>
+
+<p>Recall that with TCP sockets, a server first creates a socket
+whose sole purpose is listening for and accepting incoming
+connections. It does so with the <strong>listen</strong> system call.
+This socket is said to be in the LISTEN state.
+It will never be used for data transfer. Its only purpose is
+to accept incoming connections.</p>
+
+<p>When an incoming TCP connection request arrives at the host, the
+kernel searches for a socket in the LISTEN state where the packet&#8217;s
+destination address and port match those of the socket (the address
+can be &#8220;any&#8221; - a wildcard). The kernel then creates a <em>new</em> socket.
+The remote address and port are copied from the TCP segment header onto the
+new socket structure.
+Once the connection is set up, this new socket is in the ESTABLISHED state,
+indicating to the kernel that it has a connection to another
+socket. Any incoming TCP data segment will go to the socket that
+is associated with the source and destination addresses and ports in the
+segment header.</p>
+
+<h2 id="principlesofreliabledatatransfer">Principles of reliable data transfer</h2>
+
+<p>Given that the underlying IP network does not guarantee packet
+delivery, if a transport layer protocol wants to provide
+reliable data delivery, it has to implement it
+via software. We will first look at evolving
+<strong>reliable data transfer</strong> (<strong>RDT</strong>) software in general before
+turning our attention to how it is implemented in TCP specifically.</p>
+
+<p>If the underlying networking layer was indeed reliable,
+there would, of course, be no need for RDT. A sender would
+send a segment and a receiver would receive it and immediately
+<strong>deliver</strong> it to the application. </p>
+
+<h3 id="stop-and-waitprotocol">Stop-and-wait protocol</h3>
+
+<p>Let us now assume that <em>all</em> segments are received (this will
+not be a valid assumption in the real world of IP) but that
+some of them might have corrupted data. In this case, we may
+need to request retransmission of a segment because it
+arrived with errors. <strong>Automatic Repeat Request</strong> (<strong>ARQ</strong>)
+refers to a family of protocols that acknowledge
+received packets and request <strong>retransmission</strong> for bad packets. </p>
+
+<p>An <strong>acknowledgement</strong> (<strong>ACK</strong>), also known as a <strong>positive acknowledgement</strong>,
+is a <strong>receiver feedback</strong> message that confirms the successful receipt of a message. A
+<strong>negative acknowledgement</strong> (<strong>NAK</strong>) is a feedback message
+that tells the sender that a message was <em>not</em> successfully received.</p>
+
+<p>A simple protocol for providing RDT over a channel that always
+delivers segments but may introduce errors into them is to transmit
+one segment and wait for an ACK or NAK. A receiver sends an ACK if
+the segment was received without errors. Upon receipt of the ACK,
+the sender can transmit the next segment. A receiver sends a NAK
+if the segment was received with errors. Upon receipt of a NAK,
+the sender <strong>retransmits</strong> the same segment and again waits for an ACK or NAK.
+This form of ARQ protocol, where a segment will not be sent until the
+previously sent segment has been acknowledged, is called a <strong>stop-and-wait</strong> protocol.</p>
+
+<p>The protocol we just outlined fails in that it recognizes that data
+can be corrupted in transit but does not take that possible corruption into account for
+ACK/NAK messages. We can modify the protocol by adding a checksum for ACK/NAK
+segments and, upon receipt, detect if those segments are corrupted. If corrupted,
+we will treat the message as a NAK and retransmit the segment. This can
+result in the receiver getting <strong>duplicate packets</strong>. If a receiver
+gets a duplicate packet, it will need to ignore the data but still send an ACK in return.</p>
+
+<p>Now we need to distinguish
+new data from a retransmission. A <strong>sequence number</strong> allows us to do that.
+In the case of a stop-and-wait protocol, a one-bit sequence number suffices since
+we only need to distinguish between the current packet we&#8217;re waiting for
+and the retransmission of a correctly-received previous packet. This stop-and-wait
+protocol using a single-bit sequence number is called an <strong>alternating bit protocol</strong>.</p>
+
+<h3 id="removingnaks">Removing NAKs</h3>
+
+<p>We just saw two cases where a recipient gets a packet that it does not want:
+receipt of a duplicate packet (in which case it sends an ACK) and receipt
+of a corrupted packet (in which case it sends a NAK and awaits retransmission).
+We can remove the need for a NAK by using an ACK and adding a sequence number to it.
+The ACK will acknowledge the last packet that was correctly received. If
+the sender receives an ACK for a different number than the packet it
+most recently sent, it will treat that as a NAK and retransmit the packet.</p>
+
+<h3 id="rdtoveralossychannel">RDT over a lossy channel</h3>
+
+<p>So far, we only considered the case where packet data might be corrupted but
+the packets were always delivered to their destination. Now we need to account
+for the fact that packets may be lost. This can be due to overflow of a queue
+at a router or to data corruption in the packet header that prevents the packet from being
+routed to its destination.</p>
+
+<p>We place the burden of detecting a lost packet on the sender. The sender will
+not get an acknowledgement from a receiver in the case that a packet was never
+delivered or in the case that it was delivered but the acknowledgement message was lost.
+To detect this lack of acknowledgement, the sender will use a <strong>countdown timer</strong>.
+The timer is initialized when the packet is sent. If it times out before
+an acknowledgement is received, the sender retransmits the packet and
+reinitializes the timer. The timer should be set to some value that is longer
+than the average round-trip time so that the timeout will indicate a likely loss. Setting the timer
+to a too-short value will result in excess duplicate packets. Although the
+protocol can deal with them, we&#8217;d like to avoid an excessive amount of unnecessary retransmissions.</p>
+
+<h3 id="pipelining">Pipelining</h3>
+
+<p>A stop-and-wait protocol will not transmit a packet until the previous
+packet has been successfully sent and acknowledged. Having to wait a
+round-trip delay before sending the next packet yields horrible network
+utilization, often far less than 1%.
+Recall that <strong>network utilization</strong> is the ratio of the
+actual traffic on the network to the traffic that the network can
+support. </p>
+
+<p>A way to improve network utilization dramatically is to send successive packets without
+first waiting for acknowledgements of earlier packets. This technique is
+called <strong>pipelining</strong> and we will look at two approaches to pipelining:
+<em>Go-Back-N</em> and <em>Selective Repeat</em>. In order to send multiple packets
+without first waiting for an acknowledgement from each one, we will
+need to increase the range of sequence numbers so that we can identify
+packets and match an acknowledgement to a specific transmitted packet.
+We also need to save packets on the transmitter until they have been
+acknowledged by the receiver in case we need to re-send them. If the receiver gets
+out-of-sequence packets, it cannot deliver them to the application and
+may need to consider storing them in a receive buffer or else requesting
+those same packets from the sender again in the future.</p>
+
+<h3 id="go-back-ngbnprotocol">Go-Back-N (GBN) Protocol</h3>
+
+<figure>
+<img src="images/GBN-sm.png" alt="Figure 2. Go-Back-N sliding window" id="gbn_fig" title="Go-Back-N sliding window" style="width:400px;" />
+<figcaption>Figure 2. Go-Back-N sliding window</figcaption></figure>
+
+
+
+<p>The Go-Back-N protocol allows a sender to send multiple packets
+without waiting for an acknowledgement. Each successive packet
+has a monotonically increasing sequence number.
+A <strong>window size</strong> defines
+the maximum number of packets that could be transmitted before
+waiting for acknowledgements. The <strong>base</strong> of the window is
+the earliest packet that has been sent but not yet acknowledged.
+When an acknowledgement is received for a sequence number that
+corresponds to that packet, it can be discarded (the sender
+will never need to retransmit it) and the window advances,
+or <strong>slides</strong> to the next unacknowledged packet and the new
+packet that entered the window can now be transmitted.
+This is why Go-Back-N is called a <strong>sliding window protocol</strong>.</p>
+
+<p>The sender sends all packets that fall within the current
+window and starts a timer.
+The receiver expects to receive packets
+in the correct sequence number order but it may not get that. Whenever
+a packet is received correctly and is in the proper sequence,
+that packet is acknowledged with its sequence number and delivered
+to the application. The expected sequence number is incremented
+and the receiver waits for the next packet.</p>
+
+<p>If the receiver gets a packet that has a different sequence number,
+it discards the packet and
+sends back a duplicate acknowledgement (that is, the
+acknowledgement for the previous sequence number it received).
+An acknowledgement number <em>n</em>
+indicates that the receiver has correctly received all packets up to
+and including packet <em>n</em>.
+This form of acknowledgement is called a <strong>cumulative acknowledgement</strong>.
+The receiver only needs to keep track of the next sequence number it needs and
+only stores one packet at a time.</p>
+
+<p>When the sender receives an acknowledgement <em>n</em>, it advances
+the base of its window to <em>n</em>. Packets less than or equal
+to <em>n</em> can be discarded.
+Note that there is no harm in losing acknowledgements less than
+<em>n</em>; this acknowledgement indicates that <em>all</em> prior packets were
+received as well.
+If the acknowledgement number corresponds to the last packet that was
+sent, the sender has all outstanding acknowledgements and can
+stop the timer. Otherwise, the timer is restarted to wait for
+additional acknowledgments. If the timer expires, that means that
+some all transmitted packets have not been acknowledged; one
+or more packets have been lost (or the final acknowledgement
+has been lost). Upon timer expiration, the sender sends
+<em>all</em> packets that are in the current window. </p>
+
+<h3 id="selectiverepeatsrprotocol">Selective Repeat (SR) Protocol</h3>
+
+<p>With the Go-Back-N protocol, many packets can be in the
+pipeline: sent but not yet acknowledged. A single error
+in one of these packets will result in a timeout at the sender
+and hence a retransmission of <em>all</em> packets in the sender&#8217;s
+window. This can result in a lot of unnecessary retransmissions
+since the receiver will be getting packets that it has previously
+received correctly but discarded.</p>
+
+<p><strong>Selective Repeat</strong> (<strong>SR</strong>).
+Selective repeat, like Go-Back-N, is a sliding window protocol but
+allows the receiver to store and acknowledge out-of-order
+packets so that they do not need to be retransmitted.</p>
+
+<p>Instead of cumulative acknowledgements, the receiver sends an
+acknowledgement for the specific packet that was received.
+The sender&#8217;s window slides when the earliest packet in the
+window is acknowledged and always starts at the first
+unacknowledged packet. The window itself may contain a mix
+of acknowledged and unacknowledged packets.</p>
+
+<p>The receiver must also maintain a window since it may receive
+packets out of sequence and needs to buffer them. Whenever
+a packet is received in sequence, it can be delivered to the
+application. The receive window slides to the slot for the
+first non-received packet. </p>
+
+<p>Every transmitted packet has a separate timer associated with it.
+If an acknowledgement is not received successfully within that
+time, that specific packet is retransmitted. The receiver will
+acknowledge the packet if it fits in the window or if it
+is sequenced before the window. This latter case means that the
+packet is a duplicate of a packet that was already received
+and delivered to the application. If the packet is beyond
+the receiver&#8217;s window, it has no room to accept the packet
+and will ignore it.</p>
+
+<h1 id="transportlayer:tcp">Transport Layer: TCP</h1>
+
+<p><strong>TCP</strong>, the <strong>Transmission Control Protocol</strong>, is the dominant transport protocol on the Internet.
+Where UDP was a thin layer over IP that provided us with multiplexing and a limited
+demultiplexing service (the source host was not factored into the demultiplexing - that&#8217;s up
+the the application to process),
+TCP provides applications with a <em>reliable</em>, <em>bidirectional</em> communication channel.
+In addition, TCP attempts to be a good network citizen and manage the <strong>flow control</strong> of
+data to ensure that the receiver&#8217;s buffer does not overflow and to avoid network <strong>congestion</strong>.</p>
+
+<p>TCP is a <strong>connection-oriented</strong> protocol. This does <em>not</em> mean that a virtual circuit
+is established in the network. Indeed, routers are not aware of TCP any more than they are
+of UDP or other transport layer protocols.
+TCP is a form of protocol design called <strong>end-to-end control</strong>, where only the endpoints
+are responsible for the integrity of the connection. Routers do not
+guarantee not to drop packets, ensure the are sequenced correctly, or correct errors.
+The &#8220;connection&#8221; is managed in software at both
+end systems. Because the hosts need to keep track of the state of the communication channel,
+TCP has an initial <strong>connection setup</strong> step that comprises a three-way handshake where parameters
+such as port numbers, sequence numbers, and buffers are established. Once the connection
+is established, all messages are acknowledged and retransmitted if lost. When the session is
+complete, TCP enters a <strong>teardown</strong> phase to ensure both sides are informed that the connection
+is no longer needed and that they can free up resources that were used for the connection.</p>
+
+<p>TCP&#8217;s communication is <strong>full duplex</strong>. This means that if a process <em>A</em> established a TCP
+connection to process <em>B</em> then process <em>B</em> can use the same connection to send data to
+process <em>A</em>. </p>
+
+<h2 id="tcpsegments">TCP Segments</h2>
+
+<p>TCP sends <strong>segments</strong> between the sender and receiver. A <strong>segment</strong> is simply the
+transport layer term for a packet. The sending process writes data to a socket. This
+data is copied to the operating system kernel and ends up in TCP&#8217;s <strong>send buffer</strong>,
+a pool of memory devoted to that specific connection. TCP reads chunks of data from this
+send buffer, creates TCP segments, and sends them down to the IP layer for transmission
+onto the network (the IP layer will, in turn, send the IP datagram to the data link layer,
+which will actually get it to the network). When an IP datagram arrives at the
+destination machine, a <strong>protocol</strong> field in the IP header identifies the message as a TCP
+message and IP forwards it up to the TCP driver. TCP then examines the source address,
+source port, destination address, and destination port for find the appropriate socket
+for this segment. The data is placed in that socket&#8217;s <strong>receive buffer</strong>, the counterpart
+to the send buffer that is a pool of memory used to hold received data that did not
+yet make it up to the application.</p>
+
+<p>Note that, unlike in UDP, TCP views the data coming from the application as
+a stream of bytes rather than individual messages that need to be sent out.
+There is no assurance that writing, say, 20 bytes to a socket will result in
+20 bytes of data being transmitted in a TCP segment. If there was other
+data in the send buffer that was ready to transmit, it could be combined with
+this new data. Similarly, the 20 bytes may not be transmitted immediately but
+combined with additional data that is written onto that socket.</p>
+
+<h3 id="maximumsegmentsize">Maximum Segment Size</h3>
+
+<p>When the TCP driver reads bytes from data in the send buffer to create outgoing segments, it makes
+sure that the number of bytes is grabs is
+less than the <strong>maximum segment size</strong> (<strong>MSS</strong>) to make sure it does not try to send a segment
+larger than the underlying network can transmit.
+Data link layers have a <strong>Maximum Transmission Unit</strong> (<strong>MTU</strong>), the largest payload
+that they can carry. For a TCP segment to fit into a data link frame, the IP header,
+TCP header, and application data must be no larger than the MTU.
+Ethernet supports an MTU of 1500 bytes (with support for an MTU of 9,000 bytes for
+jumbo frames in gigabit ethernet) while 802.11 (Wi-Fi) supports a 7981-byte MTU.
+Since IP and TCP headers are each 20 bytes long, the MSS is typically the MTU minus 40 bytes.
+Hence, a common MSS on an ethernet network is 1460 bytes (1500&#8211;40).</p>
+
+<h3 id="pathmtudiscovery">Path MTU Discovery</h3>
+
+<p>It is easy enough for the TCP layer to find out the MTU of the local link layer, subtract 40,
+and compute a value for the MSS. While this is fine for communication within the LAN, this
+does not ensure that some link that the packet traverses to the destination will not have
+a smaller MTU, resulting in the need to fragment the packet (which is undesirable).
+The <strong>path MTU</strong> is the minimum MTU of all the hops along the path the destination.
+Unfortunately, there is no foolproof way of determining this value.
+IP networks are required to support an MTU of 576 bytes (512 bytes of data plus up to 64 bytes for headers).
+However, most network links can support larger MTUs (for example, and MTU of 1500 bytes works on
+practically all routers in the Internet but support is not guaranteed).</p>
+
+<p><strong>Path MTU Discovery</strong>
+(<a href="http://www.ietf.org/rfc/rfc1181.txt">RFC 1181</a> and
+<a href="http://www.ietf.org/rfc/rfc1191.txt">RFC 1191</a>) defines a method for a host to discover
+the path MTU and hence set its MSS to the maximum possible value.</p>
+
+<p>It works by initially assuming that the path MTU is the MTU of the first hop
+(this is local to the host and easy to find). All initial datagrams are
+sent to the destination with the <strong>&#8220;don&#8217;t fragment&#8221;</strong> (DF) bit
+set in the IP header. If a router needs to route the datagram
+to a link with a smaller MTU, the router will discard the datagram
+and send back an ICMP<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a> datagram containing an
+<em>ICMP Destination Unreachable</em> message with a code indicating
+<em>fragmentation needed</em>.
+The MTU of the outbound link is placed in the ICMP message.
+Upon getting this response, the sending host reduces its MTU to the returned value and
+tries again. Since routes may change periodically, the Path MTU process is repeated
+periodically (every 10 minutes on Linux and Windows systems by default).</p>
+
+<h2 id="tcpstructure">TCP structure</h2>
+
+<figure>
+<img src="images/TCP-header-sm.png" alt="TCP header" id="tcpheader" title="TCP header" style="width:350px;" />
+<figcaption>TCP header</figcaption></figure>
+
+
+
+<p>A TCP segment comprises at least 20 bytes of a TCP header followed by a variable number of
+bytes of application data. The TCP header is prefixed by an IP header that, in turn,
+is encapsulated in a link layer header.</p>
+
+<p>Some of the key parts of the TCP header are:</p>
+<dl>
+<dt>Source port number</dt>
+<dd>Identifies the port number of the sender&#8217;s socket.</dd>
+
+<dt>Destination port number</dt>
+<dd>Identifies the port number of the receiver&#8217;s socket.</dd>
+
+<dt>Checksum</dt>
+<dd>Like UDP, this is a 16-bit 1s complement sum of the TCP header, application data,
+and <strong>IP pseudo header</strong>. The IP pseudo header is a subset of the fields in the
+IP header: source address, destination address, protocol ID, and the length of the
+TCP header and data. All the data is added in 16-bit chunks. Any overflow carries result
+in a 1 added to the result. The final result is complemented (bits inverted).
+When the receiver performs the same operation and includes the checksum field,
+the result for an uncorrupted packet is all 1s (0xffff).</dd>
+
+<dt>Sequence number</dt>
+<dd>Every byte that is transmitted is counted starting from some <strong>initial sequence number</strong>.
+The 32-bit sequence number of the TCP segment is the number of the first byte in the data.
+The sequence number is an essential part of TCP&#8217;s reliable data transfer service.</dd>
+
+<dt>Acknowledgement (ACK) number</dt>
+<dd>A receiver sends back a 32-bit acknowledgement number that is the sequence number
+of the next byte that it expects to receive. This too is an
+essential part of TCP&#8217;s reliable data transfer service.</dd>
+
+<dt>Receive window</dt>
+<dd>The receiver tells the sender the maximum number of bytes that it is capable of
+receiving. This 16-bit value takes priority over the MSS (maximum segment size).</dd>
+
+<dt>Header length</dt>
+<dd>The header length indicates the number of 32-bit words in the TCP header. Note
+that the IP header contains the total datagram length, which can be used to determine
+how much data is in the message.
+The basic TCP header is 20 bytes and the minimum value of the header length is hence 5 (20 bytes =
+5 32-bit words). TCP supports optional data in its header and this may make the header
+larger.</dd>
+
+<dt>TCP Options</dt>
+<dd>If the header length is greater than 5, that means there are more than 20 bytes in the header
+and TCP options are present. TCP options are located at the end of the normal 20-byte
+header.
+While approximately 32 different options are defined, some are obsolete and many
+are never used. The most commonly used options include:</dd>
+</dl>
+
+
+<ul>
+<li><strong>Maximum Segment Size</strong>: defines the maximum segment size that will be used during
+a connection between two hosts.</li>
+<li><strong>Window Scaling</strong>: extends the number of bits for the receive window to allow the TCP
+window size to be specified as a 30-bit number instead of a 16-bit number.</li>
+<li><strong>Selective Acknowledgements</strong>: allow the receiver to inform the sender if it received
+any out-of-order segments.</li>
+<li><strong>Timestamps</strong>: an extension to allow more accurate mechanism to measure
+segment delivery time, including retransmissions.</li>
+</ul>
+<dl>
+<dt>Flags</dt>
+<dd>A number of 1-bit flags are present in the header. These are:</dd>
+</dl>
+
+
+<ul>
+<li><p><strong>ACK</strong>: informs the recipient of the segment that the acknowledgement field contains a valid sequence number.</p></li>
+<li><p><strong>RST</strong>, <strong>SYN</strong>, <strong>FIN</strong>: These are used to set up and tear down the TCP connection.
+The SYN (&#8220;Synchronize&#8221;) flag is used in the handshake used to set up a connection.
+The FIN (&#8220;Finish&#8221;) flag is used to close a connection.
+The RST (&#8220;Reset&#8221;) flag indicates that a segment was received for a closed or nonexistent socket.</p></li>
+<li><p>PSH (&#8220;Push&#8221;): Tells the receiver to pass the received data to the application layer immediately.
+This flag is not used in practice.</p></li>
+<li><p>URG (&#8220;Urgent&#8221;): Tells the receiver that the application data contains a region of &#8220;urgent&#8221;
+data, possibly along with &#8220;non-urgent&#8221; data. The 16-bit <strong>urgent data pointer</strong> is an index to the
+last byte of this data. As with PSH, the concept of urgent data is not used.</p></li>
+<li><p>NS (&#8220;Nonce Sum&#8221;), CWR (&#8220;Congestion Window Reduced&#8221;), and ECE (&#8220;Explicit Congestion Expected&#8221;)
+are all part of an Explicit Congestion Notification protocol, which is an extension to IP.
+Not all routers support this and we will not cover this extension.</p></li>
+</ul>
+
+<h2 id="tcpsequencenumbers">TCP Sequence Numbers</h2>
+
+<figure>
+<img src="images/TCP-seq-sm.png" alt="TCP sequence numbers" id="tcpsequencenumbers" title="TCP sequence numbers" style="width:250px;" />
+<figcaption>TCP sequence numbers</figcaption></figure>
+
+
+
+<p>TCP views application data as a sequence of bytes and each byte in the sequence
+is assigned a <strong>sequence number</strong>. The sequence number in each TCP segment
+is the sequence number of the first byte in that segment.
+For example, if the current sequence number is 500 and we transmit
+a segment containing 1460 bytes, the segment will contain a sequence number
+of 500. If the following segment contains 1000 bytes, the sequence
+number of the segment will be 1960, which is 500 (the last sequence number)
+plus 1460 (the number of bytes that was sent with the last segment). Sequence
+numbers are 32-bit values and do not have to start with 0. The value may
+wrap around the 32-bit boundary, so all sequencing is done modulo 2<sup>32</sup>
+(mod 4,294,967,296).</p>
+
+<h2 id="tcpacknowledgementnumbers">TCP Acknowledgement numbers</h2>
+
+<p>Received TCP segments are acknowledged by the receiver. TCP uses <strong>pipelining</strong>
+and permits several segments to be sent at once prior to waiting for
+an acknowledgement (more on this later).</p>
+
+<p>An <strong>acknowledgement number</strong> is present in a received segment and is a
+32-bit number that indicates the sequence number of the next byte that
+the remote host is expecting to receive next. For example,
+in the above example we sent 1460 bytes with a sequence number of 500.
+Upon receipt of this segment, the return segment will contain an acknowledgement
+number of 1960, the sequence number of the next byte that the receiver needs.
+The message it just received contained bytes numbered 500 through 1959.
+When the receiver receives the next segment, 1000 bytes with a sequence number
+of 1960, it will return an acknowledgement number of 2960.</p>
+
+<p>It would be a waste of network resources to send back a TCP segment containing
+nothing but an acknowledgement number. While this is inevitable in some cases,
+if the receiver happens to have data to transmit back to the sender, the acknowledgement
+number is simply set in the TCP header of the transmitted segment, completely
+avoiding the need to send a separate acknowledgement. Using an outgoing
+data segment to transmit an acknowledgement is known as a <strong>piggybacked acknowledgement</strong>.</p>
+
+<p>TCP uses <strong>cumulative acknowledgements</strong>.
+The acknowledgement number that a receiver sends inside a TCP header
+is always the sequence number that the receiver
+wants to see next. Going back to the earlier example, if a receiver receives
+1460 bytes with a sequence number of 500, it sends back an acknowledgement for
+the next byte it wants: 1960. Suppose that the next segment it receives
+contains 500 bytes with the sequence number 2960. This means that the desired segment was either lost
+or will be arriving out of sequence. Upon receiving the segment with sequence
+number 2960, the receiver generates an acknowledgement (all segments get acknowledged)
+but the acknowledgement
+number is the number of the earliest sequence it does not yet have: 1960. Hence,
+the sender will get back <strong>duplicate acknowledgements</strong> for 1960. </p>
+
+<p>To avoid sending too many data-free acknowledgement segments, a receiver is allowed to
+wait up to 500 ms (half a second) before sending an acknowledgement. If another
+segment comes in during that interval, a cumulative acknowledgement must be sent.
+For a steady stream of messages, therefore, cumulative ACKs need to be sent for every other
+packet. However, any out-of-order segments must be acknowledged upon receipt.</p>
+
+<p>A receiver does not have to store segments that were received out of sequence but
+it is more efficient to do so and practically every implementation of the TCP
+protocol does this. Continuing our example, suppose that the receiver
+does get the segment containing sequence number 1960 after receiving
+the segment withe the sequence number 2960; the segment really did arrive out of
+order and was not dropped.
+Now the receiver can fill in its hole in the receive buffer. It just
+got bytes 1960&#8230;2959 and it already had bytes 2960&#8230;3459 from the earlier
+receipt of the segment with sequence number 2060. The acknowledgement it sends
+now will be the cumulative acknowledgement &#8211; the sequence number of the next
+byte it needs: 3460.
+The sender will see acknowledgements of 1960, 1960, and 3460.
+Had the transmitted segments arrived in order, the acknowledgements
+would have been 1960, 2960, and 3460.</p>
+
+<h2 id="tcpconnectionsetupandteardown">TCP Connection setup and teardown</h2>
+
+<h3 id="connectionsetup">Connection setup</h3>
+
+<p>TCP employs a <strong>three-way handshake</strong> to set up a connection: a process of SYN, SYN-ACK, and ACK.
+The client initiates the process; it creates a random initial sequence number (client_isn) and
+sends it to the server in a TCP segment with the <strong>SYN</strong> flag set.
+The server receives this and allocates send and receiver buffers as well
+as variables. This set of data, containing all the information about a connection,
+is called the <strong>transmission control block</strong> (<strong>TCB</strong>). The server then
+creates a <strong>SYN-ACK</strong> segment that acknowledges the
+received sequence number and contains a random sequence number from
+the receiver. This segment also has the SYN bit set.
+Upon receiving this, the client acknowledges the server&#8217;s sequence
+number by sending the final <strong>ACK</strong> segment to the server and
+allocates its own TCP buffers and variables for the connection.</p>
+
+<h3 id="synflooding">SYN flooding</h3>
+
+<p>Kernel memory is finite and the operating system will not allocate an unlimited amount
+of memory for managing TCP connections. A <strong>denial-of-service attack</strong> called
+<strong>SYN flooding</strong> sends a large number of SYN segments to a machine but
+usually uses an unreachable return address to
+never complete the handshake to set up a legitimate connection. The
+recipient normally allocates memory for each SYN segment that it receives, expecting
+each to become a legitimate connection. Eventually, kernel memory is exhausted
+and the operating system will not allow any more incoming TCP connection requests,
+including, of course, legitimate ones. The operating system will continue
+to refuse incoming connections until those incomplete ones time out. The connection
+setup timeout
+is an administrator-configured value and can range from half a minute to several
+minutes.</p>
+
+<p>Several approaches have been proposed to deal with SYN flooding.
+One of these is <strong>SYN cookies</strong>.
+The key realization is that the kernel allocates memory (the TCB)
+before the connection is fully set up. With the technique of SYN cookies,
+<strong>no state is saved</strong> (no memory allocated) upon the receipt of a connection
+request. Instead, any needed information is encoded into
+the initial sequence number. Since that sequence number (+1) will be
+sent back in the final ACK from the client, the server will be able
+to validate that the ACK, and hence the requesting client, is legitimate.
+The initial sequence number that the server creates is a hash of
+the source and destination IP addresses, ports, and some secret value
+known only to the server. A client will not be able to spoof this value
+since it does not know the secret but a server can easily validate it
+from the acknowledgement number in the ACK message from a legitimate client.</p>
+
+<h3 id="mssannouncement">MSS announcement</h3>
+
+<p>TCP provides an option during connection setup to tell the other side
+its maximum segment size (MSS); that is, the largest size segment that
+it is willing to accept.
+If both machines are on the same LAN, the MSS is likely to be the MTU of the
+network interface minus the size of the protocol headers (20 bytes for IP and 20
+more bytes for TCP), although it can differ even here if, for example, one
+device supports jumbo (9000-byte) Ethernet packets and the other does not.
+The Internet requirement is that all IP routers support an MSS of at least 536
+bytes.</p>
+
+<h3 id="invalidmessages">Invalid messages</h3>
+
+<p>If a host receives a TCP segment where the port numbers or source address
+to not match any connection (e.g., the socket is closed or there is
+no listener on that address), it will send back a <strong>reset segment</strong>, a
+TCP segment with the <strong>RST</strong> flag set. In the case of UDP, an attempt
+to send a message to a port that does not have any process listening
+on it will result in the generation of an ICMP message back to the sender.</p>
+
+<h3 id="connectionteardown">Connection teardown</h3>
+
+<p>Either the sender or the receiver can decide to terminate a TCP connection.
+Termination involves telling the other side that you are finished sending
+data, getting an acknowledgement, and then freeing allocated resources for
+that connection.</p>
+
+<p>This is a two step process between the two hosts (let&#8217;s call them A and B).
+The the host that initiates the teardown, host A,
+sends a <em>finished</em> message: a TCP segment with the <strong>FIN</strong> flag set. It
+then enters the FIN_WAIT_1 state and waits for an acknowledgement from host B.
+This FIN message is a promise that host A will not send any more data on the connection.
+Host B sends the acknowledgement and enters the CLOSE_WAIT state. It may
+still have data to send, however. Upon receiving the acknowledgement, host A enters the
+FIN_WAIT_2 state and waits for host B to terminate its side of the connection.
+Host B does the same thing that host A did: once it has no more data to send, it sends
+a TCP segment with the
+<strong>FIN</strong> flag set and enters the LAST_ACK state, which means it is waiting for the
+final acknowledgement from host A. When host A receives the FIN message,
+it knows that it will receive no more messages from host B. It sends the final
+ACK to host B and enters the TIME_WAIT state, which is a timeout period to ensure
+that host B receives the final ACK and there are no stray packets for that connection in
+the network.</p>
+
+<h2 id="timeouts">Timeouts</h2>
+
+<p>Since TCP does not know about the congestion or performance of the underlying network and
+the network does not provide any guarantees for packet delivery, TCP relies on a time limit
+to determine if any transmitted segments were lost. If an acknowledgement is not
+received within a specific time limit then the sender may assume that the segment
+was lost. Since IP provides no guarantees on the timeliness of delivery, this
+<strong>retransmission timeout</strong> (<strong>RTO</strong>)
+can only be a best guess. We need a value that is long enough to avoid excessive
+timeouts and retransmissions but is short enough to avoid excessive waits. </p>
+
+<p>TCP keeps track of the average round-trip time of segments. Since these may fluctuate
+over time, TCP uses an <strong>exponentially weighted moving average</strong> (<strong>EWMA</strong>), which places
+approximately 10&#8211;20% of the weight on the most recent RTT measurement.
+This average of the RTT is called the <strong>smoothed round trip time</strong>, or <strong>SRTT</strong>.</p>
+
+<p>The second thing that TCP keeps track of is how much the recently measured
+round-trip time deviated from the SRTT. This too is is an EWMA function,
+placing approximately 25% of the weight on the most recent deviation.
+The average delay is called the <strong>round-trip time variation</strong>, or <strong>RTTVAR</strong>.
+It is an estimate of how much the RTT typically deviates from the average RTT
+and is an approximation to the standard deviation, which would be slower
+to compute.</p>
+
+<p>The retransmission timeout (<strong>RTO</strong>) value is set to a function of the SRTT and RTTVAR:</p>
+
+<pre><code>timeout interval = SRTT + 4 * RTTVAR
+</code></pre>
+
+<p>However, whenever a timeout occurs, this value is doubled. The timeout value
+is doubled for each timed-out retransmission up to a value of 64 seconds. This doubling
+of the timeout is called an <strong>exponential backoff</strong>. Whenever an acknowledgement is received
+without a timeout, the timeout interval is reset to its base value.</p>
+
+<h2 id="tcpreliabledatatransfer">TCP Reliable Data Transfer</h2>
+
+<p>When an application writes data to a socket, the data is copied over to the <strong>send buffer</strong>
+for that socket&#8217;s TCP connection. Some time later (the time is not specified in the standards),
+TCP will grab data sitting in the send buffer and create and transmit one or more TCP
+segments, each with the appropriate sequence number.
+The first of these segments will cause the <strong>RTO timer</strong> to be set. Whenever
+any segment containing an acknowledgement from the receiver arrives, the timer is reset.
+If the acknowledgement number is greater than the sequence number of the base of the
+send buffer, the sender can remove all bytes prior to that of the acknowledgement number
+from the send buffer since it knows that the receiver has them. If a timeout
+occurs, TCP will retransmit only one segment, the non-acknowledged segment with the smallest
+sequence number, double the timeout interval, and restart the timer.</p>
+
+<p>Let us consider a few cases to illustrate how this works.</p>
+
+<h3 id="lostack">Lost ACK</h3>
+
+<p>If an acknowledgement is lost and the sender times out (meaning that there were no
+additional segments sent), the sender will retransmit that segment. The receiver,
+upon getting it, will see that it does not need that sequence number (it is a
+duplicate segment) and will discard the segment but will send an acknowledgement back to the sender.</p>
+
+<p>Another case is when the sender sent two segments but the acknowledgement to the first one
+was lost. Because acknowledgements are cumulative and the sender gets the second, cumulative
+acknowledgement, it knows that the sender has received all the bytes and a retransmission is
+not necessary.</p>
+
+<h3 id="delayedacks">Delayed ACKs</h3>
+
+<p>If the network round-trip time suddenly became much longer than expected, acknowledgements
+to a sequence of segments might arrive after a timeout. When the timeout occurs, the
+sender will retransmit only the earliest unacknowledged segment and restart the timer.
+Suppose now that acknowledgements for the previously transmitted segments arrive.
+TCP will process them and adjust the base of its send buffer if those bytes are no longer
+needed. When the receiver gets the duplicate packet, it will discard it but send an
+acknowledgement. Some time later, the sender will receive this acknowledgement but
+see that it is a duplicate and hence discard it.</p>
+
+<h3 id="tcpfastretransmit">TCP Fast Retransmit</h3>
+
+<p>As we have seen, TCP uses pipelining and can send multiple segments before waiting
+for acknowledgements. If a receiver detects a missing sequence number, it means one of
+two things: a segment was lost (either discarded due to queue overflows or due to
+data corruption) or that a segment is delivered out of sequence. TCP does not use
+negative acknowledgements but sends an acknowledgement for every received out-of-sequence
+segment with the sequence number of the next byte it needs. In the case where a segment has
+indeed been lost, every segment after that will be acknowledged with the same sequence
+number. Hence, the receiver will see a stream of duplicate acknowledgements.</p>
+
+<p>If TCP receives three segments with duplicate
+acknowledgement numbers, it assumes a segment was lost (the assumption is that it is
+unlikely that one segment was routed or delayed such that three others arrived first).
+Instead of waiting for an RTO to occur, TCP will transmit that missing segment
+(the one with the sequence number of the ACK). This technique is
+called a <strong>fast retransmit</strong> because the protocol retransmits the segment
+without waiting for the RTO to occur.</p>
+
+<h3 id="selectiveacknowledgements">Selective Acknowledgements</h3>
+
+<p>TCP behaves in a similar manner, but not quite the same, as the Go-Back-N protocol.
+The sender only keeps track of the
+earliest sequence number that has been transmitted but not acknowledged. A distinction
+is that, in the case of a timeout, Go-Back-N will retransmit <em>all</em> segments in its
+window while TCP will only retransmit the lowest (earliest) segment. </p>
+
+<p>With this behavior, having the receiver store out-of-order segments is
+optional. The receiver may store them. If it does, and the receipt of
+a segment fills in a hole (missing segment), then TCP will send back
+a cumulative ACK, ensuring that the sender will not have to retransmit those
+segments. However, the sender does not know if this will happen and has
+to hold on to all unacknowledged segments in its send buffer just
+in case any or all of those segments have to be resent.</p>
+
+<p>An optional enhancement to the TCP protocol uses the <em>options</em> field in the
+header to allow the receiver to send over a list of {start byte, end byte}
+values to identify the specific range of bytes that have been received.
+These are called <strong>Selective Acknowledgements</strong> and make the protocol behave like
+a Selective Repeat protocol.
+The acknowledgement number in the TCP header is unchanged but the list of
+received byte ranges allows the sender to
+remove those enumerated segments from its send buffer since it knows that
+they will never have to be retransmitted. </p>
+
+<h2 id="receiver-regulatedflowcontrol">Receiver-regulated flow control</h2>
+
+<p>It would be pointless to keep sending data to the receiver if the
+receiver&#8217;s application isn&#8217;t keeping up with reading it.
+In addition to slowing down transmission due to congestion (which
+we will look at next), TCP allows the receiver to tell the sender
+to tell it how much space it has in the receive window (the free
+space in the receive buffer).
+It does this by placing the size of the receive window into
+the <strong>receive window</strong> field in the TCP header in each segment
+that is sent to the sender.</p>
+
+<p>One problem that can arise is if the receive window size is zero,
+the sender would stop transmitting and not get feedback from
+the receiver once the window size became bigger when the application
+consumed some data. The feedback is absent because the receiver
+already sent acknowledgements for all received segments.
+To remedy this, the sender uses <strong>probing</strong>:
+if the receive window is zero, the sender will periodically send
+a message with one byte of data. The receiver does not have to
+accept this data if the window size is truly zero (the sender will
+retransmit) but this gives the receiver a chance to send an
+acknowledgement segment with a non-zero receive window once
+there is room in the buffer.</p>
+
+<h2 id="tcpcongestioncontrol">TCP Congestion Control</h2>
+
+<p>TCP tries to be a good network citizen and decrease the rate at which a sender sends
+traffic based on its perception of <strong>congestion</strong> in the network.
+This is in addition to TCP&#8217;s flow control where a recipient can tell
+a sender to send less data by giving it a smaller window.</p>
+
+<p>TCP uses a <strong>sliding window</strong> approach to flow control.
+The way that TCP controls the rate at which data is sent on a network is
+by adjusting the size of its sending window. Recall that a window size
+regulates the number of bytes that can be sent before waiting for acknowledgements
+from the recipient. We have seen that a window size of one MSS gives us a
+stop-and-wait protocol where we can send out only one segment before waiting
+for an acknowledgement for the receipt of that segment. In general, the
+transmission rate is the <strong>window size divided by the round-trip time</strong>.
+TCP&#8217;s use of the sliding window algorithm makes the protocol <strong>self-clocking</strong>:
+packet transmission is timed by the receipt of acknowledgements; each
+acknowledgement slides the window.</p>
+
+<p>A TCP connection receives a maximum size that the receiver can accept in
+the <strong>receive window</strong> field of the TCP header (abbreviated as <strong>rwnd</strong>).
+In addition to that, the
+transmitter will dynamically adjust its transmit window size based on
+its guess of network congestion. This window size is called the
+<strong>congestion window</strong>, abbreviated as <strong>cwnd</strong>. At any point in time,
+the maximum window size will be the smaller of these two windows: rwnd and cwnd.</p>
+
+<p>IP provides no guarantees on the accuracy or timeliness of end-to-end
+packet delivery through the network, nor does it provide any data on the
+levels of traffic in the network or queue sizes at routers.
+TCP, therefore, relies on making assumptions on congestion based on observed behavior.
+If an RTO occurs or three duplicate acknowledgements
+are received, the protocol assumes a segment was lost. Segment loss often
+implies congestion, so TCP will decrease its transmission rate by reducing
+the size of its congestion window, cwnd.
+On the other hand, if TCP gets acknowledgements for sent packets then there
+is no packet loss and therefore no congestion. In this case, TCP will increase
+its transmission rate by increasing the size of its cwnd. This continuous
+approach of increasing the transmission rate until packet loss occurs and
+then decreasing it is called <strong>bandwidth probing</strong>. The connection tries to
+see if it can transmit faster, backing down when problems arise, and then
+trying again.</p>
+
+<h3 id="aimd">AIMD</h3>
+
+<p>TCP&#8217;s congestion control is called <strong>Additive Increase / Multiplicative Decrease</strong> (<strong>AIMD</strong>).
+While a connection is experiencing no packet loss, it will increase
+its congestion window by one MSS every round-trip time (RTT), hence increasing its
+transmission rate. This is an <strong>additive increase</strong> (linear increase).
+If cwnd was 15 segments and all 15 segments
+were sent and acknowledged, the window is then increased to 16 segments.</p>
+
+<p>In practice, we don’t wait for all the segments in the window to be sent out before
+increasing the windows size. We increase the window size (cwnd) fractionally for each arriving ACK.
+The number of segments that fit into a window is <strong>cwnd/MSS</strong>.
+After that many segments have been delivered, we want to increase cwnd by one segment (MSS bytes).
+That means for each ACK (each received segment),
+we will increase cwnd by this fractional amount: MSS divided by segments_per_cwnd, or MSS / cwnd/MSS.
+The assumption is that we always have data to transmit so every segment will be of size MSS.</p>
+
+<p>If TCP feels that it has congestion (because of lost segments), the
+congestion window is halved. This is a <strong>multiplicative decrease</strong>.
+AIMD is a necessary condition for TCP congestion control to be stable in the
+system as a whole and ensure that some connections do not end up monopolizing
+the network link.</p>
+
+<h3 id="statesoftcpcongestioncontrol">States of TCP congestion control</h3>
+
+<p>TCP operates in one of three states: Slow Start, Congestion Avoidance, and Fast Recovery.</p>
+
+<p>If we start with a congestion window of one MSS and increase it linearly, it can take
+a long time before we reach an effective transmission rate. TCP <strong>Slow Start</strong>
+<em>prevents</em> this slow ramp at startup by increasing the cwnd size exponentially.
+The congestion window starts at one MSS and increases by one MSS with
+each received ACK, causing it to double every RTT. Slow Start starts off
+slowly but speeds up quickly. It continues to increase until cwnd reaches
+a threshold level, called <strong>ssthresh</strong> (<strong>slow start threshold</strong>). Then the protocol switches to <em>Congestion Avoidance</em>.
+Initially, ssthresh is effectively not set (set to a maximum value), so the rate
+of transmission continues to increase exponentially until a transmission times out
+waiting for an ACK. At this time, the protocol sets the threshold, ssthresh, to
+<em>one half</em> of the window size that resulted in the RTO and restarts the Slow Start
+process. This second time, it will ramp up to the threshold and then
+switch to the Congestion Avoidance state (unless packet loss occurs).</p>
+
+<p><strong>Congestion Avoidance</strong> is the normal state for TCP. The state is entered
+after Slow Start reaches its threshold, which is one half the last window size that experienced
+an RTO due to packet loss. Congestion avoidance continues to increase the
+window size (cwnd) but does so linearly: one MSS per RTT. This continues until one
+of two events occur. If an RTO occurs, then ssthresh is set to half
+of the cwnd (half of the current window size when the packet loss occurred), cwnd is
+set to one MSS, and the protocol moves to the Slow Start state.
+If three duplicate ACKs are received then instead of
+going all the way back to cwnd=1 and a Slow Start, the protocol switches to Fast Recovery.</p>
+
+<p><strong>Fast Recovery</strong> is entered only when three duplicate ACKs are received.
+The receipt of three or more duplicate ACKs is a sign that we lost a segment
+but data is still flowing between the sender and receiver since each of those ACKs was generated
+when a segment was received.
+They are duplicates because one needed segment was not received.
+Fast Recovery assumes that cwnd is the estimated system capacity.
+Instead of reducing data flow abruptly by going into Slow Start, ssthresh
+and the congestion window are cut to half of their current size (this is a
+<strong>multiplicative decrease</strong>).
+Fast Recovery loops, picking up every duplicate acknowledgement it
+receives and increases cwnd by 1 MSS each time it does so. This includes
+the three duplicates that caused TCP to enter this state.
+Once a non-duplicate acknowledgement is received, cwnd is set back
+to the threshold, ssthresh, and the state is switched to Congestion Avoidance (<strong>additive increase</strong>).
+Should a retransmission timeout occur, the same thing happens as anywhere else that an
+RTO occurs: ssthresh is set to half the window size, cwnd is set to one MSS,
+and TCP switches to the Slow Start state.</p>
+
+<h3 id="summaryoftcpcongestioncontrol">Summary of TCP congestion control</h3>
+
+<p>TCP congestion control is always operating in one of three states.</p>
+
+<ol>
+<li><p>Whenever the congestion window, cwnd, is below the slow start threshold, ssthresh,
+ the protocol is in the Slow Start state and the window increases exponentially.</p></li>
+<li><p>Once cwnd reaches ssthresh, TCP enters the Congestion Avoidance state and grows
+ linearly. </p></li>
+<li><p>Whenever three duplicate ACKs are received, ssthresh and cwnd are
+ halved and all duplicate ACKs are picked up before going back to the Congestion Avoidance state.
+ Should an RTO occur in any state, ssthresh is set to cwnd/2, cwnd is set to one MSS,
+ and TCP switches to the Slow Start state.</p></li>
+</ol>
+
+<figure>
+<img src="images/tcp_states.png" alt="TCP states" id="tcpstates" title="TCP states" style="width:694px;" />
+<figcaption>TCP states</figcaption></figure>
+
+
+
+<div class="footnotes">
+<hr />
+<ol>
+
+
+<li id="fn:1">
+<p><a href="http://en.wikipedia.org/wiki/Internet_Control_Message_Protocol" title="ICMP" class="external">ICMP</a> is the <em>Internet Control Message Protocol</em>, a IP network-layer
+protocol designed for sending various status and error messages to hosts and routers on the Internet. <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+
+<h1 id="networklayer">Network Layer</h1>
+
+<p>We looked at the transport layer (layer 3), which allowed
+applications to communicate with other applications over
+logical communication channels. The transport layer sits
+on top of the <strong>network layer</strong> (layer 4). The network
+layer provides host-to-host communication and is responsible
+for routing packets (called <strong>datagrams</strong> at the network
+layer) from a source host to a destination host.</p>
+
+<p>A <strong>route</strong> is the path that a packet takes through the network.
+<strong>Routing</strong> is the process of moving the packet along the route.
+<strong>Routing algorithms</strong> figure out the route that
+the packet will take.
+A <strong>router</strong> is a host that forwards packets from an incoming
+link to a specific outgoing link as determined by the route.
+<strong>Forwarding</strong> is the process that a router uses to
+transfer a packet from an incoming link to the specific outgoing link.
+A router consults a <strong>forwarding table</strong> (also known as
+a <strong>routing table</strong>) that uses information
+in the packet headers to determine the outgoing link.
+The forwarding table is configured by routing algorithms.</p>
+
+<p>Ideally, we might expect a variety of guarantees from the network. These include:</p>
+
+<ul>
+<li>Guaranteed (lossless) datagram delivery</li>
+<li>Time limits on datagram delivery</li>
+<li>In-order datagram delivery</li>
+<li>Guaranteed constant end-to-end bandwidth or the ability to offer a specific minimum bandwidth</li>
+<li>The ability to specify maximum jitter. Jitter is the variation in the latency of packet delivery.</li>
+<li>Security services, such as authenticating the source and destination as well as encrypting contents through the network.</li>
+</ul>
+
+<p>The Internet Protocol, IP, gives us none of these. It provides
+<strong>best effort</strong> packet delivery but makes no guarantees on
+the reliability of delivery, bounds on delay, jitter, or packet order.
+Other network technologies, such as <strong>ATM</strong> (<strong>Asynchronous
+Transfer Mode</strong>), provide some of these capabilities. ATM is a
+<strong>virtual circuit (VC) network</strong> that provides logical connections
+at the network layer. All routers in the path are involved
+in setting up and maintaining the connection.
+For example, ATM&#8217;s CBR (Constant Bit Rate) service allows the
+connection to request a specific constant bandwidth and
+specify constraints on jitter and packet loss. The network will
+also guarantee in-order delivery.</p>
+
+<p>A <strong>datagram network</strong>, such as IP, provides connectionless
+service at the network layer and relies on the transport
+layer to provide connection-oriented service. Only end
+hosts are involved in providing transport-layer service;
+the network layer itself is oblivious.</p>
+
+<h3 id="virtualcircuitnetworks">Virtual Circuit Networks</h3>
+
+<p>Before examining datagram networks, we&#8217;ll take a quick look at
+virtual circuit networks. Unlike datagram networks,
+virtual circuit networks require a connection setup phase
+where an end-to-end route is established and each router
+along the path agrees to participating in the path and commits
+necessary resources (e.g., buffers for queues) to ensure
+it can deliver the desired level of service being
+requested.</p>
+
+<p>A host that initiates a connection request for a virtual
+circuit (a communication channel) identifies the virtual
+circuit with a number.
+As the path for a virtual circuit is set up,
+each router enters the input port/output port
+mapping for that path in its forwarding table
+and designates a virtual circuit number for the outgoing
+link (easier than allocating a
+virtual circuit number that may need to be unique globally).
+Unlike datagram routers, virtual circuit routers
+need to maintain connection state information.
+For communication, each packet only needs to contain
+a virtual circuit number. There is no need to specify
+the source or destination addresses since each forwarding
+table can look up the incoming interface and virtual circuit
+number, find the outgoing interface and change the virtual
+circuit number for the next link.</p>
+
+<h3 id="datagramnetworks">Datagram networks</h3>
+
+<p>With routers on datagram networks, there is no a priori
+setup of the route from source to destination. Indeed,
+the route may change during a communication session.
+Each datagram must be identified with the destination
+address of the endpoint. A router uses this destination address
+to forward the packet to the next network link.
+A <strong>forwarding table</strong> on a router allows it to determine
+the outgoing interface for a given datagram.
+IP addresses are 32 bits long (for IPv4; IPv6 addresses are
+128 bits long). That gives 2<sup>32</sup> (or 2<sup>128</sup> possible addresses. It
+is not feasible to have a table of over four billion entries.
+Instead, a forwarding table is based based on matching
+a <strong>prefix</strong> of a number of most significant (leftmost)
+bits in the address. The fewer bits in the prefix, the
+more addresses are matched for that prefix. Since the forwarding
+table may have a mix of longer and shorter prefixes,
+it uses a <strong>longest prefix matching rule</strong>
+so that longer, more specific, prefixes are tested prior to
+shorter, more general, prefixes.</p>
+
+<h3 id="routerarchitecture">Router Architecture</h3>
+
+<p>An IP router comprises two part: a control plane and a data plane.
+The <strong>control plane</strong> is responsible for the high-level software
+of the router. It runs a <strong>routing processor</strong> that
+implements the user interface, runs routing
+protocols, populates forwarding tables, implements the ICMP protocol,
+and controls queue behavior.</p>
+
+<p>The <strong>data plane</strong> is responsible for
+packet forwarding. Its purpose is to move packets from the <strong>input
+port</strong> to the <strong>output port</strong> on a router as quickly as possible.
+Because of the need to move as manay as tens of millions of packets
+per second per port, the data plane is generally implemented in
+hardware. Note that on a router, a <strong>port</strong> refers to the input and output
+interfaces and has <em>nothing</em> to do with the use of the term <em>port</em>
+at the transport layer. A <strong>line card</strong> is the hardware that is
+responsible for implementing the input and output ports for a
+specific interface (e.g., an Ethernet interface). Because the
+router operates at layer 3 (the network layer), the data plane must
+process layers 1, 2, and 3 of the protocol stack: </p>
+
+<ul>
+<li>At layer 1, it has to retime and regenerate the signal at the output port.</li>
+<li>At layer 2, it has to create the new datalink headers and
+checksums for transmission onto the selected output port</li>
+<li>At layer 3, it has to extract the destination address, search
+the forwarding table to determine the output port, decrement
+a time-to-live count, regenerate a checksum, and forward the
+datagram to the output port.</li>
+</ul>
+
+<p>The <strong>input port</strong> of a router
+implements the link-layer protocol to accept incoming packets (frames) on the physical interface
+of the line card. It decapsulates (extracts the data encapsulated in the frame) the layer 3 datagram
+to get the IP packet, validates the protocol version number, and updates the packet&#8217;s time-to-live (TTL) field.
+If the TTL field reaches 0, the packet is dropped and a message is sent to the routing processor in
+the control plane to send back an error packet.
+The input port then performs a lookup in the forwarding table (using a longest prefix match) to determine the required output port
+to which the packet needs to be delivered.</p>
+
+<p>The <strong>output port</strong> of a router accepts
+outbound datagrams and encapsulates them with the appropriate link-layer headers (e.g., Ethernet).
+Like the input port, it implements the link-layer protocol to transmit these outgoing packets (frames) on the physical interface
+of the line card. </p>
+
+<p>A packet is delivered from the input port to the output port via the router&#8217;s <strong>switch fabric</strong>. This is a
+general term for the architecture that allows the movement of packets between the line cards.
+This packet delivery may need to be delayed if the switch fabric cannot currently accept the packet or if another
+input port is currently moving data to that same output port. In that case, the packet will
+need to wait in a queue at the input port.</p>
+
+<p>A router will have queues at both input and output ports.
+The output port maintains a queue of packets received from the switch fabric
+and transmits them using the link-layer protocol for the outbound interface.</p>
+
+<p>Queues, of course, are finite in size and have the
+risk of overflowing and therefore causing
+packet loss.
+If the queue at the output port is full, there is no
+room for the packet and it will have to be dropped
+or some other packet in that queue will have to be deleted.
+The simplest
+algorithm is first come, first served (FCFS) queuing.
+A more sophisticated one may place a priority on
+the source, destination, protocol, or even a service
+level that may be embedded in the packet. <strong>Active
+Queue Management</strong> (<strong>AQM</strong>) refers to the algorithm in
+place to make the decision of which packet gets sent next
+and which packet gets dropped if the queue is full.</p>
+
+<p>At the input port, packets may be queued if they cannot
+be forwarded to the output port quickly enough.
+Queuing is susceptible to <strong>head-of-the-line blocking</strong>.
+If a packet cannot be immediately forwarded to an
+output port (typically because that port or switching
+fabric is in use by another line card), not only is
+the packet delayed but all the packets queued behind
+it are blocked.</p>
+
+<p>There are several router architectures and the choice of design largely depends
+on cost and the performance needs of packet forwarding. Every one of these
+architectures is in use.</p>
+<dl>
+<dt>Conventional shared memory</dt>
+<dd>A conventional shared memory design is not different from that of a PC with each input/output pair of ports functioning as an input/output device. An incoming packet at a port generates a system interrupt. The operating system copies the packet from the transceiver to the system&#8217;s memory. The processor runs a network stack whose network layer searches the routing table to determine where the packet needs to be forwarded. The packet then travels back down the stack onto the desired output port. The limitation of this design is that only one memory operation can take place at a time. Moreover, the single CPU and system bus can become bottlenecks.</dd>
+
+<dt>Shared memory with distributed CPUs</dt>
+<dd>To alleviate the CPU bottleneck, this design incorporates a CPU on each line card. This gives each line card the intelligence to process the three layers of the stack, and determine the destination port of the packet without having to make use of the central CPU, shared bus, or main (shared) memory. The central CPU is responsible for the control plane: providing the administrative interface and creating the forwarding table. It pushes a copy of the forwarding table onto each line card. The shared memory and shared bus are used to allow the processor on one line card to copy the packet to another line card. The fact that the bus is shared and only one memory operation can take place at a time in shared memory can still result in a bottleneck for moving packets between line cards.</dd>
+
+<dt>Shared bus, no shared memory</dt>
+<dd>To alleviate having to use shared memory as an intermediate buffer in copying packets, this design allows one line card to send a packet directly to the memory of another line card using a common shared bus. The shared bus is now the performance bottleneck.</dd>
+
+<dt>Switched (crossbar) data path</dt>
+<dd>The final variation of architectures removes the shared bus and replaces it with a crossbar switch. This is a considerably more expensive option but allows one line card interface to switch directly to another line card interface without affecting the ability of other line cards to communicate.</dd>
+</dl>
+
+
+<h1 id="networklayer:internetprotocol">Network Layer: Internet Protocol</h1>
+
+<p>The <strong>Internet Protocol</strong> (<strong>IP</strong>) has three components:</p>
+
+<ol>
+<li><p>The <strong>IP protocol</strong> itself, which deals with addressing
+hosts, formatting datagrams, fragmenting and reassembling
+datagrams, and forwarding datagrams through routers.</p></li>
+<li><p><strong>Routing protocols</strong>, which determine network
+connectivity and how forwarding
+tables are configured at routers</p></li>
+<li><p>The <strong>Internet Control Message Protocol</strong> (<strong>ICMP</strong>),
+which is a network-layer protocol for error and status reporting.</p></li>
+</ol>
+
+<h2 id="theipdatagram">The IP datagram</h2>
+
+<p>The IP datagram comprises a 20-byte header, a variable-size
+options field after the header, and the payload, which will
+typically be the TCP or UDP segment. It contains a 32-bit
+source IP address, which identifies the sender, and a 32-bit
+destination IP address, which identifies the recipient.</p>
+
+<p>A <strong>time-to-live</strong> (<strong>TTL</strong>) field is a counter that is
+designed to keep packets from circulating indefinitely in
+the network case forwarding tables accidentally create cycles.
+An IP datagram is typically initialized with a TTL of 60 or 64
+and the TTL is decremented by one each time it enters a router.
+If the TTL reaches zero, the router will discard the packet.</p>
+
+<p>A <strong>protocol</strong> field in the datagram identifies the higher-layer
+protocol that is contained within the data. Common values are
+6 to identify the data as a TCP segment and 17 to identify the
+data as a UDP segment. </p>
+
+<p>A <strong>header checksum</strong> field contains a 16-bit header checksum.
+This is calculated with the same formula as UDP and TCP checksums.
+Only the IP header is checksummed. A router has to recompute
+the checksum since the TTL field (and possibly the options field)
+will change with each network hop.</p>
+
+<h2 id="fragmentationandreassembly">Fragmentation and reassembly</h2>
+
+<p>If a router needs to
+forward a packet to a link that has a smaller MTU (maximum
+transmission unit) than the incoming link, it is possible that
+the IP packet may be too large to be transmitted as a single
+frame (packet) on the outgoing link. To handle this situation,
+IP supports <strong>fragmentation</strong>. If a packet is bigger than
+the MTU of the outgoing link, a router can split the datagram
+into two or more fragments. Each fragment is a separate IP
+datagram with its own IP header. When the fragments reach
+their ultimate destination, the receiving host must
+<strong>reassemble</strong> them into a complete packet before passing them
+to the transport layer.</p>
+
+<p>Fragmentation is controlled by two data fields and two one-bit flags
+in the IP header. A <strong>don&#8217;t fragment</strong> (<strong>DF</strong>) bit tells a
+router that fragmentation is not permitted on a datagram. This
+may result in the inability to route the datagram. If a
+router makes the decision to fragment the datagram, the datagram
+is split into two or more fragments. Each transmitted IP datagram
+contains an identification number in the <strong>identification</strong> field
+of the IP header. This is set when the original datagram is created
+and is typically an incrementing counter for each successive datagram.
+When a datagram is fragmented, the IP header of each datagram holding
+a fragment contains the same ID number. This tells the receiver
+that those datagrams are part of the same original datagram.
+Each fragment also contains a 13-bit fragment offset. This is a
+number that is multiplied by eight to indicate where the
+data in this fragment belongs in the reassembled datagram. The
+first datagram contains an offset of zero. Each datagram fragment
+except for the last one has a <strong>more fragments</strong> (<strong>MF</strong>)
+bit set to one. The last fragment will have MF=0 and
+the fragment offset along with the IP length field will indicate
+the length of the final reassembled datagram.</p>
+
+<h2 id="ipaddressing">IP addressing</h2>
+
+<p>Our discussion focuses on IP version 4, which is the most
+widely deployed version of IP. IPv4 addresses are 32-bits
+long. Every <em>interface</em> on an IP network must have a unique
+IP address. If a host has two interfaces (e.g., Ethernet and
+802.11 links), it will have one IP address for each link.
+If a router has 128 ports, it will have 128 IP addresses.</p>
+
+<p>We earlier discussed that it would be impractical for
+addresses to be randomly assigned as each router would have
+to have to be able to look up an individual address in
+a forwarding table of over four billion addresses. Moreover,
+routing algorithms would need to manage information about
+the route of every single address on the Internet.
+Instead, groups of adjacent addresses are assigned to
+an organization. Rutgers, for example, has been assigned
+all addresses with the top 16 bits of 128.6. A router
+would need to know where to forward anything that starts
+with 128.6 rather than maintain a table of all the
+2<sup>16</sup> (65,536) possible addresses that may start with 128.6.
+This ability to use one prefix to refer to a route that
+may span multiple sub-networks or hosts is called
+<strong>route aggregation</strong>.</p>
+
+<p>A <strong>subnet</strong> (also called a
+<strong>subnetwork</strong> or a <strong>network</strong>) is a group of adjacent
+IP addresses that share a common prefix and are assigned
+to an organization. A subnet makes up a logical
+network that is connected to a router. For example,
+routers on the Internet needs to know how to route an
+address starting 128.6 to Rutgers.
+Subnets are expressed in <strong>CIDR</strong> (<strong>Classless Inter-Domain
+Routing</strong>) notation, whose format is a 32-bit IP address that
+comprises the identifying bits of the subnetwork followed by
+a slash an the number of bits that identify the subnetwork.
+For example, 128.6.0.0/16 means that the top (leftmost) 16 bits of the
+address 128.6.0.0 identify the subnetwork. The subnetwork
+logically divides an IP address into a <strong>network</strong> part (the
+bits that make up the subnet) and the <strong>host</strong> part (the
+bits that identify the host within the subnet).</p>
+
+<p>A <strong>subnet mask</strong> (also called a <strong>netmask</strong>) is a bit mask that contains ones in the
+positions of the network bits of the address. For Rutgers,
+this means the top 16 bits will be one, resulting in a
+subnet mask of 255.255.0.0. A subnet mask is used to
+strip the host bits from the address to match prefixes in
+a forwarding table.</p>
+
+<p>Subnetworks are hierarchical. An Internet service provider (ISP)
+will often be assigned large blocks of IP addresses by a
+Regional Internet Registry (RIR). Routers between ISPs will
+need to know which block of addresses is handled by
+which ISP. A specific ISP will allocate smaller blocks of IP
+addresses
+to organizations or lower-tiered ISPs. This is not relevant
+information outside of the ISP since outside routers only
+need to know how to reach one of the ISP&#8217;s routers. Routers
+within the ISP need to route to the organizations that
+were allocated those addresses. This process can continue
+iteratively. Within Rutgers, for example, are multiple
+networks that use blocks within the 128.6.0.0/16 allocation.
+For instance, the host aramis.rutgers.edu has an address of
+128.6.4.2 and a netmask of 0xffffff00. This indicates that
+it is in a subnetwork that is defined by the prefix
+128.6.4.0/24.</p>
+
+<p>IP supports several special addresses: bit patterns that
+cannot be used as generic host addresses.
+An address of 255.255.255.255 represents a <strong>limited broadcast address</strong>.
+This is a broadcast address for the host&#8217;s network.
+Datagrams directed to this address will be delivered to all
+hosts on the directly-connected network but routers will not
+forward them to other networks (they are <em>limited</em> to the same local
+area network as
+the sender).
+An address with only the host bits set to one (e.g., 128.6.255.255)
+represents a <strong>directed broadcast address</strong>.
+Datagrams directed to this address will be routed to the
+specified subnet (if the router permits it) and delivered to all
+hosts on that subnet (they are <em>directed</em> to a specific subnet).
+Routers may be configured to forward
+these datagrams to ensure that they are delivered to subnets
+outside the directly-connected local area network. </p>
+
+<h2 id="hostconfiguration">Host configuration</h2>
+
+<p>A regular host on the Internet needs to know a few key parameters:</p>
+
+<ul>
+<li>Its <strong>IP address</strong>, so it can identify itself in the source address field of an IP header.</li>
+<li>Its <strong>subnet mask</strong>. Using the subnetmask along with the IP address, it can identify its own subnet and hence identify which addresses are on the local subnet and which ones need to be directed to a router.</li>
+<li>Its <strong>gateway</strong>. This is a router on the LAN and the default
+address for non-local addresses that are not in a host&#8217;s local
+routing table. A gateway is a simple router that routes datagrams
+between the LAN and another network.</li>
+<li>One or more <strong>domain name servers</strong>. It needs to know the address
+of at least one name server so that it can look up Internet
+domain names and find corresponding addresses.</li>
+</ul>
+
+<p>These four parameters can be configured manually. Alternatively,
+the <strong>Dynamic Host Configuration Protocol</strong> (<strong>DHCP</strong>) can
+be used to do this automatically.</p>
+
+<p>DHCP is a protocol to allow a client to get an IP address for
+itself as well as essential network configuration parameters.
+The challenge with developing such a protocol is that it has
+to work before the client has a valid address on the network.
+Hence, a conventional request-response protocol with source
+and destination addresses will not work. A requirement for
+DHCP is that the DHCP server has to be running on the same
+local area network as the host. If not, a DHCP Relay Agent must
+run that serves as a proxy and forwards requests and responses
+to the remote DHCP server. </p>
+
+<p>DHCP uses limited broadcast messages (255.255.255.255). A
+client is allowed to send a limited broadcast and is capable
+of receiving one even if does not have an address assigned.
+DHCP works in four steps, with an acronym of <strong>D-O-R-A</strong> to
+describe them.</p>
+
+<ol>
+<li><p><strong>Discover</strong>. The client sends a limited broadcast
+<strong>DHCP Discover</strong> UDP message to port 67. This contains a
+random transaction identifier.</p></li>
+<li><p><strong>Offer</strong>. The server listens to broadcasts coming in on
+port 67. It gets the <em>Discover</em> message and responds back
+by sending a limited broadcast <strong>DHCP Offer</strong> UDP message
+to port 68. The response contains the following parameters:</p>
+
+<ul>
+<li>Matching transaction identifier</li>
+<li>Proposed IP address</li>
+<li>Subnet mask</li>
+<li>Lease time</li>
+</ul></li>
+<li><p><strong>Request</strong>. The client picks up the server&#8217;s <em>Offer</em>
+message. It compares the transaction identifier to ensure
+that the offer is not directed to another client. If there
+have been multiple DHCP servers and it received multiple
+offers, it selects the one it wants to accept and ignores
+the others. The client responds with a <strong>Request</strong> message
+that contains a copy of the parameters in the Offer.</p></li>
+<li><p><strong>ACK</strong>. The server associates the offered parameters
+with the host and sends back a <strong>DHCP ACK</strong> message
+acknowledging the association. The client can now configure
+its network with those parameters.</p></li>
+</ol>
+
+<p>DHCP can be used in several scenarios:</p>
+
+<ol>
+<li><p>Automatic allocation. DHCP can be used to assign
+a permanent IP address to a host. </p></li>
+<li><p>Dynamic allocation. DHCP can be used to <strong>lease</strong>
+an address to a host. The host may use the address for
+a specified period of time. This allows the reuse of an
+address after it is no longer needed by the host.
+A Wi-Fi hotspot is a common example of this use of DHCP.</p></li>
+<li><p>Manual allocation. An administrator can configure
+the DHCP server to assign a specific address in response
+to a DHCP <em>Discover</em> message. This is done by associating
+the host&#8217;s link layer address (e.g., Ethernet MAC address)
+with a specific IP address.</p></li>
+</ol>
+
+<h2 id="networkaddresstranslationnat">Network Address Translation (NAT)</h2>
+
+<p>In order to move datagrams between hosts on the Internet,
+each host interface needs to have a globally unique IP
+address. If this is not the case, routers will not be
+able to route the packet to that interface. The need for
+this, of course, creates a huge need for IP addresses.
+An organization with 10,000 hosts would need 10,000 IP
+addresses.</p>
+
+<p><strong>Network Address Translation</strong> (<strong>NAT</strong>) addresses this
+problem by allowing an organization to create a
+<strong>private IP address space</strong> within the organization
+while presenting one, or a small set of IP addresses
+to the outside Internet. As a packet flows through
+a <strong>NAT-enabled router</strong>, the router uses a
+<strong>NAT Translation Table</strong> to map a source
+{private-address, port<sub>1</sub>} to a {public-address, port<sub>2</sub>}.
+When packets flow back to the router from the outside,
+the router uses the NAT Translation Table to perform
+the inverse mapping of
+{public-address, port<sub>2</sub>} to {private-address, port<sub>1</sub>}.</p>
+
+<p>To enable NAT, the gateway router has to look at, and possibly
+modify, the transport layer header since since a source
+port number may need to be changed to one that is not used
+by any other internal-external mapping at the router.</p>
+
+<p>The private address space within the organization
+must contain a range of addresses that are not used
+by any hosts on the public Internet. Otherwise, there would be
+ambiguity as to which host is being addressed and where it is located. Hence
+private addresses are <strong>non-routable</strong> on the Internet and can only
+be used in internal networks. RFC 1918 defines three
+address blocks that can be used for these addresses.</p>
+
+<p>Hosts in a NAT environment cannot accept incoming packets
+unless a host/port mapping has been established by an outgoing
+packet. As such, NAT is not particularly useful for servers
+but is incredibly useful for client machines.</p>
+
+<h2 id="icmp">ICMP</h2>
+
+<p>The <strong>Internet Control Message Protocol</strong> (<strong>ICMP</strong>) is
+a simple network-layer protocol that was designed to allow
+hosts and routers to communicate network-related information.
+ICMP is an eight byte or greater segment that sits in the payload
+(data section) of an IP datagram.
+It contains a <strong>checksum</strong> over the ICMP header and associated
+data as well as
+<strong>type</strong> and <strong>code</strong> fields,
+which define the purpose of the message.
+Depending on the message, four additional bytes may specify
+parameters to the message and optional data may contain
+the IP header and first eight bytes of the original datagram
+for which ICMP is generating a report.</p>
+
+<p>The most common ICMP message types include an <em>echo request</em> (ping),
+<em>echo response</em> (ping), a <em>destination unreachable</em> status,
+a <em>TTL exceeded</em> warning, and a <em>bad IP header</em> error.</p>
+
+<p>The <strong>ping</strong> program is an example of a service that uses ICMP.
+It creates a raw socket and generates an ICMP message of the
+type <strong>echo request</strong> (type 8). When the message is routed
+to the destination host, the ICMP protocol sends back an
+ICMP <strong>echo reply</strong> (type 0) datagram. </p>
+
+<p>The <strong>traceroute</strong> program traces a route to a specific host.
+It also uses ICMP by sending a series of UDP segments to a
+bogus destination port on the desired host. Each UDP segment
+has a progressively longer time-to-live (TTL) value in the
+IP header. The first router will not route the datagram with
+a TTL of 1 since it decremented to 0 and hence expired.
+Instead, the router sends back an ICMP <strong>TTL exceeded</strong>
+warning message that contains the name and address of the router in
+the body of the ICMP message. The datagram with a TTL=2 will be routed
+by the first router but will be rejected by the second one, and so on.</p>
+
+<h2 id="ipv6">IPv6</h2>
+
+<p>We have thus far discussed IP version 4, the most widely deployed
+version of IP. As IP was rapidly using up allocatable subnetworks
+due to its 32-bit address size, design on a successor protocol,
+called IPv6, began in the mid 1990s.</p>
+
+<p>IPv6 uses a huge address space: 128-bit addresses compared
+with IPv4&#8217;s 32-bit addresses. A 128-bit address allows for
+3.4&times;10<sup>38</sup> addresses, which is 8.9&times;10<sup>28</sup>
+times more than IPv4. Even though its addresses are longer,
+IPv6 uses a simplified header compared to its predecessor.
+It is a fixed-length headers with fewer fields. An optional
+extension to the the header supports less-frequently used options
+and additional capabilities.
+Under IPv6, routers will never fragment IPv6 datagrams. This differs
+from IPv4, where a router may do so if the outbound link has
+a smaller MTU. With IPv6, the sender is expected to perform a
+path MTU discovery ahead of time to determine the minimum transmission unit
+for the entire route. To handle cases where higher levels of
+software might create larger datagrams without checking
+the path MTU, IPv6 does support fragmentation by the sender.
+Since fragmentation is often not used, however, the fields related to managing
+it are relegated to this optional header extension.
+There is also no header
+checksum. The designers reasoned that the link layer has a
+checksum and TCP as well as UDP include critical IP fields in
+their checksum computation. </p>
+
+<p>Transitioning to IPv6 has been a challenge in a world
+with widespread IPv4 deployment. IPv6 systems can bridge to
+IPv4 systems since the IPv4 address space is mapped onto a
+subset of the IPv6 space. The problem is that IPv4 systems
+cannot effectively communicate with IPv6 systems due to its
+larger address space. A system using IPv6 may not be visible
+to a system on an IPv4 network. Most systems today are
+<strong>dual-stack</strong> systems, with both network stacks implemented
+and capable of using either protocol. In areas with widespread
+IPv4 deployments, such as the U.S., IPv6 is finding most of its
+initial deployment in less visible areas, such as cable modems,
+set-top boxes, and VoIP (voice over IP) MTAs (multimedia terminal adapter).</p>
+
+<h1 id="routing">Routing</h1>
+
+<h2 id="routingalgorithmgoals">Routing algorithm goals</h2>
+
+<p>Routers connect networks together at the network layer and are responsible
+for moving datagrams (routing) from one link to another. In many cases,
+a datagram will have to flow through multiple routers and there are multiple
+possible paths that the datagram can take to reach its destination.
+The goal of a <strong>routing algorithm</strong> is to figure out a good path, or <strong>route</strong>,
+for a datagram to take to get to its destination. By <strong>good</strong>, we mean
+an algorithm that will minimize the cost of the overall route. That <strong>cost</strong> may be either
+time (quickest route) or money (if there are financial costs that differ between
+different routes).</p>
+
+<p>For purposes of analysis, a route may be represented as a <strong>connected graph</strong>,
+<strong>G = (N, E)</strong>, where <em>N</em> is the set of nodes (vertices) (routers, in real life) and
+<em>E</em> is the set of edges (links between the routers in real life).
+A connected graph is one where, given two nodes <em>a</em> and <em>b</em>, there is some path
+from <em>a</em> to <em>b</em>.
+Each edge is identified by a pair of nodes. A node <em>y</em> is considered to be
+a <strong>neighbor</strong> of node <em>x</em> if the edge (x, y) exists in the graph. That is,
+<em>(x, y) &isin; E</em>.</p>
+
+<p>Each edge has associated with it a value that represents the cost of the link.
+We represent the cost of an edge between nodes <em>x</em> and <em>y</em> as <em>c(x, y)</em>. If
+there is no edge <em>(x, y)</em> in the graph then the cost <em>c(x, y)</em> is infinite (&#8734;).
+If we need to route from node <em>x</em> to node <em>y</em> in this case, we will need
+to establish a path through some other nodes.
+For the purposes of our analysis, we will assume that a link has the same
+cost in each direction. That is, <em>c(x, y) = c(y, x)</em>. </p>
+
+<p>A <strong>path</strong> in a graph <em>G = (N, E)</em> is a sequence of nodes
+(<em>x<sub>1</sub>, </em>x<sub>2</sub>, &#8230; <em>x<sub>p</sub></em>) such that each of the pairs
+(<em>x<sub>1</sub>, </em>x<sub>2</sub><em>), (</em>x<sub>2</sub>, <em>x<sub>3</sub></em>), etc. are edges in <em>E</em>: a path
+is a sequence of edges. The <strong>cost of a path</strong> is the sum of the
+edge costs. Since there may be multiple paths from one node
+to another, one or more of
+these will be a <strong>least-cost path</strong>.
+If all edges have the same cost, that least-cost path will also be the <strong>shortest path</strong>.</p>
+
+<h2 id="categoriesofroutingalgorithms">Categories of routing algorithms</h2>
+
+<p>There are two categories of routing algorithms. A <strong>global routing algorithm</strong>
+relies on complete knowledge of the network graph. The algorithm, as input, knows
+the connectivity graph: all the nodes and edges. Algorithms in this category are known as <strong>link-state</strong> (<strong>LS</strong>)
+algorithms. <strong>Dijkstra&#8217;s shortest path algorithm</strong> is an example of an LS algorithm.</p>
+
+<p>In a <strong>decentralized routing algorithm</strong> , no node has complete knowledge of all
+links in the graph. A node initially knows only about its direct links.
+Through an iterative process of exchanging lists of nodes and costs with its
+neighbors, a node will eventually compute the least-cost path to any destination in the graph.
+The <strong>distance-vector</strong> (<strong>DV</strong>) algorithm is an example of a decentralized routing algorithm.</p>
+
+<h2 id="link-state:dijkstrasshortestpathalgorithm">Link-State: Dijkstra&#8217;s shortest path algorithm</h2>
+
+<p>Dijkstra&#8217;s algorithm is a global algorithm that assumes that the entire network topology
+(graph nodes, edges, and edge costs) is known to the algorithm. In an implementation, each
+node will need to broadcast any link change information to every other node so that
+all nodes will have an identical and complete view of the network.</p>
+
+<p>Dijkstra&#8217;s algorithm is an iterative algorithm that, after <em>k</em> iterations, will
+compute the least-cost paths to <em>k</em> nodes from some given initial node.
+For each iteration, the algorithm keeps a list of nodes, <em>N&#8217;</em> for which the lowest
+cost path has already been found (the current node requires no edge and is
+the initial element on this list). For each node in the graph, the algorithm
+stores:</p>
+
+<ul>
+<li><strong>D(v)</strong>: the <strong>distance</strong>, our current knowledge of the least cost path to get to node <em>v</em>.</li>
+<li><strong>p(v)</strong>: the <strong>previous node</strong> before node <em>v</em> along the least cost path that we have so far.</li>
+</ul>
+
+<h3 id="initialization">Initialization</h3>
+
+<p>Let us assume that we need to find the least-cost routes from some node <em>u</em> to all other nodes.
+The list of nodes with a known least-cost path, <em>N&#8217;</em> is initialized to <em>u</em>, our starting node.
+The distance for each node <em>v</em>, <em>D(v)</em> is set to the cost of the
+edge from <em>u</em> to <em>v</em>, <em>c(u, v)</em>. If there is no edge between the
+nodes, the cost is set to infinity. For each node <em>v</em> with a non-infinite cost, the previous node, <em>p(v)</em>,
+is set to <em>u</em> since the entire path at this time is simply a single edge from <em>u</em> to <em>v</em>.</p>
+
+<h3 id="foreachiteration">For each iteration</h3>
+
+<p>Each iteration picks a new node, <em>n</em>, and examines the total distance to each of <em>n</em>&#8217;s
+neighbor nodes from <em>u</em> through <em>n</em>. Here are the steps.</p>
+
+<ol>
+<li><p>Pick a node <em>n</em> that is not in <em>N&#8217;</em> and has the smallest distance <em>D(n)</em>. This will be the
+node that we will examine this iteration and for which we will find the definitive least-cost path.</p></li>
+<li><p>Add node <em>n</em> to the least-cost list <em>N&#8217;</em>.</p></li>
+<li><p>For each neighbor <em>m</em> of node <em>n</em> that is not in <em>N&#8217;</em>, compute the cost of the route through <em>n</em>.
+This is <em>D(n)</em> + <em>c(n, m)</em>; that is, the cost to <em>n</em> plus the cost of the edge from <em>n</em> to <em>m</em>.</p></li>
+<li><p>If this computed cost to <em>m</em> through <em>n</em> is lower than the value we currently have for <em>D(m)</em>,
+update <em>D(m)</em> with the new cost and set the previous node of <em>m</em>, <em>p(m)</em>, to <em>n</em> since the path through <em>n</em>
+resulted in a lower cost.</p></li>
+</ol>
+
+<p>Eventually, all nodes will be in the list <em>N&#8217;</em> and there will be no more nodes left to process.
+At this time we have computed the least-cost paths from <em>u</em> to all nodes in the graph.</p>
+
+<h3 id="findingtheleast-costroute">Finding the least-cost route</h3>
+
+<p>After running Dijkstra&#8217;s algorithm for a starting node <em>u</em>, we know the least cost to each node <em>v</em> and the
+node that is encountered right before <em>v</em> on that least-cost path: <em>p(v)</em>. We can work backwards from this
+to compute the full route. For example, if the previous node for some node <em>z</em> is <em>w</em>, we can look up <em>p(w)</em>
+to find the node before <em>w</em> along the least cost path to <em>u</em>. Suppose that is <em>r</em>. We then look up
+<em>p(r)</em> to to find the node before <em>r</em> along the least cost path to <em>u</em>. Suppose that is <em>u</em>, our starting
+node. We now reconstructed the least-cost path: <em>u &rarr; r &rarr; w &rarr; z</em>.</p>
+
+<p>A routing table at <em>u</em>
+is interested not in the last hop or the entire path, but only in the first hop along
+the least-cost path so it can forward its
+datagram to that next router. In the routing table, we would need an entry that states that datagrams
+for the range of addresses handled by <em>z</em> need to be forwarded to router <em>r</em>.</p>
+
+<h3 id="oscillations">Oscillations</h3>
+
+<p>If we have an environment where link costs vary to reflect the current traffic volume on the link,
+the lowest-cost paths will favor uncongested links. This will cause routers to send more data
+over these low-traffic links, which will, in turn, increase the level of traffic on these links and
+take traffic away from what used to be high-traffic links.
+When the algorithm is re-run, lowest-cost routes will now be recomputed to be the formerly high-cost
+routes since we channeled traffic away from them. As the new routing table is used, we will see
+the same phenomenon happen again as traffic is shifted to what used to be low-volume links.
+This results in <strong>oscillations</strong> between network routes each time the LS algorithm is re-run.
+The best approach to avoiding these oscillations is to have routers run their LS algorithm at
+random times rather than all at the same time.</p>
+
+<h3 id="bellman-fordequation">Bellman-Ford equation</h3>
+
+<p>The distance-vector algorithm is based on a simple principle that is embodied in the <strong>Bellman-Ford</strong>
+equation. This equation states that the least cost to get from node <em>x</em> to node <em>y</em> is to go through
+a neighbor node <em>v</em> where the cost form <em>x</em> to <em>v</em> plus the cost from <em>v</em> to <em>y</em> is the smallest. </p>
+
+<p>Let&#8217;s look at a two-node example. Suppose that you are in Geneva, want to get to Munich, but must
+travel through either Zurich or Turin. Your cost is travel time.
+The paths from Zurich or Turin to Geneva may involve several more
+stops but you don&#8217;t care about that. You just know the cost to your neighbors, Zurich (3:00 hours)
+and Turin (2:40) and you know the cost from Zurich to Munich (3:15) and the cost from Turin to
+Munich (6:00). To determine the best first leg of the route, you want to minimize the overall cost.
+The cost (time) via Zurich is 3:00 + 3:15, or 6:15. The cost via Turin is 2:40 + 6:00, or 8:40.
+Hence, you choose to use Zurich as your first hop. Pretty simple, eh?</p>
+
+<h2 id="distance-vectoralgorithm">Distance-Vector Algorithm</h2>
+
+<p>The <strong>distance-vector</strong> (<strong>DV</strong>) algorithm is a distributed algorithm where a node (router) communicates
+only with its
+neighboring nodes.
+The DV algorithm is <strong>iterative</strong>. A node will send messages to its neighbors only when its local link costs
+change or it receives a distance vector update message that results in the node changing its least-cost route
+estimate to some destination.</p>
+
+<p>A node <em>n</em>&#8217;s <strong>distance vector</strong> is a list of costs from <em>n</em> that each other node in the graph.
+Unknown costs are infinity. Each cost is considered to be an <em>estimate</em> as it may be based on
+incomplete data. Eventually, the algorithm converges and the costs become true least-cost values.
+In the DV algorithm, a node sends its distance vector to its neighboring nodes.</p>
+
+<p>A node also keeps a <strong>distance vector table</strong>. This is a set of distance vectors that it has received
+from its neighbors. These distance vectors are used to allow a node to check whether it is more
+efficient to have a route that goes through a specific neighbor, <em>m</em>, than the node it currently
+thinks is the next hop on the shortest path. </p>
+
+<h3 id="initialization">Initialization</h3>
+
+<p>Initially, a node knows only of its neighbors and the cost to each neighbor. The distance vector is
+a set of <em>(node, cost)</em> tuples, with the cost being the cost of the direct link to the neighbor.
+Send a copy of the distance vector to each neighbor.</p>
+
+<h3 id="operation">Operation</h3>
+
+<p>Suppose that a node <em>n</em> receives and saves a distance vector from another node, <em>m</em>.
+It then does a node-by-node comparison of all the nodes in both vectors. For a given node <em>x</em>:</p>
+
+<ul>
+<li><p>Is the cost of routing to <em>x</em> through node <em>m</em> lower than the current cost estimate?
+That is, is the cost to <em>x</em> supplied in node <em>m</em>&#8217;s distance vector plus the cost of the link from <em>x</em> to <em>m</em>
+result in a smaller value than <em>n</em> currently has?</p></li>
+<li><p>If yes, update <em>n</em>&#8217;s distance vector for the destination <em>m</em> to the value computed by going through <em>x</em>. If no,
+leave the distance to <em>m</em> unchanged.
+To build a routing table, <em>n</em> would also record that the currently-known lowest-cost to <em>m</em> is via <em>x</em>.
+Unlike the link-state algorithm, the distance-vector algorithm keeps track of first hops rather than last hops.</p></li>
+<li><p>Anytime a node initializes or updates its distance vector, it sends a copy to each of its neighbors.</p></li>
+</ul>
+
+<p>Eventually, no node will experience any changes to its distance vector and therefore will
+not send any updates to its neighbors. The algorithm has converged.</p>
+
+<h3 id="poisonreverse">Poison reverse</h3>
+
+<p>If a link to a node fails at some point, a neighbor will mark the cost of that link as infinite.
+As long as alternate paths exist, the algorithm will converge and use alternate paths.
+However, consider (for example) a case where there is only a single link to node <em>C</em> from <em>B</em>.
+Node <em>A</em> tells its neighbors that it can route to <em>C</em> (by going through B). If the link between
+<em>C</em> and <em>B</em> fails, node <em>B</em>., using <em>A</em>&#8217;s information about the route, will attempt to use <em>A</em> as an alternate route, not realizing that the attempted route will be
+<em>B &rarr; A &rarr; B &rarr; C</em>. This will result in an infinite sequence of distance
+vector updates between <em>B</em> and <em>A</em>, each advertising a progressively higher cost as they
+factor an additional link cost between the <em>AB</em> link each time. This is known as the
+<strong>count-to-infinity</strong> problem.</p>
+
+<p>A technique called <strong>poison reverse</strong> tries to mitigate this problem. Since <em>A</em> knows that
+it needs to route through <em>B</em> to get to <em>C</em>, whenever <em>A</em> sends its distance vector to
+<em>B</em>, it will set any costs whose first hop is <em>B</em> to infinity. This will avoid creating
+a <strong>routing loop</strong>.</p>
+
+<h1 id="internetrouting">Internet Routing</h1>
+
+<h2 id="autonomoussystems">Autonomous Systems</h2>
+
+<p>An <strong>autonomous system</strong> (<strong>AS</strong>) is a collection of routers and hosts that are administered together
+and expose a single routing policy to other systems on the Internet.
+ASes provide a two-level routing <strong>hierarchy</strong> in the Internet. Organizations manage their own
+infrastructure and expose only limited connectivity to others.
+Each AS comprises one or more subnetworks and
+serves one or more ranges of IP addresses. It advertises the set of IP prefixes that
+it can route (via CIDR and route aggregation to minimize the length of the list). The AS is responsible
+for the routing of traffic within its AS, whether it is routing it to another AS or to a machine within its own AS.
+The Internet can be viewed as a set of connected ASes, with packets being sent from one AS, possibly
+routed through other ASes, and delivered to a target AS.
+Routing on the Internet takes place between ASes. Using ASes simplifies the problem of dealing with
+the billion hosts on the Internet. </p>
+
+<p>An <strong>Intra-AS routing protocol</strong>, called an <strong>Interior Gateway Protocol</strong> (<strong>IGP</strong>) runs
+within an AS. It is up to the system administrator to pick a protocol (e.g., an LS or DV algorithm)
+and manage the
+routes between machines within the AS. The outside world does not see the routes within an AS.
+Some Intra-AS routing protocols are RIP and OSPF.</p>
+
+<p><strong>Gateway routers</strong> are routers within an AS that connect to other ASes and forward packets between them.
+In addition to running an intra-AS routing protocol with other routers inside the AS, they
+are also responsible for routing to destinations outside the AS by sending datagrams to
+other gateway routers.
+An <strong>Inter-AS routing protocol</strong>, called an <strong>Exterior Gateway Protocol</strong> (<strong>EGP</strong>) runs on
+<strong>gateway routers</strong> and enables
+them to learn of routes to addresses served by other ASes or routed by the gateway routers within that AS.</p>
+
+<p>Logically, an external AS looks like a router. An AS will be
+connected to some other ASes and needs to learn
+which destinations are reachable via those ASes.
+Some of those ASes may need to relay the datagram in order to send it onto other ASes.
+If a desired subnet can be accessed through either of several ASes (that is, either of those ASes can
+route to that subnet, not that the subnet belongs to multiple ASes), then a common approach is to
+have the AS send the packet out onto another AS in the least-cost manner. This is called <strong>hot-potato
+routing</strong>. The goal is to find the lowest cost path to any gateway router that can then route to some
+AS that can deliver the packet.
+Since ASes are owned by different organizations, everyone on the Internet must agree to use the same
+<strong>inter-AS</strong> routing protocol. Currently, this protocol is BGP version 4. </p>
+
+<h2 id="autonomoussystemtaxonomy">Autonomous System Taxonomy</h2>
+
+<p>Each Autonomous System is assigned a unique ID by a Regional Internet Registry (the same
+organization that assigns blocks of IP addresses). Policies defined by the owner of the AS
+determine if the AS will route traffic to other ASes and, if it will, whose traffic it will route.</p>
+
+<p>A <strong>Transit Autonomous System</strong> is an AS that provides the ability to route traffic from
+one AS to another AS.
+A <strong>Tier 1 ISP</strong> represents a transit autonomous AS (or set of ASes) that does not pay any other network for
+transit. It peers (and connects directly) with every other Tier 1 network so it can route an
+IP address directly to the Tier 1 network that oversees it.</p>
+
+<p>A <strong>Transit</strong> relationship on the Internet is considered to be one where an AS sells access to the Internet.
+That is, it agrees to act as a router between ASes but traffic is metered and charged.
+A <strong>peering</strong> relationship is one where a pair of ASes agrees to exchange traffic with each other
+for no cost.
+A <strong>Tier 2 ISP</strong> is an AS (or set of ASes) that needs to purchase Transit to connect to some
+parts of the Internet. Establishing a peering relationship avoids the need to purchase Transit.</p>
+
+<p>A <strong>stub Autonomous System</strong> is an AS that is connected only to one other AS (run by an ISP).
+Because it is connected to just one AS, it cannot provide transit. A <strong>multi-homed stub
+Autonomous System</strong> is an AS that is connected to multiple ASes (e.g., multiple ISPs) but will
+<em>not</em> offer routing services between them.</p>
+
+<h2 id="routinginformationprotocolrip">Routing Information Protocol (RIP)</h2>
+
+<p>The <strong>Routing Information Protocol</strong> (<strong>RIP</strong>) is an Intra-AS IP routing protocol
+(<strong>interior gateway protocol</strong>) that uses
+a form of the <strong>Distance-Vector algorithm</strong>. It counts only hops, so the cost of each link is one.
+RIP creates and manages a <strong>routing table</strong> on a router. For each destination (a subnet: a group of IP
+addresses), the table contains the number of hops to that destination and the address of the next router (the first hop).</p>
+
+<p>As with the DV algorithm, each router sends periodic <strong>RIP advertisements</strong> to its
+neighbors. A RIP
+advertisement is just the routing table with hop counts. When another router receives such an
+advertisement, it compares the routes in the received table to see if routing that
+that node will result in fewer hops. If so, it will update its own routing table. It will
+also add any new subnets that it obtains from received tables.</p>
+
+<h2 id="openshortestpathfirstospf">Open Shortest Path First (OSPF)</h2>
+
+<p><strong>Open Shortest Path First</strong> (<strong>OSPF</strong>) is another <strong>interior gateway protocol</strong> that was designed
+as a successor to RIP. It is a <strong>link-state algorithm</strong> based on Dijkstra&#8217;s shortest path algorithm.
+Because of this, every router constructs a complete graph of the systems in the AS.
+Any link changes are broadcast to all routers, not just a node&#8217;s neighbors.</p>
+
+<p>To support larger networks, OSPF allows the network in an AS to be partitioned into multiple
+<strong>OSPF Areas</strong>. Each area runs its own OSPF link-state algorithm and routes any packets that
+are destined to go out-of-area to an <strong>area border router</strong> (<strong>ABR</strong>). The collection of these
+area border routers belong to a common <strong>backbone area</strong>. They summarize (aggregate)
+routes to the subnetworks in their own area and advertise them to other area border routers.
+Area border routers also run the OSPF algorithm not just to learn routes within its
+area but also to ensure that each ABR
+can route to the proper ABR in another area based on a prefix match of the destination IP address.
+OSPF Areas make a single AS look like a mini Internet.</p>
+
+<h2 id="bordergatewayprotocolbgp">Border Gateway Protocol (BGP)</h2>
+
+<p>Unlike RIP and OSPF, the <strong>Border Gateway Protocol</strong> (<strong>BGP</strong>) is an <strong>exterior gateway protocol</strong>:
+an <strong>inter-AS routing protocol</strong>.
+Gateway routers in an AS establish a TCP connection with gateway routers in other ASes.
+A pair of such routers are known as <strong>BGP peers</strong> and the TCP connection between them is known
+as an <strong>external BGP session</strong> (<strong>eBGP</strong>).
+In cases where an AS has more than one gateway router, other routers need to know which
+IP address prefixes are served by which gateway.
+<strong>Internal BGP sessions</strong> (<strong>iBGP</strong>) between a gateway router
+and other routers within the AS allow the gateway router to propagate information about
+external IP prefixes that it can reach. Typically, iBGP will run between the gateway
+router and the area border routers (ABRs) in an OSPF backbone area.</p>
+
+<p>BGP peers exchange CIDR route prefixes and use a distance vector (DV) algorithm to establish least-cost paths.
+A gateway router advertises its <strong>prefix reachability</strong>, which means it
+tells its peers in neighboring ASes the routes that it is capable of handling (as CIDR prefixes).
+In this manner, each AS finds out which neighboring AS yields the lowest-cost path to a
+destination. Each BGP advertisement identifies a <strong>route</strong>, which consists of:</p>
+
+<ul>
+<li>a CIDR prefix (e.g., 128.6.0.0/16)</li>
+<li>a path, which is a list of ASes through which the advertisement passed. This allows an AS to detect
+and reject routing loops. The sending of a full path makes BGB a <strong>path vector</strong> protocol: a
+variation of the distance-vector protocol that sends entire paths.</li>
+<li>a next-hop router, which identifies the address of the remote router that sent the
+advertisement and allows the gateway router in an AS to address the router in a remote AS.
+The next-hop value also allows an AS to choose to choose from several possible links to
+another AS.</li>
+</ul>
+
+<p>An important facet of BGP is its use of policies. An <strong>import policy</strong> defines
+what routes an gateway router will reject. Policies are designed by an administrator and
+can set local preferences and policies such as not offering transit to certain ASes.</p>
+
+
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: May  6, 2016
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+		<h2> Study guides </h2>
+	<ul>
+	<li> <a href="../exam/study-guide-1.html"> Study Guide 1 </a> </li>
+	<li> <a href="../exam/study-guide-2.html"> Study Guide 2 </a> </li>
+	<li> <a href="../exam/study-guide-3.html"> Study Guide 3 </a> </li>
+	</ul>
+
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

@@ -1,0 +1,973 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Authentication</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Authentication</h1>
+								<h2>AUthenticaion & key exchange protocols, user authentication, biometrics, and CAPTCHA</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>October 23, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<p>Authentication is the process of binding an identity to a user (or service).
+There is a distinction between authentication and
+identification. <strong>Identification</strong> is simply the process of asking you
+to identify yourself (for example, ask for a login name). <strong>Authentication</strong>
+is the process of proving that the identification is correct.
+<strong>Authorization</strong> is the process of determining whether the user is permitted to do something.</p>
+
+<h2 id="combinedauthenticationkeyexchangekeyexchange">Combined Authentication &amp; Key Exchange Key Exchange</h2>
+
+<p>The biggest problem with symmetric cryptography is <strong>key distribution</strong>. For
+Alice and Bob to communicate, they must share a secret key that no
+adversaries can get. However, Alice cannot send the key to Bob since it
+would be visible to adversaries. She cannot encrypt it because Alice
+and Bob do not share a key yet.</p>
+
+<h3 id="keyexchangeusingatrustedthirdparty">Key exchange using a trusted third party</h3>
+
+<p>For two parties to communicate using symmetric ciphers they need to
+share the same key. The ways of doing this are:</p>
+
+<ol>
+<li><p>Share the key via some trusted mechanism outside of the network, such are
+reading it over the phone or sending a flash drive via FedEx.</p></li>
+<li><p>Send the key using a public key algorithm (if we can trust the key!)</p></li>
+<li><p>Use a trusted third party.</p></li>
+</ol>
+
+<p>We will first examine the use of a trusted third party. A trusted third party
+is a trusted system that has everyone&#8217;s key. Hence, only Alice and the trusted party
+(whom we will call Trent) have Alice&#8217;s secret key. Only Bob and Trent
+have Bob&#8217;s secret key.</p>
+
+<p>The simplest way of using a trusted third party is to ask it to come up
+with a session key and send it to the parties that wish to communicate.
+For example, Alice sends a message to Trent requesting a session key to
+communicate with Bob. This message is encrypted with Alice&#8217;s secret key
+so that Trent knows the message could have only come from Alice.</p>
+
+<p>Trent generates a random session key and encrypts it with Alice&#8217;s secret key.
+He also encrypts the same key with Bob&#8217;s secret key. Alice gets both keys
+and passes the one encrypted for Bob to Bob. Now Alice and Bob have a session
+key that was encrypted with each of their secret keys and they can communicate
+by encrypting messages with that session key.</p>
+
+<p>This simple scheme is vulnerable to <strong>replay attacks</strong>. An eavesdropper, Eve,
+can record messages from Alice to Bob and replay them at a later time. Eve
+might not be able to decode the messages but she can confuse Bob by sending him
+seemingly valid encrypted messages.</p>
+
+<p>The second problem is that Alice sends Trent an encrypted session key but
+Trent has no idea that Alice is requesting to communicate with him. While Trent
+<strong>authenticated</strong> Alice (simply by being able to decrypt her request) and
+<strong>authorized</strong> her to talk with Bob (by generating the session key), that information
+has not been conveyed to Bob.</p>
+
+<h3 id="needham-schroeder:nonces">Needham-Schroeder: nonces</h3>
+
+<p>The <strong>Needham-Schroeder</strong> protocol improves the basic key exchange protocol by
+adding <em>nonces</em> to messages. A <strong>nonce</strong> is simply a random string &#8211; a random bunch
+of bits. Alice sends a request to Trent, asking to talk to Bob. This time, it
+doesn&#8217;t have to even be encrypted. As part of the request she sends a <em>nonce</em>.</p>
+
+<p>Trent responds with a message that contains:</p>
+
+<ul>
+<li>Alice&#8217;s ID</li>
+<li>Bob&#8217;s ID</li>
+<li>the nonce</li>
+<li>the session key</li>
+<li>a <strong>ticket</strong>: a message encrypted for Bob containing Alice&#8217;s ID and the same session key</li>
+</ul>
+
+<p>This <em>entire message</em> from Trent is encrypted with Alice&#8217;s secret key.
+Alice can validate that the message is a response to her message because:</p>
+
+<ul>
+<li>It is encrypted for her: nobody but Alice and Trent has Alice&#8217;s secret key.</li>
+<li>It contains the same nonce as in her request, so it is not a replay of some earlier message, which would have had a different randomly-generated nonce.</li>
+</ul>
+
+<p>Alice sends the <em>ticket</em> (the message encrypted with Bob&#8217;s key) to Bob. He can decrypt it
+and knows:</p>
+
+<ul>
+<li>The message must have been generated by Trent since only Trent and Bob know Bob&#8217;s key and and thus could construct a meaningful message encrypted with Bob&#8217;s key.</li>
+<li>He will be communicating with Alice because Trent placed Alice&#8217;s ID in that ticket.</li>
+<li>The session key since Trent placed that in the ticket as well. Alice has this too.</li>
+</ul>
+
+<p>Bob can now communicate with Alice but he will first <strong>authenticate</strong> Alice to be sure
+that he&#8217;s really communicating with her. He&#8217;ll believe it&#8217;s Alice if she can prove that
+she has the session key. To do this, Bob creates another nonce, encrypts it with the session key,
+and sends it to Alice. Alice decrypts the message, subtracts one from the nonce,
+encrypts the result, and sends it back to Bob. She just demonstrated that she could
+decrypt a message using the session key and return back a known modification of the message.
+Needham-Schroeder is a combined authentication and key exchange protocol.</p>
+
+<h3 id="denning-saccomodification:timestampstoavoidkeyreplay">Denning-Sacco modification: timestamps to avoid key replay</h3>
+
+<p>One flaw in the Needham-Schroeder algorithm is when Alice sends the ticket to Bob.
+The ticket is encrypted with Bob&#8217;s secret key and contains Alice&#8217;s ID as well as the session key.
+If an attacker happened to record an old conversation session and was able to decrypt the session key,
+she can <strong>replay</strong> the transmission of an old ticket to Bob. Bob won&#8217;t know that he received
+that same session key in the past. He will proceed to validate &#8220;Alice&#8221; by asking her to prove
+that she indeed knows the session key. In this case, Eve, our eavesdropper, does know it;
+that&#8217;s why she sent the ticket to Bob. Bob completes the authentication and thinks he is
+talking with Alice when in reality he is talking to Eve.</p>
+
+<p>A fix for this was proposed by Denning &amp; Sacco: add a <strong>timestamp</strong> to the ticket. When Trent creates the ticket that Alice
+will give to Bob, it is a message encrypted for Bob and contains Alice&#8217;s ID, the session key, and
+a <em>timestamp</em>. </p>
+
+<p>When Bob receives a ticket, he checks the timestamp. If it is older than some recent time (e.g., a few
+seconds), Bob will simply discard the ticket, assuming that he is getting a replay attack.</p>
+
+<h3 id="otway-reesprotocol:sessionidsinsteadoftimestamps">Otway-Rees protocol: session IDs instead of timestamps</h3>
+
+<p>A problem with timestamps is that their use relies on all entities having synchronized clocks.
+If Bob&#8217;s clock is significantly off from Trent&#8217;s, he may falsely accept or falsely reject a ticket
+that Alice presents to him. Time synchronization becomes an attack vector for this protocol.
+If an attacker can change Bob&#8217;s concept of time, she may be able to convince Bob to accept
+an older ticket. To do this, she can create fake NTP (network time protocol) responses to force
+Bob&#8217;s clock to synchronize to a different value or, if Bob is paranoid and uses a GPS receiver to
+synchronize time, create fake GPS signals.</p>
+
+<p>A way to avoid the replay of the ticket without using timestamps is to add a <strong>session ID</strong> to
+each message. The rest of the Otway-Rees protocol differs a bit from Needham-Schroeder but is conceptually
+very similar.</p>
+
+<ol>
+<li>Alice sends a message to Bob that contains:
+
+<ul>
+<li>A session ID</li>
+<li>Aoth of their IDs</li>
+<li>A message encrypted with Alice&#8217;s secret key. This encrypted message contains Alice and Bob&#8217;s IDs as well as the session ID.</li>
+</ul></li>
+<li>Bob sends Trent a request to communicate with Alice, containing:
+
+<ul>
+<li>Alice&#8217;s message</li>
+<li>A message encrypted with Bob&#8217;s secret key that also contains the session ID.</li>
+</ul></li>
+<li><p>Trent now knows that Alice wants to talk to Bob since the session ID is inside her encrypted message and
+that Bob agrees to talk to Alice since that same session ID is inside his encrypted message.</p></li>
+<li><p>Trent creates a random session key encrypted for Bob and the same key encrypted for Alice and sends both
+of those to Bob, along with the session key.</p></li>
+</ol>
+
+<p>The protocol also incorporates nonces to ensure that there is no replay attack on Trent&#8217;s response even
+if an attacker sends a message to Bob with a new session ID and old encrypted session keys (that were
+cracked by the attacker).</p>
+
+<h3 id="kerberos">Kerberos</h3>
+
+<p><strong>Kerberos</strong> is a trusted third party authentication,
+authorization, and key exchange
+protocol using symmetric cryptography and based closely on
+the Needham-Schroeder protocol with the Denning-Sacco modification (the use of timestamps).</p>
+
+<p>When Alice wands to talk with Bob (they can be users and services),
+she first needs to ask Kerberos. If access is authorized, Kerberos will send her
+two messages. One is encrypted with Alice&#8217;s secret key and contains
+the session key for her communication with Bob. The other
+message is encrypted with Bob&#8217;s secret key. Alice cannot read
+or decode this second message. It s a <strong>ticket</strong>. It contains
+the same session key that Alice received but is encrypted for
+Bob. Alice will send that to Bob. When Bob decrypts it, he knows that the message
+must have been generated by an entity that knows its secret key:
+Kerberos.
+Now that Alice and Bob both have the session key, they can communicate
+securely by encrypting all traffic with that session key.</p>
+
+<p>To avoid replay attacks, Kerberos places a <strong>timestamp</strong> in Alice&#8217;s response and in the ticket.
+For Alice to authenticate herself to Bob, she needs to prove that she was able
+to extract the session key from the encrypted message Kerberos sent her.
+She proves this by generating a new timestamp, encrypting it with the session key, and sending it to Bob.
+Bob now needs to prove to Alice that he can decode messages encrypted with the session key.
+He takes Alice&#8217;s timestamp, adds one (just to permute the value), and sends it back to Alice, encrypted
+with their session key.</p>
+
+<p>Since your secret key is needed to decrypt every service request
+you make of Kerberos, you&#8217;ll end up typing your password each time
+you want to access a service. Storing the key in a file to cache it
+is not a good idea. Kerberos handles this by splitting itself into
+two components that run the same protocol: the <strong>authentication
+service</strong> (<strong>AS</strong>) and the <strong>ticket granting service</strong> (<strong>TGS</strong>). The authentication
+service handles the initial user request and provides a session key
+to access the TGS. This session key can be cached for the user&#8217;s
+login session and allows the user to send requests to the TGS without
+re-entering a password. The TGS is the part of Kerberos that
+handles requests for services. It also returns two messages to the
+user: a different <em>session key</em> for the desired service and a <em>ticket</em> that must
+be provided to that service.</p>
+
+<!--
+### Diffie-Hellman key exchange 
+
+The **Diffie-Hellman key exchange** algorithm allows two parties
+to establish a **common key** without disclosing any information
+that would allow any other party to compute the same key.  Each
+party generates a private key and a public key.
+Despite their name, these are _not_
+encryption keys; they are just numbers. Diffie-Hellman does not
+implement public key cryptography. Alice can compute a common key
+using her private key and Bob's public key. Bob can compute the
+same common key by using his private key and Alice's public key.
+
+Diffie-Hellman uses the one-way function _a^b_ _mod&nbsp;c_.
+Its one-wayness is due to our inability to compute the inverse:
+a discrete logarithm. Anyone may see Alice and Bob's public keys
+but will be unable to compute their common key. Although Diffie-Hellman
+is not a public key encryption algorithm, it behaves like one in the
+sense that it allows us to exchange keys without having to use a
+trusted third party.
+
+-->
+
+<h2 id="keyexchangeusingpublickeycryptography">Key exchange using public key cryptography</h2>
+
+<p>With public key cryptography, there generally isn&#8217;t a need for key exchange.
+As long as both sides can get each other&#8217;s public keys from a trusted source,
+they can encrypt messages using those keys.
+However, we rarely use public key cryptography for large messages.
+It can, however, be used to transmit a session key. This use of
+public key cryptography to transmit a session key that will be used
+to apply symmetric cryptography to messages is called <strong>hybrid cryptography</strong>.
+For Alice to send a key to Bob:</p>
+
+<ol>
+<li>Alice generates a random session key.</li>
+<li>She encrypts it with Bob&#8217;s public key &amp; sends it to Bob.</li>
+<li>Bob decrypts the message using his private key and now has the session key.</li>
+</ol>
+
+<p>Bob is the only one who has Bob&#8217;s private key to be able to decrypt
+that message and extract the session key. A problem with this is that
+<em>anybody</em> can do this. Charles can generate a random session key,
+encrypt it with Bob&#8217;s public key, and send it to Bob. For Bob to be convinced
+that it came from Alice, she can encrypt it with her private key (this is
+effectively <strong>signing</strong> the message).</p>
+
+<ol>
+<li>Alice generates a random session key.</li>
+<li>She signs it by encrypting the key with her private key.</li>
+<li>She encrypts the result with Bob&#8217;s public key &amp; sends it to Bob.</li>
+<li>Bob decrypts the message using his private key.</li>
+<li>Bob decrypts the resulting message with Alice&#8217;s public key and gets the session key.</li>
+</ol>
+
+<p>If anybody other than Alice created the message, the result that Bob gets by
+decrypting it with Alice&#8217;s public key will not result in a valid key for anyone.
+We can enhance the protocol by using a standalone signature (encrypted hash) so
+Bob can identify a valid key from a bogus one.</p>
+
+<!-- 
+## Forward secrecy
+
+If an attacker steals, for example, Bob's private key, he will be able to go through
+old messages and decrypt old session keys (the start of every message to Bob contained
+a session key encrypted with his public key). **Forward secrecy**, also called
+**perfect forward secrecy**, is the use of keys and key exchange protocols where the 
+compromise of a key does not compromise past session keys. There is no secret
+that one can steal that will allow the attacker to decrypt multiple past messages.
+Note that this is of value for communication sessions but not stored encrypted documents
+(such as email). You don't want an attacker to gain any information from a communication
+session even if a user's key is compromised. However, the user needs to be able to
+decrypt her own documents, so they need to rely on a long-term key.
+
+Diffie-Hellman enables **forward secrecy**.
+Alice and Bob can each generate a key pair and send their public key to each other.
+They can then compute a common key that nobody else will know and use that
+to communicate. 
+Achieving forward secrecy requires **single-use** (**ephemeral**) keys.
+Next time Alice and Bob want to communicate, they will generate a new set of keys
+and compute a new common key.
+At no time do we rely on **long-term keys**, such
+as Alice's secret key or RSA private key. Encrypting a session key
+with a long-term key, such as Bob's public key, will not achieve forward
+secrecy. If an attacker ever finds Bob's private key, she will be able
+to extract the session key.
+
+Diffie-Hellman is particularly good for for achieving forward secrecy because it is
+efficient to create new new key pairs on the fly.
+RSA or ECC keys can be used as well but key generation is far less efficient.
+Because of this, RSA and ECC keys tend to be used mainly as long-term keys (e.g., for authentication).
+-->
+
+<h1 id="userauthentication">User Authentication</h1>
+
+<h2 id="authenticationfactors">Authentication factors</h2>
+
+<p>The three <strong>factors</strong> of authentication are:</p>
+
+<ol>
+<li><em>something you have</em> (such as a key or a card),</li>
+<li><em>something you know</em> (such as a password or PIN),</li>
+<li>and <em>something you are</em> (biometrics).</li>
+</ol>
+
+<p>Combining these into a <strong>multi-factor</strong>
+authentication scheme can increase security against the chance that
+any one of the factors is compromised.
+Multi-factor authentication must use two or more of these
+factors. Using two passwords, for example, is not sufficient and does not qualify as multi-factor.</p>
+
+<h2 id="passwordauthenticationprotocol">Password Authentication Protocol</h2>
+
+<p>The classic authentication method is the use of reusable passwords.
+This is known as the <strong>password authentication protocol</strong>,
+or <strong>PAP</strong>.
+The system asks you to identify yourself (login name) and then enter a
+password. If the password matches that which is associated
+with the login name on the system
+then you&#8217;re authenticated.</p>
+
+<h3 id="passwordguessingdefenses">Password guessing defenses</h3>
+
+<p>To avoid having an adversary carry out a password guessing attack, we need to make
+it not feasible to try a large number of passwords. A common approach is to
+<strong>rate-limit</strong> guesses. When the system detects an incorrect password, it will
+wait several seconds before allowing the user to try again. Linux, for example, waits
+about three seconds. After five bad guesses, it terminates and restarts the <em>login</em> process.</p>
+
+<p>Another approach is to completely disallow password guessing after a certain
+number of failed attempts by locking the account. This is common for some web-based
+services, such as banks. However, the system has now been made vulnerable to a
+denial-of-service attack. An attacker may not be able to take your money but may
+inconvenience you by disallowing you to access it as well.</p>
+
+<h3 id="hashedpasswords">Hashed passwords</h3>
+
+<p>One problem with the password authentication protocol is that if someone
+gets hold of the password file on the system, then they have all
+the passwords. The common way to thwart this is to store <strong>hashes</strong> of
+passwords instead of the passwords themselves. This takes advantage
+of the one-way property of the hash: anyone who sees the hash still has no way of computing your password.</p>
+
+<p>To authenticate a user, the system simply checks if
+<em>hash(password) = stored_hashed_password</em>. If someone got hold of the
+password file, they&#8217;re still stuck since they won&#8217;t be able to
+reconstruct the original password from the hash. They&#8217;ll have to
+resort to an <strong>exhaustive search</strong> (also known as a <strong>brute-force search</strong>)
+to search for a password that hashes to the value in the file. The hashed file should still be protected from read access by normal users to keep them from performing an exhaustive search.</p>
+
+<p>A <strong>dictionary attack</strong> is an optimization of the search that tests common
+passwords, including dictionary words, known common passwords, and common letter-number substitutions rather than every possible combination of characters.
+Moreover, an intruder does not need to perform such search on each hashed password to find the password.
+Instead, the results of a dictionary
+search can be stored in a file and later searched to find a corresponding hash in a password file. These are called <strong>precomputed hashes</strong>. To guard
+against this, a password is concatenated with a bunch of extra random characters,
+called <strong>salt</strong>. These characters make the password substantially longer and would make
+a table of precomputed hashes insanely huge and hence not practical. Such a table would need to go far beyond a dictionary list and create hashes of all possible - and long - passwords.
+The salt is not a secret &#8211; it is stored in plaintext in the password file
+in order to validate a user&#8217;s password. Its only function is to make using
+precomputed hashes impractical and ensure that even identical passwords do not
+generate the same hashed results. An intruder would have to select one specific
+hashed password and do a brute-force or dictionary attack on just that
+password, adding salt to each guess prior to hashing it.</p>
+
+<h3 id="passwordrecoveryoptions">Password recovery options</h3>
+
+<p>Passwords are bad. They are not incredibly secure. English text has a low entropy (approximately 1.2&#8211;1.5 bits per character) and
+are often easy to guess. Password files from some high-profile sites have been obtained to validate just how bad a lot of people are
+at picking passwords. Over <a href="http://www.passwordrandom.com/most-popular-passwords">90%</a> of all user passwords sampled
+are on a list of the top 1,000 passwords. The most common password is <code>password</code>. People also tend to reuse passwords.
+If an attacker can get passwords from one place, there is a good chance that many of those passwords will work with other services.</p>
+
+<p>Despite many people picking bad passwords, people often forget them, especially when they are trying to be
+good and use different passwords for different accounts. There are several common ways of handling forgotten
+passwords, none of them great:</p>
+<dl>
+<dt>Email them:</dt>
+<dd>This used to be a common solution and is somewhat dying off. It requires that the server is able to get the password (it is
+not stored as a hash). It exposes the risk that anyone who might see your email will see your password.</dd>
+
+<dt>Reset them:</dt>
+<dd>This is more common but requires authenticating the requestor to avoid a denial of service attack.
+The common thing to do is to send a <em>password reset</em> link to an email address that was entered when the account was created.
+We again have the problem that if someone has access to your mail, they will have access to the password reset
+link and will be able to create a new password for your account. In both these cases, we have the problem that
+users may no longer have the same email address. Think of the people who switched from Comcast to get Verizon FiOS and
+switched their comcast.net addresses to verizon.net (note: avoid using email addresses tied to services or locations that you might change).</dd>
+
+<dt>Provide hints:</dt>
+<dd>This is common for system logins (e.g. macOS and Windows). However, a good hint may weaken the password or may not help the user.</dd>
+
+<dt>Ask questions:</dt>
+<dd>It is common for sites to ask questions (&#8220;what was your favorite
+pet&#8217;s name?&#8221;, &#8220;what street did you live on when you were eight years
+old?&#8221;). The answers to many of these questions can often be found through
+some searching or via social engineering. A more clever thing is to have
+unpredictable answers (&#8220;what was your favorite pet&#8217;s name?&#8221; &#8220;Osnu7$Qbv999&#8221;)
+but that requires storing answers somewhere.</dd>
+
+<dt>Rely on users to write them down:</dt>
+<dd>This is fine as long as the thread model is electronic-only and you don&#8217;t worry about someone physically searching for your passwords.</dd>
+</dl>
+
+
+<h2 id="one-timepasswords">One-time Passwords</h2>
+
+<p>The other problem with reusable passwords is that
+if a network is insecure,
+an eavesdropper may sniff the password from the network. A potential
+intruder may also simply observe the user typing a password. To
+thwart this, we can turn to <strong>one-time passwords</strong>. If someone sees you
+type a password or gets it from the network stream, it won&#8217;t
+matter because that password will be useless for future logins.</p>
+
+<p>There are three forms of one-time passwords:</p>
+
+<ol>
+<li><p><strong>Sequence-based</strong>. Each password is a function of the previous password. S/Key is an example of this.</p></li>
+<li><p><strong>Challenge-based</strong>. A password is a function of a challenge provided by the server. CHAP is an example of this.</p></li>
+<li><p><strong>Time-based</strong>. Each password is a function of the time. TOTP and RSA&#8217;s SecurID are example of this.</p></li>
+</ol>
+
+<h3 id="sequence-based:skey">Sequence-based: S/Key</h3>
+
+<p><strong>S/Key authentication</strong> allows the use of one-time passwords
+by generating a list via one-way functions. The list is created such that
+password <em>n</em> is generated as <em>f(password[n&#8211;1])</em>, where <em>f</em>
+is a one-way function. The list of
+passwords is used backwards.
+Given a password <em>password[p]</em>, it is impossible
+for an observer to compute the next valid password because a one-way function
+<em>f</em> makes it improbably difficult to compute the inverse function,
+<em>f<sup>&#8211;1</sup>(password[p])</em>, to
+get the next valid password, <em>password[p&#8211;1]</em>.</p>
+
+<h3 id="challenge-based:chap">Challenge-based: CHAP</h3>
+
+<p>The <strong>Challenge-Handshake Authentication Protocol</strong>
+(<strong>CHAP</strong>) is an authentication protocol that
+allows a server to authenticate a user without sending a
+password over the network.</p>
+
+<p>Both the client and server share a secret (essentially a password).
+A server creates a random bunch of bits (called a <strong>nonce</strong>)
+and sends it to the client (user) that wants to authenticate. This
+is the <strong>challenge</strong>.</p>
+
+<p>The client identifies itself and sends a <strong>response</strong> that
+is the hash of the shared secret combined with the challenge.
+The server has the same data and can generate its own hash of the
+same challenge and secret. If the hash matches the one received from the
+client, the server is convinced that the client knows the shared secret
+and is therefore legitimate.</p>
+
+<p>An intruder that sees this hash cannot extract the original data.
+An intruder that sees the challenge cannot create a suitable hashed
+response without knowing the secret.
+Note that this technique requires passwords to be accessible at the
+server and the security rests on the password file remaining secure.</p>
+
+<h3 id="time-based:totpandsecuridsupregsup">Time-based: TOTP and SecurID<sup>&reg;</sup></h3>
+
+<p>With the <strong>Time-based One Time Password</strong> (<strong>TOTP</strong>) protocol, both sides share a secret key. To authenticate, a user runs the TOTP function to create a one-time password. The TOTP function is a hash:</p>
+
+<pre><code>password := hash(secret_key, time) % 10&lt;sup&gt;password_length&lt;/sup&gt;
+</code></pre>
+
+<p>The resultant hash is taken modulo some number that determines the length of the password. A time window of 30 seconds is usually used to provide a reasonably coarse granularity of time that doesn&#8217;t put too much stress on the user or requirements for tight clock synchronization.
+The service, who also knows the secret key and time, can generate the same hash and hence validate the value presented by the user.</p>
+
+<p>TOTP is often used as a second factor (proof that you have some device with the secret configured in it) in addition to a password. The protocol is widely supported by companies such as Amazon, Dropbox, Wordpress, Microsoft, and Google.</p>
+
+<p>A closely related system is RSA&#8217;s SecureID is a two-factor authentication system that generates
+one-time passwords for response to a user login prompt. It relies
+on a user password (Personal ID Number, PIN) and a token device (an
+authenticator card or fob). The token generates a new number every
+30 seconds. The number is a function of a seed that is unique for
+each card and the time of day.</p>
+
+<p>To authenticate to a server, you send a concatenation of your PIN
+and the number from the token in lieu of a password. A legitimate
+remote system will have your PIN, the token seed, and the time of
+day and will be able to compute the same value to validate your
+password. An intruder would not know your PIN or the token’s seed
+and will never see it on the network.</p>
+
+<h2 id="publickeyauthentication">Public key authentication</h2>
+
+<p>Public key authentication relies on the use of nonces, similar to the way
+they were used to authenticate users using the Needham-Schroeder protocol.
+A <strong>nonce</strong> is is generated on the fly and used to present to the other party
+as a challenge for them to prove that they are
+capable of encrypting something with a specific key that they possess.
+The use of a nonce is central to <strong>public key authentication</strong>.</p>
+
+<p>If Alice wants to authenticate Bob, she needs to have Bob prove that
+he possesses his private key (private keys are never shared). To do this,
+Alice generates a nonce (a random bunch of bits) and sends it to Bob,
+asking him to encrypt it with his private key. If she can decrypt
+Bob&#8217;s response using Bob&#8217;s public key and sees the same nonce, she
+will be convinced that she is talking to Bob because nobody else will
+have Bob&#8217;s private key. <strong>Mutual authentication</strong> requires that each party
+authenticate itself to the other: Bob will also have to generate a nonce
+and ask Alice to encrypt it with her private key.</p>
+
+<!--
+##  FIDO Universal Second Factor (U2F) Authenticators
+
+**FIDO U2F** is a standard that was developed as an easy-to-use second factor for authentication and was primarily
+designed with web-based services in mind. It is generally implemented as a USB or Bluetooth fob. JavaScript on
+the browser calls APIs to communicate with the hardware. Hence, unlike TOTP or SecurID, the user does not have
+to transcribe any numbers. The entire user experience is:
+
+1. Enter name and password (this is the first factor).
+2. Insert the U2F key and touch the button. This validates the user's physical presence and runs the client protocol.
+3. You're logged in.
+
+U2F is currently supported by Google, Microsoft, Dropbox, GitHub, RSA, and many others as well as popular password managers and
+web browsers (except Safari, but it is in Apple's preview releases).
+Google switched from TOTP to U2F in 2017 and reports that there were no successful phishing attacks against their 85,000+ employees since then.
+
+There are two interactions: registration with a service and authentication.
+
+For registration:
+
+- The server sends a **challenge** (a random bunch of bits).
+- The U2F device generates a public/private key pair and creates a data structure containing its ID and its public key. This is called the _handle_.
+- The device signs a message comprising the handle and the server's challenge and sends the result to the server.
+- The server verifies the signed data against the public key in the message.
+- The server then stores the key handle and associated public key in its database for future authentication sessions.
+
+For authentication (after the user registered the device):
+
+- The server sends a challenge along with the user's key handle (which it stored in its database)
+- The device extracts the private key for the service (the private key never leaves the device)
+- The device signs a data structure containing client info and the challenge & sends it back
+- The server receives the data and verifies it against the stored public key.
+
+U2F perform its interactions over a TLS link, so all communication between the client (browser) and server are encrypted.
+Note that keys are generated per site, so the authenticator will not use the same key pair for different services.
+U2F prevents phishing attacks because only the real site authenticate
+the user with a specific key. Authentication will fail on a fake (phishing)
+site even if the user was fooled into thinking it was real.
+-->
+
+<h2 id="man-in-the-middleattacks">Man-in-the-middle attacks</h2>
+
+<p>Authentication protocols can be vulnerable to <strong>man-in-the-middle</strong> (<strong>MITM</strong>) attacks.
+In this attack, Alice thinks she is talking to Bob but is really
+talking to Mike (the man in the middle, an adversary). Mike, in turn
+talks to Bob. Any message that Alice sends gets forwarded by Mike to
+Bob. Mike forwards any response from Bob gets back to Alice.
+This way, Mike allows Alice and Bob to carry out their authentication
+protocol. Once Bob is convinced he is talking with Alice, Mike
+can drop Alice and communicate with Bob directly, posing as Alice &#8230; or
+stay around and read their messages, possibly changing them as he sees fit.</p>
+
+<p>The protocols that are immune to this are those where Alice and Bob
+establish an encrypted channel using trusted keys. For example,
+with Kerberos, both Alice and Bob get a session key that is encrypted
+only for each of them. Mike cannot find it even if he intercepts
+their communications.</p>
+
+<p>With public key cryptography, Mike can take over after Bob is
+convinced he is talking with Alice. To avoid a man-in-the-middle
+attack Alice will have to send Bob a session key. If she uses public
+key cryptography to do the key exchange, as long as the message
+from Alice is signed, Mike will not be able to decrypt the session
+key or forge a new one. </p>
+
+<!-- 
+## Code signing
+
+We have seen how we could use hash functions for message integrity in the form of MACs (message authentication codes, which use a shared key) and digital signatures (which use public and private keys). The same mechanism is employed to **sign software**: to validate that software has not been modified since it was created by the developer.
+
+The advantages of signing code are that the software can be downloaded from untrusted servers or distributed over untrusted channels and still be validated to be untampered. It also enables us to detect whether malware on our local system has modified the software.
+
+Microsoft Windows, Apple macOS, iOS, and Android all make extensive use of signed software. Signing an application is fundamentally no different than signing any other digital content:
+
+1. As a software publisher, you create a public/private key pair
+2. You obtain a digital certificate for the public key. In some cases, you need to obtain it from a certification authority (CA) that can certify you as a software publisher.
+3. You create a digital signature of the software that you're distributing: generate a hash and encrypt it with your private key.
+4. Attach the signature and certificate to the software package. This will enable others to validate the signature.
+
+Prior to installation, the system will validate the certificate and then validate the signature. If the signature does not match the hash of the software package, that indicates that the software has been altered. Signed software usually also supports **per-page hashes**.   Recall demand paging in operating systems: an operating system does not load a program into memory at once; it only loads chunks (_pages_) as they are needed. This is called _demand paging_. Signed software will often include signatures for each page (typically 4K bytes) and each page will be validated as it is loaded into memory. This avoids the overhead of validating the entire file prior to running the program (e.g., the executable for Adobe Photoshop is over 100 MB).
+-->
+
+<h1 id="biometricauthentication">Biometric authentication</h1>
+
+<p><strong>Biometric authentication</strong> is the process of identifying a person
+based on their physical or behavioral characteristics as opposed to
+their ability to remember a password or their possession of some
+device. It is the third of the three factors of authentication:
+<em>something you know, something you have</em>, and <em>something you are</em>.</p>
+
+<p>It is also fundamentally different than the other two factors
+because it does not deal with data that lends itself to exact comparisons.
+For instance, sensing the same fingerprint several times is not likely
+to give you identical results each time. The orientation may differ,
+the pressure and angle of the finger may result in some parts of the
+fingerprint to appear in one sample but not the other, and
+dirt, oil, and humidity may alter the image. Biometric authentication
+relies on <strong>statistical pattern recognition</strong>: we establish thresholds
+to determine whether two patterns are close enough to accept
+as being the same.</p>
+
+<p>A <strong>false accept rate</strong> (<strong>FAR</strong>) is when a pair
+of <em>different</em> biometric samples (e.g., fingerprints from two different people)
+is <em>accepted</em> as a match.
+A <strong>false reject rate</strong> (<strong>FRR</strong>) is when a pair of
+<em>identical</em> biometric samples is <em>rejected</em> as a match.
+Based on the properties of the biometric data, the sensor,
+the feature extraction algorithms, and the comparison algorithms,
+each biometric device has a characteristic <strong>ROC</strong> (<strong>Receiver Operating
+Characteristic</strong>) curve. The name derives from early work on RADAR and
+maps the false accept versus false reject rates for a given
+biometric authentication device. For password authentication,
+the &#8220;curve&#8221; would be a single point at the origin: no false accepts
+and no false rejects. For biometric authentication, which is based
+on thresholds that determine if the match is &#8220;close enough&#8221;, we have
+a curve.</p>
+
+<p>At one end of the curve, we can have an incredibly low
+false accept rate (FAR). This is good as it means that we will not have
+false matches: the enemy stays out. However, it also means
+that the false reject rate (FRR) will be very high. If you think
+of a fingerprint biometric, the stringent comparison needed to yield
+a low FAR means that the algorithm will not be forgiving to a speck
+of dirt, light pressure, or a finger held at a different angle.
+We get high security at the expense of inconveniencing legitimate
+users, you may have to present their finger over and over again for
+sensing, hoping that it will eventually be accepted. </p>
+
+<p>At the other end of the curve, we have a very low false reject rate (FRR).
+This is good since it provides convenience to legitimate users. Their
+biometric data will likely be accepted as legitimate and they will
+not have to deal with the frustration of re-sensing their biometric,
+hoping that their finger is clean, not too greasy, not too dry, and
+pressed at the right angle with the correct pressure. The trade-off is
+that it&#8217;s more likely that another person&#8217;s biometric data will be
+considered close enough as well and accepted as legitimate.</p>
+
+<p>There are numerous biological components that can be measured.
+They include fingerprints, irises, blood vessels on the retina,
+hand geometry, facial geometry, facial thermographs, and many
+others. Data such as signatures and voice can also be used, but
+these often vary significantly with one&#8217;s state of mind (your
+voice changes if you&#8217;re tired, ill, or angry). They are <strong>behavioral
+systems</strong> rather than <strong>physiological systems</strong>, such as your iris
+patterns, length of your fingers,
+or fingerprints, and tend to have lower recognition rates.
+Other behavioral biometrics include keystroke dynamics, mouse use
+characteristics, gait analysis, and even cognitive tests.</p>
+
+<p>Regardless of which biometric is used, the important thing to do
+in order to make it useful for authentication is to identify the
+elements that make it different. Most of us have swirls on our fingers.
+What makes fingerprints different from finger to finger are
+the various variations in those swirls: ridge endings, bifurcations,
+enclosures, and other elements beyond that of a gently sloping curve.
+These features are called <strong>minutia</strong>.
+The presence of minutia, their relative distances
+from each other an their relative positions can allow us to
+express the unique aspect of a fingerprint as a relatively compact
+stream of bits rather than a bitmap.</p>
+
+<p>Two important elements of biometrics are robustness and distinctiveness.
+<strong>Robustness</strong> means that the biometric data will not change
+much over time. Your fingerprints will look mostly the same next
+year and the year after. Your fingers might grow fatter (or thinner)
+over the years and at some point in the future, you might need to
+re-register your hand geometry data.</p>
+
+<p><strong>Distinctiveness</strong> relates to the differences in the biometric
+pattern among the population. Distinctiveness is also affected
+by the precision of a sensor. A finger length sensor will not measure
+your finger length to the nanometer, so there will be quantized
+values in the measured data. Moreover, the measurements will need to
+account for normal hand swelling and shrinking based on temperature
+and humidity, making the data even less precise. Accounting for
+these factors, approximately one in a hundred people may have hand
+measurements similar to yours.
+A fingerprint sensor
+may typically detect 40&#8211;60 distinct features that can be used for
+comparing with other sensed fingerprints. An iris scan, on the
+other hand, will often capture over 250 distinct features, making
+it far more distinctive and more likely to identify a unique individual.</p>
+
+<p>Some sensed data is difficult to <strong>normalize</strong>. Here, normalization
+refers to the ability to align different sensed data to some common
+orientation. For instance, identical fingers might be presented
+at different angles to the sensors. The comparison algorithm will
+have to account for possible rotation when comparing the two
+patterns. The inability to normalize data makes it difficult to
+perform efficient searches. There is no good way to search for a
+specific fingerprint short of performing a comparison against
+each stored pattern. Data such as iris scans lends itself to
+normalization, making it easier to find potentially matching patterns
+without going through an exhaustive search.</p>
+
+<p>In general, the difficulty of normalization and the fact that
+no two measurements are ever likely to be the same makes biometric
+data <strong>not</strong> a good choice for <strong>identification</strong>. It is extremely
+difficult, for example, to construct a system that will store
+hundreds of thousands of fingerprints and allow the user to
+identify and authenticate themselves by presenting their finger.
+Such a system will require an exhaustive search through the
+stored data and each comparison will itself be time consuming
+as it will not be a simple bit-by-bit match test. Secondly,
+fingerprint data is not distinct enough for a population of that
+size. A more realistic system will use biometrics for
+<strong>verification</strong> and have users identify themselves through
+some other means (e.g., type their login name)
+and then present their biometric data. In this case, the software
+will only have to compare the pattern associated with that user.</p>
+
+<p>The biometric authentication process comprises several steps:</p>
+
+<ol>
+<li><p><strong>Enrollment</strong>. Before any authentication can be performed, the
+system needs to have stored biometric data of the user that it can
+use for comparison. The user will have to present the data to
+the sensor, distinctive features need to be extracted, and the
+resulting pattern stored. The system may also validate if the
+sensed data is of sufficiently high quality or ask the user to
+repeat the process several times to ensure consistency in the data.</p></li>
+<li><p><strong>Sensing</strong>. The biological component needs to be measured by
+presenting it to a sensor, a dedicated piece of hardware that
+can capture the data (e.g., a camera for iris recognition, a
+capacitive fingerprint sensor). The sensor captures the raw
+data (e.g., an image).</p></li>
+<li><p><strong>Feature extraction</strong>. This is a signal processing phase where
+the interesting and distinctive components are extracted from
+the raw sensed data to create a biometric pattern that can be
+used for matching. This process involves removing signal noise,
+discarding sensed data that is not distinctive or not useful
+for comparisons, and determining whether the resulting values
+are of sufficiently good quality that it makes sense to use
+them for comparison. A barely-sensed fingerprint, for instance,
+may not present enough minutia to be considered useful.</p></li>
+<li><p><strong>Pattern matching</strong>. The extracted sample is now
+compared to the stored sample that was obtained during the
+enrollment phase. Features that match closely will have
+small distances. Given variations in measurements, it is
+unlikely that the distance will be zero, which would indicate
+a perfect match.</p></li>
+<li><p><strong>Decision</strong>. The &#8220;distance&#8221; between the sensed and
+stored samples is now evaluated to decide if the match is
+close enough. The decision determination decides whether the system
+favors more false rejects or more false accepts.</p></li>
+</ol>
+
+<h2 id="securityimplications">Security implications</h2>
+
+<p>There are several security issues that relate to biometric
+authentication. </p>
+<dl>
+<dt><strong>Sensing</strong></dt>
+<dd>Unlike passwords or encryption keys, biometric systems require
+sensors to gather the data. The sensor, its connectors, the software
+that processes sensed data, and the entire software stack around it
+(operating system, firmware, libraries) must all be trusted and
+tamper-proof.</dd>
+
+<dt><strong>Secure communication and storage</strong></dt>
+<dd>The communication path after the data is captured and sensed must
+also be secure so that attackers will have no ability to replace
+a stored biometric pattern with one of their own.</dd>
+
+<dt><strong>Liveness</strong></dt>
+<dd>Much biometric data can be forged. Gummy fingerprints can copy
+real fingerprints, pictures of faces or eyes can fool cameras into
+believing they are looking at a real person, and recordings can
+be used for voice-based authentication systems.</dd>
+
+<dt><strong>Thresholds</strong></dt>
+<dd>Since biometric data relies on &#8220;close-enough&#8221; matches, you can never
+be sure of a certain match. You will need to determine what threshold
+is good enough and hope that you do not annoy legitimate users too
+much or make it too easy for the enemy to get authenticated.</dd>
+
+<dt><strong>Lack of compartmentalization</strong></dt>
+<dd>You have a finite set of biological characteristics to present.
+Fingerprints and iris scans are the most popular biometric sources.
+Unlike passwords, where you can have distinct passwords for each
+service, you cannot have this with biometric data.</dd>
+
+<dt><strong>Theft of biometric data</strong></dt>
+<dd>If someone steals your password, you can create a new one. If
+someone steals your fingerprint, you have nine fingerprints left and
+then none. If someone gets a picture of your iris, you have one more left.
+Once biometric data is compromised, it remains compromised.</dd>
+</dl>
+
+
+<h1 id="detectinghumans">Detecting humans</h1>
+
+<p><strong>CAPTCHA</strong> (Completely Automated Public Turning test to tell Computers
+and Humans Apart) is <em>not</em> a technique to authenticate users but
+rather a technique to identify whether a system is interacting with
+a human being or with automated software. The idea behind it is
+that humans can recognize highly distorted characters far better
+than character recognition software can.</p>
+
+<p>CAPTCHA presents an image containing a string of distorted text and asks
+the user to identify the text. As optical character recognition (OCR)
+technology improved, this text had to be ever more distorted and
+often reached a point where legitimate users struggled to decode it.
+CAPTCHAs were designed to thwart scripts that would, for example,
+sign up for thousands of logins on a service or buy all tickets to an
+event. CAPTCHAs do this by having a human solve the CAPTCHA before proceeding.</p>
+
+<p>This was not always successful.
+CAPTCHAs were susceptible to a form of a man-in-the-middle attack
+where the distorted image is presented to low-cost (or free) humans
+whose job is to decipher CAPTCHAs. These are called CAPTCHA farms.
+Ever-improving OCR technology also made text-based CAPTCHAs susceptible
+to attack. By 2014, Google found that they could use AI techniques
+to crack CAPTCHAs with 99.8% accuracy.</p>
+
+<p>An alternative to text-based CAPTCHAs are CAPTCHAs that involve
+image recognition, such as &#8220;select all images that have mountains in them&#8221;
+or &quot;select all squares in an image that have street signs&#8217;.
+A recent variation of CAPTCHA is Google&#8217;s <strong>No CAPTCHA reCAPTCHA</strong>.
+This simply asks users to check a box stating that <em>I&#8217;m not a robot</em>.
+The JavaScript behind the scenes, however, does several things:</p>
+
+<ul>
+<li><p>It contacts the Google server to perform an &#8220;advanced risk analysis&#8221;. What this does is not defined but the act of contacting the server causes the web browser to send Google cookies to the server. If you&#8217;re logged in to a Google account, your identity is now known to the server via a cookie and the server can look at your past history to determine if you are a threat. </p></li>
+<li><p>By contacting the Google server, the server can also check where the request came from and compare it with its list of known malicious IP addresses known to host bots</p></li>
+<li><p>The JavaScript code monitors the user&#8217;s engagement with the CAPTCHA, measuring mouse movements, scroll bar movement, acceleration, and the precise location of clicks. If everything is too perfect then the software will assume it is not dealing with a human being.</p></li>
+</ul>
+
+<p>The very latest variation of this system is the <strong>invisible reCAPTCHA</strong>. The
+user doesn&#8217;t even see the checkbox: it is oriented tens of thousands of pixels above the origin, so the JavaScript code is run but the reCAPTCHA frame is out of view. If the server-based risk analysis does not get sufficient information from the Google cookies then it relocates the reCAPTCHA frame back down to a visible part of the screen.</p>
+
+<p>Finally, if the risk analysis part of the system fails, the software presents a CAPTCHA (recognize text on an image) or, for mobile users, a quiz to find matching images.</p>
+
+							</section>
+							<footer class="main">
+								Last modified November 25, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

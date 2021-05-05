@@ -1,0 +1,366 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Application Sandboxing</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Application Sandboxing</h1>
+								<h2>Protecting rogue apps</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>October 11, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<h1 id="introduction">Introduction</h1>
+
+<p>The goal of an application <strong>sandbox</strong> is to provide a controlled and restricted environment for code execution.
+This can be useful for applications that may come from untrustworthy sources, such as games from unknown developers or software downloaded from dubious sites. The program can run with minimal risk of causing widespread damage to the system.
+Sandboxes are also used by security researchers to observe how software behaves: what the program trying to do and whether it is attempting to access any resources in a manner that is suspicious for the application. This can help identify the presence of malware within a program.
+The sandbox defines and enforces what an individual application is allowed to do while executing in within its sandbox. </p>
+
+<p>We previously looked at isolation via jails and containers, which use mechanisms that include namespaces, control groups, and capabilities. These constitute a widely-used form of sandboxing. However, these techniques focus on isolating an application (or group of processes) from other processes, restricting access to parts of the file system, and/or providing a separate network stack with a new IP address. </p>
+
+<p>While this is great for running services without the overhead of deploying virtual machines, it does not sufficiently address the basic needs of running normal applications. We want to protect users from their applications: give users the ability to run apps but restrict what those apps can do on a per-app basis.</p>
+
+<p>For example, you may want to make sure that a program accesses only files under your home directory with a suffix of <code>“.txt”</code>, and only for reading, without restricting the entire file system namespace as <em>chroot</em> would do, which would require creating a separate directory structure for shared libraries and other standard components the application may need. As another example, you might want an application to have access only to TCP networking. With a mechanism such as namespaces, we cannot exercise control over the <em>names</em> of files that an application can open or their access modes. Namespaces also do not allow us to control how the application interacts with the network. Capabilities allow us to restrict what a process running with <em>root</em> privileges can do but offer no ability to restrict more fundamental operations, such as denying a process the ability to read a file even if that file has read access enabled. The missing ingredient is <strong>rule-based</strong> policies to define precisely what system calls an application can invoke &#8211; down to the parameters of the system calls of interest. </p>
+
+<p>Instead of building a jail (a container), we will add an extra layer of access control. An application will have the same view of the operating system as any other application but will be restricted in what it can do.</p>
+
+<p>Sandboxing is currently supported on a wide variety of platforms at
+either the kernel or application level.
+We will examine four types of application sandboxes:</p>
+
+<ol>
+<li>User-level validation</li>
+<li>OS support</li>
+<li>Browser-based application sandboxing</li>
+<li>The Java sandbox</li>
+</ol>
+
+<p>Note that there are many other sandbox implementations. This is just a representative sampling.</p>
+
+<h2 id="applicationsandboxingviasystemcallinterpositionuser-levelvalidation">Application sandboxing via system call interposition &amp; user-level validation</h2>
+
+<p>Applications interact with their environment via system calls to
+the operating system. Any interaction that an application needs to do
+aside from computation,
+whether legitimate or because it has been compromised, must be done through system
+calls: accessing files or devices, changing permissions, accessing
+the network, talking with other processes, etc.</p>
+
+<p>An application sandbox will allow us to create <strong>policies</strong> that define which system calls are permissible to the application and in what way they can be used.</p>
+
+<p>If the operating system does not provide us with the required support
+and we do not have the ability to recompile an application to force
+it to use alternate system call libraries, we can rely on system
+call interposition to construct a sandbox. <strong>System call interposition</strong>
+is the process of intercepting an app’s system calls and performing
+additional operations. The technique is also called <strong>hooking</strong>.
+In the case of a sandbox, it will intercept a system call, inspect
+its parameters, and decide whether to allow the system call to take
+place or return an error.</p>
+
+<h3 id="example:janus">Example: Janus</h3>
+
+<p>One example of doing validation at the <strong>user level</strong> is the <strong>Janus</strong>
+sandboxing system, developed at UC Berkeley, originally for SunOS
+but later ported to Linux.
+Janus uses a loadable, lightweight, kernel module called <em>mod_janus</em>.
+The module initializes itself by setting up hooks to redirect system call requests to
+to itself. A <strong>hook</strong> is simply a
+mechanism that redirects an API request somewhere else and
+allows it to return back for normal processing. For example,
+a function can be hooked to simply log the fact that it has been called.
+The Janus kernel module copies the system call table to redirect the vector of calls to the mod_janus. </p>
+
+<p>A user-configured <strong>policy file</strong> defines the allowable files and network operations for each sandboxed application. Users run applications through a Janus launcher/monitor program, which places the application in the sandbox. The monitor parses the policy file and spawns a child process for the user-specified program. The child process executes the actual application. The parent Janus process serves as the monitor, running a <strong>policy engine</strong> that receives system call notifications and decides whether to allow or disallow the system call.</p>
+
+<p>Whenever a sandboxed application makes a system call, the call is
+redirected by the hook in the kernel to the Janus kernel module.
+The module blocks the thread (it is still waiting for the return from
+the system call) and
+signals the user-level Janus process that a system call has been requested.
+The user-level Janus process&#8217; <em>policy engine</em> then requests all
+the necessary information about the call (calling process, type of system call, parameters).
+The policy engine makes a <strong>policy decision</strong> to determine whether, based on the policy,
+the process should be permitted to make the system call.
+If so, the system call is directed back to the operating system.
+If not, an error code is returned to the application.</p>
+
+<h3 id="challengesofuser-levelvalidation">Challenges of user-level validation</h3>
+
+<p>The biggest challenge with implementing Janus is that the user-level monitor must mirror the state of the operating system. If the child process forks a new process, the Janus monitor must also fork. It needs to keep track of not
+just network operations but the proper sequencing of the
+steps in the protocol to ensure that no improper actions are attempted on the network. This is a sequence of <em>socket, bind, connect, read/write</em>, and <em>shutdown</em> system calls. If one fails, chances are that the others should not be allowed to take place. However, the Janus monitor does not have the knowledge of whether a particular system call succeeded or not; approved calls are simply forwarded from the module to the kernel for processing. Failure to handle this correctly may enable attack vectors such as trying to send
+data on an unconnected socket.</p>
+
+<p>The same applies with file operations. If a file failed to open, <em>read</em> and <em>write</em> operations should not be allowed to take place. Keeping track of state also gets tricky if file descriptors are duplicated (e.g., via the <em>dup2</em> system call); it is not clear whether any requested file descriptor is a valid one or not. </p>
+
+<p>Pathname parsing of file names has to be handled entirely by the monitor. We earlier examined the complexities of processing <code>&quot;../&quot;</code> sequences in pathnames. Janus has to do this in order to validate any policies on permissible file names or directories. It also has to keep track of relative filenames since the application may change the current directory at any time via the <em>chdir</em> system call. This means Janus needs to intercept <em>chdir</em> requests and process new pathnames within the proper context. Moreover, the application may change its entire namespace if the process calls <em>chroot</em>.</p>
+
+<p>File descriptor can cause additional problems. A process can pass an open file descriptor to another process via UNIX domain sockets, which can then use that file descriptor (via a <em>sendfd</em> and <em>recv_fd</em> set of calls). Janus would be hard-pressed to know that this happened since that would require understanding the intent of the underlying <em>sendmsg</em> system calls and <em>cmsg</em> directives. </p>
+
+<p>In addition to these difficulties, user-level validation suffers from possible TOCTTOU (time-of-check-to-time-of-use) race conditions. The environment present when Janus validates a request may change by the time the request is processed.</p>
+
+<h2 id="applicationsandboxingwithintegratedossupport">Application sandboxing with integrated OS support</h2>
+
+<p>The better alternative to having a user-level process decide on whether to permit system calls is to incorporate policy validation in the kernel. Some operating systems provide kernel support for sandboxing.
+These include the Android Application Sandbox, the iOS App Sandbox,
+the macOS sandbox, and AppArmor on Linux. Microsoft introduced the Windows Sandbox in December 2018, but this functions far more like a container than a traditional application sandbox, giving the process an isolated execution environment.</p>
+
+<h3 id="seccomp-bpf">seccomp-BPF</h3>
+
+<p><strong>seccomp-BPF</strong>, which stands for <strong>SECure COMPuting with Berkeley Packet Filters</strong>, is a sandboxing framework that is available on Linux systems. It allows the user to attach a system call filter to a process and all of the descendants of that process. Users can enumerate allowable system calls and also allow or disallow access to parameters to those calls. A limitation is that seccomp does not enable dereferencing addresses in parameters, so it cannot compare strings. seccomp has been a core part of the Android security since the release of Android O in August 2017.</p>
+
+<p>seccomp uses the Berkeley Packet Filter (BPF) interpreter, which is a framework that was initially created for
+<a href="https://en.wikipedia.org/wiki/Berkeley_Packet_Filter">network socket filtering</a>. With socket filtering, a user can create a filter to allow or disallow certain types of data to come through the socket. Since BPF is a framework that was initially created for sockets, seccomp sends “packets” that represent system calls to the BPF (Berkeley Packet Filter) interpreter. The filter allows the user to define rules that are applied to these system calls. These rules enable the inspection of each system call and its arguments and take subsequent action. Actions include allowing the call to run or not. If the call is not permitted, rules can specify whether an error is returned to the process, a SIGSYS signal is sent, or whether the process gets killed.</p>
+
+<p>seccomp is not designed to serve as a complete sandbox solution but is a tool for building sandboxes. For further process isolation, it can be used with other components, such as namespaces, capabilities, and control groups. The biggest downside of seccomp is the use of the BPF.
+BPF is a full interpreter &#8211; a processor virtual machine &#8211; that supports reading/writing registers, scratch memory operations, arithmetic, and conditional branches. Policies are compiled into BPF instructions before they are loaded into the kernel.
+It provides a low-level interface and the rules are not simple <em>condition-action</em> definitions. System calls are referenced by numbers, so it is important to check the system architecture in the filter as Linux system call numbers may vary across architectures. Once the user gets past this, the challenge is to apply the <em>principle of least privilege</em> effectively: restrict unnecessary operations but ensure that the program still functions correctly, which includes things like logging errors and other extraneous activities.</p>
+
+<h3 id="theapplesandbox">The Apple Sandbox</h3>
+
+<p>Conceptually, Apple’s sandbox is similar to <em>seccomp</em> in that it is a kernel-level sandbox, although it does not use the Berkeley Packet Filter. The sandbox comprises:</p>
+
+<ul>
+<li>User-level library functions for initializing and configuring the sandbox for a process</li>
+<li>A server process for handling logging from the kernel</li>
+<li>A kernel extension that uses the <strong>TrustedBSD API</strong> to enforce sandbox policies</li>
+<li>A kernel extension that provides support for <strong>regular expression pattern matching</strong> to enforce the defined policies</li>
+</ul>
+
+<p>An application initializes the sandbox by calling <em>sandbox_init</em>. This function reads a human-friendly <strong>policy definition file</strong> and converts it into a binary format that is then passed to the kernel. Now the sandbox is initialized. Any function calls that are hooked by the <em>TrustedBSD</em> layer will be passed to the sandbox kernel extension for enforcement. Note that, unlike Janus, all enforcement takes place in the kernel. Enforcement means consulting a list of sandbox rules for the process that made the system call (the policy that was sent to the kernel by <em>sandbox_init</em>). In some cases, the rules may involve regular expression pattern matching, such as those that define filename patterns).</p>
+
+<p>The Apple sandbox helps avoid <em>comprehension errors</em> by providing predefined sandbox profiles (entitlements). Certain resources are restricted by default and a sandboxed app must explicitly ask the user for permission. This includes accessing:</p>
+
+<ul>
+<li>the system hardware (camera, microphone, USB)</li>
+<li>network connections, data from other apps (calendar, contacts)</li>
+<li>location data, and user files (photos, movies, music, user-specified files)</li>
+<li>iCloud services</li>
+</ul>
+
+<p>For mobile devices, there are also entitlements for push notifications and Apple Pay/Wallet access.</p>
+
+<p>Once permission is granted, the sandbox policy can be modified for that application. Some basic categories of entitlements include:</p>
+
+<ul>
+<li>Restrict file system access: stay within an app container, a group container, any file in the system, or temporary/global places</li>
+<li>Deny file writing</li>
+<li>Deny networking</li>
+<li>Deny process execution</li>
+</ul>
+
+<h2 id="browser-basedsandboxing:chromiumnativeclientnacl">Browser-based Sandboxing: Chromium Native Client (NaCl)</h2>
+
+<p>Since the early days of the web, browsers have supported a plug-in architecture, where modules (containing native code) could be loaded into the browser to extend its capabilities. When a page specifies a specific plug-in via an &lt;object&gt; or &lt;embed&gt; element, the requested content is downloaded and the plug-in that is associated with that object type is invoked on that content. Examples of common plug-ins include Adobe Flash, Adobe Reader (for rendering pdf files), and Java, but there are hundreds of others. The challenge with this framework is how to keep the software in a plug-in from doing bad things.</p>
+
+<p>An example of sandboxing designed to address the problem of running code in a plugin
+is the <strong>Chromium Native Client</strong>,called <strong>NaCl</strong>.
+Chromium is the open source project behind the
+Google Chrome browser and Chrome OS.
+The NaCl Browser plug-in designed to allow
+safe execution of untrusted native code within a browser, unlike
+JavaScript, which is run through an interpreter. It is built
+with compute-intensive applications in mind or interactive applications that use the resources of a client, such as games. </p>
+
+<p>NaCl is a user-level sandbox and works by
+restricting the type of code it can sandbox.
+It is designed for the safe execution of
+platform-independent, untrusted native code inside a browser.
+The motivation was that some browser-based applications will be
+so compute-intensive that writing them in JavaScript will not be
+sufficient. These native applications may be interactive and may
+use various client resources but will need to do so in a controlled and
+monitored manner.</p>
+
+<p>NaCl supports two categories of code: <strong>trusted</strong> and <strong>untrusted</strong>.
+Trusted code can run without a sandbox.
+Untrusted code must run inside a sandbox. This code
+has to be compiled using the NaCl SDK or any compiler
+that adheres to NaCl&#8217;s data alignment rules and instruction restrictions
+(not all machine instructions can be used). Since applications cannot access resources directly, the code is also
+linked with special NaCl libraries that provide access to system services,
+including the file system and network. NaCl includes a GNU-based toolchain that
+contains custom versions of gcc, binutils, gdb, and common libraries. This toolchain supports 32-bit ARM, 32-bit Intel x86 (IA&#8211;32), x86&#8211;64, and 32-bit MIPS architectures. </p>
+
+<p>NaCl executes with two sandboxes in place: </p>
+
+<ol>
+<li><p>The <strong>inner sandbox</strong> uses Intel&#8217;s IA&#8211;32 architecture&#8217;s segmentation capabilities to isolate memory regions among apps so that even if multiple apps run in the same process space, their memory is still isolated. Before executing an application, the NaCl loader applies static analysis on thecode to ensure that there is no attempt to use privileged instructions or create self-modifying code. It also attempts to detect security defects in the code.</p></li>
+<li><p>The <strong>outer sandbox</strong> uses system call interposition to restrict
+the capabilities of apps at the system call level. Note that this is done completely at the user level via libraries rather than system call hooking.</p></li>
+</ol>
+
+<h3 id="processvirtualmachinesandboxes:java">Process virtual machine sandboxes: Java</h3>
+
+<p>A different type of sandbox is the <strong>Java Virtual Machine</strong>.
+The <strong>Java</strong> language was originally designed as a language for
+web applets, compiled Java programs that would get download and
+run dynamically upon fetching a web page.
+As such, confining how those applications run
+and what they can do was extremely important. Because
+the author of the application would not know what operating system
+or hardware architecture a client had, Java would compile to a
+hypothetical architecture called the Java Virtual Machine (<strong>JVM</strong>).
+An interpreter on the client would simulate the JVM and
+process the instructions in the application.
+The Java sandbox has three parts to it:</p>
+
+<p>The <strong>bytecode verifier</strong> verifies Java bytecodes before they
+are executed. It tries to
+ensure that the code looks like valid Java byte
+code with no attempts to circumvent access restrictions, convert
+data illegally, bypass array bounds, or forge pointers.</p>
+
+<p>The <strong>class loader</strong> enforces
+restrictions on whether a program is allowed to load additional
+classes and that key parts of the runtime environment are not overwritten (e.g., the standard class libraries). The class loader ensures that malicious code does not interfere with trusted code nad ensures that trusted class librares remain accessible and unmodified.
+It implements ASLR (Address Space Layout Randomization) by
+randomly laying out Runtime data areas (stacks, bytecodes, heap).</p>
+
+<p>The <strong>security manager</strong> enforces the <strong>protection domain</strong>.
+It defines what actions are safe and which are not; it creates the boundaries of the sandbox and is consulted before
+any access to a resource is permitted. It is called at the time an application
+makes a call to specific methods so it can provide
+run-time verification of whether a program has been given rights to invoke
+the method, such as file I/O or network access. Any actions not allowed by the security policy result in a <code>SecurityException</code> being thrown. The security manager is the component that allows the user to restrict an application from accessing files or accessing the network, for example.A user can create a security policy file that enumerates what an application can or cannot do.</p>
+
+<p>Java security has shown that building a sandbox seems deceptively simple. It turned out to be a complex task. After over twenty years of bugs one
+hopes that the truly dangerous ones have been fixed. Even though the Java
+language itself is pretty secure and provides dynamic memory management
+and array bounds checking, buffer overflows have been
+found in the underlying C support library, which has been buggy in general.
+Varying implementations of the JVM environment on different platforms
+make it unclear how secure any specific client will be. Moreover, Java
+supports the use of <strong>native methods</strong>, libraries that you can write in
+compiled languages such as C that interact with the operating system
+directly. These bypass the Java sandbox.</p>
+
+							</section>
+							<footer class="main">
+								Last modified November 25, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

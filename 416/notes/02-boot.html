@@ -1,0 +1,561 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Booting an Operating System </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 416 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/02-boot.html"> Booting an Operating System </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Booting an Operating System </h1>
+<h2> How do you run that first program? </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> January 26, 2015 </p>
+</div>
+<h1 id="introduction">Introduction</h1>
+
+<p>An operating sytem is sometimes described as &#8220;the first program,&#8221;
+one that allows you to run other programs. However, it is usually stored
+as a file (or, more commonly, a collection of files) on a disk.
+How does this &#8220;first&#8221; program get to run?</p>
+
+<figure>
+<img src="images/02-pdp-11.jpg" alt="PDP-11/70 front panel" id="pdp-11" title="PDP-11/70 front panel" style="height:101px;width:220px;" />
+<figcaption>PDP&#8211;11/70 front panel</figcaption></figure>
+
+
+
+<p>The operating system is loaded through a <strong>bootstrapping</strong> process, more
+succinctly known as <strong>booting</strong>. A <strong>boot loader</strong> is a program whose
+task is to load a bigger
+program, such as the operating system. </p>
+
+<p>When you turn on a computer, its memory is usually uninitialized. Hence,
+there is nothing to run. Early
+computers would have hardware that would enable the operator to
+press a button to load a sequence of bytes from punched cards,
+punched paper tape, or a tape drive. Switches on the computer&#8217;s front
+panel would define the source of the data and the target memory address.
+In some cases, the boot loader software would be hard wired as
+non-volatile memory (in early computers, this would be a grid of
+wires with cuts in the appropirate places where a 0-bit was needed).</p>
+
+<p>In early minicomputer and microcomputer systems systems,
+a computer operator would use the switches on
+the computer&#8217;s front panel to toggle in the code to load in a bigger
+program, programming each memory location and then starting the
+program. This program might do something basic such as read successive
+bytes into memory from a paper tape attached to a teletype. </p>
+
+<p>In later systems, read-only memory would contain a small bootloader
+that would have basic intelligence to read, say, the first sector
+(512 bytes) of a disk.</p>
+
+<p>Since this initial program had to be as small as possible, it would
+have minimal capabilities. What often happened is that the boot
+loader would load another boot loader, called a <strong>second stage
+loader</strong>, which was more sophisticated. This second stage loader
+would have error checking, among possibly other features, such as
+giving the user a choice of operating systems to boot, the ability
+to load diagnostic software, or enabling diagnostic modes in the
+operating system. This <strong>multi-stage boot loader</strong>, having a boot
+loader load a bigger boot loader, is called <strong>chain loading</strong>.</p>
+
+<p>The boot loader will often perform some core initialization of the system
+hardware and will then load the operating system. Once the operating
+system is loaded, the boot loader transfers control to it and is
+no longer needed. The operating system will initialize itself,
+configure the system hardware (e.g., set up memory management, set
+timers, set interrupts), and load device drivers, if needed.</p>
+
+<h1 id="intel-basedia-32startup">Intel-based (IA&#8211;32) startup</h1>
+
+<p>To make the example of the boot process concrete, let us take a
+look at 32-bit Intel-compatible PCs (we&#8217;ll get to 64-bit systems in a bit). This
+architecture is known as IA&#8211;32 (Intel Architecture, 32-bit) and
+defines the instruction set of most Intel microprocessors since the
+Intel 80386 that was introduced in 1986. It is still supported on
+Intel&#8217;s latest processors.</p>
+
+<p>An IA&#8211;32-based PC is expected to have a BIOS (<strong>Basic Input/Output System</strong>,
+which comprises the bootloader firmware) in non-volatile memory
+(ROM in the past and NOR flash memory these days). The BIOS is a
+descendent of the BIOS found on early CP/M systems in that it contains
+low-level functions for accessing some basic system devices, such as
+performing disk I/O, reading from the keyboard, and accessing the
+video display. It also contains code to load a <strong>stage 1 boot loader</strong>.</p>
+
+<p>When the CPU is reset at startup, the computer starts execution at
+memory location <code>0xffff0</code> (the IA&#8211;32 architecture uses a
+segment:offset form of addressing; the code segment is set to
+<code>0xf000</code> and the instruction pointer is set to <code>fff0</code>).</p>
+
+<p>The processor starts up in <strong>real mode</strong>, which gives it access to
+only a 20-bit memory address space and provides it with direct access to
+I/O, interrupts, and memory (32-bit addressing and virtual memory
+comes into play when the processor is switched to <em>protected mode</em>).
+The location at <code>0xffff0</code> is actually at the end of the
+BIOS ROM and contains a jump instruction to a region of the
+BIOS that contains start-up code. </p>
+
+<p>Upon start-up, the BIOS goes through the following sequence:</p>
+
+<ol>
+<li>Power-on self-test (POST)</li>
+<li>Detect the video card&#8217;s (chip&#8217;s) BIOS and execute its code to initialize the video hardware</li>
+<li>Detect any other device BIOSes and invoke their initialize functions</li>
+<li>Display the BIOS start-up screen</li>
+<li>Perform a brief memory test (identify how much memory is in the system)</li>
+<li>Set memory and drive parameters</li>
+<li>Configure Plug &amp; Play devices (traditionally PCI bus devices)</li>
+<li>Assign resources (DMA channels &amp; IRQs)</li>
+<li>Identify the boot device</li>
+</ol>
+
+<p>When the BIOS identifies the boot device (typically one of several
+disks that has been tagged as the bootable disk), it reads
+block 0 from that device into memory location <code>0x7c00</code> and
+jumps there.</p>
+
+<h2 id="stage1:themasterbootrecord">Stage 1: the Master Boot Record</h2>
+
+<p>This first disk block, block 0, is called the <strong>Master Boot Record</strong> (<strong>MBR</strong>) and contains
+the first stage boot loader. Since the standard block size is 512 bytes, the entire boot loader has to fit
+into this space. The contents of the MBR are: </p>
+
+<ul>
+<li>First stage boot loader (&le; 440 bytes)</li>
+<li>Disk signature (4 bytes)</li>
+<li>Disk partition table, which identifies distinct regions of the disk (16 bytes per partition &times; 4 partitions)</li>
+</ul>
+
+<h2 id="stage2:thevolumebootrecord">Stage 2: the Volume Boot Record</h2>
+
+<p>Once the BIOS transfers control to the start of the MBR that was
+loaded into memory, the MBR code scans through its partition table
+and loads the <strong>Volume Boot Record</strong> (<strong>VBR</strong>) for that partition.
+The VBR is a sequence of consecutive blocks starting
+at the first disk block of the designated
+partition. The first block of the VBR identifies the partition type
+and size and contains an <strong>Initial Program Loader</strong> (<strong>IPL</strong>), which is code that
+will load the additional blocks that comprise the <strong>second stage boot
+loader</strong>. On Windows NT-derived systems (e.g., Windows Server
+2012, Windows 8), the IPL loads a program called <strong>NTLDR</strong>, which then loads
+the operating system.</p>
+
+<p>One reason that low level boot loaders have a difficult time with
+loading a full OS, especially one that may be composed of multiple
+files, is that doing so requires the ability to parse a file system
+structure. This means understanding how directories and file names
+are laid out and how to find the data blocks that correspond to a
+specific file. Without much code, it is far easier to just
+read consecutive blocks. A higher-level loader, such as Microsoft&#8217;s NTLDR,
+can read NTFS, FAT, and ISO 9660 (CD) file formats.</p>
+
+<h2 id="beyondwindows">Beyond Windows</h2>
+
+<p>There are many variations on booting other operating systems on an Intel PC.
+One popular boot loader on Linux systems is
+<a href="http://www.gnu.org/software/grub/" title="GRUB info" class="external">GRUB</a>, or GRand Unified
+Bootloader. GRUB is also a multistage boot loader. The BIOS, of course, does what it always does:
+identifies a bootable device, loads the Master Boot Record, and transfers control to this newly-loaded
+code.
+Under GRUB, the MBR typically contains a first-stage boot loader called <strong>GRUB Stage 1</strong>. This Stage 1 boot loader loads <strong>GRUB Stage 2</strong>.
+The Stage 2 loader presents the user with a choice of operating systems to boot and allows the user to specify
+any additional boot parameters for those systems (e.g., force maximum memory, enable debugging). It then
+reads in the selected operating system kernel and transfers control to it.</p>
+
+<p>A specific problem with using GRUB to boot Windows is that Windows is not
+<a href="http://www.gnu.org/software/grub/manual/multiboot/" title="Multiboot" class="external">Multiboot</a>
+compliant. Multiboot is a Free Software Foundation specification on loading multiple operating systems using
+a single boot loader. What GRUB does in this case is fake a conventional Windows boot process. It
+boots a bootloader that would normally reside in the MBR
+(or run the Windows boot menu program). From that point onward, GRUB is out of the picture, Windows
+has no idea what happened, and the native Windows boot process takes over.</p>
+
+<h2 id="good-byebios.hellouefi">Good-bye, BIOS. Hello UEFI</h2>
+
+<p>As 64-bit architectures emerged to replace 32-bit architectures, the BIOS was starting to look
+quite dated. Intel set out to create a specification of a BIOS successor that had no restrictions on
+having to run the startup code in 16-bit mode with 20-bit addressing. This specification is called the <strong>Unified Extensible Firmware Interface</strong>,
+or <strong>UEFI</strong>.
+Although developed by Intel, it was managed since 2005 by the Unified EFI Forum. It
+is used by many newer 64-bit systems, including Macs, which also have legacy BIOS support for running Windows.</p>
+
+<p>Some of the features that EFI supports are:</p>
+<dl>
+<dt>BIOS components</dt>
+<dd>preserved some components from the BIOS, including power
+ management (Advanced Configuration &amp; Power Interface, ACPI)
+ and system management components (e.g., reading and setting date).</dd></dd>
+
+<dt>Support for larger disks</dt>
+<dd>The BIOS only supported four partitions per disk, with a capacity
+ of up to 2.2 TB per partition. UEFI supports a maximum partition
+ size of 9.4 ZB (9.4 &times; 10<sup>21</sup> bytes).</dd>
+
+<dt>No need to start up in 16-bit (real) mode</dt>
+<dd>The pre-boot execution environment gives you direct access to all of system memory.</dd>
+
+<dt>Device drivers</dt>
+<dd>UEFI includes device drivers, including the ability to interpret
+ architecture-independent EFI Byte Code (EBC). Operating systems use
+ their own drivers, however, so &mdash; as with the BIOS &mdash; the
+ drivers are generally used only for the boot process.</dd>
+
+<dt>Boot manager</dt>
+<dd>This is a significant one. The old BIOS only had the smarts
+ to load a single block, which necessitates multi-stage booting
+ process. UEFI has its own command interpreter
+ and complete boot manager. You no longer need a dedicated boot
+ loader. As long as you place the bootable files into the UEFI boot
+ partition, which is formatted as a FAT file system (the standard
+ file system format in older Windows systems; one that just about
+ every operating system knows how to handle).</dd>
+
+<dt>Extensibility</dt>
+<dd>The firmware is extensible. Extensions to UEFI can be loaded into non-volatile memory.</dd>
+</dl>
+
+
+<h3 id="bootingwithuefi">Booting with UEFI</h3>
+
+<p>With UEFI, there is no longer a need for the Master Boot Record to
+store a stage 1 boot loader; UEFI has the smarts to parse a file
+system and load a file on its own, even if that file does not occupy
+contiguous disk blocks.
+Instead, UEFI reads the <strong>GUID</strong> (Globally Unique
+IDentifier) <strong>Partition Table</strong> (<strong>GPT</strong>), which is located in
+blocks immediately after block 0 (which is where the MBR still sits
+for legacy reasons). The GPT describes the layout of the partition
+table on a disk. From this, the EFI boot loader identifies the EFI
+System Partition. This system partition contains boot loaders for
+all operating systems that are installed on other partitions on the
+device. For EFI-aware Windows systems,
+UEFI loads the
+<em>Windows Boot Manager</em> (bootmgfw.efi). For older 64-bit NT systems, EFI
+would load <em>IA64ldr</em>. For Linux, there are many options. Two common
+ones are to use an EFI-aware version of GRUB (the Grand Unified
+Bootloader) and load a file such as <em>grub.efi</em> or to have EFI load
+load <em>elilo.efi</em>, the <a href="http://sourceforge.net/projects/elilo/" title="EFI Linux Boot Loader" class="external">EFI loader</a>.</p>
+
+<p>In general, even with UEFI, the dominant approach is to load an boot
+loader dedicated to a specific operating system rather than load
+that operating system directly. However, the need for a multi-stage
+boot process that requires loading multiple bootloaders is no
+longer necessary. </p>
+
+<h1 id="non-intelsystems">Non-Intel Systems</h1>
+
+<p>Our entire discussion thus far has focused on booting with the Intel
+PC-based architecture (which includes IA&#8211;32/IA&#8211;64 compatible
+architectures, such as those by AMD). This is the dominant architecture
+in today&#8217;s PCs (notebooks through servers) but there are many, many
+non-Intel devices out there, particularly in embedded devices, such
+as cell phones. What about them?</p>
+
+<p>There are numerous implementations of the boot process. Many embedded
+devices will not load an operating system but have one already
+stored in non-volatile memory (such as flash or ROM). Those that
+load an OS, such as ARM-based Android phones, for instance, will
+execute code in read-only memory (typically in NOR flash memory)
+when the device is powered on. This
+boot code is embedded within the CPU ASIC on some devices so you
+do not need a separate flash memory chip on the board.</p>
+
+<p>When the system is reset (which includes a power-up), the processor
+is in supervisor (SVC) mode and interrupts are disabled. On ARM-based
+systems the processor starts execution at address
+<code>0x00000000</code>. The flash memory containing start-up code is
+mapped to address <code>0x00000000</code> on reset. This code performs various
+initializations, including setting up an exception vector table
+in DRAM and copying application code from ROM to DRAM (code runs faster
+in DRAM). The code remaps the DRAM to address 0, thus
+hiding the flash memory (the processor has
+a REMAP bit to change the mapping of flash memory). The memory
+system is then initialized. This involves setting up memory protection
+and setting up the system stacks. I/O devices are then initialized and the
+processor is changed to user mode. The boot firmware detects bootable
+media and loads and runs the second stage boot loader (if necessary).
+The second
+stage boot loader is often GRUB for larger systems or <a href="http://www.denx.de/wiki/U-Boot">uBoot</a> for
+embedded systems. This second stage loader loads the operating
+system and transfers control to it.</p>
+
+<h1 id="macosx">Mac OS X</h1>
+
+<p>Older PowerPC-based versions of Apple Macintosh systems,
+as of at least OS 8 as well as OS X, were based on Open Firmware. Open Firmware
+originated at Sun and was used in non-Intel Sun computers.
+Once Apple switched to Intel systems, it adopted UEFI as its boot-level firmware.</p>
+
+<h2 id="oldermacs">Older Macs</h2>
+
+<p>Open Firmware is stored in ROM and, like the PC BIOS, is executed on power-on.
+Since Open Firmware was designed to be platform independent, it is
+implemented in Forth (a simple stack-based language) and compiled to bytecodes rather than native
+machine instructions. The firmware contains a byte code interpreter.</p>
+
+<p>Unlike the BIOS, Open Firmware provides the user with a command-line
+processor from which one can edit system configuration parameters,
+such as reduce the amount of physical memory, debug the system, or
+even start a telnet server so that you can interact with the firmware
+and boot process from a remote machine via an ethernet connection.</p>
+
+<p>Before booting the operating system, the Open Firmware generates a device tree by probing components on the main board and expansion devices. </p>
+
+<p>Like the PC BIOS, Open Firmware contains device drivers that the
+boot process in the firmware can use to access the disk, keyboard,
+monitor, and network. However, these drivers are all implemented in FCode,
+the Forth bytecode system. Also like the BIOS, these drivers are
+used only during the boot process. The operating system itself has
+its own native runtime drivers.</p>
+
+<p>Unlike the BIOS, Open Firmware could parse the HFS/HFS+ file systems
+(the native file system on Macs), so you could use the Open Firmware
+command interpreter to load in a boot file from the hard disk and
+run it. By default, Open Firmware loads a file from the system
+partition. On OS 9 systems, this was the file called &#8220;Mac OS ROM&#8221;
+in the <em>System</em> folder. On OS X systems, it loads
+<code>/System/Library/CoreServices/BootX</code>. <code>BootX</code> is bootloader
+that then loads in the kernel.</p>
+
+<h2 id="themactoday">The Mac today</h2>
+
+<p>The Mac uses UEFI for its system firmware.</p>
+
+<p>When the Mac starts up, the first code that gets executed is the
+BootROM. This sets up EFI drivers for relevant hardware devices,
+initializes some of the hardware interfaces, validates that sufficient
+memory is available, and performs a brief power-on self-test.
+Unlike the PC BIOS, which knew nothing about file systems and could
+only read raw disk blocks, UEFI on the Mac has
+been extended to parse both FAT
+(legacy DOS/Windows) and HFS+ (native Mac) filesystems on a disk.
+It reads the GPT (GUID Partition Table) to identify disk partitions.
+The default boot volume is stored in NVRAM. </p>
+
+<p>Instead of specifying a path to a boot loader, the HFS+ volume
+header (data at the start of an HFS+ file system) points to
+a <em>blessed file</em> or <em>blessed directory</em> (see the
+<a href="http://www.manpagez.com/man/8/bless/" title="bless command" class="external">bless</a> command.
+If a directory is blessed, that tells the EFI firmware to look in
+that directory for the boot loader. If a file is blessed,
+that tells the EFI firmware to load that file as the boot loader
+(there are extra variations, such as booting from an unmounted
+volume).</p>
+
+<p>By default, the boot loader is located in
+<code>/System/Library/CoreServices/boot.efi</code> on the root (often
+only) partition of the disk.</p>
+
+<p>Alternatively, the firmware supports downloading a second-stage
+bootloader or a kernel from a network server (netboot server).</p>
+
+<p>When the <code>boot.efi</code> file is loaded, the computer displays a
+metallic Apple logo on the screen. The boot loader loads in the
+kernel as well as essential driver extensions, which then runs
+<em>launchd</em>, which executes the various startup scripts and programs.
+Once the kernel is loaded, the spinning gear gear appears below the
+Apple logo. When the kernel runs the first process, <em>launchd</em>, the
+screen turns blue.</p>
+
+<p>A description of how OS X starts up can be found in
+<a href="http://osxbook.com/book/bonus/ancient/whatismacosx/arch_boot.html" title="What is Mac OS X?" class="external">What is Mac OS X</a>.</p>
+
+<p>To support booting BIOS-based operating systems, such as older
+Windows systems and Linux systems that use GRUB or other BIOS-aware
+boot loaders, the EFI installs a &#8220;compatibility support module&#8221;
+(CSM) component from the system firmware. This then starts a
+BIOS-based boot process. This compatibility support module is
+loaded only when the user selects Windows as the default OS to boot. The
+boot process now is a standard BIOS-based boot. The Master Boot
+Record (MBR) is loaded and executed, which then locates and loads
+the Volume Boot Record of the Windows (or Linux) partition.</p>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Booting" title="Booting" class="external">Booting</a>, Wikipedia</li>
+<li><a href="http://www.pcguide.com/ref/mbsys/bios/boot.htm" title="System Boot Sequence" class="external">System Boot Sequence</a>, <a href="http://www.pcguide.com">The PC Guide</li>
+<li><a href="http://www.gnu.org/software/grub/manual/multiboot/" title="GNU Multiboot spec " class="external">GNU Multiboot spec </a></li>
+<li><a href="http://www.uefi.org/home/" title="UEFI consortium" class="external">UEFI consortium</a> and specifications</li>
+<li><a href="http://en.wikipedia.org/wiki/Extensible_Firmware_Interface" title="EFI" class="external">EFI</a>, Wikipedia article</li>
+<li><a href="http://www.tomshardware.co.uk/intel-uefi-firmware,review-31766-2.html" title="What UEFI Can Do For You" class="external">What UEFI Can Do For You</a>, Tom&#8217;s Hardware</li>
+<li><a href="http://en.wikipedia.org/wiki/GUID_Partition_Table" title="GUID Partition Table" class="external">GUID Partition Table</a>, Wikipedia article</li>
+<li><a href="http://en.wikipedia.org/wiki/EFI_System_partition" title="EFI System Partition" class="external">EFI System Partition</a>, Wikipedia article</li>
+<li><a href="http://www.microsoft.com/whdc/system/platform/firmware/bcd.mspx" title="Boot Configuration Data in Windows Vista" class="external">Boot Configuration Data in Windows Vista</a>, Microsoft Hardware Developer Central</li>
+<li><a href="http://en.wikipedia.org/wiki/Windows_Vista_startup_process" title="Windows Vista startup process" class="external">Windows Vista startup process</a>, Wikipedia article</li>
+<li><a href="http://en.wikipedia.org/wiki/Windows_NT_startup_process" title="Windows NT startup process" class="external">Windows NT startup process</a>, Wikipedia article</li>
+<li><a href="http://sourceforge.net/projects/elilo/" title="ELILO: EFI Linux Boot Loader" class="external">ELILO: EFI Linux Boot Loader</a></li>
+<li><a href="http://tisu.it.jyu.fi/embedded/TIE345/luentokalvot/Embedded_3_ARM.pdf" title="ARM architecture tutorial" class="external">ARM architecture tutorial</a></li>
+</ul>
+
+<p>Mac booting references</p>
+
+<ul>
+<li><a href="http://www.openfirmware.org/" title="Open Firmware Home Page" class="external">Open Firmware Home Page</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Open_Firmware" title="Open Firmware" class="external">Open Firmware</a>, Wikipedia article</li>
+<li><a href="http://osxbook.com/book/bonus/ancient/whatismacosx/arch_boot.html" title="What is Mac OS X?" class="external">What is Mac OS X</a>, Mac OS X Internals</li>
+<li><a href="http://developer.apple.com/legacy/mac/library/#technotes/tn/tn1061.html" title="Technical Note TN1061, Fundamentals of Open Firmware, Part I: The User Interface" class="external">Mac-OF-I</a>, Mac OS X Reference Library, Apple Inc.</li>
+<li><a href="http://developer.apple.com/legacy/mac/library/#technotes/tn/tn1062.html" title="Technical Note TN1062, Fundamentals of Open Firmware, Part II: The Device Tree" class="external">Mac-OF-II</a>, Mac OS X Reference Library, Apple Inc.</li>
+</ul>
+
+<p>Mac OS X references:</p>
+
+<ul>
+<li><a href="http://developer.apple.com/library/mac/#technotes/tn2006/tn2166.html" title=" Apple Technical Note TN2166, Secrets of the GPT" class="external">Mac-GPT</a>, Mac OS X Reference Library, Apple Inc.</li>
+<li><a href="http://developer.apple.com/library/mac/#documentation/MacOSX/Conceptual/BPSystemStartup/Articles/BootProcess.html" title=" The Boot Process" class="external">Mac-Boot</a>, Mac OS X Reference Library, Apple Inc.</li>
+<li><a href="http://support.apple.com/kb/HT2674" title=" Intel-based Mac: Startup sequence and error codes, symbols" class="external">Mac-Intel</a>, HT2674, Apple Inc.</li>
+<li><a href="http://images.apple.com/server/macosx/docs/Command_Line_Admin_v10.5.pdf" title=" Mac OS X Server Command-Line Administration for Version 10.5 Leopard" class="external">Mac-Admin</a>, &copy; 2007 Apple Inc.</li>
+<li><a href="http://www.manpagez.com/man/8/bless/" title=" Manual page for the OS X bless command from the BSD System Manager's Manual" class="external">Mac-bless</a></li>
+<li><a href="http://refit.sourceforge.net/info/boot_process.html" title=" The Intel Mac boot process" class="external">Mac-Intel-boot</a>, rEFIt Sourceforge Project</li>
+</ul>
+
+<p>This is an updated version of the original document, which was written on September 14, 2010.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2015 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: April 12, 2015 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

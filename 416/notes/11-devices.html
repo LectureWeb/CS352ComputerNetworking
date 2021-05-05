@@ -1,0 +1,1093 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Device Drivers </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 416 </a> 
+ 	<li> <a href="../notes/index.html"> Documents </a> 
+ 	<li> <a href="../notes/11-devices.html"> Device Drivers </a> 
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Devices </h1>
+
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> last update: March 22, 2012 </p>
+</div>
+
+<blockquote>
+<em>
+We live in a world of things, and our only connection with them is that we know how to manipulate them or to consume them.
+<br/>
+&mdash; Erich Fromm (1890-1980), The Sane Society, chapter 5
+</em>
+</blockquote>
+
+
+<h1> Introduction </h1>
+<p>
+Ultimately, a computer is useful only if it can access devices and
+communicate with people and objects. Common devices include keyboards,
+displays, disks, mice, printers, scanners, and keyboards. They also
+include devices on the system board such as timers, and graphics
+chips, and audio chips.
+
+Each piece of hardware that is connected to a computer requires
+software to control it.  This software is known as a <strong>device
+driver</strong>.  The device driver allows us to have a consistent
+interface to the kernel and to hide device-specific details within
+the driver. For instance, the kernel outside of the device driver
+should not care about the details of writing a disk block and whether
+the the underlying device is a magnetic disk or flash memory.
+Likewise, it should not care whether your computer has a Microsoft
+mouse or a Logitech mouse. A device driver communicates with the
+<strong>device controller</strong> to control the device itself. A
+device controller is the hardware (and/or firmware) that controls
+the operation of the device. Its controls are typically mapped onto
+specific physical memory locations and it may also generate interrupts
+to alert the processor of events and use DMA (Direct Memory Access)
+to transfer blocks of data between the device and system memory.
+</p>
+
+<p>
+Device drivers implement mechanism, not policy. A
+<strong>mechanism</strong> specifies the ways of interacting with
+the device. A <strong>policy</strong> enforces who can access the
+device and in what way they can control it. The policy will be
+handled at higher layers in the operating system and the device
+driver has only to implement the operations needed to interface
+with the device.
+</p>
+
+<p>
+Very broadly, the device subsystem of an operating system contains
+three components:
+</p>
+
+<ol>
+<li>
+Generic device driver code: these are abstract interfaces for devices and code for managing
+instances of and references to devices.
+</li>
+
+<li>
+Drivers for specific devices: this is code written for interfacing
+with specific devices.  This group also includes the code for
+<strong>bus drivers</strong>, such as discovering components on a
+USB bus and sending and receiving data on the bus.
+</li>
+
+<li>
+The buffer cache: this manages the caching and I/O to block-oriented
+devices such as disks.
+</li>
+
+</ol>
+<h1> Categories of I/O </h1>
+<p>
+There are four broad categories of I/O:
+</p>
+<ul>
+	<li> block devices </li>
+	<li> character devices </li>
+	<li> file systems </li>
+	<li> network (sockets) </li>
+</ul>
+
+<p>
+Of these, character and block devices will appear in the file system
+name space (we'll see how shortly).
+</p>
+
+<h2> Block devices </h2>
+<p>
+A <strong>block device</strong> provides <em>structured</em> access
+to the underlying hardware. Block devices are devices that can host
+a file system.  They support addressable block-oriented I/O (e.g.,
+<em>read block number</em>, <em>write block number</em>) and exhibit
+persistence of data. That is, you can read the same block number
+over and over again and get the same contents. Examples of block
+devices are: USB memory keys, disks, CDs, and DVDs.
+</p>
+
+<p>
+Because blocks are addressable and persistent, block I/O lends
+itself to caching frequently used blocks in memory.  The <strong>buffer
+cache</strong> is a pool of kernel memory that is allocated to hold
+frequently used blocks from block devices. By using the buffer
+cache, we can minimize the number of I/O requests that actually
+require a device I/O operation.  the buffer cache also allows
+applications to read/write from/to the device as a stream of bytes
+or arbitrary-sized blocks.  For example, suppose that a disk has a
+minimum block size of 512 bytes (as most disks do). If you want to
+modify 16 bytes on a disk, you need to read the entire 512-byte
+block (or two blocks if the 16 bytes straddle a block boundary),
+store the data somewhere (in the buffer cache), modify the 16 bytes,
+and write the modified block(s) out again.
+</p>
+
+<h2> File systems </h2>
+<p>
+The file system determines how data is organized on a block device
+in order to present higher-level software with a hierarchy of directories
+and files, with access permissions for both.
+</p>
+<p>
+A file system is <em>not</em> a device driver.
+It is a software driver within the operating system that maps between low-level and high-level data structures.
+</p>
+
+<h2> Network devices </h2>
+<p>
+The network access device is a packet-oriented, rather than stream-oriented device.
+It is not visible in the file system but is accessible through the <em>socket</em> interface.
+We will examine this device when we look at networking. The underlying network device may be either
+hardware (e.g., an ethernet controller) or software (e.g., a loopback driver). Higher level networking
+software will be agnostic to this.
+</p>
+
+<h2> Character devices </h2>
+<p>
+<strong>Character devices</strong> provide <strong>unstructured</strong> access to the underlying hardware.
+In some ways, they are a catch-all for anything that is not a block or network device.
+Examples of character devices include:
+</p>
+<ul>
+<li> Traditional character-stream devices, such as a terminal multiplexer, modem, printer, scanner, or mouse.  </li>
+<li> The frame buffer. This is considered a character device even though it has its
+own buffer management policies and custom interfaces
+<li> Sound devices, I<sup>2</sup>C bus controllers, and other bus interfaces. </li>
+</ul>
+
+<p>
+In addition to supporting "character" devices, the character device
+drivers are also used with block devices to bypass the buffer cache
+and provide <strong>raw</strong> I/O operations directly to the user's program address
+space. For example, this feature is used for programs that dump and check file systems.
+When accessing block devices via this interface, the program has to abide by the restrictions
+of the hardware and ensure that the I/O is a multiple of the device's block size.
+</p>
+<p>
+For terminal devices (virtual terminals as well as old-style serial-port terminals), it may make sense to
+process input from those devices in one of two modes:
+</p>
+<dl>
+<dt> <strong>line mode (cooked)</strong> </dt>
+<dd>
+Input characters are echoed by the system as they are received (e.g.
+typed) and collected in a buffer until a return is received. Then
+the entire line is made available to the process that is waiting on a <em>read</em>
+operation. The user may correct typing errors in this mode and use
+special characters to start/stop output, suspend a process, or
+delete the current input line.
+</dd>
+<dt> <strong>raw mode</strong> </dt>
+<dd>
+Characters are made available to the process as soon as they are
+received. This is the only mode that makes sense for a non-terminal
+device such as a mouse. For a terminal, this mode is needed if a
+screen editor wishes to process every keystroke that it gets.
+</dd>
+</dl>
+<p>
+These modes were created in the era of dumb terminals to provide users with rudimentary
+line buffering capabilities without having a <em>read</em> system call return as soon
+as a single character was typed. Even shells tend to support in-place command editing and
+must revert to raw mode. The time that you mostly come in contact with a line driver is
+whenever you use a terminal window and run programs that request line-oriented input
+(e.g., via <em>fgets</em>).
+</p>
+
+<h1> Modularity </h1>
+
+<p>
+A goal in managing devices is that I/O operations should have a
+consistent interface for different devices. This is known as
+<strong>device independence</strong>. Device independence implies
+that higher levels of the operating system, libraries, and user
+applications need not, to the greatest extent possible, know that
+they are accessing one device over another. A user should not have
+to modify a program if the output is to go to a USB memory key
+rather than to a disk. This isn't always possible since devices may
+have very distinct capabilities but it is desirable to maximize the
+number of common interfaces.
+</p>
+
+<p>
+Drivers are modular and may often be dynamically loaded into or
+removed from the kernel at any time.  Under the Linux operating
+system, one can use the <tt>insmod</tt> command to add a kernel
+module and the <tt>rmmod</tt> command to remove it.  A dynamic
+loader links unresolved symbols within the module to the symbol
+table of the running kernel.
+</p>
+
+<p>
+When presented with a new module, a kernel on its own does not
+know what the code within that module is for.
+Each module has a function, called <em>module_init</em>, that the
+kernel calls when the module is first loaded to allow the module
+initialize itself and register each facility that the module
+supports, whether it is a driver
+or some other software abstraction, such as a file system. 
+Under Linux, a device driver has allocate, initialize, and 
+register a structure for the category of device that it controls:
+</p>
+<dl>
+<dt> Character drivers </dt>
+<dd>
+Initialize and register a <code>cdev</code> structure and implement
+<code>file_operations</code>
+</dd>
+
+<dt> Block drivers </dt>
+<dd>
+Initialize and register a <code>gendisk</code> structure and implement
+<code>block_device_operations</code>
+</dd>
+
+<dt> Network drivers </dt>
+<dd>
+Initialize and register a <code>net_device</code> structure and
+implement <code>net_device_ops</code>
+</dd>
+</dl>
+
+<p>
+The <em>delete_module</em> system call calls a function named
+<em>module_exit</em> function in the module prior to removing the
+module from the kernel.  The kernel also keeps a <strong>use
+count</strong> for each device in use.  A module can be removed
+only if the use count is 0.
+</p>
+
+<p>
+While we will focus on the kernel structure here, it is important to
+note that some drivers can be implemented at the user level. For
+example, the X windows server is a user-level process that offers
+graphic resources to X clients. It sits on top of a kernel-level
+device driver that gives it access to the frame buffer.  Client
+applications connect to this user-level server to perform communications
+with the device.
+</p>
+
+
+<h1> Blocking, Non-Blocking, Asynchronous I/O, and Buffering </h1>
+<p>
+The system call interface allows us to either wait for data or not.
+</p>
+<p>
+<strong>Blocking I/O</strong> means that the user process will <em>block</em> (wait) until the I/O
+is complete. If you're reading 1,500 bytes from a device, the <em>read</em> will block until the data is ready.
+The <em>select</em> system call is often used with non-blocking I/O to check whether data is ready for a device.
+</p>
+<p>
+<strong>Non-blocking I/O</strong> means that an I/O system call would not put the process to sleep
+waiting on I/O. Instead, the process would get a status stating that the I/O is not ready. If you're
+reading 1,500 bytes from a device and only 12 bytes are ready, your <em>read</em> request will return only the 12 bytes.
+</p>
+<p>
+<strong>Asynchronous I/O</strong> is similar to non-blocking I/O in that the process would not be put
+to sleep. It is a two-stage operation: a request for a <em>read</em> or <em>write</em> operation is first made,
+and returns immediately. Later on, the process is notified that the operation is complete.
+</p>
+<p>
+In the kernel, the buffer cache provides asynchronous I/O interface
+to block devices. A write to the buffer cache does not necessarily
+translate to an immediate write to the disk. This is good because
+it reduces the amount of I/O needed to the device in case that same
+block gets modified again in the future.  There is a risk, however.
+If the system crashes or is shut off spontaneously before all
+modified blocks are written, that data is then lost.
+</p>
+<p>
+To minimize
+data loss, the operating system will periodically force a flush of
+data that's cached in the buffer cache. On BSD systems, a user
+process, <tt>update</tt>, calls the <em>sync</em> system call every
+30 seconds to flush data. On Linux, the operation is done by a
+process called <tt>kupdated</tt>, the kernel update daemon.
+</p>
+
+<p>
+<strong>Buffered I/O</strong> is where the kernel makes a copy of the data on a <em>write</em> operation from the
+user process to a temporary buffer.
+Similarly, for a <em>read</em> operation, the kernel reads data into a buffer
+first and then copies the requested data to the user process.
+The operating system's buffer cache is an example of a use of input/output buffering.
+</p>
+<p>
+Buffering is clearly an overhead since it requires copying blocks of data
+to an intermediate area. However, it has a number of benefits:
+</p>
+<ul>
+<li>
+It deals with device burstiness. Data may be read in chunks while you want to read it as a byte stream. 
+A buffer provides a place to store the chunks while giving you the stream of bytes. This specific example is
+called a <em>leaky bucket</em>, since it provides a way to get a constant bandwidth stream with bursty input.
+</li>
+
+<li>
+Buffering allows user data to be modified without affecting the data that is actually being written to
+or read from the device. This is especially critical for asynchronous write operations. If you modify a buffer
+after you requested the <em>write</em> but before the data was copied to the device, the device gets the
+modified data. By buffering, you can provide a point-in-time snapshot of the data.
+</li>
+
+<li>
+Buffers serve as a cache for frequently used data. This is the main purpose of the buffer cache. It's
+often the case that the same blocks will be accessed from the disk over and over again. If they are cached
+then we don't have to perform the disk operation ... and we save a lot of time.
+</li>
+
+<li>
+Buffers help with alignment. As we mentioned in the above example, if you want to read 16 bytes but a disk forces you to read at least 512 bytes, you need to have a place to store the extra data. If you want to write 16 bytes, you'll need to read 512 bytes into a buffer, modify the 16 bytes, and then write the results back to the disk.
+</li>
+</ul>
+
+
+<h1> Devices as files </h1>
+<p>
+On many operating systems (POSIX-ones such as Linux, UNIX, BSD, OS X, as well as NT-derived Windows systems), devices
+are presented via the file I/O interface. Since we read and write to files, why not use the same mechanisms
+for devices? Certain operations may not make sense, such as a <em>seek</em> function on a character device, but
+all functions don't need to be fully supported to present the abstract interface.
+</p>
+<p>
+On Linux, each character device driver initializes itself upon being loaded, registers a <tt>cdev</tt> structure
+that describes the device, and implements a set of functions in a <tt>file_operations</tt> structure:
+</p>
+<div class="codeblock">
+struct file_operations {
+ struct module *owner;
+ loff_t (*llseek) (struct file *, loff_t, int);
+ ssize_t (*read) (struct file *, char __user *, size_t, loff_t *);
+ ssize_t (*write) (struct file *, const char __user *, size_t, loff_t *);
+ ssize_t (*aio_read) (struct kiocb *, const struct iovec *, unsigned long, loff_t);
+ ssize_t (*aio_write) (struct kiocb *, const struct iovec *, unsigned long, loff_t);
+ int (*readdir) (struct file *, void *, filldir_t);
+ unsigned int (*poll) (struct file *, struct poll_table_struct *);
+ int (*ioctl) (struct inode *, struct file *, unsigned int, unsigned long);
+ int (*mmap) (struct file *, struct vm_area_struct *);
+ int (*open) (struct inode *, struct file *);
+ int (*flush) (struct file *, fl_owner_t id);
+ int (*release) (struct inode *, struct file *);
+ int (*fsync) (struct file *, struct dentry *, int datasync);
+ int (*fasync) (int, struct file *, int);
+ int (*flock) (struct file *, int, struct file_lock *);
+ ...
+}
+</div>
+<p>
+These functions are called by the kernel to transform generic input/output requests to device-specific
+operations. The "looks-like-a-file" interface abstraction applies only to character devices. 
+</p>
+<p>
+Each device driver implements a fixed set of <strong>entry points</strong>.  It defines whether the 
+device has a block or character interface (or multiple interfaces). Block device interfaces appear in 
+a <strong>block device table</strong>. Character device interfaces appear in a <strong>character device table</strong>.
+</p>
+<p>
+Block devices are used to implement file systems and are accessed via the operating system's buffer cache.
+A block device driver initializes and registers a <tt>gendisk</tt> (generic disk) structure and
+implements functions defined in <tt>block_device_operations</tt>. 
+</p>
+<p>
+A network device driver initializes and registers a <tt>net_device</tt> (network device) structure and
+implements functions defined in <tt>net_device_ops</tt>.
+</p>
+
+
+<h2> Locating devices </h2>
+<p>
+Within the kernel, a device is identified by two numbers:
+</p>
+<ul>
+<li>
+<strong>major number</strong>:
+Identifies the specific device driver and is an index into the device table (either the block or character table).
+</li>
+<li>
+<strong>minor device number</strong>:
+This number is interpreted within the device driver. It identifies which, of possibly several, specific devices the
+request is for. For example, a major number may identify a SATA disk driver. A minor number will identify a specific disk.
+on the SATA interface.
+</li>
+</ul>
+
+<p>
+How do user programs locate devices?
+There are a couple of approaches:
+</p>
+<ol class="separated">
+<li> <strong>Use an explicit namespace for devices</strong> that is unique from files. This is the approach taken by MS-DOS 
+and supported by the Win32 API. Devices are given names such as
+		<tt>C:</tt>,  <tt>D:</tt>, <tt>LPT1:</tt>, <tt>COM1:</tt>, etc.
+The colon cannot be used as part of a file name and a device that hosts a file system will have the device
+name identified as part of the full pathname of the file (e.g., <tt>D:\paul\proj1\main,cpp</tt>).
+</li>
+<li>
+<p>
+<strong>Incorporate device names into the  file system namespace</strong>.
+A device is a file with no contents (data) but whose metadata (descriptive information about a file) 
+identifies it as a device, gives the device type (block or character), and provides the major and minor numbers.
+On POSIX systems, devices may be located anywhere in the file system but are traditionally placed under the
+<tt>/dev</tt> directory. These special files can be created with the <em>mknod</em> system call (or
+<tt>mknod</tt> command). When the file is opened, it is recognized as a device special file and 
+high-level file operations are passed to the functions defined in the <tt>file_operations</tt> structure of
+the character device driver (located in the character device table and indexed by the major number).
+</p>
+<p>
+The Windows NT architecture (XP, 2000, Vista, Windows 7, etc.) uses a similar concept, although
+the device names do not live on the disk file system.
+When a device driver is loaded, it is registered by name with the Object Manager, which is
+responsible for presenting a name space to applications.
+Device names have a hierarchical namespace that is maintained by the Object Manager and integrated with the
+namespace of files and other objects. For example, <tt>\Device\Serial0</tt>, <tt>\Device\CDRom0</tt>.
+One snag is that the Win32 API requires the old-style MS-DOS device names.
+These names reside in the <tt>\??</tt> directory in the Object Manager's namespace.
+The names are visible to Win32 programs and are symbolic links to the Windows NT device names
+</p>
+</li>
+</ol>
+
+<p>
+In summary, the Big Idea was to use the file system interface as an abstract interface for both file and device I/O.
+</p>
+
+
+<h1> Device driver structure </h1>
+
+<p>
+Character (and raw block) devices include these entry points and must implement the <tt>file_operations</tt> functions 
+mentioned earlier:
+</p>
+<ul>
+<li><strong>open</strong>: open the device</li>
+<li><strong>close</strong>: close the device</li>
+<li><strong>ioctl</strong>: do an i/o control operation</li>
+<li><strong>mmap</strong>: map the device offset to a memory location</li>
+<li><strong>read</strong>: do an input operation</li>
+<li><strong>reset</strong>: reinitialize the device</li>
+<li><strong>select</strong>: poll the device for I/O readiness</li>
+<li><strong>stop</strong>: stop output on the device</li>
+<li><strong>write</strong>: do an output operation</li>
+</ul>
+
+<p>
+Block devices must implement these functions:
+</p>
+<ul>
+<li><strong>open</strong>: prepare for I/O - called for each <em>open</em> system call on a block device (e.g. when 
+a file system is mounted)</li>
+
+<li><strong>strategy</strong>:
+schedule I/O to read or write blocks. This function is called by the buffer cache. The kernel makes <em>bread</em> and
+<em>bwrite</em> requests to the buffer cache. If the block is not there then it requests it from the device.
+The strategy routine finds a list of I/O requests (<tt>CURRENT</tt>, defined to be
+<tt>blk_devpMAJOR_NR].current_request</tt>). It implements the code to move data from the device
+to the block (read) and from the block to the device (write). 
+
+<li><strong>close</strong>:
+called after the final client using the device terminates.
+
+<li><strong>psize</strong>:
+get partition size &mdash; the capacity of the device.
+</ul>
+
+<h1> Execution contexts and Interrupt handling </h1>
+<p>
+When kernel code, such a device driver (or anything else, for that matter), is executed,
+it is done so in one of three contexts:
+</p>
+<dl>
+<dt> <strong>Interrupt context</strong></dt>
+<dd>
+Interrupt context is created by the spontaneous change in the flow of execution when a hardware 
+interrupt takes place. Any actions performed in this context cannot block because there is no
+process that requested the action that could be put to sleep and scheduled to wake up when an operation is complete.
+</dd>
+
+<dt> <strong>User context</strong></dt>
+<dd>
+The kernel running in user context is invoked by a user thread when it makes a system call (or generates
+a trap). For example,
+when the user calls the <em>read</em> system call, the wrapper function for the system call executes
+a trap instruction that jumps to a well-known entry point in the kernel and switches the processor to
+run in kernel (supervisor) mode. However, the memory map is still unchanged and the kernel is aware
+of the user thread from which the request came (on Linux, the global variable <tt>context</tt>
+contains a pointer to <tt>struct task_struct</tt> that identifies the calling thread). Because of this,
+the thread (or process) may block on a semaphore, I/O, or copy operation. It's the same user thread that
+just happens to be executing kernel code.
+</dd>
+
+<dt> <strong>Kernel context</strong></dt>
+<dd>
+The kernel itself may schedule worker threads just like it schedules user processes. For all practical
+purposes, these no different than any threads that are associated with user processes; they just happen
+to run in kernel mode. Because they are scheduled entities, even though they have no relation to any
+user thread, they may block on I/O or any other operation that would cause a thread to block. When
+the condition that made the thread block does not exist anymore, the thread is put on the ready queue 
+and rescheduled by the schedulers. Note: system call processing takes place in <em>kernel mode</em>
+in the <em>user context</em>, not in the kernel context.
+</dd>
+</dl>
+
+<p class="nospace">
+Device drivers do not get invoked directly when a system interrupt occurs.
+Instead, they register themselves
+with the kernel's <strong>interrupt handler</strong> when they initialize themselves.
+This is known as a <strong>hook</strong>. Hooking is a general term for allowing software to intercept
+messages or events. It also allows multiple device drivers to share the same interrupt if necessary.
+The interrupt handler performs the following functions:
+</p>
+<ol>
+<li> Save all registers </li>
+<li> Update interrupt statistics </li>
+<li> Call interrupt service routine in driver with the appropriate unit number (ID of device that generated the interrupt) </li>
+<li> Restore registers </li>
+<li> Return from interrupt </li>
+</ol>
+<p>
+This process of registering to intercept an interrupt (or, in the
+general case, any message or event flow) is known as 
+<strong>hooking</strong>. 
+By separating interrupt handling from the driver, the driver does not have to deal with saving or restoring registers or 
+dealing with any specifics of the interrupt handling mechanism.
+Moreover, interrupts may be shared and the operating system can keep global statistics on interrupts.
+</p>
+<p>
+Because an interrupt is, by its very nature, an interruption of the current workflow on the system, we'd like
+interrupt service routines to finish quickly. In many systems, interrupts are disabled while an interrupt is being
+serviced, so that adds more urgency to finish quickly.
+Also, since the interrupt context cannot block, we have to make sure that the interrupt service routine does not perform
+any potentially blocking actions, such as waiting on I/O or a semaphore.
+</p>
+<p>
+To ensure speedy interrupt servicing, interrupt handling is generally split into two parts:
+<ul>
+<li> The <strong>top half</strong> (<strong>interrupt service routine</strong>) is the function that
+is registered with the kernel's interrupt handler (in Linux, via <em>request_irq</em>) and is called 
+whenever an interrupt is detected. Its goal is to finish as quickly as possible. It saves any data
+in a buffer or queue (e.g., grabs an incoming packet from the ethernet card), schedules a 
+<em>bottom half</em>, and exits.
+</li>
+
+<li> The <strong>bottom half</strong> of the interrupt handler (also known as the <strong>work queue</strong>
+or <strong>kernel thread</strong>) is the part that is scheduled by the top half for later execution.
+This is where the real work of the interrupt servicing is done. 
+The bottom half is run in the <em>kernel context</em> and is scheduled by the kernel's process scheduler.
+Because of this, interrupts are enabled and the thread can perform blocking operations. On Linux 2.6, the
+kernel provides <em>tasklets</em> and <em>work queues</em> for dispatching bottom half threads. Linux creates
+one work queue thread per processor (with names such as <tt>events/0</tt> and <tt>events/1</tt>).
+</ul>
+
+<h2> I/O Queues </h2>
+<div class="figure width400"> <img width="400" height="128" src="images/10-io-queues.png"/>
+<p> Figure 1. I/O queues </p>
+</div>
+
+<p>
+I/O queues are the primary means of communication between the top and bottom halves of an interrupt handler.
+A <strong>device status table</strong> keeps track of a list of devices and the current status
+of each device (e.g., idle or busy). Each device has an I/O queue attached to it.
+Whenever an I/O request is received, it is placed on a device's queue for processing.
+</p>
+<p>
+When an input or output operation completes, the device controller generates an interrupt, which
+causes the interrupt handler to call the top half of the device driver's interrupt service routine.
+The interrupt service routine
+removes the appropriate request from the device's queue, notifies the requestor that the
+request completed, and starts the next request from the queue.
+</p>
+
+
+<h1> Frameworks and a unified device/driver model </h1>
+<p>
+In earlier times, the block/character division of device drivers worked well. Drivers were primarily
+disk interfaces (block devices) or serial terminals (character devices). As more devices were
+added to machines, the character driver became the catch-all driver for any kind of device. 
+Non-I/O related controls were implemented as custom commands that are called via the <em>ioctl</em> system
+call. 
+</p>
+<p>
+<strong>Frameworks</strong> were created to formalize a set of interfaces for drivers of specific types.
+For instance. The ALSA framework is a kernel-level API for audio. Instead of having each
+audio chipset create its own custom interfaces, they can all be written to conform to ALSA APIs.
+Frameworks define common parts and common interfaces for the same types of devices
+(e.g., ALSA core, TTY serial, SCSI core, framebuffer devices).
+All these devises are still seen as normal devices to users and treated as such by the kernel.
+A framework just defines a common interface and a set of operations that the device must implement (e.g., 
+e.g., framebuffer operations, ALSA audio operations).
+</p>
+<p class="nospace">
+For example, a framebuffer driver has to implement functions defined in <tt>struct fb_ops</tt>, 
+which is a set of framebuffer-specific functions and include functions such as:
+</p>
+<blockquote>
+<tt>xxx_open()</tt>, <tt>xxx_read()</tt>, <tt>xxx_write()</tt>, <tt>xxx_release()</tt>, <tt>xxx_checkvar()</tt>,
+<tt>xxx_setpar()</tt>, <tt>xxx_setcolreg()</tt>, <tt>xxx_blank()</tt>, <tt>xxx_pan_display()</tt>, <tt>xxx_fillrect()</tt>,
+<tt>xxx_copyarea()</tt>, <tt>xxx_imageblit()</tt>, <tt>xxx_cursor()</tt>, <tt>xxx_rotate()</tt>, <tt>xxx_sync()</tt>,xx_get_caps()</tt>, etc.
+</blockquote>
+<p>
+It also has to allocate a <tt>fb_info</tt> structure with a call to <em>framebuffer_alloc()</em>,
+set the <tt>-&gt;fbops</tt> field to the operation structure, and
+register the framebuffer device with <tm>register_framebuffer()</em>.
+</p>
+<p>
+The Linux 2.6 kernel also tried to unify the relationship between devices, drivers, and buses. with
+the unified device/driver model.
+A <strong>bus driver</strong> is a driver for interacting with each communication bus that supports
+multiple devices. Example bus drivers are USB, PCI, SPI, MMC, and I2C.
+It is responsible for:
+</p>
+<ul>
+<li> registering the bus type </li>
+<li>registering adapter/interface drivers
+	(USB controllers, SPI controllers, …). These are devices that are 
+	capable of detecting and providing access to devices connected to the bus </li>
+<li> allowing the registration of device drivers (USB, I2C, SPI devices) </li>
+<li> matching device drivers against detected devices. </li>
+</ul>
+
+
+
+<h1> I/O Scheduling and Disks </h1>
+<p>
+From the 1960s through around 2010, the magnetic disk has been a crucial device in many computers. Much of the structure
+of the buffer cache and block drivers has been designed with the disk in mind. For high storage density, random
+access, and low cost, it's still hard to beat this device, although flash memory is making strong inroads.
+</p>
+
+<p>
+A disk (for data storage), is a disk-shaped piece of metal, typically
+2.5 inches on laptops and 3.5 inches on larger systems (in the distant past, 5-18 inches were common sizes).
+It is coated with magnetic material.
+Several disks are sometimes mounted on one spindle. An individual
+disk is known as a platter.
+</p>
+<p>
+Data is recorded on the surface of a disk on a series of concentric
+<strong>tracks</strong>. Each track is divided into a set of fixed-length blocks
+called <strong>sectors</strong> (which are separated from each other by inter-record
+gaps). A sector typically stores from 512 bytes to several kilobytes
+of data. A head reads or writes data on a track as the disk spins
+(typically at 7200 rpm, but other common speeds are 4200, 5400, 10,000, and 15,000 rpm).
+There is one read/write head per recording surface. A
+cylinder is the set of tracks stacked vertically (each track is
+under its own head). Since there is only one set of heads per
+cylinder, the disk arm must move (or seek) to access cylinders.
+A disk is a random access device (meaning that you can request any sector to be read at any time),
+but the access time for the data depends on several factors:
+</p>
+<ol>
+<li> 	How much does the disk arm have to move to get to the required cylinder (<strong>seek time</strong>)?
+<li> 	How much does the disk have to spin to get the needed sector positioned under the read/write head (<strong>rotational latency</strong>)?
+<li> 	How fast can data be transferred to the computer’s memory (<strong>transfer rate</strong>)?
+For SATA disks, a bit over 100 MB/sec is a typical sustained transfer rate.
+</ol>
+<p>
+The time for a disk to rotate to the right position may seem
+insignificant since it's spinning at 7,200 rpm, but
+let's consider what this time means to the CPU. If a disk spins at
+7,200 rpm, then it spins at 120 revolutions per second, taking 8.3
+milliseconds to rotate once. The average latency is half of that,
+or 4.2 milliseconds. A 3.2 Ghz Intel Core i7 processor can perform approximately
+76,383 million instructions per second. Therefore, the CPU can perform approximately
+318 million instructions in the time that it takes the disk to spin so
+that the proper sector will be positioned under the disk read/write
+head. Seek times are even longer.
+As far as processors are concerned, disks are &mdash; and always have been &mdash; slow.
+</p>
+<p>
+Seek times are even worse. Average seek time on a disk is typically twice 
+as slow as rotational latency (it used to be much slower in the past
+when disks used stepper motors to drive the read/write head).
+</p>
+
+<h1> Disk Scheduling </h1>
+<p>
+As with other slow devices, requests for disk service are stored
+in a queue. By the time a disk has completed one data transfer
+operation there may be several more requests in the queue. The
+question that arises is that of which order should these requests
+be processed.
+Most often, the goal is to get all disk block read/write requests to
+get serviced as quickly as possible. Given that seeks are the
+slowest part of a disk, the challenge is to minimize overall head
+movement on a disk.
+There are several algorithms that can be used to sort
+disk requests. 
+</p>
+
+<h2> First come, first served </h2>
+<p>
+The simplest thing to do is to service each disk request on the
+queue in the order that it arrived. The drawback is that this scheme
+does not try to optimize seek time. Consider having one request for
+data on cylinder 20, the next for data on cylinder 1,800, and the
+following for data on cylinder 21 and the one after that for data
+on cylinder 1,900.  Surely it makes more sense to service cylinders
+20 and 21 together and to service cylinders 1800 and 1900 together!
+The first-come-first served algorithm does not take this into
+consideration and will seek to cylinder 20, then to cylinder 1800,
+then to 21, and then back to 1900.  
+We find ourselves spending most of
+our time seeking back and forth rather than transferring data.
+</p>
+
+<h2> Elevator algorithm (SCAN) </h2>
+<div class="figure width200"> <img width="200" height="287" src="images/10-elevator.png"/>
+<p> Figure 1. Elevator algorithm </p>
+</div>
+<p>
+In the <strong>elevator algorithm</strong> (also called <strong>SCAN</strong>),
+we keep the disk head moving to inner cylinders,
+processing queued requests in order of increasing cylinder numbers
+until there are no more requests in that direction. Then we start
+seeking to outer cylinders, processing any queued requests in order
+of decreasing cylinder numbers until the disk reaches the highest track number.
+After that we reverse again. This behavior is
+analogous to that of an elevator.
+</p>
+<p>
+With this algorithm, we need to know the current head position
+and direction of the disk head (figure 2). I/O is scheduled in the sequence of the
+current direction. For example, if we're at track 600 and are moving inward
+(toward higher track numbers), we will schedule I/O requests for higher track
+numbers from lowest to highest in sequence &mdash; but only for tracks 600 and higher.
+When the head reaches the end, we switch the direction and schedule any pending I/O
+sequenced from high track numbers down to 0.
+</p>
+
+<h2> LOOK </h2>
+<p>
+<strong>LOOK</strong> is a common-sense improvement over SCAN. Instead of seeking to the very end and the
+very beginning each time, let's just seek inward until there are no more requests
+in that direction. Then we start
+seeking to outer cylinders, processing any queued requests in order
+of decreasing cylinder numbers until there are no more requests in
+that direction. After that we reverse again. 
+</p>
+
+<h2> Circular SCAN (C-SCAN)</h2>
+<p>1G
+With SCAN and LOOK, tracks in the middle of the disk get a statistical advantage in
+decreased average latency. In an attempt to provide more uniform wait times, the
+<strong>Circular SCAN</strong> algorithm only schedules requests when the head is moving in
+one direction. Once the end of the disk is reached, the head seeks to the beginning without
+servicing any I/O.
+</p>
+
+<h2> Circular-LOOK (C-LOOK) </h2>
+<p>
+This is like C-SCAN but instead of seeking to the start of the disk, we seek to the lowest track
+with scheduled I/O.
+</p>
+
+<h2> Shortest Seek Time First (SSTF) </h2>
+<p>
+To minimize average response time for processes, we were able to use a
+shortest job first scheduling algorithm. We can attempt a similar
+strategy with disk scheduling: the queue of current requests can
+be sorted by cylinder numbers closest to the current head position
+and requests made in that order. On average, the head is in the
+middle of the disk. The drawback with SSF scheduling is that requests
+for data on the ends of the disk may suffer from extreme postponement
+as "better" requests may keep coming in and be scheduled ahead of
+the less desirable requests. SSF also may create a lot of disk
+seeking activity as the head may seek back and forth with ever wider
+swings as it services the more distant requests.
+</p>
+
+<h2> Examples: Linux disk scheduling options </h2>
+<p>
+Linux 2.6 gives you a choice of using one of several disk scheduling algorithms. Let's take brief look
+at what they offer.
+</p>
+
+
+<dl>
+<dt> <strong>Completely Fair Queuing (CFQ)</strong> </dt>
+<dd>
+This is the default scheduler on most distributions. Its goal is to 
+distribute I/O equally among all I/O requests.
+It supports two types of requests.
+Synchronous requests go to per-process queues with time slices allocated per queue.
+Asynchronous requests are batched into queues by priority levels.
+</dd>
+
+<dt> <strong>Deadline</strong> </dt>
+<dd>
+Each request has a deadline. Requests are serviced using a C-SCAN algorithm.
+However, if a deadline for any I/O operation is threatened, skip to that request immediately.
+This approach helps with with real-time performance and
+gives priority to real-time processes. Otherwise, it's just a C-SCAN algorithm.
+</dd>
+
+<dt> <strong>NOOP</strong> </dt>
+<dd>
+This is a super-simple scheduler. It's just a FIFO queue. This approach has minimal CPU overhead
+but assumes that the block device is intelligent and capable of rescheduling operations internally.
+</dd>
+
+<dt> <strong>Anticipatory</strong> </dt>
+<dd>
+Anticipatory scheduling introduces a delay before dispatching I/O to try to
+aggregate and/or reorder requests to improve locality and reduce disk seek. The
+hope is that, with the delay, there's a high likelihood of additional requests for nearby
+areas on the disk.
+After issuing a request, wait (even if there is outstanding work to be done).
+If a request for nearby blocks occurs, then issue it.
+If no request occurs, then just apply a C-SCAN algorithm.
+The approach is fair.
+While it has no support for real time and may
+result in higher I/O latency, it
+works surprisingly well in benchmarks!
+</dd>
+</dt>
+
+<h2> Smarter disks </h2>
+<p>
+Most disk scheduling algorithms were designed for disks where the operating system would address data
+blocks by cylinder, head, sector and also had a good idea of where the disk head was at any time.
+That is no longer the case. Disks are a lot smarter and have a cache memory that is used to hold frequently
+used blocks, to prefetch blocks, and to resequence write requests.
+For example, consumer-grade Western Digital Caviar Black drives have dual processors and a 64 MB cache.
+</p>
+<p>
+Disks support <strong>logical block addressing</strong> (LBA), presenting
+their storage as a contiguous set of block numbers so the actual location of a block is just an educated guess 
+(we guess that contiguous blocks are quicker to access than distant blocks).
+In addition, disks have:
+</p>
+<ul>
+<li> Automatic bad block mapping, which can mess up algorithms that assume blocks are laid out sequentially.
+When a disk is formatted, the formatting process leaves spare sectors on a track for remapping bad blocks.
+</li>
+<li>
+Native Command Queuing. Both SATA and SCSI protocols
+allow the drive to queue and re-prioritize disk requests.
+Up to 256 commands can be queued up.
+</li>
+<li>
+The presence of a sizable cache on the disk allows frequently accessed blocks to be stored in the disk's RAM.
+<strong>Read-ahead</strong> can be enabled to optimize for sequential I/O. This causes the disk, if it has nothing
+else to do, to read successive blocks following an initial request into its cache.
+</li>
+<li>
+Some disks are a hybrid design, with a mix of non-volatile flash memory and disk storage. This enables bigger
+caches as well as persistent caches; the disk can acknowledge a write without actually writing it to magnetic storage.
+</li>
+</ul>
+<p>
+Moreover, solid state disks are increasingly popular alternatives to magnetic storage.
+NAND flash memory still provides us with a block-based I/O interface but there is no seek latency whatsoever,
+so there is no advantage is sorting I/O requests. A fundamental problem with flash storage is that
+NAND flash supports a limited amount of write operations (typically under 100K through a million, depending on
+the vendor). Algorithms will need to be cognizant of the amount of writes they do to any given data block
+and need to consider <strong>wear-leveling</strong>, where block writes can be distributed among all the blocks of storage.
+</p>
+
+
+
+<h1> References </h1>
+
+<ul>
+<li>
+<a href="http://tldp.org/LDP/lkmpg/2.6/lkmpg.pdf">
+The Linux Kernel Module Programming Guide
+</a>, Peter Jay Salzman, Michael Burian, and Ori Pomerantz.
+Linux Documentation Project, May 18, 2007.
+</li>
+<li>
+<a href="http://sites.google.com/site/io/anatomy--physiology-of-an-android">Anatomy &amp; Physiology of an Android</a>,
+Patrick Brady, 2008 Google I/O Session Videos and Slides
+</li>
+
+<li>
+<a href="http://code.google.com/events/io/2010/">Google I/O sessions: May 19 - 20, 2010</a>
+</li>
+
+<li> <a href="http://www.redhat.com/magazine/008jun05/features/schedulers/"> 
+Choosing an I/O Scheduler for Red Hat Enterprise Linux 4 and the 2.6 Kernel </a>, D. John Shakshober, Red Hat Magazine </li>
+
+<li> <a href="http://aplawrence.com/Linux/linux26_features.html"> Linux 2.6 </a>, Dominique Heger & Philip Carinhas, Fortuitous Technologies </li>
+
+<li> <a href="http://support.microsoft.com/kb/235128"> INFO: Understanding Device Names and Symbolic Links </a>,
+Article ID: 235128, Microsoft Support </li>
+
+<li> <a href="http://www.linuxjournal.com/article/2890">An introduction to block device drivers</a>,
+Michael K. Johnson, Linux Journal, Jan 1, 1995.
+</li>
+
+<li> <a href="http://www.linuxjournal.com/article/6916"> Kernel Korner - The New Work Queue Interface in the 2.6 Kernel </a>,
+By Robert Love, Linux Journal, November 2003</li>
+
+<li> <a href="http://dlc.sun.com/pdf/816-4854/816-4854.pdf"> Writing Device Drivers </a>, Copyright 2004, 2010, Oracle and/or its affiliates (formerly Sun). </li>
+
+<li> <a href="http://www.mulix.org/lectures/intro_to_linux_device_drivers/intro_linux_device_drivers.pdf"> Introduction to Linux Device Driv </a>, Muli Ben-Yehuda, IBM Haifa Research Labs and Haifux - Haifa Linux Club </li>
+
+<li> <a href="http://2010.rmll.info/IMG/pdf/kernel-device-drivers-rmll2010.pdf"> Linux Kernel architecture for device drivers </a>,
+Thomas Petazzoni,
+Free Electrons </li>
+
+<li> <a href="http://www.kroah.com/linux/talks/ols_2003_udev_paper/Reprint-Kroah-Hartman-OLS2003.pdf">
+udev – A Userspace Implementation of devfs</a>,
+Greg Kroah-Hartman∗ IBM Corp.
+Linux Technology Center. Proceedings of the Linux Symposium. July 23-26, 2003.
+</li>
+
+</ul>
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

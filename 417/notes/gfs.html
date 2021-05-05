@@ -1,0 +1,317 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Network Attached Storage</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Network Attached Storage</h1>
+								<h2>Parallel file systems</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>March 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Store huge files (terabyte and larger) in a file system that is distributed across many (thousands) of machines.</p>
+</blockquote>
+
+<p>Conventional file systems lay out an entire file system on one logical storage
+device (a disk or NAND flash memory). This means that the
+<strong>metadata</strong> and <strong>data</strong> for all files and directories is located in this one device.
+In some cases, the device might be a collection of disks (e.g., a RAID drive
+or several disks connected by a volume manager) but, to the operating system,
+it appears as one device &#8211; one collection of blocks.
+This places a restriction on each file system
+that it cannot span one machine.
+Conventional
+distributed file systems, used for network attached storage (NAS), basically
+use a file system access protocol but interact with one or more servers running
+these conventional file systems.</p>
+
+<p>With <strong>parallel file systems</strong>, the metadata and data of files are
+separated onto different entities. The <strong>metadata</strong> of a file
+is the set of attributes about a file: its name, size, access permissions,
+time stamps, etc. The <strong>data</strong> of a file is, well, the file&#8217;s data.
+Metadata does not take up much space. It&#8217;s a small set of attributes and
+each attribute is generally only a few bytes in size. Data, however,
+can be huge: terabytes or more for large files.</p>
+
+<p>The idea of a parallel file system is to have a system &#8211; or systems &#8211; manage
+the metadata. As part of the metadata for each file, the system will identify
+the systems and logical blocks holding the file&#8217;s data.
+By doing this, we gain several benefits:</p>
+
+<ol>
+<li><p>A file&#8217;s data is no longer limited to the capacity of any one system and can be spread out across many systems.</p></li>
+<li><p>Because data blocks are distributed among multiple systems, access is effectively load balanced across them. Moreover, multiple systems can process different file or different parts of a file with <em>read</em> operations taking place on different systems. This provides scalable bandwidth, comparable to <strong>striping</strong> in storage arrays.</p></li>
+<li><p>Data blocks can be replicated on multiple systems, providing fault tolerance and the potential for greater <em>read</em> bandwidth since processes can read from any of the replicated data blocks.</p></li>
+</ol>
+
+<p>This design approach is the basis for the Google File
+System (GFS), the Hadoop Distributed File System (HDFS, essentially a clone of GFS),
+and distributed file systems used in supercomputing clusters, such as Luster
+and GlusterFS. We will not look at these last two but the concepts are similar.</p>
+
+<h2 id="googlefilesystemgfs">Google File System (GFS)</h2>
+
+<p>The Google File System is designed to support large data-intensive
+applications (the kind of algorithms Google uses for search and other
+services).
+The system is designed for an environment where there are many thousands
+of storage servers, some of which are expected to be down at any
+given point in time. The data that is managed comprises of billions of objects
+and many petabytes of data. GFS is not designed to be a general-purpose
+file system and is optimized for large files (rather than
+lots of small files), streaming reads (more common than writes), and atomic appends
+(which may be done concurrently by multiple clients).</p>
+
+<p>Each GFS cluster contains one <strong>master</strong> file server. This
+is a faster and more reliable machine that manages file system metadata,
+such as names and attributes of files and directories. None of the actual
+file data resides on this system. Instead, it contains a mapping of
+the file contents to the <strong>chunks</strong> that hold the data.
+Chunks are fixed-size, 64 MB blocks and
+are stored in <strong>chunkservers</strong>. The chunkservers
+are less reliable than the master and are replicated so that each chunk
+is stored on typically three three separate chunkservers.</p>
+
+<p>Clients contact the master to look up files. The master gives them
+a chunkserver name and chunk handles for the files requested.</p>
+
+<p>To write to a file, the master grants a <strong>chunk lease</strong>
+to one of the replicated chunks. The chunkserver holding this is
+the <strong>primary replica chunkserver</strong> for that chunk.
+Writing is a two-stage process.
+First, the client writes to one replica. That replica then forwards
+the data to another replica chunk server, and so on until all
+replicas for that chunk receive the data. This relieves load from the client
+in that the client has to only write one copy. It
+also doesn&#8217;t put any one computer within GFS in the position of having to send
+out <em>N</em> copies of the data.</p>
+
+<p>Once all replicas acknowledge receipt of the data,
+the second stage, writing, takes place. The client sends a <em>write</em>
+request to the primary chunkserver, identifying the data that was sent. The primary
+assigns a sequence to the write operations that take place on the data
+and sends <em>write</em> requests to all the replicas so that they
+will write data in the same sequence-number order. Note that the
+<strong>data flow</strong> (data transfer) from client is chained: it goes to the primary replica,
+then to secondary replica, then another secondary replica, etc. This <strong>pipelining</strong> optimizes the bandwidth on each link. Moreover, each system will try to pick the <em>nearest</em> system that has not yet been added to the chain to send data. The client has the choice of <em>all</em> the replicas and can pick the closest one.
+The <strong>control flow</strong> (<em>write</em> commands) is sent from the client to the primary and then
+goes from the primary directly to all of the secondaries (but is a much, much
+smaller message).</p>
+
+<h2 id="hadoopdistributedfilesystem">Hadoop Distributed File System</h2>
+
+<p>Apache&#8217;s Hadoop Distributed File System (HDFS) is incredibly similar
+to GFS and is designed with essentially the same goals. The key
+distinction is that it does not support modifying a file once it is
+created, but it does support
+appends. This avoids the need to manage leases or locks for the file.</p>
+
+<p>Like GFS&#8217;s master, HDFS uses a separate server, called a <strong>NameNode</strong>,
+that is responsible for keeping track of the filesystem namespace and the
+location of replicated file blocks.
+File data is broken into 128 MB blocks (default, but configurable per file)
+and is stored on <strong>DataNodes</strong> (GFS&#8217;s chunkservers).
+Each <strong>block</strong> (GFS <em>chunk</em>) is replicated on multiple DataNodes
+(the default is three, as with GFS).
+As with GFS, all file system metadata, names and block maps, is stored in memory
+on the DataNode for performance. File writes from clients are pipelined
+through each of the replica DataNodes that will hold the data.</p>
+
+<p>HDFS uses <strong>rack-aware</strong> logic for determining which computers should
+host replicas for a block. The first replica is targeted to a computer
+in the same rack as the requesting client (to minimize latency). Second
+and additional replicas come from other racks in the data center for
+fault tolerance in case the first rack fails. The process for writing a
+block is essentially the same as in GFS. Data writes are pipelined to
+get data onto the replicas and then an <em>update</em> command is sent by the primary
+replica to all the others to write the block (this is essentially a commit
+operation, as it makes the data permanent).</p>
+
+<h2 id="dropbox:cloud-basedfilesynchronization">Dropbox: Cloud-based file synchronization</h2>
+
+<pre><code>Goal: Provide an Internet service that synchronizes part of a user's file system to remote servers. Any changes are propagated back to any devices that a user uses for synchronization. In this manner, multiple user computers can keep their data synchronized.
+</code></pre>
+
+<p>Dropbox is one of the first of a set of popular services that provide &#8220;cloud-based file storage&#8221; &#8211;
+a service that allows you to store data on remote servers and access it from anywhere.
+Dropbox does this in a manner that is largely transparent to the user. The user designates
+a directory (aka folder) that will remain in sync with the server. Any local changes will
+be propagated to the server and any changes from the server will be propagated to the local
+computer. Multiple computers can thus keep data in sync, with changes on one computer
+being sent to dropbox servers and then synchronized on other computers.</p>
+
+<p>The Dropbox service started in 2008 and grew rapidly in popularity and, hence, the amount
+of users and data. It serves as a good case study in scaling a system. Currently (2012), Dropbox
+handles over a 100 million users synchronizing a billion files each day. One way that
+Dropbox differs from other data access services such as Twitter, Facebook, Reddit, and others
+is that those services have an extremely high read to write ratio. Any content that is created
+is usually read many, many times. With Dropbox, in contrast, the read to write ratio is
+close to 1. Because the primary use case is file synchronization, remote data is rarely accessed
+except to synchronize it with other machines. As such, Dropbox has to deal with an inordinately
+high number of uploads.</p>
+
+<p>Dropbox began life as one server, using a mySQL database to keep track of users and their files.
+As the server ran out of disk space, all <strong>file data</strong> was moved over to use
+<a href="http://aws.amazon.com/s3/">Amazon&#8217;s S3</a> service (Simple Storage Service; a web services
+interface to store and retrieve objects where each object is identified with a unique key).
+Dropbox ran a database server that stored all the <strong>metadata</strong> (information about the file)
+and a server that provided a web portal and interacted
+with client software. At this time, each client ran a process that would look through a
+directory to identify changed files and send them to dropbox. In addition, the program
+<strong>polled</strong> the server periodically to see if there are any changes that need to be downloaded.</p>
+
+<p>Tens of thousands of servers all polling a server to see if anything changed generates
+considerable load, so the next design change was to add a <strong>notification server</strong>. Instead
+of having a client ask periodically, the notification server sends a message telling the
+client that there are changes. Since clients may be behind firewalls and it may not
+be possible for a notification server to connect to them, the notification server relies
+on having the client establish a TCP connection to it. The single server that handled
+all requests was also split in two: a metadata server handled everything related to
+information about users and files while a blockserver, hosted at Amazon, handled
+everything having to do with reading and writing file data.</p>
+
+<p>As the number of users grew even larger, a two-level hierarchy of notification servers was
+added since each server could manage only around one million connections. The metadata
+server, block server, and database were also replicated and load balanced.</p>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 Documents </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> CS 417 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/make/index.html"> Sockets Tutorial </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Programming with UDP sockets </h1>
+</div>
+
+<h1> Introduction </h1>
+<p>
+In <a href="index.html">our discussion of sockets</a>, we covered an example
+of programming with connection-oriented sockets: sockets that use the TCP/IP
+protocol. Here, we'll briefly look at an example using connectionless sockets over UDP/IP.
+</p>
+<p>
+This tutorial provides an introduction to using UDP sockets over the IP network (IPv4).
+</p>
+<p>
+As with TCP sockets, this tutorial will focus on the basics.
+There are tutorials on the web that delve into far greater
+detail. On-line manual pages will provide you
+with the latest information on acceptable parameters and functions.
+The interface described here is the system call interface provided
+by the OS X, Linux, and Solaris operating systems and is generally
+similar amongst all Unix/POSIX systems (as well as many other operating
+systems).
+</p>
+
+<h1> Programming with UDP/IP sockets </h1>
+<p>
+There are a few steps involved in using sockets:
+</p>
+<ol>
+<li> Create the socket
+<li> Identify the socket (name it)
+<li> On the server, wait for a message
+<li> On the client, send a message
+<li> Send a response back to the client (optional)
+<li> Close the socket
+</ol>
+
+<h2> Step 1. Create a socket </h2>
+<p>
+A socket, <code>s</code>, is created with the <em>socket</em> system call:
+</p>
+<div class="codeblock">
+		int s = socket(domain, type, protocol)
+</div>
+<p>
+All the parameters as well as the return value are integers:
+</p>
+
+<dl>
+<dt> domain, or address family — </dd>
+<dd> communication domain in which the socket should be created.
+Some of address families are AF_INET (IP),
+AF_INET6 (IPv6),
+AF_UNIX (local channel, similar to pipes),
+AF_ISO (ISO protocols), and
+AF_NS (Xerox Network Systems protocols).
+</dt>
+
+<dt> type — </dt>
+<dd>
+type of service. This is selected according to the properties required by the application: SOCK_STREAM (virtual circuit service), SOCK_DGRAM (datagram service), SOCK_RAW (direct IP service). Check with your address family to see whether a particular service is available.
+</dd>
+
+<dt> protocol — </dt>
+<dd>
+indicate a specific protocol to use in supporting the sockets operation. This is useful in cases where some families may have more than one protocol to support a given type of service.
+The return value is a file descriptor (a small integer).  The analogy of creating a socket is that of requesting a telephone line from the phone company.
+</dd>
+</dl>
+<p>
+For UDP/IP sockets, we want to specify the IP address family (AF_INET)
+and datagram service (SOCK_DGRAM). Since there's only one
+form of datagram service, there are no variations of the
+protocol, so the last argument, <em>protocol</em>, is zero. Our
+code for creating a UDP socket looks like this:
+</p>
+
+<div class="codeblock-box">
+#include &lt;sys/socket.h&gt;
+
+...
+
+if ((fd = socket(AF_INET, SOCK_DGRAM, 0)) &lt; 0) {
+	perror("cannot create socket");
+	return 0;
+}
+</div>
+&rArr; <a href="demo-udp-01.html">Download a demo file</a> 
+
+<h2> Step 2. Indentify (name) a socket </h2>
+<p>
+When we talk about <em>naming</em> a socket, we are talking about assigning a
+transport address to the socket (a port number in IP networking).
+In sockets, this operation is called binding an address and the <em>bind</em>
+system call is used to do this.
+The analogy is that of assigning a phone number to the
+line that you requested from the phone company in step 1 or that
+of assigning an address to a mailbox.
+</p>
+<p>
+The transport address is defined in a socket address structure.
+Because sockets were designed to work with various different 
+types of communication interfaces, the interface 
+is very general. Instead of accepting, say, a port number as a
+parameter, it takes a <code>sockaddr</code> structure whose actual
+format is determined on the address family (type of network) you're
+using. For example, if you're using UNIX domain sockets, <em>bind</em>
+actually creates a file in the file system.
+</p>
+<p>
+The system call for <em>bind</em> is:
+</p>
+<div class="codeblock">
+	#include &lt;sys/socket.h&gt;
+
+	int
+	bind(int socket, const struct sockaddr *address, socklen_t address_len);
+</div>
+<p>
+The first parameter, <code>socket</code>, is the socket that was created
+with the <em>socket</em> system call.
+</p>
+<p>
+For the second parameter, 
+the structure <code>sockaddr</code> is a generic container that just allows
+the OS to be able to read the first couple of bytes that identify the
+address family.
+The address family determines what variant of the <code>sockaddr</code>
+struct to use that contains elements that make sense for that specific
+communication type. For IP networking, we use <code>struct sockaddr_in</code>, which
+is defined in the header <code>netinet/in.h</code>. This structure defines:
+</p>
+
+<div class="codeblock">
+struct sockaddr_in {
+        __uint8_t       sin_len;
+        sa_family_t     sin_family;
+        in_port_t       sin_port;
+        struct  in_addr sin_addr;
+        char            sin_zero[8];
+};
+</div>
+
+<p>
+Before calling <em>bind</em>, we need to fill out this structure. 
+The three key parts we need to set are:
+<dl>
+<dt> sin_family </dt>
+<dd> The address family we used when we set up the socket. In our case, it's AF_INET.
+</dd>
+
+<dt> sin_port </dt>
+<dd>
+The port number (the transport address).
+You can explicitly assign a transport address (port) or allow the
+operating system to assign one. If you're a client and don't need
+a well-known port that others can use to locate you (since they will
+only respond to your messages),
+you can just let the operating system pick
+any available port number by specifying port 0.
+If you're a server, you'll generally
+pick a specific number since clients will need to know a port number
+to which to address messages.
+</dd>
+
+<dt> sin_addr </dt>
+<dd>
+The address for this socket. This is just your machine's IP address. With
+IP, your machine will have one IP address for each network interface. For
+example, if your machine has both Wi-Fi and ethernet connections, that machine
+will have two addresses, one for each interface. Most of the time, we don't
+care to specify a specific interface and can let the operating system
+use whatever it wants. The special address for this is 0.0.0.0, defined
+by the symbolic constant <code>INADDR_ANY</code>.
+</dd>
+</dl>
+
+<p>
+Since the address structure may differ based on the type of transport used, the
+third parameter specifies the length of that structure. This is simply the
+size of the internet address structure, <code>sizeof(struct sockaddr_in)</code>.
+</p>
+
+<p>
+The code to bind a socket looks like this:
+</p>
+
+<div class="codeblock-box">
+#include &lt;sys/socket.h&gt;
+
+...
+
+struct sockaddr_in myaddr;
+
+/* bind to an arbitrary return address */
+/* because this is the client side, we don't care about the address */
+/* since no application will initiate communication here - it will */
+/* just send responses */
+/* INADDR_ANY is the IP address and 0 is the socket */
+/* htonl converts a long integer (e.g. address) to a network representation */
+/* htons converts a short integer (e.g. port) to a network representation */
+
+memset((char *)&myaddr, 0, sizeof(myaddr));
+myaddr.sin_family = AF_INET;
+myaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+myaddr.sin_port = htons(0);
+
+if (bind(fd, (struct sockaddr *)&myaddr, sizeof(myaddr)) &lt; 0) {
+	perror("bind failed");
+	return 0;
+}
+</div>
+&rArr; <a href="demo-udp-02.html">Download a demo file</a> 
+
+<p>
+This example asks the operating system to pick any available port number by setting the
+port to 0. If you want to use a specific port number, change the line
+</p>
+<pre>
+	<code>myaddr.sin_port = htons(0); </code>
+</pre>
+<p>to</p>
+<pre>
+	<code>myaddr.sin_port = htons(myport)  </code>
+</pre>
+<p>
+where <code>myport</code> is the variable (short int) that contains your port number.
+</p>
+
+<h3> Note: number conversions (<em>htonl</em>, <em>htons</em>, <em>ntohl</em>, <em>ntohs</em>) </h3>
+<p>
+You might have noticed the <em>htonl</em> and <em>htons</em> references
+in the previous code block. These convert four-byte and two-byte numbers
+into network representations. Integers are stored in memory and sent
+across the network as sequences of bytes.
+There are two common ways of storing these bytes:
+<em>big endian</em> and <em>little endian</em> notation. 
+Little endian representation stores the least-significant bytes in low memory.
+Big endian representation stores the least-significant bytes in high memory.
+The Intel x86 family uses the little endian format. Old Motorola processors
+and the PowerPC (used by Macs before their switch to the Intel architecture)
+use the big endian format.
+</p>
+<p>
+Internet headers standardized on using the big endian format. 
+If you're on an Intel processor and set the value of a port to 
+1,234 (hex equivalent <code>04d2</code>),
+it will be be stored in memory as <code>d204</code>. 
+If it's stored in this order in a TCP/IP header, however, <code>d2</code>
+will be treated as the most significant byte and the network protocols
+would read this value as 53,764.
+</p>
+<p>
+To keep code portable &ndash; and to keep you from having to write
+code to swap bytes and worry about this &ndash a few convenience macros
+have been defined:
+</p>
+<dl>
+<dt> htons </dt>
+<dd> <em> host to network - short </em>: convert a number into a
+16-bit network representation. This is commonly used to store a port
+number into a <code>sockaddr</code> structure.
+</dd>
+
+<dt> htonl </dt>
+<dd> <em> host to network - long </em>: convert a number into a
+32-bit network representation. This is commonly used to store an IP 
+address into a <code>sockaddr</code> structure.
+</dd>
+
+<dt> ntohs </dt>
+<dd> <em> network to host - short </em>: convert a 16-bit number from
+a network representation into the local processor's format.
+This is commonly used to read a port number from a
+<code>sockaddr</code> structure.
+</dd>
+
+<dt> ntohl </dt>
+<dd> <em> network to host - long </em>: convert a 32-bit number from
+a network representation into the local processor's format.
+This is commonly used to read an IP address from a
+<code>sockaddr</code> structure.
+</dd>
+</dl>
+
+<p>
+For processors that use the big endian format, these macros do absolutely
+nothing. For those that use the little endian format (most processors, these days),
+the macros flip the sequence of either four or two bytes.
+Using the macros, however, ensures that your code remains portable regardless of the
+architecture to which you compile.
+In the above code, writing
+<code>htonl(INADDR_ANY)</code> and <code>htons(0)</code> is somewhat
+pointless since all the bytes are zero anyway but it's good practice
+to remember to do this at all times when reading or writing network data.
+</p>
+
+<h2> Step 3a. Send a message to a server from a client</h2>
+<p>
+With TCP sockets, we had to establish a connection before we could communicate.
+With UDP, our sockets are connectionless. Hence, we can send messages immediately.
+Since we do not have a connection, the messages have to be addressed to their
+destination. Instead of using a <em>write</em> system call, we will use <em>sendto</em>,
+which allows us to specify the destination. The address is identified through
+the <code>sockaddr</code> structure, the same
+way as it is in <em>bind</em> and as we did when using <em>connect</em> for 
+TCP sockets.
+</p>
+
+<div class="codeblock">
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+
+int
+sendto(int socket, const void *buffer, size_t length, int flags, const struct sockaddr *dest_addr,
+         socklen_t dest_len)
+</div>
+
+<p>
+The first parameter, <code>socket</code>, is the socket that was
+created with the <em>socket</em> system call and named via <em>bind</em>.
+The second parameter, <code>buffer</code>,  provides the starting address of the
+message we want to send. <code>length</code> is the number of bytes that
+we want to send. The <code>flags</code> parameter is 0 and not useful for UDP sockets.
+The <code>dest_addr</code> defines the destination address and port number for the
+message. It uses
+the same <code>sockaddr_in</code> structure that we used in <em>bind</em>
+to identify our local address. As with <em>bind</em>, the final parameter
+is simply the length of the address structure:
+<code>sizeof(struct sockaddr_in)</code>.
+</p>
+
+<p>
+The server's address will contain the IP address of the server machine as well
+as the port number that corresponds to a socket listening on that port on that machine.
+The IP address is a four-byte (32 bit) value in network byte order (see <em>htonl</em> above).
+</p>
+
+<p>
+In most cases, you'll know the name of the machine but not its IP address.
+An easy way of getting the IP address is with the <em>gethostbyname</em> library (libc) function.
+<em>Gethostbyname</em> accepts a host name as a parameter and returns a <code>hostent</code>
+structure:
+</p>
+<div class="codeblock">
+struct  hostent {
+	char    *h_name;        /* official name of host */
+	char    **h_aliases;    /* alias list */
+	int     h_addrtype;     /* host address type */
+	int     h_length;       /* length of address */
+	char    **h_addr_list;  /* list of addresses from name server */
+};
+</div>
+<p>
+If all goes well, the <code>h_addr_list</code> will contain a list of IP addresses. There
+may be more than one IP addresses for a host. In practice, you should be able to use any
+of the addresses or you may want to pick one that matches a particular subnet. You
+may want to check that <code>(h_addrtype == AF_INET)</code> and <code>(h_length == 4)</code>
+to ensure that you have a 32-bit IPv4 address.
+We'll be lazy here and just use the first address in the list.
+</p>
+<p>
+For example, suppose you want to find the addresses for google.com. The code will look like
+this:
+</p>
+<div class="codeblock-box">
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;netdb.h&gt;
+
+/* paddr: print the IP address in a standard decimal dotted format */
+void
+paddr(unsigned char *a)
+{
+        printf("%d.%d.%d.%d\n", a[0], a[1], a[2], a[3]);
+}
+
+main(int argc, char **argv) {
+        struct hostent *hp;
+        char *host = "google.com";
+        int i;
+
+        hp = gethostbyname(host);
+        if (!hp) {
+                fprintf(stderr, "could not obtain address of %s\n", host);
+                return 0;
+        }
+        for (i=0; hp-&gt;h_addr_list[i] != 0; i++)
+                paddr((unsigned char*) hp-&gt;h_addr_list[i]);
+        exit(0);
+}
+</div>
+
+<p>
+Here's the code for sending a message to the address of a machine in <code>host</code>.
+The variable <code>fd</code> is the socket which was created with the <em>socket</em>
+system call.
+</p>
+
+<div class="codeblock-box">
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;stdio.h&gt;	/* for fprintf */
+#include &lt;string.h&gt;	/* for memcpy */
+
+struct hostent *hp;     /* host information */
+struct sockaddr_in servaddr;    /* server address */
+char *my_messsage = "this is a test message";
+
+/* fill in the server's address and data */
+memset((char*)&servaddr, 0, sizeof(servaddr));
+servaddr.sin_family = AF_INET;
+servaddr.sin_port = htons(port);
+
+/* look up the address of the server given its name */
+hp = gethostbyname(host);
+if (!hp) {
+	fprintf(stderr, "could not obtain address of %s\n", host);
+	return 0;
+}
+
+/* put the host's address into the server address structure */
+memcpy((void *)&servaddr.sin_addr, hp->h_addr_list[0], hp->h_length);
+
+/* send a message to the server */
+if (<strong>sendto(fd, my_message, strlen(my_message), 0, (struct sockaddr *)&servaddr, sizeof(servaddr))</strong> &lt; 0) {
+	perror("sendto failed");
+	return 0;
+}
+</div>
+
+
+
+<h2> Step 3b. Receive messages on the server </h2>
+<p>
+With TCP sockets, a server would set up a socket for listening via a <em>listen</em>
+system call and then call <em>accept</em> to wait for a connection.
+UDP is connectionless. A server can immediately listen for messages once it has a 
+socket. We use the <em>recvfrom</em> system call to wait for an incoming datagram on
+a specific transport address (IP address and port number).
+</p>
+
+<p>
+The <em>recvfrom</em> call has the following syntax:
+</p>
+
+<div class="codeblock">
+#include &lt;sys/socket.h&gt;
+
+int
+recvfrom(int socket, void *restrict buffer, size_t length, int flags, struct sockaddr *restrict src_addr,
+         socklen_t *restrict *src_len)
+</div>
+
+<p>
+The first parameter, <code>socket</code> is a socket that we created ahead of time (and used <em>bind</em>. The port number
+assigned to that socket via the <em>bind</em> call tells us on what port <em>recvfrom</em> will wait for data.
+The incoming data will be placed into the memory at <code>buffer</code> and no more than <code>length</code> bytes
+will be transferred (that's the size of your buffer). We will ignore <code>flags</code> here. You can
+look at the man page for <em>recvfrom</em> for details on this. This parameter allows us to process out-of-band data,
+peek at an incoming message without removing it from the queue, or block until the request is fully satisfied. 
+We can safely ignore these and use 0. The <code>src_addr</code> parameter is a pointer to a <code>sockaddr</code> structure that
+you allocate and will be filled in by <em>recvfrom</em> to identify the sender of the message. The length of this
+structure will be stored in <code>src_len</code>. If you do not care to identify the sender, you can set both of these
+to zero but you will then have no way to reply to the sender.
+</p>
+<p>
+The <em>recvfrom</em> call returns the number of bytes that were read into <code>buffer</code>
+</p>
+
+<p>
+Let's examine a simple server. We'll create a socket, bind it to all available
+IP addresses on the machine but to a specific port number. Then we will loop,
+receiving messages and printing their contents.
+</p>
+
+
+<div class="codeblock-box">
+#define PORT 1153
+#define BUFSIZE 2048
+
+int
+main(int argc, char **argv)
+{
+	struct sockaddr_in myaddr;      /* our address */
+        struct sockaddr_in remaddr;     /* remote address */
+        socklen_t addrlen = sizeof(remaddr);            /* length of addresses */
+        int recvlen;                    /* # bytes received */
+        int fd;                         /* our socket */
+        unsigned char buf[BUFSIZE];     /* receive buffer */
+
+        /* create a UDP socket */
+
+        if ((fd = socket(AF_INET, SOCK_DGRAM, 0)) &lt; 0) {
+                perror("cannot create socket\n");
+                return 0;
+        }
+
+        /* bind the socket to any valid IP address and a specific port */
+
+        memset((char *)&myaddr, 0, sizeof(myaddr));
+        myaddr.sin_family = AF_INET;
+        myaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+        myaddr.sin_port = htons(PORT);
+
+        if (<strong>bind(fd, (struct sockaddr *)&myaddr, sizeof(myaddr))</strong> &lt; 0) {
+                perror("bind failed");
+                return 0;
+        }
+
+        /* now loop, receiving data and printing what we received */
+        for (;;) {
+                printf("waiting on port %d\n", PORT);
+                <strong>recvlen = recvfrom(fd, buf, BUFSIZE, 0, (struct sockaddr *)&remaddr, &addrlen);</strong>
+                printf("received %d bytes\n", recvlen);
+                if (recvlen &gt; 0) {
+                        buf[recvlen] = 0;
+                        printf("received message: \"%s\"\n", buf);
+                }
+        }
+        /* never exits */
+}
+</div>
+
+&rArr; <a href="demo-udp-03.html">Download a demo file</a> 
+
+<h2> Step 4. Bidirectional communication </h2>
+<p>
+We now have a client sending a message to a server.
+What if the server wants to send a message back to that client?
+There is no connection so the server cannot just write the response back. Fortunately,
+the <em>recvfrom</em> call gave us the address of the server. It was placed in <code>remaddr</code>:
+</p>
+<div class="codeblock-box">
+recvlen = recvfrom(s, buf, BUFSIZE, 0, <strong>(struct sockaddr *)&amp;remaddr</strong>, &amp;addrlen);
+</div>
+<p>
+The server can use that address in <em>sendto</em> and send a message back to the recipient's address.
+</p>
+<p>
+<div class="codeblock-box">
+sendto(s, buf, strlen(buf), 0, <strong>(struct sockaddr *)&amp;remaddr</strong>, addrlen)
+</div>
+</p>
+<p>
+
+&rArr; <a href="demo-udp-04.html">Download a demo file</a> 
+
+<h2> Step 5. Close the socket </h2>
+<p>
+With TCP sockets, we saw that we can use the <em>shutdown</em> system call
+to close a socket or to terminate communication in a single direction. 
+Since there is no concept of a connection in UDP, there is no need to call <em>shutdown</em>.
+However, the socket still uses up a file descriptor in the kernel, so we can 
+free that up with the <em>close</em> system call just as we do with files.
+</p>
+<div class="codeblock-box">
+	close(fd);
+</div>
+</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/9cbf3407-e64c-4dd9-b644-238d707b91b3"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

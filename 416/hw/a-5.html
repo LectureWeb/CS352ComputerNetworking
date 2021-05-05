@@ -1,0 +1,762 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Assignment 5 </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+
+.subhead {
+	background-color: #ddd;
+	text-align: center;
+	margin-left: 5em;
+	margin-right: 5em;
+	border: 1px solid #555;
+	border-radius: 5px;
+}
+.note {
+	font-style: italic;
+	color: #444;
+}
+#main .faqlist dd {
+        margin-left: 2em;
+        margin-bottom: 2em;
+}
+#main .faqlist dt {
+        background-color: #D1DBDB;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        padding-top: 0.25em;
+        padding-left: 0.5em;
+        color: black;
+	font-weight: normal;
+}
+#main .faqlist dt strong, #main .faqlist dt b {
+	color: red;
+}
+#main .faqlist dt {
+	margin-bottom: 1em;
+}
+#main .faqlist dt p + p {
+	padding-top: 1em;
+}
+#main .faqlist p + pre {
+	margin-top: -1em;
+}
+#main .faqlist dt ul {
+	margin-top: 1em;
+}
+#main .faqlist dt p {
+	margin-bottom: 0;
+}
+#main .newslist dt {
+        background-color: white;
+        color: #555;
+}
+#main .answer {
+	color: #a00000;
+}
+
+</style>
+</head>
+
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 416 </a> 
+ 	<li> <a href="../hw/index.html"> Homework </a> 
+ 	<li> <a href="../hw/a-5.html"> Assignment 5 </a> 
+</ul>
+</div>
+  
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Assignment 5 </h1>
+</div>
+
+<div class="subhead">
+Due
+March 23, 2015 6:00pm
+on-line via sakai
+</div>
+
+<h1> FAQ, Addenda, and Testing </h1>
+<p> Check the <a href="a-5-faq.html">FAQ</a>. </p>
+<p> Check the <a href="a-5-test.html">Testing guidelines</a>. </p>
+
+
+<h1> Introduction </h1>
+<p>
+One of the defining aspects of the UNIX programming environment is
+the <em>tools</em> concept: a lot of little programs that do
+one thing but can be combined together. The act of combining
+programs means that the output of one program is used as
+the input to another program. The mechanism that accomplishes
+this is the <strong>pipe</strong>. In the shell, it is
+denoted by a vertical bar (<code>|</code>).
+</p>
+<p>
+For example, the <code>ls</code> command lists all the files
+in a directory. The <code>wc</code> command counts lines, words,
+and characters. The number of files and directories in my current directory is:
+</p>
+<pre><code>
+ls | wc -l
+</code></pre>
+<p>
+To find the top ten words in Herman Melville's <em>Moby Dick</em>
+and a count of their occurrance, we can run:
+</p>
+<pre><code>
+cat moby.txt |tr A-Z a-z|tr -C a-z '\n' |sed  '/^$/d' |sort|uniq -c|sort -nr|sed 10q
+</code></pre>
+<p>
+Where:
+<ol>
+<li>
+<code>cat moby.txt</code> puts the contents of the file <code>moby.txt</code> onto
+the standard output stream.
+</li>
+
+<li>
+<code>tr A-Z a-z</code> translates all uppercase letters to their corresponding lowercase ones. This
+ensures that mixed-case words all get converted to lower case and will therefore look the
+same when we compare them.
+</li>
+
+<li>
+<code>tr -C a-z '\n'</code> translates anything that is not a lowercase letter into a newline (\n).
+This gives us one word per line as well as a lot of extra blank lines.
+</li>
+
+<li>
+<code>sed  '/^$/d'</code> runs sed, the stream editor, to delete all empty lines
+(i.e., lines that match the regular expression <code>^$</code>).
+</li>
+
+<li>
+<code>sort</code> sorts the output. Now all of our words are sorted.
+</li>
+
+<li>
+<code>uniq -c</code> combines adjacent lines (words) that are identical and 
+writes out a count of the number of duplicates followed by the line.
+</li>
+
+<li>
+<code>sort -nr</code> sorts the output of <code>uniq</code> by 
+the count of duplicate lines. The sorting is in inverse numeric order
+(<code>-nr</code>). The output from this is a frequency-ordered list
+of unique words.
+</li>
+
+<li>
+<code> sed 10q </code> tells the stream editor to quit after reading ten
+lines. The user will see the top ten lines of the output of <code>sort -nr</code>.
+</li>
+</ol>
+
+<p>
+In the shell, four kernel mechanisms are crucial to accomplishing this:
+</p>
+
+<dl>
+<dt> fork </dt>
+<dd>
+The <em>fork</em> system call is used to create new processes. Each command in 
+the pipeline has to run as a separate process. The result of a <em>fork</em>
+is a cloned copy of the parent process.
+</dd>
+
+<dt> execve </dt>
+<dd>
+The <em>execve</em> system call overlays a new program onto the current process.
+Without execve, we would never be able to run new programs. When the shell
+runs a command, it forks itself and the child then loads and runs the new 
+program via <em>execve</em>. There are several variations of <em>execve</em>
+written as library functions: <em>execl</em>, <em>execle</em>, <em>execlp</em>,
+<em>execv</em>, <em>execvp</em>, <em>execvP</em>. All of them end up
+calling <em>execve</em>.
+</dd>
+
+<dt> dup2 </dt>
+<dd>
+Dup2 simply duplicates one open file descriptor (the handle that is used
+to read and write files) onto another file descriptor number.
+This is the basis of I/O redirection. Under UNIX, programs that may interact
+with the terminal expect to have three file descriptors open and ready for
+use. File descriptor 0 is the standard input, 
+file descriptor 1 is the standard output, and
+file descriptor 2 is the standard error. Typically, standard input comes
+from the keyboard and standard output and error go to the virtual terminal
+(terminal window running the shell). However, any or all of these
+can be redirected to other files (or devices; there is usually no
+distinction in UNIX).
+As an example of how this is done, consider redirecting the standard output of 
+a program. Before calling <em>execve</em>, the child process opens the desired 
+output file. The <em>open</em> system call returns a file descriptor, which
+is a small integer. The child then calls <em>dup2</em> to duplicate this
+new file descriptor onto file descriptor 1, the standard output. <em>dup2</em>
+causes the current file descriptor 1 to be closed and the new one is duplicated
+onto 1. All further output to file descriptor 1 (standard output) will now go to
+this newly-opened file. After this, the child process calls <em>execve</em>
+to run the desired program, which will simply write to file descriptor 1 for
+its output.
+</dd>
+
+<dt> pipe </dt>
+<dd>
+The <em>pipe</em> system call sets up a unidirectional communication channel using
+file descriptors. It creates two file descriptors: any data written to the second
+file descriptor will be read from the first file descriptor. Coupled with 
+<em>fork</em>, <em>execve</em>, and <em>dup2</em>, it allows one process to
+have a communication stream to another process. See pge 142 of the text for 
+a detailed description.
+</dd>
+</dl>
+
+<h1> Objective </h1>
+<p>
+Your assignment will be a simple shell that will run one command or a pipeline
+of commands. 
+When each process terminates, the shell will print the exit status 
+for the process.
+</p>
+<p>
+Your goal in this assignment is to become familiar with the basic
+set of system calls that let you create processes, establish pipes between them,
+and detect when a child process has died. This assignment will
+use the <em>fork</em>, <em>execve</em>, <em>wait</em>, <em>pipe</em>,
+<em>dup2</em>, <em>chdir</em>, and <em>exit</em> system calls.
+</p>
+<p>
+You do not have to implement multi-line commands, environment variables, or I/O
+redirection.
+<p>
+Don't be intimidated by the length of this write-up. The HTML for
+this page is far longer the C code for the assignment! I hope to
+give you enough guidance with this assignment so that you will know
+exactly what to do. My version of this is well under 300 lines of
+code, including a fair number of comments and blank lines.
+
+<h1>Group size</h1>
+<p>
+The assignment should not take a lot of effort. However, since the class is huge,
+you may work in a group of up to
+<a href="http://weknowmemes.com/wp-content/uploads/2013/04/every-group-project-the-hangover.jpg" target="_blank">five students</a>.
+Be sure to identify the group members
+in your writeup and in a comment in the assignment.
+</p>
+<p>
+You will be held to higher standards if working in a larger group. Be sure to
+submit a beautifully-written report that summarizes your design and
+all the test cases you have performed.
+</p>
+
+<h1>Languages and operating systems</h1>
+<p>
+This assignment must be done in C. It must compile and work on the iLab machines. 
+You should be able to develop this on any version of Linux, BSD, or OS X. You may
+also be able to develop this using <a href="https://www.cygwin.com">Cygwin</a>
+but I have not tried that. If you are using another platform, be sure to test on
+an iLab machine periodically and be sure to allow time for final testing.
+</p>
+
+<h1> Specifications </h1>
+<p>
+Your
+assignment is to write a rudimentary shell, or command
+interpreter, with very specific capabilities. Here's what it will
+do, step by step:
+
+<ol class="separated">
+<li>
+If the standard input is coming from a terminal, then
+print a prompt ("<code>$ </code>" or anything else you'd like; preferably something different than your
+normal shell prompt so that you'll remember when you're running this shell). You can detect
+if the standard input to the shell is a terminal or not via the <code>isatty()</code>
+library function (see <a href="../notes/c-tutorials/isatty.html">here</a>). 
+</li>
+
+<li>
+Get a command line from the user. You may assume that the entire command is on one line.
+This line may be a pipeline of one or more commands.
+</li>
+
+<li>
+<p>
+Parse the command line. Each command is a sequence of one or more
+tokens separated by whitespace (spaces or tabs). Tokens containing
+spaces must be quoted with either single or double quotes.
+Commands may be piped
+together by separating them with a vertical bar (<code>|</code>). 
+There need not be a space on either side of the vertical bar. Examples
+of valid input lines are:
+</p>
+<pre><code>
+echo I "am a command"
+ls|wc -l
+"ls" | wc '-l'
+</code></pre>
+<p>
+The last two commands are identical.
+</p>
+<p>
+Break the command and arguments into an argument list (an array
+of char *). 
+You may assume that no command will have more than 50 arguments.
+</p>
+<p>
+The result of your parsing will be a list of piped commands. Each command will be parsed
+into an its arguments.
+</p>
+</li>
+
+<li>
+<p>
+Execute the pipeline of commands.
+If one command has its output going to another command, then create a pipe and set
+the standard output of the command to the pipe. If the command is reading input from
+a pipe then set the standard input to the pipe. See the <em>Hints</em> section for
+more advice.
+</p>
+<p>
+Execute each command using <em>fork</em> and <em>execve</em>. Using the <em>execvp</em>
+variant of <em>execve</em> will probably be the easiest since it handles searching
+your search path (PATH environment variable) for the command &mdash; just pass it the
+command name and the full argument list.
+You may <strong>not</strong> use the <em>system</em> library function. If you do,
+your grade for the assignment will be 0. If the child cannot execute the desired command
+(execvp fails), then print an error message (see <em>perror</em>) and exit the child
+with an exit code of 1.
+</p>
+</li>
+
+<li>
+<p>
+Check if the command is one of two special built-in commands. If so, then
+call local functions to execute them and <em>do not</em> fork a new process.
+<strong>Built-in commands must be implemented as a table of pointers to functions.</strong>
+You only have two, so the table will be tiny but it will illustrate how you can design
+your program to easily support an arbitrary number of functions.
+Each built-in command accepts the same parameters that any external program will 
+get: <code>(int argc, char **argv)</code>.
+</p>
+<dl>
+<dt> cd [<em>dirname</em>] </dt>
+<dd> The <strong>cd</strong> command changes the current working directory to
+that specified by the first and only argument. An error is printed
+if more than one arguments are present
+or if changing the directory fails. Otherwise, the full pathname of
+the new directory is printed. See the <a href="http://linux.die.net/man/2/chdir">chdir</a>
+system call man page and the <a href="http://linux.die.net/man/3/getcwd">getcwd</a>
+library function. If there is no argument given to the <strong>cd</strong> command then
+change to the user's home directory. You can get this by reading the envrionment variable
+HOME via <tt>getenv("HOME")</tt>.
+</dd>
+
+<dt> exit [<em>value</em>] </dt>
+<dd> The <strong>exit</strong> command causes the shell process to exit by
+calling the <a href="http://linux.die.net/man/3/exit">exit</a> library 
+function (which, in turn, calls the <em>_exit</em> system call). If no parameter
+is provided, then <em>exit</em> returns with an exit code of 0. Otherwise, <em>exit</em>
+returns with the error code provided by <em>value</em>. Note that the exit code will be
+truncated to eight bits (0..255). No need to print an error here since chances are that
+we really want to exit the process, even if the syntax is wrong.
+</dd>
+</dl>
+<p>
+Neither of the built-in commands have to function in a pipeline of commands.
+</p>
+</li>
+
+<li>
+The parent will now wait for all the child processes to terminate before going back to step 1.
+To do this, loop on <em>wait</em> until <em>wait</em> returns a value of -1. For each 
+process that terminates, print that child's exit status. See <a href="notes/c-tutorials/wait.html">here</a>
+for how to do this. Do not be concerned if some of the termination messages are interspersed
+with some output from the commands themselves.
+</li>
+
+</ol>
+
+
+<h1>
+Hints 
+</h1>
+
+
+<h3> Develop and test incrementally! </h3>
+<p>
+Develop and test your code incrementally. Write a 10-30 lines of code at a time and then test it.
+For example, try this sequence:
+</p>
+<ol>
+<li> Prompt for a command, get the line, print it, and repeat. </li>
+<li>
+<p>Parse the commmand line into tokens. A token is either a quoted string, a set of non-space characters,
+or a <code>|</code> character. Test this extensively to ensure that this is robust. If a string starts
+with a single quote, it must end with a single quote. If it starts with a double quote (<code>"</code>)
+then it must end with a double quote. For example, the command:
+</p>
+<pre><code>
+'abc'   "de f'g"  hij|  k "lm | no"
+</code></pre>
+<p>
+must parse into the tokens:
+</p>
+<pre>
+token 1: "<code>abc</code>"
+token 2: "<code>de f'g</code>"
+token 3: "<code>hij</code>"
+token 4: "<code>|</code>"
+token 5: "<code>k</code>"
+token 6: "<code>lm | no</code>"
+</pre>
+
+<li>
+<p>
+Build up a list of commands. Each command is a sequence of arguments. A pipe separates commands. From the above example, 
+the list will be:
+</p>
+<pre>
+command 1: "<code>abc</code>", "<code>de f'g</code>", "<code>hij</code>"
+command 2: "<code>k</code>", "<code>lm | no</code>"
+</pre>
+</li>
+
+<li>
+Check for built-in commands. If found, call the corresponding function to execute them.
+<strong>Built-in commands must be implemented as a table of pointers to functions.</strong>
+</li>
+
+<li> 
+Set up a pipe (if necessary) and execute a command using <em>fork</em>, <em>dup2</em>, and <em>exec</em>.
+</li>
+<li>
+Loop and wait for all processes to die, printing their status. Make sure that all processes do indeed terminate.
+</li>
+</ol>
+
+
+<h3> Malloc and strcpy </h3>
+<p>
+If you use <em>malloc</em> for dynamic memory allocation, be sure to use <em>free</em> to
+clean it up. 
+Your program does not need to use any dynamic memory allocation or string copying for 
+parsing the command line (although you certainly may do this).
+All you need to do is keep track of pointers to the start of
+each token and terminate the end of the token with a 0 within the command line buffer.
+Unnecessary memory allocation and copying is your enemy!
+</p>
+
+<h3> Getting lines </h3>
+<p>
+<i>fgets</i> is a fine function to use for reading a line. <i>Don't</i> use <i>gets</i>
+since it doesn't allow you to specify the size of the buffer and is a target for
+buffer overflow attacks.
+</p>
+
+<h3> Creating an argument list </h3>
+<p>
+Your parsing function will split a line containing a command into an array of pointers to characters.
+</p>
+<p>
+You have to write this yourself since you need to parse tokens that might be quoted with
+single or double quotes and may therefore contain whitespace or pipe characters within the
+quoted string. You also have to account for the pipe character possibly not having any
+whitespace before or after surrounding tokens. 
+Using the <em>strtok</em> library will not work.
+You may assume a maximum of 50 arguments and you can use a  to be a static amount of at least 50.
+</p>
+
+<h3> Keep your functions small </h3>
+<p>
+<em>Advice: resist the temptation to put a lot of logic into any one function. Keep the purpose
+of each function highly focused. For example, create separate functions to read lines,
+parse lines, and fork &amp; exec. Err on the side of having more functions.</em>
+</p>
+
+
+<h3> Running built-in commands</h3>
+<p>
+The shell has to support two built-in commands: <em>exit</em> and <em>cd</em>.
+The trivial but uninspiring way to do this is simply via a few
+<tt>if</tt> statements with <tt>strcmp</tt>. Don't do this!
+Instead, use a table that maps a built-in
+function name to the function and search the table. One possible
+definition for such a table structure is:
+</p>
+<div class="codeblock">
+	struct builtins {
+		char *name;	/* name of function */
+		int (*f)();	/* function to execute for the built-in command */
+	}
+</div>
+<p>
+So now we run through the table of builtins, searching for a match
+for the first argument (arg[0]). If there is one, we call the corresponding function
+and return its value back to parse, which returns the value back
+to main. This is overkill for just two commands but it's really handy if the list grows 
+to a dozen or more built-in commands.
+</p>
+
+<h3> Running external programs </h3>
+<p>
+If the function is not a built-in then we have to execute it as a command, so we <em>fork()</em>.
+</p>
+<p>
+The child does an <em>execvp(argv[0], argv)</em>.
+This is a library function over <em>execve</em> that saves us the trouble of searching through the PATH environment variable.
+</p>
+
+<h3> Handling pipe and dup2 </h3>
+<p>
+See the tutorial <a href="../notes/c-tutorials/pipe.html">here</a>.
+Note that it is crucial that you close the file descriptors of the pipe in the parent. Otherwise, any
+processes reading from pipes will never exit. Also, you'll be
+building up more and more open but unusued file descriptors in your
+parent.
+</p>
+
+<h1> References </h1>
+
+<h2> Recitation notes </h2>
+<p>
+        <a href="../notes/content/06r-assignment-5.pdf">Assignment 5 discussion</a>
+        (<a href=../notes/"content/06r-assignment-5-6.pdf">6 per page</a>).
+</p>
+
+<h2> See these brief tutorials </h2>
+<ul>
+<li> fork, exec, and wait: <a href="../notes/c-tutorials/fork.html">fork</a>,
+	<a href="../notes/c-tutorials/exec.html">execve</a>,
+	<a href="../notes/c-tutorials/forkexec.html">fork+exec</a>,
+	<a href="../notes/c-tutorials/wait.html">wait</a>
+</li>
+<li> <a href="../notes/c-tutorials/dup2.html">dup2</a> </li>
+<li> <a href="../notes/c-tutorials/pipe.html">pipe and dup2</a> </li>
+<li> <a href="../notes/c-tutorials/isatty.html">isatty</a> </li>
+</ul>
+<p> 
+The main page for tutorials is <a href="../notes/c-tutorials/index.html">here</a>.
+</p>
+
+
+<h1> Testing </h1>
+<p> Check the <a href="a-5-test.html">guidelines to testing the assignment</a>. </p>
+
+<h1> Submission </h1>
+<p>
+Be sure to indicate all members of your team in the opening comments in your code.
+If it takes us effort to figure out whose program this is, you will lose points.
+Only one team member needs to submit the assignment but be sure that the comments
+make it clear who the members are.
+</p>
+<p>
+You may submit a <strong>Makefile</strong> so that I can run <strong>make</strong>
+to compile your program (see <a href="../notes/make/index.html">some basic notes on makefiles</a>).
+Otherwise, I expect to be able to compile your program via:
+</p>
+<div class="code">
+	cc -o shell shell.c
+</div>
+
+<p>
+Submit only what is required. Do not submit object files, executables, or temporary editor files. 
+</p>
+
+<p>
+Hand the assignment in via <a href="https://sakai.rutgers.edu/portal">sakai</a>.
+Only one group member needs to submit the assignment.
+</p><p>
+Before sending the file to me, make sure that all the components
+are there. If I can't
+compile any part, you will get <strong>no</strong> credit.
+</p>
+
+<h1> Pre-submission notes </h1>
+<p>
+<strong>Important: </strong>
+please check my <a href="programming.html">notes on submitting assignments</a>
+before you hand in your assignment.
+</p>
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 417 Assignments </h2>
+	<ul>
+	<li> <a href="a-1.html"> Assignment 1 </a>
+	<li> <a href="a-2.html"> Assignment 2 </a>
+	<li> <a href="a-3.html"> Assignment 3 </a>
+	<li> <a href="a-4.html"> Assignment 4 </a>
+	<li> <a href="a-5.html"> Assignment 5 </a>
+	<li> <a href="a-6.html"> Assignment 6 </a>
+	<li> <a href="a-7.html"> Assignment 7 </a>
+	<li> <a href="a-8.html"> Assignment 8 </a>
+	</ul>
+	<h2> Tutorials </h2>
+	<ul>
+<!--
+	<li> <a href="../notes/sockets/index.html"> TCP Sockets tutorial </a> </li>
+	<li> <a href="../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+-->
+	<li> <a href="../notes/c-tutorials/index.html"> C/Unix tutorials </a> </li>
+	<li> <a href="../notes/make/index.html"> Makefile tutorial </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Distributed Lookup</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Distributed Lookup</h1>
+								<h2>Domain Name System (DNS)</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>March 24, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Design a system to look up domain names that can scale to the planet-wide internet and handle billions of objects.</p>
+</blockquote>
+
+<p>The Internet <strong>Domain Name System</strong> (DNS) is the naming system for nodes on the
+Internet. It associates human-friendly names with numeric
+IP addresses and other information about that node.</p>
+
+<p>It is challenging to create and manage meaningful unique names on a very large scale (e.g.,
+try picking a twitter handl).
+Hierarchical naming systems are commonly used to facilitate uniqueness and
+management. A name that is made up of a list of components is
+called a <strong>compound name</strong>. We see this in names such as
+pathnames (&#8220;/home/paul/src/qsync/main.c&#8221;)
+and Internet domain names (&#8220;www.cs.rutgers.edu&#8221;).</p>
+
+<p>IP domain names
+(e.g., <code>cs.rutgers.edu</code>) are hierarchical and assigned completely independently
+from their corresponding
+addresses (e.g., <code>128.6.4.2</code>). Any name can be associated with any address.</p>
+
+<p>IP addresses are managed globally by the <strong>IANA</strong>, the Internet Assigned Numbers Authority,
+which hands off management to Regional Internet Registries that, in turn, assign
+blocks of IP addresses to ISPs.</p>
+
+<p>Internet domain names are also assigned hierarchically, with hundreds of
+top-level domains (.com, .org, .ca, .es, .yoga, .wedding, &#8230;) under a single root.
+The IANA delegates the management of individual top-level domain names
+to various companies. These are called <strong>domain name registry operators</strong>, each of
+which operates a <strong>NIC</strong>, or <strong>Network Information Center</strong>.</p>
+
+<p><strong>Domain name registrars</strong> are companies that allow end users to register
+domain names. They update the registry database at the NIC. For example,
+the .yoga top-level domain is operated by a company in Ireland
+called Top Level Domain Holdings Ltd. When you register a domain with
+a domain name registrar such as Namecheap or GoDaddy, the company
+contacts Top Level Domain Holdings to update the master database of
+information about domains registered under .yoga.</p>
+
+<p>The <strong>DNS server</strong> is a
+distributed name server for resolving Internet domain names into IP addresses as well
+as providing other information about the domain name.
+Each server is responsible for answering questions about machines within its zone.
+A <strong>zone</strong> is a subtree of the Internet Domain name space that is managed by that server.
+A registered domain name must include the address of one or more
+name servers that are responsible for answering queries about hosts
+within that domain.</p>
+
+<p>Each DNS server may do one of several things: (1) answer a request if it
+knows the answer to the query, (2) contact another name server(s) to search for the answer,
+(3) return an error if the domain name does not exist, or (4) return a <strong>referral</strong>:
+the address of another name server that may know more of the answer.</p>
+
+<p>For example, a search for <code>mail.pk.org</code> (with no cached information) begins by
+querying one of several replicated <strong>root name servers</strong>. These keep track of the name
+servers responsible for top-level domains. This query will return a <em>referral</em>
+to a name server that is responsible the <code>.org</code> domain.
+Querying that name server
+will provide the name server responsible for <code>pk.org</code>.
+Finally, the name server
+responsible for <code>pk.org</code> will provide the IP address or an authoritative
+&#8220;this host does not exist&#8221; response. Along the way, referrals may be cached so that a
+name server need not go through the entire process again.</p>
+
+<p>An <strong>iterative</strong> name resolution process is one where the client handles referrals.
+It follwos the process describe dabove, where a DNS server returns a <em>referral</em> to a lower-level DSN
+server, an authoritative answer, or an error.
+Because the contacted server may return a referral, the client must iterate, issuing
+requests to these other name servers, until it reaches the leaf of the hierarchy where
+a name server can provide an authoritative answer about the host.
+The advantage of this approach is that name server do not need to track state about the query:
+they immediately either know an answer,
+know the address of a lower-level name server, or know nothing. They never need to issue network
+requests to resolve a query.</p>
+
+<p>A <strong>recursive</strong> name resolution
+process is one where a domain name server itself will query other DNS servers
+as needed to get the answer to the query. The DNS protocol supports both forms.
+The local DNS server, called a <strong>DNS resolver</strong> (for example at your ISP) will generally support
+recursive requests and perform the iteration itself rather than passing
+referrals back to the client.</p>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

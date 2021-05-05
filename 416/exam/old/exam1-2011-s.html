@@ -1,0 +1,401 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 old exams: Exam 1 Spring 2011 </title>
+
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+#main ol h1 {
+	font-size: 140%;
+	margin-left: -1.3em;
+}
+#main ol li {
+	margin-bottom: 1em;
+}
+</style>
+</head>
+
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> 416 </a> 
+ 	<li> <a href="../../exam/index.html"> Exam info </a> 
+ 	<li> <a href="../../exam/old/index.html"> Old exams </a> 
+ 	<li> <a href="../../exam/old/exam1-2011-s.html"> Exam 1 Spring 2011 </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> CS 416 Exam 1 </h1>
+<h2>Spring 2011</h2>
+</div>
+
+<p>
+See the <a href="exam1-review-2011-s.pdf">solutions</a>
+(<a href="exam1-review-2011-s-6.pdf">6 per page</a>).
+</p>
+
+<ol>
+<h1>Part I &ndash; 24 Points</h1>
+
+<li> 4 points<br/>
+Most operating systems are designed for general-purpose computation. A proposal has been put forth for an OS that is optimized for running math-intensive programs. In MathOS, the kernel includes system calls for many useful mathematical operations, such as matrix arithmetic, Bessel functions, Euclidean distance, etc. These system calls are written in highly optimized assembly language for maximum performance. Is this concept for MathOS a good idea? Explain why or why not.
+</li>
+
+<li> 4 points <br/>
+What is the difference between a <em>mode switch</em> and a <em>context switch</em>?
+</li>
+
+<li> 4 points <br/>
+List two events that may take a process to a <em>ready</em> state.
+</li>
+
+<li> 4 points <br/>
+How many times does the following program print hello?
+<div class="codeblock">
+
+#include &lt;stdio.h&gt;
+
+main() {
+	int i;
+	for (i=0; i &lt; 3; i++)
+		fork();
+   	printf("hello\n");
+}
+</div>
+</li>
+
+<li> 4 points <br/>
+Given that we can create user-level code to control access to critical sections (e.g., Peterson’s algorithm), why is it important for an operating system to provide synchronization facilities such as semaphores in the kernel?
+</li>
+
+<li> 4 points <br/>
+A short quantum allows a scheduler to cycle through more processes more quickly than with a long quantum. What is the downside of this?
+</li>
+
+
+<h1>
+PART II &ndash; 66 points &ndash; 3 points each </h1>
+<p>
+For each statement, select the most appropriate answer.
+You may omit one question. Please clearly indicate the question you choose to omit.
+</p>
+
+<li> What does a time-sharing system need that a multiprogramming system does not?
+<br/>(a) Trap mechanism
+<br/>(b) Kernel mode execution privileges
+<br/>(c) Shorter time slices
+<br/>(d) Interval Timer
+
+</li><li> In an Intel PC architecture, the Master Boot Record (MBR):
+<br/>(a) Loads the operating system.
+<br/>(b) Loads the system BIOS.
+<br/>(c) Loads the Volume Boot Record (VBR).
+<br/>(d) Allows the user to choose which operating system to load.
+
+</li><li> When does preemption take place?
+<br/>(a) When a quantum expires.
+<br/>(b) When a process issues an I/O request.
+<br/>(c) When a process exits.
+<br/>(d) All of the above.
+
+</li><li> With DMA (Direct Memory Access):
+<br/>(a) The processor can read or write directly to a device.
+<br/>(b) The kernel can read or write directly to a process’ memory without intermediate buffers.
+<br/>(c) A process can read or write to kernel memory without intermediate buffers.
+<br/>(d) The device can read or write directly to the system’s memory.
+
+</li><li> When a process is first launched, the operating system does not know the size of this segment:
+<br/>(a) text
+<br/>(b) data
+<br/>(c) bss
+<br/>(d) heap
+
+</li><li> In contrast to a cooperative scheduler, a preemptive scheduler supports the following state transition:
+<br/>(a) Ready →  running  
+<br/>(b) Running →  ready 
+<br/>(c) Ready →  blocked  
+<br/>(d) Blocked →  running  
+
+</li><li> On POSIX systems, one process can send a signal to another process via:
+<br/>(a) notify
+<br/>(b) signal
+<br/>(c) wait
+<br/>(d) kill
+
+</li><li> What information is stored in a thread control block (TCB)?
+<br/>(a) List of open files.
+<br/>(b) Stack pointer.
+<br/>(c) Memory map.
+<br/>(d) Thread owner ID.
+
+</li><li> To implement a user-level threads package, it helps if the operating system provides:
+<br/>(a) Non-blocking system calls.
+<br/>(b) Kernel threads.
+<br/>(c) An execve mechanism.
+<br/>(d) Direct memory access.
+
+</li><li> Switching between user level threads of the same process is often more efficient than switching between kernel threads because:
+<br/>(a) User level threads require tracking less state.
+<br/>(b) User level threads share the same memory address space.
+<br/>(c) Mode switching is not necessary.
+<br/>(d) Execution stays within the same process with user level threads.
+
+</li><li> A compare-and-swap instruction (CAS, or CMPXCHG on Intel systems) allows you to:
+<br/>(a) Modify a memory location only if its contents match a given value.
+<br/>(b) Exchange the contents of two memory locations if their values are different.
+<br/>(c) Exchange the contents of two memory locations if a lock is not set.
+<br/>(d) Exchange the contents of two memory locations if a lock is set.
+
+</li><li> Starvation is the case when a thread:
+<br/>(a) Loops continuously until it runs out of memory.
+<br/>(b) Is never scheduled to run.
+<br/>(c) Can never acquire a lock on a critical section.
+<br/>(d) Cannot create a child process or thread.
+
+</li><li> Two threads are considered to be asynchronous when:
+<br/>(a) They have no reliance on one another.
+<br/>(b) The outcome of a thread is dependent on the specific sequence of execution of both threads.
+<br/>(c) Only one thread is allowed to access a shared resource at a time.
+<br/>(d) The threads require occasional synchronization.
+
+</li><li> A thread that is blocked on a semaphore is awakened when another thread:
+<br/>(a) Tries to decrement a semaphore’s value below 0.
+<br/>(b) Tries to increment the semaphore.
+<br/>(c) Causes the semaphore’s value to reach a specific number.
+<br/>(d) Tries to block on the same semaphore.
+
+</li><li> Condition variables support these operations:
+<br/>(a) Wait / notify
+<br/>(b) Read-and-increment / wait-for-value
+<br/>(c) Increment / decrement-and-wait
+<br/>(d) Set-value / wait-for-value
+
+</li><li> A quantum is:
+<br/>(a) The absolute minimum time that a process can run.
+<br/>(b) The maximum time that a process can run before being preempted.
+<br/>(c) The amount of time that a process runs before it blocks on I/O.
+<br/>(d) The fraction of a time slice during which the process is running.
+
+</li><li> Process aging is:
+<br/>(a) Computing the next CPU burst time via a weighted exponential average of previous bursts.
+<br/>(b) The measurement of elapsed CPU time during a process’ execution.
+<br/>(c) Boosting a process’ priority temporarily to get it scheduled to run.
+<br/>(d) Giving a process a longer quantum as it gets older.
+
+</li><li> Differing from a soft deadline, a hard deadline:
+<br/>(a) Is one where it is difficult to predict when the thread will exit.
+<br/>(b) Applies to periodic (nonterminating) rather than terminating processes.
+<br/>(c) Is one where there is no value to the computation if the deadline is missed.
+<br/>(d) Is one where it is difficult to predict when the CPU burst period will end.
+
+</li><li> Which scheduler gives each process an equal share of the CPU?
+<br/>(a) Round robin.
+<br/>(b) Shortest remaining time first.
+<br/>(c) Priority.
+<br/>(d) Multilevel feedback queues.
+
+</li><li> Push migration is:
+<br/>(a) When a processor has nothing in its run queue and grabs a process from another run queue.
+<br/>(b) When a processor forks a new process to run on another processor.
+<br/>(c) The migration of a process over a network from one computer to another one.
+<br/>(d) The periodic rebalancing of the run queues among multiple processors.
+
+</li><li> A multilevel feedback queue scheduler generally assigns a long quantum to:
+<br/>(a) High priority processes.
+<br/>(b) Low priority processes.
+<br/>(c) New processes.
+<br/>(d) Old processes.
+
+</li><li> Which scheduler relies on predicting the next CPU burst based on an average of previous bursts?
+<br/>(a) First-come, first served.
+<br/>(b) Round robin
+<br/>(c) Shortest remaining time first.
+<br/>(d) Multilevel feedback queues.
+</li>
+
+<h1>
+PART III &ndash; 10 points &ndash; 1 point each </h1>
+<p>
+For each statement, specify whether it is true or false by circling the correct choice. 
+</p>
+
+<li> Software interrupts are synchronous with the current process.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> A context switch takes place at every system call.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> Programmed I/O (PIO) uses fewer CPU resources than DMA.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> The POSIX execve system call creates a new process.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> Switching among threads in the same process is more efficient than switching among processes.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> Using mutual exclusion ensures that a system avoids deadlock.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> Rendezvous is a form of messaging that uses indirect addressing.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> Rate monotonic analysis assigns the highest priority to the process that has the most computation remaining.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> Multilevel queues allow multiple processes to share the same priority level.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> The value of a semaphore can never be negative.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li>
+</ol>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> Exam Info </h2>
+	<ul>
+	<li> <a href="../index.html#list">List of topics</a>
+	<li> <a href="../study-guide-1.html">Exam 1 Study Guide</a> </li>
+	<li> <a href="../study-guide-2.html">Exam 2 Study Guide</a> </li>
+	<li> <a href="../study-guide-3.html">Exam 3 Study Guide</a> </li>
+	</ul>
+		<h2> Old exams </h2>
+	<ul>
+	<li> <a href="exam1-2012-s.html"> Spring 2012 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2012-s.html"> Spring 2012 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2012-s.html"> Spring 2012 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2011-s.html"> Spring 2011 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2011-s.html"> Spring 2011 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2011-s.html"> Spring 2011 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2010-f.html"> Fall 2010 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2010-f.html"> Fall 2010 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2010-f.html"> Fall 2010 &ndash; Exam 3</a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

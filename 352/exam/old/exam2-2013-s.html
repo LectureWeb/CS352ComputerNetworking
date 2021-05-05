@@ -1,0 +1,405 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 352 old exams: Exam 2 Spring 2013 </title>
+
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+#main ol h1 {
+	font-size: 140%;
+	margin-left: -1.3em;
+}
+#main ol li {
+	margin-bottom: 1em;
+}
+</style>
+</head>
+
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> 352 </a> 
+ 	<li> <a href="../../exam/index.html"> Exam info </a> 
+ 	<li> <a href="../../exam/old/index.html"> Old exams </a> 
+ 	<li> <a href="../../exam/old/exam2-2013-s.html"> Exam 2 Spring 2013 </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> CS 352 Exam 2 </h1>
+<h2>Spring 2013</h2>
+</div>
+
+<ol>
+
+<h1>
+PART I &ndash; 90 points &ndash; 3 points each </h1>
+<p>
+For each statement, select the most appropriate answer.
+</p>
+
+<li> 
+<span class="comment">[this is not applicable to the forthcoming exam #2]</span></br>
+Which peer-to-peer file sharing system relies on flooding for content discovery?
+<br/>(a) Napster
+<br/>(b) Gnutella
+<br/>(c) BitTorrent
+<br/>(d) Chord DHT
+
+</li><li>
+<span class="comment">[this is not applicable to the forthcoming exam #2]</span></br>
+Which peer-to-peer file sharing system is self-scaling for file downloads? That is, which system scales the bandwidth available to download a file as more users download that file?
+<br/>(a) Napster
+<br/>(b) Gnutella
+<br/>(c) BitTorrent
+<br/>(d) Chord DHT
+
+</li><li>
+<span class="comment">[this is not applicable to the forthcoming exam #2]</span></br>
+A Kazaa <em>ultrapeer</em>:
+<br/>(a) Avoids the need to query normal peers.
+<br/>(b) Forwards queries to all of its connected normal peers.
+<br/>(c) Is like a normal peer but hosts more content.
+<br/>(d) Is a central server that keeps track of all the peers in the system.
+
+</li><li>
+<span class="comment">[this is not applicable to the forthcoming exam #2]</span></br>
+A .torrent file in BitTorrent includes:
+<br/>(a) The location of the tracker for the desired file.
+<br/>(b) The location of seed nodes containing the file.
+<br/>(c) The file data that is later distributed among peers.
+<br/>(d) Just initial parts of the file data.
+
+</li><li>
+<span class="comment">[this is not applicable to the forthcoming exam #2]</span></br>
+If a node leaves a Chord DHT (Distributed Hash Table), its (<em>key, value</em>) data:
+<br/>(a) Moves to its successor node.
+<br/>(b) Moves to its predecessor node.
+<br/>(c) Is split between the predecessor and successor nodes.
+<br/>(d) Is split among all remaining nodes.
+
+</li><li> Why might using UDP instead of TCP be appealing?
+<br/>(a) UDP supports much larger segment sizes.
+<br/>(b) UDP uses a checksum to ensure data integrity.
+<br/>(c) UDP segments are sent immediately.
+<br/>(d) UDP segments are sequenced to arrive in order.
+
+</li><li> What is the eight-bit Internet checksum of the two bytes {0xff, 0xff} (in binary: 1111 1111, 1111 1111)?
+<br/>(a) 0x00 (0000 0000)
+<br/>(b) 0x01 (0000 0001)
+<br/>(c) 0xfe (1111 1110)
+<br/>(d) 0xff (1111 1111)
+
+</li><li> Sequence numbers in a stop-and-wait protocol are useful for:
+<br/>(a) Ensuring data is delivered in the correct order.
+<br/>(b) Distinguishing a new message from a duplicate.
+<br/>(c) Keeping track of the total number of messages sent.
+<br/>(d) Matching the receive window size with the transmit window size.
+
+</li><li> You have a 1 Gbps network. The packet size is 1,000 bits and there is a 10 ms (10<sup>-2</sup> s) round-trip time between two hosts. What is the approximate network utilization with a stop-and-wait protocol?
+<br/>(a) 0.01%
+<br/>(b) 1%
+<br/>(c) 10%
+<br/>(d) Almost 100%
+
+</li><li> With Go-Back-N, a segment can be deleted from the send buffer only when:
+<br/>(a) It has been successfully received by the receiver.
+<br/>(b) It and all prior segments have been successfully received by the receiver.
+<br/>(c) All segments in the window have been successfully received by the receiver.
+<br/>(d) The countdown timer expires after sending all segments in the window to the receiver.
+
+</li><li> In a Go-Back-N protocol, a sender sends segments 5, 6, and 7. It gets back acknowledgements for segments 5 and 7. The acknowledgement for segment 6 does not arrive. What happens?
+<br/>(a) The sender moves the base of its window to segment 8.
+<br/>(b) The sender retransmits segment 6 upon getting the acknowledgement for segment 7.
+<br/>(c) The sender retransmits segment 6 upon getting a timeout.
+<br/>(d) The sender advances the base of its window to segment 6 and waits.
+
+</li><li> Path MTU (Maximum Transmission Unit) discovery relies on:
+<br/>(a) The ability to send a query to a router for its MTU size.
+<br/>(b) The ability to turn off fragmentation.
+<br/>(c) Committing to an unchanging end-to-end route.
+<br/>(d) Negotiating with the receiver to pick the maximum MTU that both can support.
+
+</li><li> TCP without the Selective Acknowledgement (SACK) option behaves like a Go-Back-N protocol except that:
+<br/>(a) Only the earliest unacknowledged segment is sent upon timeout.
+<br/>(b) All unacknowledged segments are sent upon timeout.
+<br/>(c) All segments in the current window are sent upon timeout.
+<br/>(d) Only the last unacknowledged segment is sent upon timeout.
+
+</li><li> A TCP header does not have this field:
+<br/>(a) Source address
+<br/>(b) Destination port
+<br/>(c) Sequence number
+<br/>(d) Checksum
+
+</li><li> Host <em>A</em> sends the following consecutive TCP segments to host <em>B</em>: (1) sequence #1000, 500 bytes; (2) 500 bytes;
+(3) 500 bytes. Host <em>B</em> receives only segments #1 and #3. What ACK does it send upon receiving segment #3?
+<br/>(a) 1000
+<br/>(b) 1500
+<br/>(c) 2000
+<br/>(d) 2500
+
+</li><li> Suppose host <em>B</em> now receives segment #2 (after it receives segment #3). What ACK does it send back to host <em>A</em>?
+<br/>(a) 1000
+<br/>(b) 1500
+<br/>(c) 2000
+<br/>(d) 2500
+
+</li><li> TCP's Slow Start:
+<br/>(a) Provides an additive (linear) increase in transmission rate.
+<br/>(b) Delays data transmission until a TCP connection is established.
+<br/>(c) Provides a multiplicative decrease in the transmission rate.
+<br/>(d) Provides an exponential increase in transmission rate.
+
+<div "figure width=450">
+<img src="images/2013-exam2-q18.gif" width=448 height=159/>
+</div>
+
+</li><li> The chart above shows TCP's congestion window over time. What happened at (A)?
+<br/>(a) A retransmission timer expired.
+<br/>(b) Three duplicate ACKs were received. 
+<br/>(c) The maximum window size was reached.
+<br/>(d) The <code>ssthresh</code> value was reached.
+
+</li><li> What happened at (B)?
+<br/>(a) A retransmission timer expired.
+<br/>(b) Three duplicate ACKs were received.
+<br/>(c) The maximum window size was reached.
+<br/>(d) The <code>ssthresh</code> value was reached.
+
+</li><li> What happened at (C)?
+<br/>(a) A retransmission timer expired.
+<br/>(b) Three duplicate ACKs were received.
+<br/>(c) The maximum window size was reached.
+<br/>(d) The <code>ssthresh</code> value was reached.
+
+</li><li> TCP Fast Retransmit retransmits:
+<br/>(a) One segment without waiting for a timeout.
+<br/>(b) Every unacknowledged segment if it detects the loss of one segment.
+<br/>(c) A segment immediately upon getting a negative ACK from the sender.
+<br/>(d) Retransmits a segment upon getting a retransmission timeout.
+
+</li><li> Which router architecture does not require replicating the forwarding table?
+<br/>(a) Conventional shared memory.
+<br/>(b) Shared memory with distributed CPUs.
+<br/>(c) Shared bus, no shared memory.
+<br/>(d) Switched data path.
+
+</li><li> Which field is NOT in an IPv4 header?
+<br/>(a) Header length.
+<br/>(b) Time to live (hop limit).
+<br/>(c) ACK number.
+<br/>(d) Header checksum.
+
+</li><li> The minimum condition for an IP receiver to know the size of a reassembled IP datagram is when:
+<br/>(a) It has received all fragments of the datagram.
+<br/>(b) It has received the last fragment of a datagram, but not necessarily all fragments.
+<br/>(c) It has received the first fragment of a datagram.
+<br/>(d) When it has received any fragment since all fragments contain the full datagram length.
+
+</li><li> Which is a valid IP address on a 132.15.4.0/22 network?
+<br/>(a) 132.15.10.7
+<br/>(b) 132.15.9.8
+<br/>(c) 132.15.8.9
+<br/>(d) 132.15.7.10
+
+</li><li> In DHCP, the Dynamic Host Configuration Protocol, the DHCP server communicates back to the client via a(an):
+<br/>(a) UDP message to the client DHCP process.
+<br/>(b) UDP broadcast to all machines on the LAN
+<br/>(c) TCP message to the client DHCP process.
+<br/>(d) ICMP message to the client machine.
+
+</li><li> NAT, Network Address Translation, requires that all the machines in the internal network:
+<br/>(a) Have private addresses that are not valid on the wide-area Internet.
+<br/>(b) Share the same IP address.
+<br/>(c) Contact a DHCP server to get an on-demand address assignment.
+<br/>(d) Contact a NAT server to get an address assignment.
+
+</li><li> The Internet Control Message Protocol (ICMP) is likely to be used to:
+<br/>(a) Get a unique IP address.
+<br/>(b) Choose one of several available routes.
+<br/>(c) Find out that the time-to-live expired on an IP packet.
+<br/>(d) Define a route for an IP datagram.
+
+</li><li> Which header does not have a checksum in it?
+<br/>(a) IPv4
+<br/>(b) IPv6
+<br/>(c) TCP
+<br/>(d) UDP
+
+</li><li> IPv6 does not have which of the following IPv4 headers (same or similar names)?
+<br/>(a) Protocol version.
+<br/>(b) Time to live (hop limit).
+<br/>(c) Source IP address.
+<br/>(d) Fragment offset.
+</li>
+
+
+<h1>PART II &ndash; 10 points &ndash; 1 point each </h1>
+
+For each statement, specify whether it is true or false by circling the correct choice.
+
+<li> ARQ (Automatic Request) protocols avoid the need to use ACKs by having a server automatically resend each segment.
+<br/> [True]    [False]
+
+</li><li> A countdown timer is not needed in a protocol that uses ACKs and sequence numbers.
+<br/> [True]    [False]
+
+</li><li> UDP allows different processes to send messages to the same socket at a server.
+<br/> [True]    [False]
+
+</li><li> Increasing the congestion window size increases TCP's transmission rate.
+<br/> [True]    [False]
+
+</li><li> The Congestion Avoidance state provides an additive increase to the transmission rate.
+<br/> [True]    [False]
+
+</li><li> TCP requires a Virtual Circuit network since it requires connection service at the network layer.
+<br/> [True]    [False]
+
+</li><li> A router has to recompute the IP header checksum.
+<br/> [True]    [False]
+
+</li><li> The control plane of a router is responsible for forwarding datagrams between ports.
+<br/> [True]    [False]
+
+</li><li> Under NAT, two different computers in an organization may appear to an outsider as having the same IP address.
+<br/> [True]    [False]
+
+</li><li> A router that fragments an IP datagram that carries TCP data must replicate the TCP header onto each fragment.
+<br/> [True]    [False]
+</li>
+
+</ol>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: March 23, 2016
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+		<h2> Old exams </h2>
+	<ul>
+	<li> <a href="exam1-2013-s.html"> Spring 2013 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2013-s.html"> Spring 2013 &ndash; Exam 2</a> </li>
+	<hr/>
+
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

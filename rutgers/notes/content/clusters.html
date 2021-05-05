@@ -1,0 +1,1022 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Clusters </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/small-logo.png" alt="pk.org" name="logo" width="97" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru416"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../index.html"> Rutgers CS 417 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/clusters.html"> Clusters </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Clusters </h1>
+<h2> Building scalable and reliable systems </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> April 2007 </p>
+</div>
+
+<h1> Introduction </h1>
+
+<p>
+If we want a computer that will be highly available, we would traditionally look for one that has reliable components (a better fan
+and power supply, for example) and incorporates elements of fault-tolerant design.
+This ranges from basic replication to TMR (triple modular redundancy). If we're serious about availability, we'll
+be looking for redundant and hot-swappable power supplies, disk drives, and processor cards as well as error-correctiong
+memory. The problem with these designs is their high cost. This is not a mass-market prodcut.
+</p>
+
+<p>
+If we want a computer that can handle massive amounts of computation, we would traditionally select a system
+that offered an SMP (symmetric multi-processing) architecture with a large number of processors.
+The problem with SMP designs is that the performance gain as a function of the 
+number of processors is sublinear, particularly with more than 8&ndash;16 processors, primarily because of 
+contention for shared resources such as busses, memory, and devices.  These computers are also not mass-market devices
+and are expensive compared to generic PCs.
+</p>
+
+<h1> Clusters </h1>
+
+<p>
+Wouldn't it be great if we could just connect a bunch of cheap off-the-shelf PCs together and get all the benefits
+of reliability and scalability without the high cost?
+</p>
+
+<p>
+The goal of <strong>clustering</strong> is to achieve reliability and scalability by interconnecting multiple 
+independent systems.
+A <strong>cluster</strong> is a collection of standard, autonomous, machines, configured so that they 
+appear on the network as a single machine. The application and its data can reside anywhere but this is 
+transparent to the application and its users.
+
+It is made up of
+computing and storage systems interconnected using a high speed network. By using standard components, 
+we can take advantage of the low price of mass produced PCs, disk systems, and networking hardware.
+</p>
+
+<p>
+This is the realization of the <strong>single-system image</strong>. Depending on the implementation and
+the needs of the system, the single system image may not be 100% realized. For example,
+the differences between machines may be visible to the administrator and the systems may be individually
+managed.  However, the single system image should be present for users and applications.
+</p>
+
+<p>
+A cluster is a distributed, not a parallel, system. Each machine runs a separate copy of the 
+operating system on each node. A management subsystem creates the abstraction of an integrated entity 
+(rather than a rack of PCs) and a cluster API (application programmer interface) provides a collection of 
+system interfaces to perform operations such as determining the set of nodes on a cluster, monitor all state, 
+launch applications, etc. 
+</p>
+
+<p>
+Ideally, running one set of "clustering software" over a bunch of machines will solve all issues at once,
+providing scalable computing together with fault tolerance. Unfortunately, we don't get all this in one
+package (yet). 
+Clustering solutions tend to primarily focus one set of needs (although there is overlap):
+<dl>
+<dt> High Availability (HA) </dt>
+<dd> A high-availability system strives to provide a non-stop environment for applications, even if machines fail. </dd>
+
+<dt> High Performance Computing (HPC) </dt>
+<dd> High perforamce computing attempts to aggregate the combined computing power of a bunch of computers. There
+are a few variations of this:
+<ul>
+<li> supercomputing (cooperative multiprocessing): 
+simulate the large-scale multiprocessing of supercomputer, where
+software has to operate on massive vectors and arrays. Ongoing communication between
+processors is generally needed for this.</li>
+
+<li> batch processing: 
+ dispatch chunks of work to a set of computers. A renderfarm is a classic
+example of this.</li>
+
+<li> load balancing:
+dispatch network requests among a set of similar servers to distribute the load. This clearly
+provides fault tolerance as well </li>
+</ul>
+</dl>
+
+</p>
+
+<p>
+Most commercial clustered solutions today focus on high availability rather than HPC since that's where the
+more lucrative business needs reside. Load balancing is often a sufficient approach for many of these environments.
+Because of this, it is common for most commercial clustering environments to support no more than a few servers.
+</p>
+
+
+<h1> High Performance Computing (HPC) </h1>
+
+<p>
+The attraction of combining a bunch of off-the-shelf computers together is that the level of scalability can be greatly 
+enhanced from the typical 2-8 CPUs possible with off-the-shelf systems and at a far reduced cost
+than that of massively multiprocessor systems. Taking 16 $300 PCs and networking them together costs little more than
+$4800, far less than the cost of a 16-processor computer. Moreover, memory contention problems are 
+reduced, workload can be balanced across multiple servers, and nodes can be added incrementally, reducing 
+a need for an initial expensive outlay. 
+</p>
+
+<p>
+Supercomputing clusters are still largely custom efforts, optimized for the specific task at hand.
+One of the most popular efforts for supercomputing clustering arose in 1994 from the Center of Excellence in Space 
+Data and Information Sciences (CESDIS), a division of University Space Research Association at the 
+Goddard Space Flight Center [this division is currently known as <a href="http://cisto.gsfc.nasa.gov/">CISTO</a>].
+This is a collection of software and configuration known as
+<a href="http://www.beowulf.org/overview/index.html">Beowulf</a>. It was 
+initially built to address problems associated with large data sets in Earth and Space Science applications. 
+What made it possible to build highly scalable supercomputing systems is: 
+</p>
+
+<ul>
+<li> <p>
+Commodity off-the-shelf (COTS) computers have become cost effective. The mass-market adoption of PCs drove
+the costs of these devices down. 
+</p></li>
+
+<li> <p>
+Low-cost, high-speed, switchable networking is available. Switches allow network 
+bandwidth to scale with the number of hosts since two machines communication with
+each other over a switched connection do not slow down any other network communications.
+</p></li>
+
+<li> <p>
+Open source software (Linux, GNU compilers and tools), including libraries for supporting
+parallel machine abstractions, such as MPI (message passing 
+interface) and PVM (parallel virtual machine) libraries.
+These allow software to be 
+written that is largely hardware and platform independent 
+</p></li>
+</ul>
+
+<p>
+In addition to this, many more people have accumulated experience with parallel software. Thus
+far, writing parallel programs tends to be difficult and solutions tend to be custom. 
+</p>
+
+<p>
+Programs that do not require fine-grain computation and communication can usually be ported to 
+run effectively on Beowulf clusters. Under Beowulf, the machines (nodes) are generally dedicated to the 
+cluster (to the application that will be run). This means that the performance of the nodes is not subject to 
+external factors, making load balancing easier. The interconnect network among the cluster elements is 
+generally a separate network that is isolated from the external network, making the network load be 
+determined only by the application run on the cluster. A global process ID is provided, enabling processes 
+on one node to be able to send signals to a process on another node.
+</p>
+
+<p>
+Beowulf is not a single product but rather a collection of publicly available software that helps 
+build a cluster. It generally runs on Linux systems (and also on the variants of BSD). The system includes: 
+</p>
+
+<ul>
+<li> <p>
+<a href="http://bproc.sourceforge.net/">BPROC: Beowulf Distributed Process Space</a>.
+This allows process IDs to span 
+multiple nodes in a cluster, provides a way for users to start processes on other 
+machines, and allows signals and exit status to be forwarded across machines.
+</p></li>
+
+<li> <p>
+device drivers. In additional to supporting conventional  drivers, Beowulf 
+contributed channel-bonded ethernet drivers, enabling network traffic to be striped 
+across multiple ethernet cards. With 100 Mbps Ethernet cards standard fare now and
+1 Gbps cards quite inexpensive, channel bonding is not as useful as it was when 
+the project began.
+</p></li>
+
+<li> <p>
+monitor driver provides a /proc interface for an LM78 on-board hardware 
+monitor. 
+</p></li>
+
+<li><p>
+ tools that include: 
+	<ul>
+	<li>
+	PVM (parallel virtual machine) and MPI (message passing interface) libraries 
+	</li>
+	<li>
+	Distributed shared memory (page based with software-enforced page ownership 
+and consistency policy). The original DSM available for Beowulf was 
+	based on ZOUNDS (Zero Overhead Unified Network DSM System) but other packages
+	are available.
+	</li>
+	<li>
+	Other tools, such as a cluster monitor and global ps/top/uptime tools. 
+	</li>
+	</ul>
+</p></li>
+</ul>
+
+<p>
+Depending on the application needs, different configurations of Beowulf are possible: 
+</p>
+
+<ul>
+<li> <p>
+Networking: 
+single entry point to cluster: one monitor and one keyboard and a single external IP 
+address. The rest of the cluster hides behind this with IP masquerading. Users log 
+onto the main node and spawn remote jobs with ssh.
+</p></li>
+ 
+<li> <p>
+nodes: each has its own external address. Each system may double as a 
+desktop machine. 
+</p></li>
+
+<li> <p>
+File systems. There is no particular file system needed for Beowulf and the system
+does not support any mechanism for synchronizing files across machines. There are several
+options for synchronization:
+<ul>
+<li> <p>
+Local disks synchronized nightly (except for /var, /tmp, /etc/sysconfig) with a utility 
+such as <em>rsync</em> </li>
+
+<li> <p>
+Local disks are not synchronized: useful for applications that do only number crunching </li>
+
+<li> <p>
+NFS root (or some other distributed file system): useful for programs that need disk 
+synchronization but are not disk bound </li>
+</li>
+</ul>
+
+<li> <p>
+Process management: 
+batch system: job scheduling is left to the programmer (job runner). Generally a 
+queue is used to ssh remote jobs. This is good for highly parallel applications, such as 
+supercomputing or rendering 
+</p></li>
+
+
+<li> <p>
+Preemptive scheduling/migration: this is not a  part of the Beowulf solution but may 
+be incorporated into the system. Processes can be automatically migrated based on 
+cluster status. This is geared to an environment that is not dedicated to the cluster or 
+one where different types of jobs are run. Two popular packages that provide this 
+capability are Condor (not open source) and Mosix 
+</p></li>
+
+<li> <p>
+Fine-grained control: programs control their own synchronization and load balancing 
+using MPI and/or PVM libraries and bproc for process dispatch. 
+</p></li>
+</ul>
+
+<h2> Batch Processing </h2>
+
+<p>
+One area that readily benefits from having access to a collection of computers is large-scale batch processing.
+Batch processing dates back to the early days of computing, when users would submit jobs (usually in the form
+of stacks of punched cards) that would then be run in batches. Today, it refers to a non-interactive environment
+where one can submit a set of tasks for execution and get results later. These jobs tend to be long-running
+and CPU-intensive. Circuit simulations and rendering frames for computer animation of movies are classic examples.
+The typical solution is to maintain a queue of frames to be rendered and have a 
+dispatcher that remotely executes the process on an available server. 
+</p>
+
+<p>
+Batch processing environments for computer animation are referred to as <em>render farms</em>. These
+are collections of computers, all of which are generally connected to a shared storage system. A coordinator
+maintains a work queue and distributes tasks to each member of the farm ("machine 1 renders frame 1,"
+"machine 2 renders frame 2," etc.). When a machine is done with its task, it informs the coordinator
+and gets the next chunk of work. 
+</p>
+
+<p>
+The composition of render farms changes frequently as companies beef up their infrastructure and replace
+aging equipment. As an example of the types of systems that a few render farms use, consider:
+</p>
+<dl>
+<dt> Pixar </dt>
+<dd> 1,024 machines with 2.8 GHz Intel Xeon processors running Linux and <a href="https://renderman.pixar.com/">Renderman
+software. THe systems in aggregate have 2 TB RAM and 60 TB of disk space. Pixar initially used NFS file systems but
+switched to a SAN (Storage Area Network) based on an EMC CX700 after discovering that 
+<a href="http://www.lightreading.com/document.asp?doc_id=92075">
+NFS was a bottleneck</a>. The movie <em>Cars</em> required 300 times more compute power than <em>Toy Story</em>: 
+2,300 CPU years at a rate of approximately one hour per frame.
+</dd>
+
+<dt> ILM </dt>
+<dd>
+3,000 AMD processor render farm that expands to 5,000 processors by harnessing desktop machines. For storage,
+they use 20 Linux-based SpinServer NAS systems and 3,000 disks from Network Appliance. Machines are networked with
+10 Gbps ethernet.
+</dd>
+
+<dt> DreamWorks </dt>
+<dd>
+Dreamworks outsources their rendering to the 
+<a href="http://www.hp.com/hpinfo/newsroom/press/2004/040419a.html">
+HP Labs Utility Rendering Service</a>. 
+This is a 1,000-processor collection of machines running Linux.
+</dd>
+
+<dt>Sony Pictures' Imageworks</dt>
+<dd>
+This render farm comprises over 1,200 processors in Dell and IBM workstations. Almost 70 TB of
+data was processed in the rendering of Polar Express.
+</dd>
+</dl>
+
+<p>
+Outside of proprietary batch processing solutions, there are a few attempts to create a general-purpose
+framework for dispatching and managing remote jobs. One of these is the
+<a href="http://openpbs.org">Portable Batch System</a>, OpenPBS. Like Beowulf, it has it's
+origins in NASA. The original free version is unsupported although there is still a user community
+for it that 
+<a href="http://www-unix.mcs.anl.gov/openpbs/">provides support and patches</a>. The open source
+development on this effort has forked to the
+<a href="http://www.clusterresources.com/pages/products/torque-resource-manager.php">TORQUE
+Resource Manager</a> project.
+</p>
+
+<p>
+THe basic idea of these systems is that they provide software to submit, execute, list, hold, and delete
+jobs remotely.
+</p>
+
+<h2>Grid Computing</h2>
+<p>
+One relatively recent, and still very much evolving, effort is to develop software to deal with a general purpose 
+decentralized collection of computing resources. The idea is to create a "virtual" clusters from a set of machines
+that will let you run your software for a period of time instead of using a dedicated cluster where the collection
+of machines is configured for and dedicated to a specific set of tasks.
+</p>
+<p>
+The best known Grid effort is the 
+<a href="http://www.globus.org/toolkit/">Globus toolkit</a> - an open source collection of software for building 
+grids. The main goal of this software is to provide a standard set of interfaces for exchanging messages.
+The Globus toolkit makes use of web service mechanisms with XML-based formats for discovering, describing,
+and invoking services.
+
+<h1> Clustering for High Availability (HA) </h1>
+
+<div class="right-sidetext">
+<p>
+When we talk about the availability of systems, we may refer to different 
+levels of statistical availability, which also include human overhead in dealing
+with failures. 100% is unattainable. 99.999%, known as
+"five nines" is the standard for devices such as phone system switches and
+generally requires backup power, earthquake-resistant enclosures (if needed), redundant
+power supplies and redundant networks. Just because your PC running FreeBSD hasn't been
+rebooted all year does not mean that the system is designed with five nines reliability.
+</p>
+<table>
+<tr> <td> Class </td> <td> level </td> <td> annual downtime</td>  </tr>
+<tr> <td> Continuous </td> <td> 100% </td> <td> 0 </td>  </tr>
+<tr> <td> Fault tolerant </td> <td> 99.999% </td> <td> 5 minutes </td>  </tr>
+<tr> <td> Fault resilient </td> <td> 99.99% </td> <td> 53 minutes </td>  </tr>
+<tr> <td> High availablity </td> <td> 99.9% </td> <td> 8.8 hours </td>  </tr>
+<tr> <td> Normal availablity </td> <td> 99-99.5% </td> <td> 1.8-3.6 days </td>  </tr>
+</table>
+</div>
+<p>
+Companies such as Stratus NEC, and Marathon technologies have built fault-tolerant systems through hardware 
+replication. These are proprietary systems and are expensive. NEC and Stratus support software running in
+lockstep synchronization on two identical connected systems.
+
+Systems such as 
+<a href="http://www.novell.com/coolsolutions/tools/13711.html">Novell's SFT-III</a>
+(Software Fault Tolerance) allow two systems to be configured identically with not only the disks being replicated but also the 
+entire server replicated onto an identical machine, running identical software and designed such that both
+systems receive the exact same inputs. Software runs in synchrony on both machines.
+If one system fails, the other takes over 
+immediately. There still is a problem. Software faults can crash both systems. It is also a relatively expensive 
+solution since a dedicated backup system is required along with very frequent communication between the 
+two systems.
+</p>
+
+<h2> Failover </h2>
+<p>
+With clustering, we would like to find a solution that can achieve high availability with standard computers.
+This problem is addressed by many vendors, including, Sun, IBM, HP, Microsoft, SteelEye Lifekeeper,
+and many others. 
+</p>
+<p>
+In the general case, if one server fails, the fault is isolated to that node. The workload is 
+automatically spread over surviving nodes. This allows a machine to be taken down for maintenance 
+without disrupting the system as a whole. A node that picks up work does not have to be sitting idle waiting 
+for a failure. This overhead is that <em>k</em> systems are now doing the work that was done by <em>k+1</em> systems. 
+</p>
+
+<p>
+To build this kind of system, we need to have software on each system that can detect when other machines have
+died or when an application on its own machine has died. The software must run an election and ensure that
+some system is put in charge of figuring out which system will take over and run applications from a machine that
+failed and then dispatching messages to other systems to start those applications.
+
+<p>
+Two important issues in cluster reliability are how application failover takes place and how long it takes 
+the cluster to realize that one of its members is dead. Design options for failover are: 
+</p>
+
+<dl>
+<dt> cold failover </dt>
+<dd> When a cluster detects that an application is dead on one machine, it restarts it on another machine. </dd>
+
+<dt> warm failover </dt>
+<dd>A running application checkpoints itself periodically. When it dies, the 
+cluster restarts the last checkpointed image. It may also maintain a log of 
+inputs to perform a roll-forward to bring the application to the point where 
+the original system died. Most commercial HA clustering systems provide a library
+that an application programmer can use to create and load a checkpoint file for an application.
+</dd>
+
+<dt>hot failover</dt>
+<dd> The application's state is lockstep synchronized on a backup system. When 
+the application dies, the backup takes over. This generally requires custom hardware
+(e.g., Stratus, NEC, Marathon technologies) or software with extensive communication (e.g., Novel SFT III).
+</dd>
+</dl>
+
+<p>
+Clearly, hot and warm failovers have the advantage of bringing the application to the state last 
+presented to the user. The issue with a checkpointed restart is to ensure that all activity is logged if roll- 
+forward is used to ensure that it has all the state necessary to execute properly and not will not generate 
+redundant disk activity (for example). Issues for both warm and hot failovers are that system specific state is 
+not present in the devices (e.g. a connection over a particular serial port) and that relevant operating system 
+state is also reestablished (e.g. open files, network connections). 
+</p>
+
+<p>
+Another issue in failover is whether the cluster can support application failover to different 
+machines or only to a single machine. This is known as <strong>multi-directional failover</strong>. Once failover takes 
+place, an extra level of fault tolerance is achieved if the application can fail over to yet another system if 
+the backup system dies. This is known as <strong>cascading failover</strong>. 
+</p>
+
+
+<h2> Shared resources </h2>
+<p>
+Most real-world applications rely on accessing files stored on disk. A problem with failover is that, while
+an application may have restarted on another system, the disk containing the files that the application needs
+are still on the dead machine.
+</p>
+
+<p>
+There are two basic models used for dealing with disk access:
+<strong>shared-disk</strong> and <strong>shared-nothing</strong>.
+
+A shared-disk cluster 
+allows multiple systems to share access to disk drives while a shared-nothing cluster has no shared devices. 
+</p>
+
+<p>
+With a shared-disk cluster, each node has its own memory but storage resources are shared. This 
+works well if applications do not generate much disk I/O since a shared device can be a point of contention. 
+Disk access must be synchronized to maintain data integrity. Synchronization is achieved by using a 
+<strong>distributed lock manager (DLM)</strong> to serialize requests. This is mutual exclusion software to
+ensure that two systems do not try to claim disk access at the same time.
+The benefit of a shared-disk cluster is that everyone
+sees the same storage system. If an application moves to another machine, it can continue making the same 
+disk requests (but cache coherency remains an issue). The detriment is disk contention. 
+</p>
+
+<p>
+Under a shared-nothing cluster, each system has its own storage resources (cache and disk). The 
+benefit is that there is no need to deal with DLMs and there are no problems with cache coherency. If a 
+machine A needs data that resides on a disk connected to machine B, A sends a message to machine B with 
+the request. If there are many such requests, performance is still an issue. Moreover, if machine B fails, 
+storage resources have to be switched over to a live node or be completely inaccessible. In general, shared 
+nothing is better at providing linear scalability because of lower contention. 
+</p>
+
+<p>
+A hybrid architecture is also possible, where shared-nothing can be used for scalable, easily- 
+partitioned applications and shared-disk be used for difficult-to-partition applications or those that mostly 
+do disk reads rather than disk writes. 
+</p>
+
+<p>
+This hybrid architecture can also help in providing a failure-mode of operation a shared-nothing architecture.
+Here, a shared-nothing architecture is used but the disk is still connected to multiple machines.
+When all systems are up, a system will forward its disk requests to the system that owns that storage. If 
+that system fails, then the failover system can access the disk directly, knowing that it is the only one
+doing so.
+</p>
+
+<h2> Hardware enhancement in HA clusters </h2>
+<p>
+In addition to software support for high availability, it often makes sense to beef up the
+hardware on systems to make them more fault tolerant. The decision to do so is largely a financial
+one: is it cost-effective to do so? Some hardware enhancements include the use of hot-pluggable devices
+(e.g., you don't need to shut the machine down to replace a drive, bad fan, or power supply), 
+redundant devices (ECC memory, RAID 1 mirroring on disks), and hardware with support for on-line diagnostics.
+</p>
+
+<h2> Cluster interconnects </h2>
+
+<p>
+Traditional LANs and WANs are often too slow to serve as a cluster interconnect (connecting 
+server nodes, storage nodes, I/O channels, and perhaps memory pages). This led to the emergence of the 
+<strong>System Area Network (SAN)</strong>. A SAN is a switched interconnect that can switch any cluster resources 
+together. It provides reliability (no need for TCP), high speed (usually over 1 Gbps), low latency, I/O without processor intervention,
+and a scalable switching fabric (it is 
+easy to add more nodes). Transfer is typically through a Remote Direct Memory Access (RDMA) mechanism.
+
+A key point in a SAN is the low processing overhead since processing overhead 
+affects scalability. Since it is a dedicated reliable network there is no need no manage a complex protocol stack such 
+as TCP/IP. An example of a system area network is Tandem's ServerNet. 
+</p>
+
+<p>
+Another important interconnect, which unfortunately shares the same acronym, is the <strong>SAN</strong>,
+or <strong>Storage Area Network</strong>. A storage area network is a network that allows storage devices, such
+as disk arrays, to appear as if they are directly attached to the computer even though they are really connected
+over a network and may be shared with other systems. The most common interconnect is fibre channel, where a
+fiber optic network connects the computer to a fibre channel switch that is connected to one or more
+storage systems. Other options include iSCSI, which encapsulates SCSI over a TCP/IP link or ATA over Ethernet.
+</p>
+
+<h2> Heartbeat network </h2>
+<p>
+To detect system faults and distinguish them from network faults, it is useful for clustered systems 
+to maintain redundant networks. One network can be used to send periodic heartbeat messages to test a 
+machine's liveness. Ideally, this network will be a reliable network with a bounded response time. Lucent 
+RCC (Reliable Cluster Computing) used a serial line connection for sending heartbeats. Microsoft's Cluster Server uses a SCSI bus for 
+this, with one machine performing a reset and waiting to see if another reestablishes a connection within 10seconds (a rather long time). 
+</p>
+
+<h2> HA cluster software </h2>
+<p>
+The goal of software is to hide the complexity of clustering from applications, application 
+programmers, and end users. The first is difficult, the next easier, and the last much easier to accomplish. 
+For example, a cluster-aware database can partition databases and tables across nodes transparently and will 
+know how to divide queries across nodes. Cluster-aware applications can also fix deficiencies in the 
+underlying system's ability to provide failover by managing write-ahead logs and detecting restart. Most 
+vendors of clustering software provide an API to enable developers to design such cluster-aware 
+applications. 
+</p>
+
+<p>
+At the operating system level, clustering software aids in providing a single-system image. 
+Applications should be allowed to run in an environment were resources can be accessed in a device- 
+independent manner and the application is not aware of what machine it is using or whether resources are 
+local or remote. To an administrator, the cluster should be managed as one logical entity. For example, a <em>ps</em> 
+command on a Data General cluster shows all processes throughout the cluster. An <em>exec</em> system call runs a 
+process on a machine selected (by certain parameters) by the cluster manager.
+</p>
+
+<p>
+Some key components that the collection of software should support to enable high availability and failover include:
+</p>
+
+<dl>
+<dt> IP address takeover </dt>
+<dd> When a system takes over for one that died, it will often need the ability to listen not just
+on its own IP address but also on that of a dead machine that it took over. 
+</dd>
+
+<dt> Checkpointing </dt>
+<dd> An application may be provided with the ability to call an interface that will cause its entire memory state to be saved.
+Upon starting up, an application can check whether a checkpointed image is present and should be loaded.
+</dd>
+
+<dt> Configuration database </dt>
+<dd> The software should know what services need to be running and what systems they are allowed to run on.
+</dd>
+
+<dt> Failover manager </dt>
+<dd> In the event that an application or a node failed, the failover manager should discover this and restart the
+application on a working node.
+</dd>
+
+<dt> Membership manager </dt>
+<dd> Keeps track of which machines are currently alive in the cluster and which are dead.
+</dd>
+
+<dt> Global update manager </dt>
+<dd> Propagate configuration changes to all nodes in the cluster (implement an atomic multicast).
+</dd>
+
+</p>
+
+<h2> Sample HA cluster server architectures </h2>
+<p>
+Sample cluster systems are
+
+<a href="http://www-03.ibm.com/systems/p/ha/">IBM's HACMP</a>,
+
+<a href="http://h18026.www1.hp.com/solutions/enterprise/highavailability/linux/serviceguard/index.html">HP Serviceguard for Linux<a>,
+
+<a href="http://www.sun.com/software/solaris/cluster/index.xml">Sun Microsystem's Solaris Cluster</a> system,
+
+and
+
+<a href="http://www.microsoft.com/windowsserver2003/enterprise/clustering.mspx">Microsoft Windows Server
+2003 Enterprise Edition Server Cluster</a>.
+</p>
+
+<h3> Stratus RADIO  </h3>
+<p>
+As an example of a high-end cluster architecture, we will look at the Stratus RADIO (Reliable 
+Architecture for Distributed I/O) system. It is a rack mounted collection of 6x24 compute and storage 
+nodes. Each node rack has two communication nodes and redundant power supplies. 
+</p>
+
+<p>
+A compute node is a dual processor (PC architecture) with on-board memory, small swap disks, 
+and a network interface. It runs Unix or NT and communicates with others via TCP/IP. Each compute node 
+has its own IP address. 
+</p>
+
+<p>
+Disk nodes use standard disk technology but run a non-standard operating system that acts as a 
+front-end to the network. It allows RADIO nodes to share disks, simulate n-way multiported disks, and 
+provides software functionality for disk mirroring. 
+</p>
+
+<p>
+Internal communication amongst compute and storage nodes is via fast ethernet or ATM. Network 
+adapter nodes allow the interconnection of multiple RADIO systems as well as interconnection to other 
+systems. 
+</p>
+
+<p>
+An internal management network monitors the status of nodes and provides the system 
+administrator with control of the operator interface to PCs comprising the cluster. Nodes going off-line and 
+on-line are detected within milliseconds via hardware support. Every component in the system can be hot- 
+swapped. Both software and hardware can be upgraded without disrupting continuous service. The system 
+has no single point of failure. 
+</p>
+
+<h3>Microsoft Windows 2003 Cluster Server </h3>
+<p>
+The Microsoft Windows 2003 Cluster Server architecture evolved from the Windows 2000 and Windows NT Cluster Server. The system software is structured into 
+three layers (there are many more components; this is a basic list): 
+</p>
+
+<dl>
+<dt> Top tier </dt>
+<dd>
+<strong> Cluster abstractions</strong>:
+	<ul>
+	<li> Failover manager </li>
+	<li> Resource monitor </li>
+	<li> Global update </li>
+	</ul>
+</dd>
+
+<dt> Middle tier </dt>
+<dd>
+<strong> Provides distributed operations</strong>:
+	<ul>
+	<li> Cluster registry </li>
+	<li> Quorum </li>
+	<li> Membership </li>
+	</ul>
+</dd>
+
+<dt> Bottom tier </dt>
+<dd>
+<strong> Windows 2003 and drivers</strong>, modified to support:
+	<ul>
+	<li> Dynamic creation and deletion of network names and addresses </li>
+	<li> modification of the file system to enable closing open files during disk drive dismounts</li>
+	<li> modification of the I/O subsystem to enable sharing disks and volume sets among multiple nodes</li>
+	</ul>
+</dd>
+</dl>
+
+<p>
+The Microsoft Windows 2003 Cluster Server runs on a network of conventional PCs. The system
+provides cold failover and does not support the migration of running applications. It uses
+a shared-nothing model where storage resources and other cluster devices are owned by only one machine.
+External storage may be SCSI or SCSI over fiber channel.
+</p>
+
+<p>
+A key aspect in the architecture is that of name abstraction. An application can be shut down on 
+one machine and restarted on another &ndash; there is no physical dependency on the name or IP address of any 
+machine. A quorum device keeps track of  who's in charge. A SCSI disk is typically designated to act as 
+the quorum device. It provides several functions: 
+</p>
+<ul>
+<li> provides arbitration and knowledge of who's in charge at any time </li>
+<li> arbitrates and provides a place for doing checkpoints  </li>
+<li> stores configuration information (via logs) </li>
+</ul>
+
+<p>
+The SCSI-based quorum device may also used to support the <em>heartbeat</em> of the cluster. Suppose the 
+network connection between two machines, A and B, goes down. B can use the quorum device to determine 
+if A is still alive by doing a low-level SCSI reset, waiting for A to re-establish its disk connection and, if 
+that fails, timing out and taking charge. 
+</p>
+
+<p>
+The global update mechanism allows for the propagation of global updates in the system to all 
+nodes. All nodes must commit to the update and a rollback takes place if any node fails. Every operation in 
+the system is tightly synchronized with atomic broadcasts.
+</p>
+ 
+<p>
+Applications and outside entities do not use any aspects of the internal namespace (names, IP 
+addresses). 
+</p>
+
+<h1> Load balancing and fault tolerance </h1>
+
+<p>
+A very common need for scalability is not running parallel applications but rather running multiple 
+instances of a specific server, for instance a web server. The need here is for load balancing. There are 
+several reasons for doing this:
+</p>
+ 
+<ul>
+<li> load balancing </li>
+<li> failover (requests will go to surviving servers) </li> 
+<li> planned outage management (maintenance, hardware/software upgrades)  </li>
+</ul>
+
+<h2> Load balancing with REDIRECT </h2>
+<p>
+A very simple system can be assembled to provide load balancing and/or fault tolerance for a set of 
+web servers. The HTTP protocol provides a REDIRECT error code, where a client is told to access a 
+web page from somewhere else. We can take advantage of this part of the protocol and have the client 
+make requests to a server proxy. This server proxy will then select one 
+of the available servers and send the requesting client a REDIRECT message identifying that particular server.
+This forces the client to make a second request, this time to that server.
+</p>
+<p>
+The advantage of this technique is that it is trivial to implement, nothing more than a simple Apache module.
+Once a client received a REDIRECT, successive requests are sent to the same server. This is important in
+environments where sessions need to be preserved. A different server may not know the contents of your
+shopping cart.
+</p>
+<p>
+The disadvantage of this technique is that, if users bookmark the site, they will bookmark the redirected
+server. Should that server be down in the future, the user may think the site is inaccessible. Also, the
+redirected url lacks the aesthetics of the original url (<code>www03.pk.org</code> versus <code>www.pk.org</code>).
+</p>
+
+<h2> Load balancing with software load balancers </h2>
+<p>
+Software on a server can perform the task of load balancing without sending messages back to the 
+client to issue another request. IBM's Interactive Network Dispatcher Software is an example of this type of 
+software. One load balancer receives all incoming requests. It balances the load by using a number of 
+weights and measures and supports load balancing among specific services (HTTP, FTP, SSL, NNTP, 
+POP3, SMTP, telnet). Upon determining the destination system, it forwards the request to that machine, but 
+rewrites the source address to be that of the original machine so that replies do not go back through the load 
+balancer. This works in environments where client to server communication has a lower bandwidth than 
+server to client communication (the web is a good example of this). A similar product is also available from 
+Microsoft as part of the Windows 2000 clustering solution. 
+</p>
+<p>
+To perform this kind of request forwarding, the operating system was modified to support routing TCP and UDP
+requests. Each client is capable of accepting IP packets on both its own and the dispatcher's address.
+When the dispatcher receives a packet that needs to be forwarded, it changes the MAC (ethernet) address of
+the message to the appropriate server and sends it back to the network. The IP packet itself is not modified
+is now received by the load-balanced server that owns that particular MAC address.
+
+
+<h2> Load balancing with routers </h2>
+<p>
+Routers have been getting smarter in recent years, providing features such as increased 
+sophistication in firewalling and packet filtering. A particularly interesting router in the domain of fault 
+tolerance and load balancing is the Cisco LocalDirector series. This family of routers load balances traffic 
+across multiple servers, allowing one to mix operating systems, hardware, and applications. 
+</p>
+
+<p>
+Two popular hardware load balancers are Cisco's CSM and F5's <a href="http://www.f5.com/products/bigip/">Big-IP</a>. 
+The Cisco CSM (Content Switching Module) is an option for Cisco's Catalyst 6500 Series Switch or
+7600 Series Router.
+</p>
+<p>
+Both of these allow one to assign one or more virtual 
+addresses to one or more real (internal) addresses. When an outside request comes in, the requested 
+address (destination address) is mapped to a real internal address of a selected server.
+Special assignments can be made per port (e.g. telnet destination). 
+</p>
+
+<p>
+Since these are routers and are operating system independent, the capabilities for making 
+decisions on directing traffic are limited to the data (rather than requesting the load on a particular 
+machine). Several choices are available for load balancing: 
+</p>
+<ul>
+<li>  pick the machine with the least number of TCP connections </li>
+<li> factor in weights when selecting machines (this allows one to make one machine 
+preferable to another, all other things being equal)  </li>
+<li> pick machines round-robin  </li>
+<li> pick the fastest machine (where speed is measured by response times to SYN packets 
+in requesting TCP connections) </li>
+</ul>
+
+
+<h1>References </h1>
+
+<ul>
+<li>
+<p>
+<a href="http://www.phy.duke.edu/~rgb/Beowulf/beowulf_book/beowulf_book/index.html">
+Engineering a Beowulf-style Computer Cluster</a>,
+Robert G. Brown, Duke University Physics Department, 2004.
+</p>
+</li>
+<li>
+<p>
+<a href="http://www.beowulf.org/">Beowulf Project Page</a>.
+</p>
+</li>
+<li>
+<p>
+<a href="http://www.globus.org/alliance/publications/papers.php#gt4overview">
+Globus Toolkit Version 4: Software for Service-Oriented Systems.</a>,
+I. Foster. IFIP International Conference on Network and Parallel Computing, Springer-Verlag LNCS 3779, pp 2-13, 2005.
+</p>
+</li>
+<li>
+<p>
+<a href="http://www.globus.org/toolkit/docs/4.0/key/GT4_Primer_0.6.pdf">A Globus Toolkit Primer</a>.
+I. Foster, 2005.
+</p>
+</li>
+<li>
+
+<p>
+LocalDirector Student Guide version 1.5.6, Cisco Systems, available from www.cisco.com 
+</p>
+</li>
+<li>
+<p>
+Building Secure and Reliable Network Applications, Kenneth P. Birman, 1996 Manning Publications Co. 
+</p>
+</li>
+<li>
+<p>
+Microsoft Windows 2000 Advanced Server; Windows 2000 Clustering Technologies: Cluster
+Service Architecture, Microsoft Corporation, available 
+from www.microsoft.com 
+</p>
+</li>
+<li>
+<p>
+Network and Internetwork Security, William Stallings, 1995 Prentice Hall. 
+</p>
+</li>
+<li>
+<p>
+Distributed Operating Systems, Andrew Tanenbaum, 1995 Prentice Hall, pp. 212-222.
+</p>
+</ul>
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2010 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.
+</p>
+<p> Last updated: August 23, 2010
+</p>
+<img class="stamp" src="../../../css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../../416/index.html"> Main course page </a> </li>
+	<li> <a href="../../../416/news.html"> News </a> </li>
+	<li> <a href="../../../416/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../../416/hw/index.html"> Homework </a> </li>
+	<li> <a href="../../../416/notes/index.html"> Documents </a> </li>
+	<li> <a href="../../../416/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../../416/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../../../416/about.html"> About the course </a> </li>
+	<li> <a href="../../../416/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../../416/things.html"> Things you need </a> </li>
+	<li> <a href="../../../416/policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../../../416/../417/index.html"> Main course page </a> </li>
+	<li> <a href="../../../416/../417/news.html"> News </a> </li>
+	<li> <a href="../../../416/../417/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../../416/../417/hw/index.html"> Homework </a> </li>
+	<li> <a href="../../../416/../417/notes/index.html"> Documents </a> </li>
+	<li> <a href="../../../416/../417/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../../416/../417/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../../416/../417/about.html"> About the course </a> </li>
+	<li> <a href="../../../416/../417/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../../416/../417/things.html"> Things you need </a> </li>
+	<li> <a href="../../../416/../417/policy.html"> Policy  </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> Belkin F1B0280-V Slimswitch data switch. This is a manual (knob) switch that switches among four DB25 connectors. I can't imagine why anyone would need this; perhaps for switching old printers. I never used it and can't remember how it ended up in my pile of junk.
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

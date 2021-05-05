@@ -1,0 +1,1380 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 352 Exam 3 Study Guide </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+.rqbox {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+        position: relative;
+	width: 15em;
+        background-color: #FDF5B6;
+        border-style: double; border-width: 3px;
+        padding: 0.5em 0.5em 0.5em 0.5em;
+}
+</style>
+</head>
+
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<P>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a>  </li>
+ 	<li> <a href="../../index.html"> Rutgers </a>  </li>
+ 	<li> <a href="../index.html"> CS 352 </a>  </li>
+ 	<li> <a href="../exam/index.html"> Exam info </a>  </li>
+ 	<li> <a href="../exam/study-guide-3.html"> Exam 3 study guide </a>  </li>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Exam 3 study guide </h1>
+<h2> The one-hour study guide for exam 3 </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> Latest update: Fri May  6 12:14:08 EDT 2016
+ </p>
+</div>
+
+<p class="first">
+
+Disclaimer: 
+This study guide attempts to touch upon the most
+important topics that may be covered on the exam but does not claim to
+necessarily cover everything that one needs to know for the exam. Finally,
+don't take the <i>one hour</i> time window in the title literally.</p>
+
+<h1 id="multicast">Multicast</h1>
+
+<p>A <strong>unicast</strong> is a point-to-point transmission. The communications we looked at to date
+were unicast messages: a node sends a message to a unique destination.
+A <strong>broadcast</strong> is a message that is received by everyone on a network.
+We encountered this when we examined IP addresses. An IP address with
+all bits set to 1 is a <strong>limited broadcast address</strong> where the datagram is
+delivered to all nodes on the local area network but not forwarded by routers.
+A <strong>directed broadcast address</strong> where only host bits are set to 1
+(the low-order bits that make up the host, as opposed to the network bits)
+delivers a datagram to all hosts on the specified subnet. Routers must
+may forward the datagram to that subnetwork.</p>
+
+<p>A <strong>multicast</strong> is a message that is delivered to all members of a group.
+That is, it is delivered to all hosts that have <strong>subscribed</strong> to receive
+the multicast.
+These group members do not all have to reside on the same local area network.
+A simple way of implementing a multicast is by an <strong>n-way
+unicast</strong>. The sending host simply iterates over the list of destinations
+and sends a datagram to each destination. This is inefficient since the sender must
+transmit
+<em>N</em> times the traffic. Moreover, the sender needs to know all of the
+recipients.</p>
+
+<p>It is more efficient &#8211; and desirable &#8211; to have routers replicate packets.
+With <strong>uncontrolled flooding</strong>, a host sends
+a single datagram that is then replicated by each router and sent over every
+other interface in that router. The problem with this approach is that
+any cycles in the graph formed by router connections will create a <strong>broadcast storm</strong>: a router
+will have receive a duplicate datagram, send it
+out on each interface, receive one or more of those duplicates at a later time,
+duplicate and send that, and so on.</p>
+
+<p>A <strong>controlled flooding</strong> approach ensures that these cycles do
+not occur. <strong>Sequence number controlled flooding</strong> requires each
+multicast packet to have a sequence number affixed to it.
+Each router keeps track of the sequence numbers of datagrams that it has
+recently routed. If it receives a datagram with a new sequence number,
+the router sends a copy over each link except the one it came in on.
+If the router
+gets a packet with a sequence number that it has already seen,
+it discards the packet. <strong>Reverse path forwarding</strong> (<strong>RPF</strong>) is a
+technique that does not require adding new data to a
+packet. When a router receives a datagram, it looks at the
+datagram&#8217;s source address and then consults its routing table
+to see whether the datagram arrived on the link that
+corresponds to the route to the source (which will be the
+shortest path to the source). If it does, then the router
+forwards a copy of the packet onto every other link. If it does not,
+that indicates that the packet is a duplicate that arrived through
+a cycle. That packet is discarded. A multicast based on controlled flooding
+using RPF is called a <strong>source-based tree</strong>: the flow of multicast
+packets forms a tree that is rooted at the initial sender.
+<strong>With a source-based
+tree, each sender establishes a separate shortest-path tree for a multicast group.</strong>
+Since RPF is used, routers have to keep track of the sender of the multicast packet.</p>
+
+<p>Another approach to controlled flooding is not to send a copy
+of the datagram onto every link in the router. Instead, we create
+an <strong>overlay network</strong> that is a subset of the full network.
+This overlay network is a <strong>spanning tree</strong>, which
+is a graph that contains all the nodes of the network but
+only a subset of the edges such that the graph is connected
+(all nodes are reachable) but there are no cycles.</p>
+
+<p>One way of constructing a spanning tree is to pick a random node
+to serve as a <strong>rendezvous point</strong> (also known as a center node).
+Every node that wants to receive multicasts will send a <strong>join</strong>
+message to that rendezvous point. As each join message propagates
+through routers, each router records the incoming and outgoing
+interfaces as being associated with that multicast address. The
+incoming and outgoing links become part of the spanning tree.
+When all interested nodes have sent <strong>join</strong> messages, the
+spanning tree is complete. Any multicast messages will be forwarded
+only along the links that make up the spanning tree. This multicasting
+technique is called a <strong>group-shared tree</strong> since only interested
+edge routers beome part of the tree.
+<strong>With a group-shared tree, a single tree is shared among all senders
+for a multicast group; each sender has to send its multicast packets to a common
+rendezvous point in the exact same manner as if it was sending unicast messages.</strong>
+Unlike a source-based tree, routers do not need to make routing decisions based
+on the sender&#8217;s address for a multicast destination.</p>
+
+<h2 id="ipmulticastrouting">IP multicast routing</h2>
+
+<p><strong>IP multicast</strong> is designed, like IP, to be decentralized and span multiple physical networks.
+Membership is dynamic: a machine can join or leave a multicast group at any time.
+There is no central coordinator and no restriction on the number
+of hosts that can be in a group. Multicasting provides network efficiency.
+Datagrams in a multicast stream only need to be replicated when a router needs
+to send them to multiple network links. A sender transmits only a single
+stream of datagrams and only one stream of datagrams is ever needed
+on any network segment regardless of the number of receivers.</p>
+
+<p>An <strong>IP multicast address</strong> (also known as a <strong>class D address</strong>) is
+an IP address that starts with the bit pattern 1110 and
+contains a 28-bit multicast group ID.
+With IPv6, a multicast group address starts with the bit pattern of eight 1s (1111 1111)
+and contains a 112-bit multicast group ID (the other buts are used for flags and to indicate scope;
+we will not cover that here).
+A host may join any IP multicast address and receive messages addressed to that multicast ID.
+The collection of systems that are interested in receiving multicast messages from a specific multicast group is called a <strong>host group</strong>.</p>
+
+<p>Routers have to get involved to support multicasting beyond the local area network.
+Two protocols are used to implement multicasting.
+The <strong>Internet Group Management Protocol</strong>
+(<strong>IGMP</strong>) is designed for hosts to inform routers that
+they are interested in joining a multicast group.
+The <strong>Protocol Independent Multicast</strong> (<strong>PIM</strong>)
+protocol enables routers to tell their neighboring routers that they
+are, or no longer are, interested in receiving packets for a particular
+multicast group.</p>
+
+<p>A host uses IGMP to send a
+<strong>multicast report</strong> message to join a specific multicast group. A multicast-aware
+router will get this message and now know that the link on which
+the message arrived needs to receive any packets addressed to that multicast
+group. Periodically, a router will send a <strong>membership query</strong>, asking hosts
+what multicast groups they want to receive. If no host on a network link
+responds, the router will assume that nobody on that LAN is interested in
+receiving multicast packets. If a host is interested, it has to re-send
+a <strong>multicast report</strong>. This technique of requiring renewals and deleting
+a subscription if no renewal is received is called <strong>soft state</strong>. A
+host may send an explicit <strong>leave group</strong> message to state that it is
+no longer interested but the soft state mechanism ensures that multicasts
+will not be sent onto the network even if that does not take place (if the
+machine dies, for example).</p>
+
+<p>IGMP allows routers to know what multicast groups the nodes on its connected LANs are interested in.
+PIM, Protocol Independent Multicast, is responsible for conveying membership information
+among routers. It assumes the presence of other protocols to know the network topology and which
+routers are connected together. There are two approaches to multicasting on the WAN (wide-area
+network): <strong>flooding</strong> and <strong>sparse-mode multicast</strong>.</p>
+
+<p><strong>Flooding</strong>, also known as <strong>Dense Mode Multicast</strong>, uses a source-based tree. That is, all multicast traffic
+originates from the source and the message is duplicated at a router and sent to all of its connected routers.
+Each of those routers,
+in turn, duplicates and sends the message to all of its connected routers, and so on. Reverse
+path forwarding (RPF) is used to ensure that no forwarding cycles arise.
+PIM Dense Mode floods the entire network of connected multicast-aware routers. A router
+stops forwarding traffic only when it receives a <em>Prune</em> message from a router telling it
+that the router does not want the multicast traffic for that address.
+It does this if its downstream routers are not interested in that multicast stream.
+If a node on a LAN joins a multicast group at a later time and sends an IGMP message to a
+router, that router would then send a PIM <em>Graft</em> message to its connected routers
+to state interest in the stream.
+Dense mode only makes sense when there are interested receivers spread through most locations covered
+my multicast-aware routers. It is rarely used.</p>
+
+<p>In contradistinction to Dense Mode, PIM <strong>Sparse Mode Multicast</strong> starts with requests
+from multicast receivers rather than flooding the network with traffic from the sender.
+Each multicast group must be associated with a router known as a <strong>rendezvous point</strong>.
+Edge routers that are interested in receiving a multicast group send <em>join</em> messages
+to that rendezvous point. This builds a spanning tree between the rendezvous point
+and the subscribers.
+This rendezvous point acts as a
+central point that senders route to when they are transmitting
+multicast streams.
+The advantage of PIM sparse mode multicast is that packets go only where needed.</p>
+
+<h1 id="datalinklayer">Data Link Layer</h1>
+
+<p>The data link layer is concerned with sending and receiving data on the actual communication
+links that connect machines. These are the links that constitute a local area network (<strong>LAN</strong>).
+Packets at the data link layer are called <strong>frames</strong>. <strong>Medium Access Control</strong> (<strong>MAC</strong>) is
+the general term for the protocol that is used for transmitting and receiving link-layer frames.
+Interfaces at the link layer use link-layer addressing. A <strong>MAC address</strong> (for example, an
+Ethernet address) is different from, and unrelated to, an IP address. An Ethernet MAC address
+is globally unique to a device and there is no expected grouping of such addresses within
+a local area network. IP addresses on a LAN, on the other hand, will share a common network prefix.</p>
+
+<h2 id="errordetectioncorrection">Error Detection &amp; Correction</h2>
+
+<p>MAC protocols usually employ <strong>error detection codes</strong> and sometimes employ <strong>error detection and
+correction codes</strong>. We&#8217;ve seen that IP used error detection codes to validate an IP header
+and both TCP and UDP used them to validate their headers and data. Why do we need this at the link layer?
+The basic advantage of detecting errors at the link layer is to catch bad frames early and avoid
+the overhead of propagating a useless frame up the network stack. If the firmware on a network
+card can detect an error, it can drop the packet and not even waste time interrupting the processor.
+If error correcting codes are used, the link layer now has the opportunity to correct a limited
+amount of bit errors in the received frame. This can avoid the costly delay of having to retransmit
+a packet.</p>
+
+<h3 id="parity">Parity</h3>
+
+<p>The simplest form of error detection is <strong>parity</strong>. With parity, we add one bit to a block of data, called
+a <strong>parity bit</strong>.
+With <strong>even parity</strong> the parity bit is set such that the total number of one bits in the
+block of data (including parity) is an even number.
+With <strong>odd parity</strong> the parity bit is set such that the total number of ones is an odd number.
+Parity is simple to compute and requires a low overhead both in terms of storage and computation.
+However, it cannot detect an even number of bit errors (one error cancels the other). Moreover,
+in networks, bit errors typically occur in bursts, not single bits, so parity is a poor choice
+for this kind of application. Parity is popular in applications where errors rarely happen and,
+when they do, are usually single-bit errors. Memory chips are an example where parity codes are
+useful.</p>
+
+<figure>
+<img src="images/2d-parity.png" alt="Two-dimensional parity" id="d-parity" title="Two-dimensional parity" style="width:150px;" />
+<figcaption>Two-dimensional parity</figcaption></figure>
+
+
+
+<h3 id="two-dimensionalparity">Two-dimensional parity</h3>
+
+<p>The use of parity is based on the assumption that errors are rare and multi-bit errors are even more rare.
+We can arrange a sequence of bits into a two-dimensional M &times; N array. Then we generate a parity bit for each row
+and another one for each column. Finally, we generate a parity bit for the intersection of the row and column
+parity bits. To validate data, we check the parity along each row and each column. If there is a single bit error in
+the data, the intersection of the row and column with parity errors will identify the bad bit. </p>
+
+<p>Two-dimensional parity, which can be easily extended to <em>n</em> dimensions, is a simple example of
+an <strong>error correcting code</strong> (<strong>ECC</strong>). Error correcting codes were pioneered by Richard Hamming
+in 1950 and there are numerous such codes, multi-dimensional parity being one of the simplest.
+A data transmission that uses error correcting codes is said to use <strong>forward error correction</strong> (<strong>FEC</strong>).</p>
+
+<h3 id="checksums">Checksums</h3>
+
+<p>A <strong>checksum</strong> is any form of code that is uses the data to compute a small, fixed-size value that
+is sent along with the data and is used for error checking. The receiver can apply the same computation
+to validate the checksum. Any bit errors in the data will yield a high probability that the computed
+checksum will be a different value.
+We already examined a simple checksum earlier. Protocols such as IP, UDP, TCP, ICMP, OSPF,
+and IGMP all use the <strong>Internet checksum</strong>. In this checksum, we summed up the data 16 bits
+at a time, adding one whenever the sum of two values resulted in a carry (overflow), and inverting the
+bits of the result. The Internet checksum is extremely easy to compute put provides
+poor detection of errors in the data. </p>
+
+<h3 id="cyclicredundancycheck">Cyclic redundancy check</h3>
+
+<p>A <strong>cyclic redundancy check</strong> (<strong>CRC</strong>) is a much more robust checksum that is particularly good
+at detecting multiple consecutive bad bits. An <em>n</em> bit CRC code will generally detect a burst of
+up to <em>n</em> bad bits.
+CRC codes are a type of code known as a linear block code. A block code treats the data
+as a sequence of fixed-length integers. The Internet checksum is also a form of a block code.
+A CRC is a bit more computationally intensive to compute than
+an Internet checksum but, when done at the MAC layer, is generally done by the hardware of the
+adapter, and therefore does not take time from the processor.</p>
+
+<figure>
+<img src="images/crc.png" alt="CRC computation. G=10111, CRC=1011" id="crc" title="CRC computation" style="width:200px;" />
+<figcaption>CRC computation. G=10111, CRC=1011</figcaption></figure>
+
+
+
+<p>A CRC computation is similar to long division but with the use of exclusive-ors instead of
+subtraction.
+The entire data to be checksummed is treated as a large binary number that is
+left-shifted by the desired length of the CRC code (e.g., <em>r</em> bits).
+This number is &#8220;divided&#8221; by a value called the <strong>generator</strong> (abbreviated by <strong>G</strong>).
+The generator is pre-defined and agreed to by both sides.
+For an r-bit CRC code, the generator must be <strong>r + 1</strong> bits long,
+start with a 1 and be an odd number (end with a 1).
+The &#8220;division&#8221; is a series of exclusive-ors on the data, aligning G
+with the leftmost 1 in the remaining data, exclusive-oring the result,
+and repeating until there is no more room to position <em>r</em> bits under
+the data. What&#8217;s left is the <strong>remainder</strong>, which is the <strong>CRC</strong> value.</p>
+
+<p>The figure on the right shows a CRC computation with a Generator of 23
+(10111) yielding a remainder of 11 (1011), which becomes the checksum.
+The data is sent with the CRC number in place of the 0 bits that filled
+the data on the right when we left shifted the data by <em>r</em> bits.
+The recipient performs the same division without left shifting the value it receives.
+If the remainder is 0, then this indicates that there is no data
+corruption.</p>
+
+<h2 id="multipleaccessprotocols">Multiple access protocols</h2>
+
+<p>A <strong>multiple access protocol</strong> is MAC protocol that is used on a network
+where multiple hosts need to send messages on the same physical link (e.g.,
+the same wire or range of radio frequencies). These types of links are
+<strong>broadcast links</strong> since multiple hosts are connected to the same medium.
+The <strong>multiple access problem</strong> is that of coordinating transmissions
+from multiple hosts to avoid collisions. A <strong>collision</strong> is when
+two or more hosts transmit at the same time on the same frequency,
+causing one transmission to interfere with the other, and damaging both
+signals. There are three strategies for handling this.</p>
+
+<h3 id="channelpartitioning">1. Channel partitioning</h3>
+
+<p>Channel partitioning means dividing a communication channel either
+into fixed time slots or fixed frequency bands. <strong>Time division multiplexing</strong>
+(<strong>TDM</strong>) divides a channel into time slots. For <em>n</em> hosts, each host
+gets 1/ <em>n</em> of the time slots. A host can transmit only during its
+defined time slot. <strong>Frequency division multiplexing</strong> (<strong>FDM</strong>) divides
+a channel into <em>n</em> frequency bands. A host can transmit at any time but
+can only transmit on its allotted frequency band. As with TDM, this
+channel partitioning scheme does not make efficient use of the bandwidth.
+Frequency bands or time slots go wasted if the nodes to which they are
+allocated have nothing to send.</p>
+
+<h3 id="takingturns">2. Taking turns</h3>
+
+<p>MAC protocols based on taking turns allow each node to have full use
+of the network and coordinate access to make sure that no other
+node will be using the network. This ensures that collisions cannot
+occur.</p>
+
+<p>A <strong>polling protocol</strong> uses a master that polls each of the nodes on
+the network, each in turn, to see if one of them wants to transmit
+data. This ensures that there are no collisions as the master will
+not poll another node until transmission is complete. However,
+a node incurs the delay of waiting to be polled (think about a LAN
+with thousands of nodes on it). Also, if the master dies, the network
+becomes inoperable.</p>
+
+<p>A <strong>token passing protocol</strong> uses a special frame, called a <strong>token</strong>,
+that is passed around the nodes on the network in sequence.
+If a node gets a token, then it can transmit data. Once it is done
+transmitting, it passes the token to its neighbor. If it has nothing
+to transmit, it passes the token to its neighbor immediately.
+Unlike a polling protocol, there is no need for a master. However,
+it suffers from some of the same problems. A node has to wait for
+the token and, should a node fail to pass the token, no other node
+will be able to transmit.</p>
+
+<h3 id="randomaccess">3. Random access</h3>
+
+<p>With random access protocols, any node has full use of the channel
+but only one node at a time may use it. There are no scheduled time slots
+as in TDM. Because there is no schedule on who can transmit when,
+random access protocols have a chance of collision when multiple nodes
+decide to transmit at the same time.</p>
+
+<p>In the <strong>Slotted ALOHA</strong> protocol, access to the network is divided into
+time slots. Time slots are not assigned to any node.
+A node can transmit at the start of any time slot and must finish
+transmission at the end of that slot. If two nodes happen to transmit
+during the same time slot, a collision results and both nodes will
+have to retransmit the frame. Each of them retransmits it in the
+next time slot with some predefined probability <em>p</em>. Imagine the decision
+is made by a
+node flipping a weighted coin to decide whether to retransmit in the
+next time slot. If the flip tells it not to retransmit, it makes the
+same decision for transmitting on the time slot after that (and so on).
+Slotted ALOHA introduced the concept of a randomized wait after
+a collision but it does not use the network very efficiently. For
+a large number of transmitting nodes, only about 37% of time slots
+will have useful data. The rest will be empty or have collisions.</p>
+
+<p><strong>Carrier Sense Multiple Access with Collision Detection</strong> (<strong>CSMA/CD</strong>)
+is a successor to Slotted ALOHA and is the protocol used on Ethernet on a
+shared link (which was the design of the original Ethernet).
+CSMA/CD has two parts to it: <strong>carrier sensing</strong> means that a node
+will not just transmit when it is ready to do so but will first listen
+to the communication channel and wait until it is clear (i.e., nobody
+else is transmitting); <strong>collision detection</strong> means that a
+node is listening to the channel at the same time that it is
+transmitting. If it detects interference (a collision), it immediately
+stops transmitting.</p>
+
+<p>After a node detects a collision and stops transmitting, it will
+have to retransmit that frame. Before doing so, it will wait a
+random interval. The desired heuristic is to pick a random wait time
+from a long time interval if there is a lot of traffic on the network
+and to pick a random wait time from a short time interval if there is
+little traffic on the network. Of course, a network adapter has no
+idea what is going on in the rest of the network. Instead, each
+time the transmission of a frame results in a collision,
+a random backoff value will be chosen from a time interval that is
+double the previous time interval. This technique is called
+<strong>binary exponential backoff</strong>.</p>
+
+<h2 id="ethernet">Ethernet</h2>
+
+<p>Ethernet was designed as a random access packet switched network
+that uses CSMA/CD over a shared wire. It has been evolving since
+the the mid&#8211;1970 and continues to evolve. Not only did it get
+faster (from 2.74 Mbps to 10 Gbps and beyond) but it moved from
+a shared bus topology to a switched star topology, where every
+node is connected by a dedicated cable to a central switch.</p>
+
+<p>There are slight variations on the format of an Ethernet frame
+depending on which version of the protocol is used but the
+key parts of an <strong>Ethernet frame</strong> are:</p>
+
+<ul>
+<li>MAC destination address</li>
+<li>MAC source address</li>
+<li>type, indicating the higher level protocol encapsulated within the data field (e.g., an IP datagram). It
+also identifies the version of the Ethernet protocol used in the frame.</li>
+<li>payload: the data</li>
+<li>CRC checksum</li>
+</ul>
+
+<p>Surprisingly, the frame length is missing in the most common version (Ethernet II)
+since the end of the frame is recognized by the hardware when the carrier signal drops.
+The packet driver on the adapter counts bytes as they arrive and stops when the
+receiver hardware has no more bytes to receive.</p>
+
+<h3 id="addressresolutionprotocolandneighbordiscoveryprotocol">Address Resolution Protocol and Neighbor Discovery Protocol</h3>
+
+<p>Ethernet addresses are 48-bit addresses that are globally unique. They
+are generally assigned by the manufacturer of the adapter.
+These MAC addresses are unrelated to IP addresses. Any IP datagram
+needs to be encapsulated in an Ethernet frame before it can be transmitted
+on an Ethernet network. The MAC address in this frame is the address of the
+<strong>next hop</strong> for that datagram.
+The <strong>Address Resolution Protocol</strong> (<strong>ARP</strong>)
+allows a host to find a MAC address that corresponds to a desired IP address.</p>
+
+<p>If a host needs to send a datagram to a system on its
+subnetwork, it must encapsulate the datagram in an Ethernet
+frame whose destination address is the MAC address of the recipient.
+If a host needs to send a datagram to a system that is not on its
+subnetwork, it needs to look up the destination IP address in its routing
+table and encapsulate the datagram in an Ethernet
+frame whose destination address is the MAC address of the first-hop router that
+is responsible for that IP destination.</p>
+
+<p>ARP maintains a cache of recently-used IP-MAC address mappings in an
+<strong>ARP table</strong>. If the IP address it needs is not in the table, then
+it broadcasts an <strong>ARP query</strong> that contains the desired IP address.
+Every adapter on the LAN will receive it (it&#8217;s an Ethernet broadcast).
+If one of the adapters owns that IP address, it responds directly to
+the sender with an <strong>ARP response</strong> containing the corresponding MAC address.</p>
+
+<p>IPv6 does not support ARP and uses a similar but more efficient mechanism
+called the <strong>Neighbor Discovery Protocol</strong> (<strong>NDP</strong>). Every IPv6 host must listen to a special
+multicast IP address that is derived from its own IP address. The
+multicast Ethernet MAC address is, in turn, derived from that IP
+multicast address. Hence, a query (called a <strong>neighbor solicitation</strong>)
+will be sent as a multicast message and delivered only to those
+hosts whose IP addresses result to the same Ethernet MAC address.
+Most likely, there will only be one such address in a LAN. The benefit of
+this method over ARP is that
+every host on the LAN is not interrupted with a query.</p>
+
+<h3 id="multicastaddressing">Multicast addressing</h3>
+
+<p>As with IP, Ethernet defines a range of MAC addresses that are reserved for use as multicast addresses.
+An Ethernet controller may, depending on the hardware, be configured to receive multicast frames in
+several ways:</p>
+
+<ul>
+<li>If a hash of a MAC address matches a certain value, accept the frame.</li>
+<li>If a MAC address matches one of several MAC addresses, accept the frame. This is usually limited to a small number of addresses.</li>
+<li>Accept all multicast frames in <strong>multicast promiscuous mode</strong>.</li>
+</ul>
+
+<p>The link-layer software driver needs to be prepared to receive extraneous frames and discard them
+if they contain destination addresses that the host is not interested in receiving.</p>
+
+<p>While IP and Ethernet MAC addresses are completely unrelated on a host,
+multicast addresses <em>are</em> related since there would otherwise be no way of identifying
+the set of MAC addresses that need to receive a specific IP multicast datagram.
+Each host needs to define a multicast MAC address that can be derived from the IP address
+so that each receiver can listen on that address and each transmitter can transmit to that address.
+Both IPv4 and IPv6 use a similar approach. A number of least-significant bits of the
+IP multicast address (23 out of 28 bits for IPv4; 32 out of 112 bits for IPv6)
+are copied onto a defined MAC multicast address. The IP driver will need to discard
+any extraneous multicast packets that arrive because the lower bits of the multicast
+address happened to be the same.</p>
+
+<h3 id="link-layerswitches:switchedethernet">Link-layer switches: Switched Ethernet</h3>
+
+<p>Ethernet began as a shared network using a <strong>bus topology</strong>.
+As coaxial cables gave way to twisted pair wiring (phone wires), adapters on
+different hosts could no longer tap into the same cable. Ethernet moved
+to a <strong>star topology</strong> where a separate cable connected each adapter to a
+central point: an Ethernet hub.
+An <strong>Ethernet hub</strong> simulated a shared Ethernet network by taking every bit
+that was received on one interface and transmitting it onto every other interface.</p>
+
+<p>Hubs evolved into <strong>switches</strong>. While switches look similar to hubs, they
+are more intelligent and improve the performance of Ethernet networks
+considerably. A switch essentially acts like a link-layer router.
+It <strong>forwards</strong> frames received on one interface (connector) to another.
+Unlike a router, a switch is <strong>self-learning</strong>. It learns which MAC addresses
+correspond to which interfaces on the switch by looking at the
+<em>source address</em> of frames that arrive on each interface. This mapping of
+MAC addresses to interfaces is stored in a <strong>forwarding table</strong> (also called
+a <strong>switch table</strong> or a <strong>MAC table</strong>).
+Because switches may be connected to each other, multiple MAC addresses
+may map to a single interface on a switch (that interface happens to connect
+to another switch). If a switch receives a frame with a destination
+address that is missing from its table, it simply sends a copy of that frame out onto all
+interfaces.</p>
+
+<p>The biggest benefit from switches is that collisions can no longer occur.
+A link between a switch and a host is <strong>full duplex</strong>: frames can be
+sent concurrently with frames being received. The switch itself will
+queue and forward frames (this leads to the possibility of buffer overflow, but not collision).
+Adapters operating in full duplex mode have no need to do collision detection.</p>
+
+<h2 id="virtuallocalareanetworksvlans">Virtual Local Area Networks (VLANs)</h2>
+
+<p>Some Ethernet switches can be configured to act as multiple logical, or virtual, switches,
+thereby creating several distinct local area networks.
+These networks are called <strong>Virtual Local Area Networks</strong> (<strong>VLANs</strong>) and they look and feel like
+distinct LANs.
+Each interface on the switch can be assigned, or reassigned, to one of these VLANs.
+Operations such as broadcasts and link-layer multicasts will remain within
+a single VLAN.</p>
+
+<p>VLANs can be extended geographically or in capacity by connecting multiple
+switches together. Instead of running a cable for each VLAN between the switches, a single
+cable may be used to connect the switches to handle all the traffic that flows on all of
+the VLANs. This is called <strong>VLAN trunking</strong>. To identify which VLAN an Ethernet frame
+belongs to, the Ethernet frame is augmented with a VLAN tag. This tag is removed
+when the frame is switched to a non-trunk interface.</p>
+
+<p>With VLAN switches, an administrator can define which VLAN any device resides on, regardless of
+which switch it is connected to. This allows the administrator to segment groups of computers
+(e.g., accounting vs. development vs. test) without having to connect each group to its own
+dedicated switch.</p>
+
+<h1 id="wirelessnetworks">Wireless Networks</h1>
+
+<p>A <strong>base station</strong> is a device that sends and receives data to and from wireless hosts.
+It may also coordinate transmission among hosts, with directives on who can transmit,
+when, and what signal strength. The base station generally interfaces to other, usually wired,
+networks thereby connecting the wireless devices with the wider Internet. Examples
+of base stations are cell towers and wireless access points.</p>
+
+<p>A wireless device, called a <strong>station</strong> may operate in <strong>infrastructure mode</strong>, in which case traditional
+network services such as DHCP, DNS, and routing as well as connectivity to the Internet
+are expected to be provided through the base station and the wired network to which it connects.
+Alternatively, hosts may operate in <strong>ad hoc mode</strong>, also known as <strong>peer-to-peer mode</strong>.
+In this case, there is no base station or back-end infrastructure available.
+Hosts are self-configuring and need to figure out how to communicate among themselves, which includes
+assigning unique addresses, discovering names, and deducing routes to each other.</p>
+
+<h2 id="">802.11</h2>
+
+<p><strong>802.11</strong>, also known as <strong>Wi-Fi</strong>, is a set of standards for wireless local area networking.
+Standards such as 802.11a, 802.11b, 802.11g, 802.11n, and 802.11ac define operating frequencies and
+data encoding techniques used for sending and receiving frames on a wireless LAN. Most
+802.11 systems operate in either the 2.4 or 5 GHz frequency bands. </p>
+
+<p>An 802.11 base station is known as an <strong>access point</strong> (<strong>AP</strong>). The collection of an access point
+and one or more mobile wireless devices (stations) is called a <strong>basic service set</strong> (<strong>BSS</strong>).
+Each BSS has a unique ID, called the <strong>BSSID</strong>, which happens to be the MAC address of the
+BSS&#8217;s access point. Devices that interact with an access point operate in <strong>infrastructure mode</strong>.
+The access point connects to a wired Ethernet infrastructure. 802.11 devices can also operate
+in <strong>ad hoc mode</strong>, where devices communicate directly with each other with no need of an access point.</p>
+
+<p>Each access point, in addition to having a BSSID, has a <strong>Service Set Identifier</strong> (<strong>SSID</strong>), which is
+a human-friendly text name that is assigned by the administrator who configures the AP. Each BSS operates
+over a range of frequencies identified as a <strong>channel</strong>. Adjacent channels partly overlap with each other.
+For example, in the U.S., the allowable non-overlapping channels in the 2.4 GHz band
+are 1, 6, and 11.
+If adjacent BSSes use these
+distinct channels, then frames sent by a device in one BSS will never interfere with those in another BSS.</p>
+
+<p>A station (a wireless endpoint device)
+needs to find and associate itself with an AP. Two techniques are available for this.
+With <strong>passive scanning</strong>, the AP periodically sends <strong>beacon frames</strong>, each containing the AP&#8217;s
+SSID and MAC address (BSSID). The beacon is typically sent every 100 ms.
+The station scans all channels, searching for beacon frames
+from any APs in the area.</p>
+
+<p>With <strong>active scanning</strong>, a station may broadcast a <strong>probe request frame</strong>.
+It sends this to a broadcast address (ff:ff:ff:ff:ff:ff) and sets a timer to wait for
+any answers. If no answer has been received at the end of the time period, the
+station moves to the next channel and repeats the process.
+APs that receive the probe will respond with a <strong>probe response frame</strong>, that contains their identity,
+supported data rates, and other information. A station then selects an access point with
+which to associate. This may be done by the user or programmatically (e.g., the AP with the strongest
+signal or one that has been seen in the past). The station sends an <strong>association request</strong> frame,
+receives an <strong>association response</strong> from the AP and is now part of that AP&#8217;s BSS. It can
+then send a DHCP discovery message to configure itself on the IP network.</p>
+
+<h2 id="mac">802.11 MAC</h2>
+
+<p>There are a couple of fundamental differences between 802.11 and Ethernet, apart from one
+being wireless and the other being wired. Operating in a wired medium results in
+considerably higher bit-error rates. Also, while an Ethernet transceiver, when operating on a shared
+medium, can listen while transmitting, an 802.11 transceiver cannot. Because of this,
+Ethernet was able to perform collision detection and stop transmitting the instant that
+it detected a collision. 802.11 cannot do so and will transmit a complete frame, even
+if it gets garbled in the air.</p>
+
+<h3 id="csmaca">CSMA/CA</h3>
+
+<p>To deal with the inability to detect collisions, 802.11 employs a random access MAC protocol called
+<strong>carrier sense multiple access with collision avoidance</strong> (<strong>CSMA/CA</strong>). The key
+part of CSMA/CA is that, if stations sense a busy channel, they all perform a
+random backoff and then try again.
+Collisions are likely to occur if multiple stations wait for a busy channel to become clear
+and then start to transmit at the same time. To avoid this situation, CSMA/CA tells the stations to wait a random time
+after they sensed a busy channel became clear, and then transmit the frame.
+The random time counter counts down <em>only</em> when the channel is sensed to be clear;
+it pauses whenever a signal is detected on the channel.
+The idea is that stations pick different random values and
+when they are ready to try transmitting again, they will not transmit at the same time:
+somebody will end up going first, causing the channel
+to be busy for others.</p>
+
+<h3 id="arq">802.11 ARQ</h3>
+
+<p>Since 802.11 cannot listen while transmitting to detect a collision and because
+there is a higher likelihood of data corruption on a wireless network,
+802.11 adds an ARQ protocol (acknowledgements and retransmissions).
+After a node sends a frame, the receiver (AP or station) validates the CRC in the
+frame and sends back an acknowledgement frame. If the sender does not receive the
+acknowledgement, it increases its backoff value, counts down a random interval
+for the channel to be free to transmit, and retransmits the frame.
+Like CSMA/CD, 802.11&#8217;s CSMA/CA uses <strong>binary exponential backoff</strong>.
+Because 802.11 uses an ARQ protocol, the 802.11 frame contains a sequence
+number to allow a receiver to detect duplicate frames.
+After a certain number of retransmissions, the sender gives up, so reliable delivery
+is not assured.</p>
+
+<p>Because of the higher likelihood of errors and the time expense of retransmission, 802.11n
+and 802.11ac systems also support the optional use of an error correcting code
+(low-density parity check code, <a href="https://en.wikipedia.org/wiki/Low-density_parity-check_code">LDPC</a>).
+This is in addition to the CRC error-detection code.</p>
+
+<h3 id="rtscts">802.11 RTS/CTS</h3>
+
+<p>A unique problem in wireless networks is that a station does not necessarily
+know if a channel is busy or not because it can be out of radio range of
+another station that is transmitting while both stations are in range of
+an access point. This is called the <strong>hidden node problem</strong>. In this case,
+a station may transmit when it thinks the channel is clear, not realizing
+that a transmission was already taking place between the AP and another
+station. This is unavoidable but is ameliorated via the optional use
+of <strong>RTS/CTS</strong> (<strong>Request to Send / Clear to Send</strong>).
+Before transmitting a frame, a station sends a <strong>Request to Send</strong> (<strong>RTS</strong>)
+message to the AP, asking to reserve the communication channel for
+a message of a specific size. The AP then responds with a
+<strong>Clear to Send</strong> (<strong>CTS</strong>) message, giving it permission to send
+the frame. The CTS message is <strong>broadcast</strong> so that all stations will
+get the message and know that they should not transmit anything during
+that interval. RTS and CTS frames are short and sending them reduces
+the chance of collision compared to sending a long data frame. The
+RTS/CTS mechanism serves as an extension of carrier sensing. It allows
+a station to be informed that a channel will be busy even if it may not
+have the ability to pick up the signal from the station that will be
+transmitting the data.</p>
+
+<h3 id="addressesandhostmigration">802.11 addresses and host migration</h3>
+
+<p>The 802.11 frame is conceptually similar to an Ethernet frame. In fact,
+they share the same MAC addressing scheme so that Ethernet addresses interoperate
+with 802.11 addresses. The access point serves as a bridge between the two
+protocols and converts 802.11 frames into Ethernet frames when they need
+to go on an Ethernet link and vice versa.
+One distinction between Ethernet and 802.11 frames is that an 802.11 frame
+has <strong>four address fields</strong>, three of which are used in infrastructure mode.
+One address identifies the wireless destination. Another identifies the
+wireless source. In cases where the frame is routed between the wireless
+and wired network, the third address identifies the MAC address of the
+wired device (regardless of whether it is a sender or a receiver).
+The reason for three addresses is that, unlike an Ethernet switch,
+an AP has a distinct MAC address and is addressed as an intermediate destination
+both for frames between wireless stations and for frames that go between
+and devices on the wired network. If a frame needs to go to the wired network,
+a station will address it to the AP, which will then create an Ethernet MAC
+frame that is addressed to the targeted wired destination.</p>
+
+<p>A station is part of a BSS. That means it is associated with a single access point.
+To extend the range of a wireless LAN, multiple access points may be deployed
+that share the same SSID. A device can dissociate itself from one AP and
+associate itself with another one when it detects a stronger signal from the
+new one. This is called <strong>host migration</strong>.
+Since the APs are connected to the same LAN via the same switch (or
+a set of connected switches), there is no problem with the station keeping
+the same IP address and any state of TCP session. The challenge is to
+get the Ethernet switch to immediately route frames to the latest access point
+that the station has joined. To support host migration at the switch,
+an access point broadcasts an Ethernet frame that contains the migrated
+host&#8217;s source MAC address. The switch, being self-learning will immediately
+update its forwarding table, associating the device&#8217;s MAC address with
+that of the interface on which it arrived.</p>
+
+<h3 id="powermanagement">Power management</h3>
+
+<p>Most wireless devices are battery powered and power consumption is a
+key design factor. A transceiver on a wireless device can quickly
+go to sleep and wake up at a preset interval. Before a device
+puts its 802.11 transceiver to sleep, it sends a message to the AP
+stating that it is going to sleep (this is a bit in the MAC header).
+Upon receiving this message, the AP will queue but not send any
+frames targeted for that device. The device&#8217;s transceiver is programmed
+to wake up before the AP is scheduled to send its next beacon frame
+(which the AP does typically every 100ms). When the AP sends a
+beacon frame, it sends a list of MAC addresses of stations that
+have <strong>buffered frames</strong> (queued frames). The station will then
+wake up and request the frames via a polling message. Otherwise,
+it can go to sleep until the next beacon.</p>
+
+<h1 id="qualityofserviceinnetworks">Quality of Service in Networks</h1>
+
+<p>IP was designed as
+a system that would provide best-effort packet delivery but with no guarantees
+on the path a packet will take, whether it gets dropped, or what order it
+arrives in. Hence, there is no concept of delivering any specific grade of service.
+As IP networks began to be used for carrying continuous
+media, such as voice and data,
+several approaches were taken to attempt to provide better controls
+for scheduling the delivery of IP packets.</p>
+
+<p><strong>Quality of service</strong> (<strong>QoS</strong>) on a network is characterized by four factors:</p>
+
+<ol>
+<li><strong>Bandwidth</strong> (or <strong>bit rate</strong>): the average number of bits per second over the network</li>
+<li><strong>Delay</strong> (or <strong>latency</strong>): the average time for data to get from one endpoint to another</li>
+<li><strong>Jitter</strong>: the variation in the delay</li>
+<li><strong>Errors</strong> (or <strong>packet loss</strong>): the percentage of packets that do not reach their destination or reach it with errors</li>
+</ol>
+
+<p>Quality of service problems arise because we do not have unlimited resources.</p>
+<dl>
+<dt><strong>Congestion</strong></dt>
+<dd>Congestion arises when more packets are flowing into a router than can flow out.
+It is largely due to <strong>bandwidth mismatch</strong>, such as having a 10 Gbps network routing traffic
+to a 1 Gbps link, or to <strong>aggregation</strong>, such as having four 1 Gbps links all sending traffic
+that needs to be routed over a single 1 Gbps link. If a router gets packets at a faster rate
+than it can route, the result will be <strong>packet loss</strong>.
+The router may also choose to block the arrival of new packets.</dd>
+
+<dt><strong>Latency</strong></dt>
+<dd>Latency is due to not only the <strong>propagation delay</strong> of transmitting data
+on a network but to various delays along the route. The sending host spends time in <strong>packetization</strong>, the
+creation of packets that need to be transmitted. <strong>Serialization</strong> is the queuing of packets are for transmission onto the
+network since they can only go out one at a time. Each router incurs a processing delay due to
+inspecting the packet and moving it onto the appropriate output queue. Then there is the <strong>queuing delay</strong>
+of waiting for the router to schedule the packet for transmission. Once it reaches the destination, there is the
+processing delay of depacketizing the packet and moving it through the network stack, delivering the data to the application,
+and scheduling the process to consume it.</dd>
+
+<dt><strong>Jitter</strong></dt>
+<dd>If multiple packets arrive to a router or switch at approximately the same time
+but need to be transmitted over a single link, they need to be queued since only
+one can be sent at a time. Some packet will be first and some packet will be last.
+This variation in dequeuing time creates jitter. Jitter is also caused by
+having some packets take a different route than others and, most significantly, by the retransmission of
+lost packets.</dd>
+
+<dt><strong>Packet loss</strong></dt>
+<dd>Packets can be corrupt or lost due to collision, interference, and signal degradation in the network.
+The most likely cause, however, is that of a router simply dropping packets because a
+queue is full. This condition is known as <strong>buffer overrun</strong>.</dd>
+</dl>
+
+
+<h2 id="achievingqualityofservice">Achieving quality of service</h2>
+
+<p>Quality of service on a network is achieved via <strong>resource allocation</strong> and <strong>packet prioritization</strong>
+Network service quality can be strictly enforced or may be attempted via a best-effort approach.
+<strong>Hard QoS</strong> refers to a system that is designed to provide a guaranteed level of
+service via reservations while <strong>soft QoS</strong> refers to a system that uses a best-effort approach
+to try to deliver, but not guarantee, the desired level of service.</p>
+
+<p>Two broad approaches to providing data channels with managed quality of service on a
+network are <strong>admission control</strong> and <strong>traffic control</strong>.
+Admission control is generally designed to enforce hard QoS.
+With <strong>admission control</strong>, we ask that applications first request a particular quality of
+service from the network. The network (i.e., all the routers in the path from the source
+to the destination) will reserve resources for switching and routing the packets to
+conform to that grade of service and grant the request to the application. If any router cannot
+commit to the needed resources, the request will be denied. </p>
+
+<p><strong>Traffic control</strong> provides soft QoS.
+Soft QoS on a network refers to prioritization of packets
+without any reservation of resources from routers or endpoints or
+any <em>a priori</em> negotiation for a level of service.
+With <strong>traffic control</strong>, applications may send data onto the network freely
+but the network elements (routers) will classify, queue, schedule, and sometimes drop
+packets based on various criteria.</p>
+
+<p>A <strong>link scheduling discipline</strong> defines how packets are scheduled at the output queue.
+When we looked at router architecture, we considered only
+a single queue per output
+interface with packets transmitted in a <strong>first-in-first-out</strong> (<strong>FIFO</strong>) manner.
+This is the simplest approach but does not offer any opportunity for differentiating
+one datagram from another based on its service class.</p>
+
+<p>A router can set up multiple queues for an output link and place different
+classes
+(e.g., based on addresses, ports, or other fields in the IP header)
+of packets onto different queues. A packet scheduler then picks
+the next packet from a specific queue for transmission. A <strong>round-robin
+scheduler</strong> will give each class of packet (queue) equal priority.
+A <strong>priority scheduler</strong> will always service high-priority queues first but can lead to
+<strong>starvation</strong> of low-priority queues: low-priority queues might never get serviced.
+A desirable characteristic of queue management is <strong>traffic isolation</strong> - to ensure
+that one class of service cannot adversely affect another class even if it has a higher
+A <strong>weighted fair queuing</strong> (<strong>WFQ</strong>) approach gives each queue a priority level but also a
+ensures a certain minimum percentage of the available link bandwidth so that
+starvation does not occur.</p>
+
+<h3 id="trafficshapingandtrafficpolicing">Traffic shaping and traffic policing</h3>
+
+<p><strong>Traffic shaping</strong> is when a router queues packets in certain flows during
+peak usage for later retransmission when there is available bandwidth. With
+<strong>traffic policing</strong>, traffic that exceeds the allocated bandwidth for
+a particular flow is discarded.</p>
+
+<p>A <strong>leaky bucket</strong> is a traffic shaping algorithm that coverts a bursty flow into
+a constant bitrate flow: it removes jitter. The bucket is represented by a queue that
+receives data at an irregular rate (in bursts).
+The queue is emptied at a constant rate (the hole at the bottom of the bucket),
+resulting in an absence of jitter.
+If there is nothing left to read in the queue, we have a <strong>buffer underrun</strong> and jitter occurs.
+If the queue is already full when data arrives, we have a <strong>buffer overrun</strong> and packet loss occurs.</p>
+
+<p>A <strong>token bucket</strong> is a &#8220;bucket&#8221; that holds tokens that are generated at
+a constant rate. In order to transmit a packet, the bucket must be drained of
+the number of tokens that is proportionate to the packet&#8217;s size. The token bucket algorithm
+does not smooth out traffic like the leaky bucket does but ensures that an average bitrate
+is enforced for a specific flow. For example, a buildup of tokens can result in
+a burst of data.</p>
+
+<h3 id="diffserv">DiffServ</h3>
+
+<p><strong>Differentiated services</strong> (<strong>DiffServ</strong>) is a way for programmers to provide advisory information inside
+an IP header on how a packet should be processed by routers. A packet can be
+assigned a specific service code by setting a value in the 6-bit <strong>Differentiated Services Codepoint</strong> (<strong>DSCP</strong>)
+field of the IP header.
+DiffServ is an example of <strong>traffic classification</strong>.
+It is entirely up to the routers to decide how to process this
+information (e.g., via WFQ), what the service levels mean,
+or even whether to process it at all. Differentiated services are an example
+of <strong>soft QoS</strong>: there is no guarantee on the actual quality of service
+that will be delivered. A common use for DiffServ is to try to provide a better quality
+of service for voice over IP (VoIP) phone calls by tagging those packets for
+Expedited Forwarding (EF) service, which
+is defined to have the characteristics of low delay, low loss, and low jitter.
+Whether DiffServ values are used at all and how they are interpreted is
+strictly up to the ISP.</p>
+
+<h3 id="intserv">IntServ</h3>
+
+<p><strong>Integrated Services</strong> (<strong>IntServ</strong>) is
+an approach that relies on end-to-end reservation of services.
+A transmitting host specifies its traffic (as a token bucket with a given rate and size)
+and requested level of service guarantee.
+Integrated Services system relies on
+the <strong>Reservation protocol</strong>, <strong>RSVP</strong>, which has been
+developed to allow a flow of packets to be routed with bitrate
+guarantees. RSVP is an example of a <strong>soft state protocol</strong>, meaning that
+state is not maintained perpetually but reservations expire unless they
+are refreshed periodically.</p>
+
+<p>The problem with guaranteeing this is that all routers in the path
+from the source to the destination must be configured to support RSVP: each
+intermediate router must commit to reserving the needed amount of routing
+resources to guarantee the desired level of service. Integrated Services is an example of
+admission control while differentiated services is an example of traffic control.
+If one ISP in the path does not support this then all bets are off.</p>
+
+<h2 id="rtpandrtcp">RTP and RTCP</h2>
+
+<p>The <strong>Real-Time Protocol</strong> (<strong>RTP</strong>) is an application-level protocol on top
+of UDP. It does not define any mechanisms for data delivery or QoS control. As with
+any UDP datagrams, neither in-order delivery nor delivery in general is assured.
+What RTP does is allow a sender to attach timestamps to packets so that a
+receiver can play them back at the same rate at which they were sent. </p>
+
+<p>An RTP header contains:
+- <strong>payload type</strong>: identifies type of video or audio encoding. An application can change the encoding type mid-stream (e.g., to switch to a lower bandwidth codec, for example)
+- <strong>sequence number</strong>: app can detect missing packets &amp; conceal data loss
+- <strong>timestamp</strong>: app can play back data at appropriate intervals
+- <strong>source ID</strong> of stream: uniquely identifies stream to allow demultiplexing multiple streams that may received at the same port.</p>
+
+<p>RTP is widely used for voice and video, particularly for media transport in SIP (Session Initiation Protocol) systems.</p>
+
+<p>The <strong>RTP Control Protocol</strong> (<strong>RTCP</strong>) is a companion protocol to RTP and is used to provide feedback
+from the receiver to the sender. By comparing the arrival time between packets with the difference in timestamps in
+the RTP header, a receiver can compute jitter. By checking sequence numbers, a receiver can compute packet loss.
+The receiver can periodically send this feedback through RTCP so that the sender can make adjustments
+to the data stream (for example, change to a lower bandwidth codec).</p>
+
+<h1 id="firewalls">Firewalls</h1>
+
+<p>A <strong>firewall</strong> protects the junction between an untrusted
+network (e.g., external Internet) and a trusted network (e.g., internal network).
+Two approaches
+to firewalling are <strong>packet filtering</strong> and <strong>proxies</strong>.
+A <strong>packet filter</strong>, or <strong>screening router</strong>,
+determines not only the route of a packet but whether the packet
+should be dropped based on contents in the IP header, TCP/UDP header,
+and the interface on which the packet arrived. It is usually implemented
+inside a <strong>border router</strong>, also known as the <strong>gateway router</strong> that
+manages the flow of traffic between the ISP and internal network.</p>
+
+<p>The packet filter evaluates a set of rules to determine whether to <strong>drop</strong>
+or <strong>accept</strong> a packet. This set of rules forms an <strong>access control list</strong>,
+often called a <strong>chain</strong>. Strong security follows a <strong>default deny</strong> model,
+where packets are dropped unless some rule in the chain specifically permits them.
+With <strong>stateless
+inspection</strong>, a packet is examined on its own with no context based
+on previously-seen packets.
+<strong>Stateful inspection</strong> allows the router to keep track of TCP connections
+and understand the relationship between packets. For example, a port that
+needs to be enabled for the FTP data channel once an FTP connection
+has been established or that return packets should be allowed into the
+network in response to outbound requests.</p>
+
+<p>Packet filters traditionally do no look above the transport layer.
+<strong>Deep packet inspection</strong>
+(<strong>DPI</strong>) allows a firewall to examine application data
+as well and make decisions based on its contents. Deep packet inspection
+can validate the protocol of an application as well as check for malicious
+content such as malformed URLs or other security attacks.</p>
+
+<p>An <strong>application proxy</strong> is software that presents the same protocol to
+the outside network as the application for which it is a proxy.
+For example, a mail server proxy will listen on port 25 and understand
+SMTP, the <em>Simple Mail Transfer Protocol</em>. The primary job of the proxy is
+to <strong>validate</strong> the application protocol and thus guard against protocol
+attacks (extra commands, bad arguments) that may exploit bugs in the service. Valid requests are then regenerated
+by the proxy to the real application that is running on another server and is
+not accessible from the outside network.
+The proxy is the only one that can communicate with the internal network.
+Unlike DPI, a proxy may modify the data stream,
+such as stripping headers or modifying machine names. It may also restructure
+the commands in the protocol used to communicate with the actual servers (that is,
+it does not have to relay everything that it receives).</p>
+
+<p>A typical firewalled environment is a <strong>screened subnet</strong>
+architecture, with a separate subnet for systems that run externally-accessible
+services (such as web servers and mail servers) and another one for internal
+systems that do not offer services and should not be accessed from the outside.
+The subnet that contains externally-accessible services is called the <strong>DMZ</strong> (<strong>demilitarized zone</strong>).
+The DMZ contains all the hosts that may be
+offering services to the external network (usually the Internet).
+Machines on the internal network are not accessible from the Internet.
+All machines within an organization will be either in the DMZ or
+in the internal network.</p>
+
+<p>Both subnets will be protected by screening routers.
+They will ensure that no packet
+from the outside network is permitted into the inside network.
+Logically, we can
+view our setup as containing two screening routers:</p>
+
+<ol>
+<li><p>The <strong>exterior router</strong> allows IP packets
+ only to the machines/ports in the DMZ that are offering valid
+ services. It would also reject any packets that are masqueraded to
+ appear to come from the internal network.</p></li>
+<li><p>The <strong>interior router</strong>
+ allows packets to only come from designated machines in the DMZ that
+ need to access services in the internal network. Any packets
+ not targeting the appropriate services in the internal network will
+ be rejected. Both routers will generally allow traffic to flow from
+ the internal network to the Internet, although an organization may
+ block certain services (ports) or force users to use a proxy (for
+ web access, for example).</p></li>
+</ol>
+
+<p>Note that the two screening routers may be easily replaced with
+a single router since filtering rules can specify interfaces. Each rule can thus
+state whether an interface is the DMZ, internal network,
+or Internet (ISP).</p>
+
+<p>A variation on screening routers is the use of <strong>intrusion detection systems</strong> (<strong>IDS</strong>).
+A screening router simply makes decisions based on packet headers. Intrusion
+detection systems try to identify malicious behavior. There are three forms of IDS:</p>
+
+<ol>
+<li><p>A <strong>protocol-based IDS</strong> validates specific network protocols for
+conformance. For example, it can implement a state machine to ensure that messages
+are sent in the proper sequence, that only valid commands are sent, and that replies match
+requests.</p></li>
+<li><p>A <strong>signature-based IDS</strong> is similar to a PC-based virus checker. It
+scans the bits of application data in incoming packets to try to discern if there
+is evidence of &#8220;bad data&#8221;, which may include malformed URLs, extra-long strings
+that may trigger buffer overflows, or bit patterns that match known viruses.</p></li>
+<li><p>An <strong>anomaly-based IDS</strong> looks for statistical aberrations in network activity.
+Instead of having predefined patterns, normal behavior is first measured and used
+as a baseline. An unexpected use of certain protocols, ports, or even amount of
+data sent to a specific service may trigger a warning.</p></li>
+</ol>
+
+<h1 id="securecommunicationandauthentication">Secure communication and authentication</h1>
+
+<h2 id="cryptography">Cryptography</h2>
+
+<p>Cryptography deals with encrypting <strong>plaintext</strong> using
+a <strong>cipher</strong>, also known as an <strong>encryption algorithm</strong>,
+to create <strong>ciphertext</strong>, which is unintelligible to anyone
+unless they can <strong>decrypt</strong> the message.</p>
+
+<p>A <strong>symmetric encryption algorithm</strong> uses the same secret key
+for encryption and decryption.</p>
+
+<p>A <strong>public key algorithm</strong> uses a pair of keys: data encrypted with
+the first key can be decrypted only with the second key and vice versa.
+One of these keys is kept private (known only to the creator) and is known as
+the <strong>private key</strong>. The corresponding key is generally made
+visible to others and is known as the <strong>public key</strong>. Anything
+encrypted with the private key can only be decrypted with the public
+key. This is the basis for <strong>digital signatures</strong>
+because the encryption can only be performed by the key&#8217;s owner.
+Anything that is
+encrypted with a public key can be encrypted only with the corresponding
+private key. This is the basis for authentication and covert
+communication because decryption can only be performed by the owner, who
+is the only one who has the private key.</p>
+
+<p>When data is transmitted, it is broken into blocks and each block is encrypted
+separately. This leads to two problems. If different communication sessions
+contain the same messages and use the same key, an intruder can see that the
+same data is being sent. Secondly, a malicious party can add or delete, add, or replace
+blocks (perhaps with random junk or perhaps with blocks that were captured
+from previous communication sessions). <strong>Cipher block chaining</strong> (<strong>CBC</strong>) addresses
+these problems. Every block of data is still encrypted with the same key. However,
+prior to being encrypted, the data block is exclusive-ored with the previous
+encrypted block. The receiver does the process in reverse: a block of received
+data is decrypted and then exclusive-ored with the previously-received block to
+obtain the original data. The very first block is exclusive-ored with a random
+<strong>initialization vector</strong>, which must be transmitted to the remote side. Note
+that CBC does not make the encryption more secure; it simply makes the result of
+each block of data dependent on the previous block so that data cannot be inserted or deleted in
+the message stream.</p>
+
+<p>A <strong>cryptographic hash function</strong> is a <strong>one-way function</strong>
+whose output is always a fixed number of bits for
+any input. By one-way, we mean that there is no way to compute
+the input when given the output.
+For good cryptographic hash functions
+(e.g., SHA&#8211;1, SHA&#8211;2, SHA&#8211;3),
+it is highly unlikely that two messages will ever
+hash to the same value, it is extremely difficult to construct
+text that hashes to a specific value, and it is extremely difficult
+to modify the plaintext without changing its resultant hash.
+The hash function is the basis for message authentication
+codes and digital signatures. Note that when we talk about
+cryptography and mention phrases such as &#8220;<em>extremely difficult</em>&#8221;,
+we mean &#8220;<em>impossible for all practical purposes</em>,&#8221; not that
+&#8220;you can do it if you spend an entire week working on the problem.&#8221;</p>
+
+<h2 id="securecommunication">Secure communication</h2>
+
+<p>To communicate securely using a symmetric cipher, both parties need
+to have a shared secret key. Alice will encode a message to Bob
+using the key and Bob will use the same key to decode the message. If
+Alice wants to communicate with Charles, she and Charles will also
+need a secret key. The fact that every pair of entities will need
+a secret key leads to a phenomenon known as <strong>key explosion</strong>.
+Overall, in a system with <em>n</em> users, there will be
+<em>O(n<sup>2</sup>)</em> keys.</p>
+
+<p>The biggest problem with symmetric cryptography is dealing with key
+distribution: how can Alice and Bob establish a key so they can
+communicate securely? The <strong>Diffie-Hellman key
+exchange</strong> algorithm allows one to do this. Each party will
+generate a private key and a public key (these are <em>not</em>
+encryption keys; they are just numbers &#8212; Diffie-Hellman does
+not implement public key cryptography &#8212; it is unfortunate
+that the term was used to describe these numbers). Alice can use
+her private key and Bob&#8217;s public key to compute a
+<strong>common key</strong>.
+Bob can compute the same common key by using his private key and Alice&#8217;s public key.
+They can then communicate securely by using the common key with a symmetric cipher.</p>
+
+<p>Using true public key cryptography, such as <strong>RSA</strong>, if Alice encrypts a
+message with Bob&#8217;s public key, Bob will be the only one who can
+decrypt it since doing so will require Bob&#8217;s private key. Likewise,
+Bob can encrypt messages with Alice&#8217;s public key, knowing that only
+Alice will be able to decrypt them with her private key.</p>
+
+<h2 id="sessionkeysandhybridcryptosystems">Session keys and hybrid cryptosystems</h2>
+
+<p>A <strong>session key</strong> is a random key that is generated for encrypting data for
+one communication session. It is useful because if the key
+is ever compromised, no lasting information is obtained: future
+communication sessions will use different keys. A <strong>hybrid
+cryptosystem</strong> uses public key cryptography to send a session key
+securely. The originator generates a random session key and encrypts
+it with the recipient&#8217;s public key. The recipient decrypts the
+message with the corresponding private key to extract the session
+key. After that, symmetric cryptography is used for communication,
+with messages encrypted with the session key. This has the advantages
+of higher performance (public key cryptography is <em>much, much</em> slower than
+symmetric cryptography), ease of communicating with multiple parties
+(just encrypt the session key with the public keys of each of the
+recipients), and allows the bulk of data to be encrypted with
+session keys instead of the hardly-ever-changing
+public keys.</p>
+
+<h2 id="messageauthentication">Message authentication</h2>
+
+<p><strong>Message Authentication Code</strong> (<strong>MAC</strong>) is a cryptographic hash of a message that
+is encrypted with a shared symmetric key. This MAC is sent along with the message.
+If an intruder modifies the message, the receiver will be able to validate that
+the message no longer matches the MAC: simply hash the message and compare it with
+the value of the decrypted MAC. An intruder cannot generate a new MAC because
+you need the secret key to do so.</p>
+
+<p>A <strong>digital signature</strong> is similar to a MAC but uses public key cryptography.
+It is simply the hash of a message encrypted with the creator&#8217;s private key.
+Anyone who has the message signer&#8217;s public key can decrypt the hash and thus validate
+it against the message. Other parties, however, cannot recreate the signature.
+Even though they can generate the same hash for the message, they do not have the
+signer&#8217;s private key to encrypt that hash.</p>
+
+<h2 id="publickeyauthentication">Public key authentication</h2>
+
+<p>As we saw with hybrid cryptosystems, public key cryptography makes key exchange
+simple. It also simplifies authentication. If Alice wants to authenticate herself
+to Bob (prove that she&#8217;s really Alice), Bob will generate a random bunch of bits,
+called a <strong>nonce</strong>, and ask Alice to encrypt the nonce with her private key
+(something only she can do). She will send the result back to Bob who will decrypt
+the data with Alice&#8217;s public key. If the result matches Bob&#8217;s original nonce, he
+is convinced that Alice has Alice&#8217;s private key and therefore is really Alice.</p>
+
+<h2 id="digitalcertificates">Digital certificates</h2>
+
+<p>For Bob to validate Alice in the above example, Bob must be confident that he
+really has Alice&#8217;s public key rather than someone else&#8217;s.
+<strong>X.509 digital certificates</strong> provide a way to do associate an identity
+with a public key and have some entity vouch for that association.
+A certificate
+is a data structure that contains user information and the user’s
+public key. This data structure also contains a <strong>signature</strong>
+of the <strong>certification authority</strong> (<strong>CA</strong>).
+The signature is created by taking a hash of the rest of the data in the structure
+and encrypting it with the private key of the CA.
+The CA is responsible for setting policies of how
+they validate the
+identity of the person who presents the public key for encapsulation
+in a certificate.</p>
+
+<h2 id="transportlayersecuritysecuresocketslayer">Transport Layer Security (Secure Sockets Layer)</h2>
+
+<p><strong>Secure Sockets Layer</strong>
+(<strong>SSL</strong>, also known as <strong>TLS &#8212; Transport Layer
+Security</strong>) is a layer of software above TCP at the application layer
+designed to provide authentication
+and secure communication while giving the programmer the feel of
+a normal sockets interface.
+It makes it easy to add a secure transport onto insecure TCP socket-based
+protocols (e.g., HTTP and FTP). SSL uses a <strong>hybrid cryptosystem</strong> and
+relies on public keys for authentication. If both the sender and
+receiver have X.509 digital certificates, SSL can validate them and
+use nonce-based public key authentication to validate that each party has the
+corresponding private key. In some cases, it may validate the server
+only. If the server does not have a certificate, SSL will then use
+a public key simply to allow a symmetric session key to be passed
+securely from client to server.
+The client generates a session key and encrypts it with the server&#8217;s public key.
+This ensures that only the server will be able to decode the message and
+get the session key.
+After that, communication takes
+place using a symmetric algorithm and the client-generated session
+key. Each encrypted message that is sent contains a MAC (message authentication code)
+to allow the receiver to ensure that the message has not bee accidentally
+or maliciously modified.</p>
+
+<h1 id="vpns">VPNs</h1>
+
+<p><strong>Virtual private networks</strong> (<strong>VPNs</strong>)
+allow disconnected local area networks to communicate
+securely over the public Internet, saving money by using a shared public network (Internet)
+instead of leased lines. This is achieved by <strong>tunneling</strong>, the
+encapsulation of an IP datagram within another datagram.
+In this case, a
+datagram that is destined for a remote subnet, which will often have local
+source and destination IP addresses that may not be routable over the
+public Internet, will be treated as payload and be placed inside a datagram
+that is routed over the public Internet. The source and destination
+addresses of this outer datagram are the VPN endpoints at both sides, usually the VPN-aware routers.</p>
+
+<p>When the VPN endpoint (router) receives this encapsulated datagram, it extracts the
+data, which is a full IP datagram, and routes it on the local area network.
+This tunneling behavior gives us the <em>virtual network</em> part of the
+VPN.</p>
+
+<p>To achieve security (the &#8220;private&#8221; part of VPN), an administrator setting up a VPN will
+usually be concerned that the data contents are not readable and
+the data has not been modified.
+To ensure this, the encapsulated packets can be encrypted and signed. Signing
+a packet enables the receiver to validate that the
+data has not been modified in transit. Encrypting ensures
+that intruders would not be able to make sense of the data, which is the
+encapsulated datagram.</p>
+
+<p>VPNs usually provide several options for key management: shared
+private keys (AES or 3DES), Diffie-Hellman key exchange, or RSA public keys.
+IPsec is one of the most popular types of VPNs and has two variations.
+<strong>Authentication Header</strong> (<strong>AH</strong>) mode adds a signature to the encapsulated datagram
+but does not encrypt any data. Data is readable but cannot be modified.
+Authentication Header mode is rarely used since the overhead of encrypting
+data is quite low. The other variant is the <strong>Encapsulating Security Payload</strong> (<strong>ESP</strong>)
+mode, which adds a signature as with AH but also encrypts the entire datagram.</p>
+
+<p>In an environment where an individual computer outside a trusted network
+needs to connect to another node securely, tunneling will not work since there
+is no gateway router that will extract an embedded datagram and no trusted local area network
+on which to route it.
+To support this environment, VPNs can operate in <strong>transport mode</strong> instead
+of <strong>tunnel mode</strong>. No tunneling takes place and hence there is no encapsulation of the full IP
+datagram. The IP payload (which will include TCP or UDP headers) is encrypted and signed but the original
+IP header is left unchanged. </p>
+
+
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: May  6, 2016
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+		<h2> Study guides </h2>
+	<ul>
+	<li> <a href="../exam/study-guide-1.html"> Study Guide 1 </a> </li>
+	<li> <a href="../exam/study-guide-2.html"> Study Guide 2 </a> </li>
+	<li> <a href="../exam/study-guide-3.html"> Study Guide 3 </a> </li>
+	</ul>
+
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

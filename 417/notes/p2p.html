@@ -1,0 +1,198 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Content Delivery</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Content Delivery</h1>
+								<h2>Peer-to-peer content delivery</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>April 14, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<h1 id="introduction">Introduction</h1>
+
+<p>A peer-to-peer model is an application architecture
+that removes the need for dedicated servers and enables each host to participate in providing a service. Because all systems can both access as well as provide the service, they are called <strong>peers</strong>. In this discussion, we will focus on one application domain: peer-to-peer file distribution.</p>
+
+<h2 id="gnutella">Gnutella</h2>
+
+<p>The first peer-to-peer based system to gain widespread use was Napster, which was used primarily for sharing music. Napster used a <strong>central server</strong> to track who had what music on their servers. The actual content was hosted on users' systems. When that central server was shut down after a lawsuit from the recording industry, the service effectively disappeared even if the individual content servers were still running.</p>
+
+<p>After Napster, <strong>Gnutella</strong> set out to create an architecture that offers distributed file sharing with no central point of control. Unlike Napster, Gnutella can not be shut down since there is no central server.</p>
+
+<p>Gnutella&#8217;s approach to finding content is based on <strong>query flooding</strong>. When a peer joins the system, it needs to contact at least one other Gnutella node and ask it for a list of nodes it knows about (its &#8220;friends&#8221;). This list of peers becomes its list of <strong>connected nodes</strong>. This builds an <strong>overlay network</strong>. An overlay network is a logical network that is formed by peer connections. Each peer knows of a limited set of other peers. These become its <strong>neighbors</strong>, and do not need to be physical neighbors. A peer is capable of communicating with any other peer; it is just the lack of knowing that the other peer exists that stops it.</p>
+
+<p>To search for content, a peer sends a query message to its connected nodes. Each node that receives a query will respond if it has the content. Otherwise, it forwards the content to its connected nodes. This is the process of <strong>flooding</strong>. Once the content is found, the requesting peer downloads the content from the peer hosting the content via HTTP.</p>
+
+<p>A facet of Gnutella&#8217;s original design was anonymity. Replies were sent replies through the same path that the queries took. A peer receiving a query would
+not know if it came from the requestor or from a peer just forwarding the request.</p>
+
+<p>While Gnutella is decentralized, its flooding-based search is inefficient compared to maintaining a single database. Search may require contacting a large number of systems and going through multiple hops. Well-known nodes (e.g., those that may be configured in default installations) may become overly congested.</p>
+
+<h2 id="kazaa">Kazaa</h2>
+
+<p>Kazaa was created a year after Gnutella with the core premise that not all nodes have equivalent capabilities as far as network connectivity
+and uptime are concerned. They introduced the concept of <strong>supernodes</strong>. These nodes have high uptime, fast connectivity, faster processors, and potentially more storage than regular nodes. They also know other
+supernodes. Incidentally, Gnutella later enhanced its system to support the same concept by adding <em>ultrapeers</em>.</p>
+
+<p>A client (peer) needs to know of one supernode to join the system. It sends that supernode a list of all the files that it is hosting. Only supernodes are involved in the search process. Search is a flood over the overlay network as in Gnutella. Once a query reaches a supernode that has the requested content in its list, it sends a reply directly to the peer that initiated
+the query. As with Gnutella, the querying peer will then download the content directly from the peer that hosts the content.</p>
+
+<h2 id="bittorrent">BitTorrent</h2>
+
+<p>The design of BitTorrent was motivated by the <strong>flash crowd</strong> problem. How do you design a file sharing service that will scale as a huge
+number of users want to download a specific file? Systems such as Napster, Gnutella, and Kazaa all serve their content from the peer that hosts it. If a large number of users try to download a popular file, all of them will have to share the bandwidth that is available to the peer hosting that content.</p>
+
+<p>The idea behind BitTorrent is to turn each peer that is downloading content into a server of that content. BitTorrent only focuses on the download problem and does not handle the mechanism for locating the content.</p>
+
+<p>To offer content, the content owner creates a <strong>.torrent file</strong>. This file contains metadata, or information, about the file, such as the name, creation time, and size of the file. It also contains a list of hashes of blocks of the content. The content is logically divided into fixed-size blocks and the list of hashes in the .torrent file allows a downloading peer to validate that any downloaded blocks has been downloaded correctly. Finally, the .torrent file contains a list of <strong>trackers</strong>.</p>
+
+<p>The <strong>tracker</strong> is a server running a process that manages downloads for a set of .torrent files. When a downloading peer
+opens a .torrent file, it contacts a tracker that is specified in that file. The tracker is responsible for keeping track of which peers have which have the content. There could be many trackers, each responsible for different torrents.</p>
+
+<p>A <strong>seeder</strong> is a peer that has the entire file available for download by other peers. Seeders register themselves with trackers so that trackers can direct downloading peers to them. An <strong>initial seeder</strong> is the initial version of the file.</p>
+
+<p>A <strong>leecher</strong> is a peer that is downloading files. To start the download, the leecher must have a .torrent file. That identifies the tracker for the contents. It contacts the tracker, which keeps track of the seed nodes for that file as well as other leechers, some of whom may have already downloaded some blocks of the file. A leecher contacts seeders and other leechers to download random blocks of the file. As it gets these blocks, it can make them available to other leechers.
+This allows download bandwidth to scale: every downloader increases overall download capacity. Once a file is fully downloaded, the leecher has the option of turning itself into a seeder and continue to
+offer serving the file.</p>
+
+							</section>
+							<footer class="main">
+								Last modified April 16, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

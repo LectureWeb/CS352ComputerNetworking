@@ -1,0 +1,509 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Network Attached Storage</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Network Attached Storage</h1>
+								<h2>Distributed file systems</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>March 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Allow multiple clients to access files from file servers on a network.</p>
+</blockquote>
+
+<p>We often need to access data that is stored on other computers. One way to do this is by logging in to that computer with a program like <em>ssh</em> or <em>telnet</em> and accessing it directly from that system. Another way is to download a copy of the files onto our local computer by using a program such as <em>sftp</em> or <em>http</em>. These techniques require us to go through an explicit process of accessing that data: we need to know exactly where to connect and need to run programs to connect to the computer and access that the data.
+Ideally, we would like a degree of transparency so we can access these remote files like we access local files. That is the goal of network attached storage, or NAS. They&#8217;re also referred to as distributed file systems or remote file systems.</p>
+
+<h2 id="designconsiderations">Design Considerations</h2>
+
+<p>To provide the same system call interface for supporting various local file systems as well as remote files, operating systems generally rely on a layer of abstraction that allows different file system-specific interfaces to coexist underneath the common system calls. On most Unix-derived systems (e.g., Linux, BSD, macOS), this is known as the VFS layer (Virtual File System). This gives us <em>transparency</em>: we can access remote files using the same system call interface as local files, which makes them visible in the local directory tree just as any other mounted file system.</p>
+
+<p>In addition to transparency, we need to consider several other design issues for a remote file access protocol:</p>
+
+<dl>
+<dt>Consistency</dt>
+<dd> How can the system ensure that everyone sees the latest version of the file? This is particularly important if files are shared among multiple users and it can be challenging to achieve when these shared files are modified. If files are replicated or cached for performance, the design of the protocol needs to be able to invalidate or update those copies.</dd>
+
+<dt>Security</dt>
+<dd> The operating system is the gatekeeper of what a process (and user) is or is not allowed to do. It authenticats the user upon logging in and then validates file access permissions for that user. With remote file systems, the local operating system is no longer in full control. Requests must be sent to a remote system over the network. This introduces a whole host of security issues. Should the remote system authenticate and trust the local system? Do users share the same user IDs or names across systems? Who administers file permissions? Can a malicious user on a local system impersonate other users and access their files? Is communications encrypted so message contents cannot be sniffed, modified or replayed?</dd>
+
+<dt>Reliability</dt>
+<dd> If my computer crashes, all the programs running on it die. If a remote file server crashes, my programs continue to run. The remote file access protocol needs to account for network and system failures.</dd>
+
+<dt>State</dt>
+<dd> Should the remote system keep track of what local processes are doing with those files? If so, how much information should they track? Any information stored about client activity is called <em>state</em>. Keeping no state is the goal of the design of many web services. All necessary information is sent with each request from the client. By not storing state, failover to another system is easy to implement. You don&#8217;t need to worry about losing any information if the server crashes and then recovers. However, not tracking state makes it impossible to coordinate activity between different clients. For instance, a server cannot tell a client that another client has a lock on a file &#8211; that&#8217;s state. If we do keep state on the server, there&#8217;s the question of how little or how much state to store. For example, we might only track of which clients have which files open. Or, we might track what chunks of file data each client has cached locally so we can send invalidations if any data gets modified. We might keep track of which clients have which files open in specific modes. For instance, if all clients have files open only for reading then we know there will not be modifications and there will be no need to invalidate cached data at the client.</dd>
+</dl>
+
+<h3 id="servicemodels">Service models</h3>
+
+<p>There are two basic models for implementing distributed
+file systems: the <em>download/upload</em> model or the <em>remote</em>
+<em>access</em> model. In a download/upload model, the entire file is downloaded from the server when a process opens the file. After that, the process accesses the data just like a local file &#8211; because it is. When the process closes the file, this local copy is uploaded to the server if there were changes. It&#8217;s an attractive model because the file access protocol only needs to implement the <em>open</em> and <em>close</em> operations; everything else is local. There are challenges with this model. It is not efficient if a client only needs to access a small part of the file; the entire file will be download regardless of how much of it is needed. The model doesn&#8217;t adapt well to small clients with limited storage space: how do you open a 200 GB database file when you only have 128 GB of space on your local file system? Most problematic is the concurrent access problem. If two or more users are modifying the same file, they are doing so to their private copies of it. Neither sees the other&#8217;s changes and the last one to close the file will upload the changes, overwriting the other user&#8217;s version.</p>
+
+<p><em>Sequential semantics</em> are what we commonly expect
+to see in file systems, where reads return the results of previous writes. <em>Session
+semantics</em> occur when an application owns the file for the entire access
+session, writing the contents of the file only upon close, thereby making the
+updates visible to others after the file is closed, and overwriting any
+modifications made by others prior to that. We are likely to see session semantics with this model.</p>
+
+<p>With a remote access model, the remote file service provides a functional interface to operations that can be performed on files. Such a service would provide commands to read a range of bytes from a file, write a range of bytes to a file, perhaps lock a region of a file, delete a file, and so on.
+The advantage of this model is that the client can ask for exactly what it needs and not more. It also gives the server the ability to get the latest updates from clients so it can present a consistent up-to-date view of all the latest changes. The downside of the remote access model is that clients must interact with the server throughout the duration of accessing the files. They also will incur the latency of making requests that must go through two operating systems and a network.</p>
+
+<h3 id="caching">Caching</h3>
+
+<p>Caching is used throughout computing as a technique for bringing frequently-used data in a place where it could be accessed more quickly. It&#8217;s also a place where data may be stored temporarily to enable more efficient transfers to its ultimate location. For example, the operating system maintains a buffer cache to hold disk blocks. This serves several purposes. First, it provides a place to read blocks of data from the disk (you cannot read individual bytes) even if the process only needs a few bytes. Secondly, it stores the data in memory so it could be accessed more quickly if it is needed repeatedly. Thirdly, it allows output data to be accumulated into block-size chunks and for the operating system to delay writes to the disk.</p>
+
+<p>For network attached storage, file access protocols may manage caching in similar ways. Cache management options include:</p>
+
+<dl>
+<dt>write-though</dt>
+<dd> To enable other clients to read data that a process modified, the system with the modified data needs to update the server. Write-through caching means that we can keep data cached but any modifications get sent to the server immediately. This on its own does not solve the consistency problem. Other clients will either need to check for modifications at the server before they can access their own cache (possibly negating the value of caching) or the server will need to keep state so that it can invalidate client caches if there&#8217;s an update.</dd>
+
+<dt>delayed writes (write-behind)</dt>
+<dd> Sending modifications to the server immediately is great for keeping the version of the file at the server up to date. Unfortunately, it can be horribly inefficient. Think of the situation where a program appends to a file a byte at a time. We will be sending a stream of single byte updates to the server. It would be more efficient to wait a while and see if there are more updates in the hope of sending a single larger packet instead of many small ones. The tradeoff is that file access semantics can become ambigious since clients that read data from the server will not always get the latest updates.</dd>
+
+<dt>write on close</dt>
+<dd> Propagating all changes when a process closes the file can be highly efficient. At this time, we have all the modifications to the file and can send them efficiently without the concern of sending repeated updates or small chunks. Doing this, however, is an admission that we are using session semantics &#8211; where the last process to close the file gets to overwrite any other changes to the file.</dd>
+
+<dt>read-ahead (prefetch)</dt>
+<dd> Just like sending small chunks of data from the client to the server is inefficient, so is receiving small chunks from the server. The basic form of read-ahead is to request a larger block of data even if the process needs to read only a few bytes. The assumption is that there is a good chance the process will soon need to read more data (most processes read files from the first byte of the file to the last) and it is more efficient to send an entire block in one packet rather than sending multiple packets with smaller chunks of data. The more ambitious form of read-ahead is to request successive blocks from the file before they are needed, again under the assumption that most files are read sequentially.</dd>
+
+<dt>centralized control</dt>
+<dd> The most sophisticated form of caching is having the server keep track of how processes can access files (read-only, read-write, write-only), whether they have exclusive access to byte ranges of a file, and what data they have cached. This can be a significant amount of state to track, particularly in large environments, but it allows the server to send targeted invalidation messages whenever it gets updates of specific byte ranges of a file.</dd>
+</dl>
+
+<h2 id="nfs">NFS</h2>
+
+<p>NFS was designed as a stateless, RPC-based model implementing
+commands such as <em>read bytes</em>, <em>write bytes</em>, <em>link files</em>, <em>create
+a directory</em>, and <em>remove a file</em>. Since the server does not maintain
+any state, there is no need for remote <em>open</em> or <em>close</em> procedures:
+these only establish state on the client. NFS works well in faulty environments:
+there&#8217;s no state to restore if a client or server crashes. To improve
+performance, a client reads data a block (8 KB by default) at a time and
+performs <em>read-ahead</em> (fetching future blocks before they are needed). NFS
+suffers from ambiguous semantics because the server (or other clients) has no
+idea what blocks the client has cached and the client does not know whether its
+cached blocks are still valid. NFS uses <strong>validation</strong>, where the
+client compares modification times from server requests to the times of data
+that it cached. However, it does this only if there are
+file operations to the server. Otherwise, the client simply invalidates the blocks after a
+few seconds. In NFS&#8217;s original stateless design,
+file locking could not be supported since that would require
+the server to keep state.
+It was later added through a separate lock manager that maintained the state
+of locks.</p>
+
+<p>To facilitate larger deployments, NFS introduced the <strong>automounter</strong>.
+It was common to have an environment with many clients, each mounting many
+remote file systems. In such an environment, if all clients start up at approximately
+the same time, they can flood the server with mount requests.
+The automounter mounts remote directories only when they are first accessed.
+To make keeping track of mount points easier across many machines,
+<strong>automounter maps</strong> are configuration files that define
+what remote directories get mounted. These can be distributed across a set of clients.</p>
+
+<h2 id="afs">AFS</h2>
+
+<p>AFS was designed as an improvement over NFS to support file sharing on a
+massive scale. NFS suffered because clients would never cache data for a long
+time (not knowing if it would become obsolete) and had to frequently contact
+the server. AFS introduced the use of a partition on a client&#8217;s disk to cache
+large amounts of data for a long time: <strong>whole file caching</strong> and
+<strong>long-term whole-file
+caching</strong>. It supports a file download-upload model. The entire file is
+downloaded on first access (<em>whole file download</em>) and uploaded back to
+the server after a <em>close</em> only if it was modified. Because of this
+behavior, AFS provides <strong>session semantics</strong>: the last one to
+close a modified file wins and other changes (earlier closes) are lost.</p>
+
+<p>During file access, the client need never bother the
+server: it already has the file. When a client first downloads a file, the
+server makes a <strong>callback promise</strong>: it maintains a list of each client that
+has downloaded a copy of a certain file. Whenever it gets an update for that
+file, the server goes through the list and sends a <strong>callback</strong> to each client
+that may have a cached copy so that it can be invalidated on the client. The
+next time the client opens that file, it will download it from the server.
+Files under AFS are shared in units called <strong>volumes</strong>. A volume is just a
+directory (with its subdirectories and files) on a file server that is assigned
+a unique ID among the <em>cell</em> of machines (remember cells from DCE RPC?).
+If an administrator decides
+to move the volume to another server, the old server can issue a <strong>referral</strong>
+to the new server. This allows the client to remain unaware of resource
+movement.</p>
+
+<h2 id="coda">Coda</h2>
+
+<p>Coda was built on top of AFS and focused on two things: supporting
+replicated servers and disconnected operation. To support replicated
+storage, AFS&#8217;s concept of a volume was expanded into that of a
+<strong>Volume Storage Group</strong> (<strong>VSG</strong>).
+Given that some volumes may be inaccessible at a particular point in
+time, the <strong>Accessible Volume Storage Group</strong> (<strong>AVSG</strong>)
+refers to the subset of the VSG that the client can currently access.
+Before a client accesses a file, it
+first looks up the <strong>replicated volume ID</strong> of the file to get the list
+of servers containing replicated volumes and the respective local
+volume IDs. While it can read files from any available server, it
+first checks the versions from <em>all</em> of them to ensure that one or
+more servers don&#8217;t have out-of-date files. If the client discovers
+that a server has an old version of a file, it initiates a <strong>resolution
+process</strong> by sending a message to that server, telling it
+to update its old versions. When
+a client closes a file, if there were any modifications, the changes
+are written out to <em>all</em> available replicated volumes.</p>
+
+<p>If no servers are
+available for access, the client goes into <strong>disconnected operation
+mode</strong>. In this mode, no attempt is made to contact the server and
+any file updates are logged instead in a <strong>client modification log</strong>
+(<strong>CML</strong>). Upon connection, the client plays back the log to send updated
+files to the servers and receive invalidations. If conflicts arise
+(e.g., the file may have been modified on the server while the
+client was disconnected) user intervention may be required.</p>
+
+<p>Because there&#8217;s a chance that users may need to access files that are
+not yet in the local cache, Coda supports <strong>hoarding</strong>,
+which is a term for user-directed caching. It provides a user interface
+that allows a user to look over what is already in the cache and
+bring additional files into the cache if needed. The hoard database
+is the list of which files are cached locally.</p>
+
+<h2 id="dfs">DFS</h2>
+
+<p>AFS evolved over the years. AFS version 3 was modified to become
+the recommended distributed file
+system in the Distributed Computing Environment (DCE). This was
+named the Distributed File System (DFS).</p>
+
+<p>The primary design goal of this system was to avoid the unpredictable
+lost data problems of session semantics if multiple clients are
+modifying the same file. The concept of <strong>tokens</strong>
+was introduced. A <strong>token</strong> is permission given by the
+server to the client to perform certain operations on a file and
+cache a file&#8217;s data. The system has four classes of tokens:
+<em>open</em>, <em>data</em>, <em>status</em>, and <em>lock</em> tokens.
+An <em>open</em> token must be obtained to have permission to open a
+file. A <em>read</em> data token must be obtained for a byte range
+of a file to have permission to access that part of the file.
+Similarly, a <em>write</em> data token is needed to write the file.
+<em>Status</em> tokens tell the client that it may be able to cache
+file attributes. These tokens give the server control over who is
+doing what to a file. Tokens are granted and revoked by the server.
+For example, if one client needs to write to a file then any
+outstanding <em>read</em> and <em>write data</em> tokens that were
+issued to any clients for that byte range get revoked: those clients
+are now denied access until they get new tokens.</p>
+
+<h2 id="smb">SMB</h2>
+
+<p>Microsoft&#8217;s <strong>Server Message Block</strong> protocol was designed as a
+connection-oriented, stateful file system with a priority on file
+consistency and support of locking rather than client caching and
+performance. While it does not use remote procedure calls, its
+access principle is the same: requests (message blocks) are
+functional messages, providing file access commands such as open, create,
+rename, read, write, and close.</p>
+
+<p>With the advent of Windows NT 4.0 and an increasing
+need to provide improved performance via caching, Microsoft introduced
+the concept of <strong>opportunistic locks</strong>
+(<strong>oplocks</strong>) into the operating
+system. This is a modified form of DFS&#8217;s tokens. An oplock tells
+the client how it may cache data.
+It allows clients to cache information without worrying about changes to the file at the server.
+At any time, a client&#8217;s oplock
+may be revoked or changed by the server. The mechanism has been extended since
+<a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ifs/overview">Windows 7</a> and is generally
+referred to as <em>leases</em>. There are currently eight oplocks (including leases; <em>do not memorize these but have an understanding of what they do</em>):</p>
+
+<ol>
+<li><p>A <strong>level 1 oplock</strong> (<strong>exclusive oplock</strong>) provides the
+client with exclusive access to the file (nobody else is
+reading or writing it), so it can cache lock information, file
+attributes, and perform read-aheads and write-behinds.</p></li>
+<li><p>A <strong>level 2 oplock</strong> (<strong>shared oplock</strong>) is granted in cases where multiple processes may read a file
+and no processes are writing to it.</p></li>
+<li><p>A <strong>batch oplock</strong> is also exclusive and allows a client to keep a file open
+on the server even if the local process using it closed the file. This optimizes
+cases where a process repeatedly opens and closes tehe same files (e.g., batch script
+execution).</p></li>
+<li><p>A <strong>filter oplock</strong> is exclusive and allows applications that hold the oplock
+to be preempted whenever other processes or clients need to access the file.</p></li>
+<li><p>A <strong>read oplock</strong> (<strong>R</strong>) is a shared oplock that is essentially the same as a level 2 oplock. It supports read caching.</p></li>
+<li><p>A <strong>read-handle oplock</strong> (<strong>RH</strong>) allows multiple readers and keeps the file open on the server even if the client process closes it. It is similar to the batch oplock but is shared and does not support file modifications. It supports read caching and handle caching.</p></li>
+<li><p>A <strong>read-write oplock</strong> (<strong>RW</strong>) gives a client exclusive access to the file and supports read and write caching. It is essentially the same the the level 1, or exclusive, oplock.</p></li>
+<li><p>A <strong>read-write-handle oplock</strong> (<strong>RWH</strong>) enables a client to keep a file open on the server even if the
+client process closes it. It is exclusive and similar to the batch oplock.</p></li>
+</ol>
+
+<p>The last four oplocks have been added since Windows 7 and are somewhat redundant with earlier
+mechanisms.</p>
+
+<p>Oplocks may be <strong>revoked</strong> (<strong>broken</strong>) by the server. For example, if Process A has a <em>read-write</em> oplock,
+it can cache all read and write operations, knowing that no other client is modifying or reading
+that file. If another client, Process B, opens the file for reading, a conflict is detected.
+Process B is suspended and Process A is informed of the oplock break. This gives Process A
+a chance to send any cached changes to the server before Process B resumes execution.</p>
+
+<h2 id="dfsnamespaces">DFS Namespaces</h2>
+
+<p>Microsoft added a separate component to SMB file sharing called <strong>DFS Namespaces</strong>. DFS stands for <em>Distributed File System</em>, but is not related to DFS, although there are concepts in common between the two.</p>
+
+<p>DFS Namespaces run on a Namespace Server that tracks which shared volumes lives on which SMB server. The collection of shared volumes are arranged by an administrator to present a single hierarchical file system to all clients.
+Clients contact the DFS Namespace server and don&#8217;t need to be aware of the individual servers that serve the files.
+DFS Namespaces are not a separate remote file system protocol; files are accessed through SMB.</p>
+
+<p>DFS namespaces provide location transparency. Users do not have to be aware of which servers they need to contact for resources.
+DFS also allows a single node in the directory tree to point to multiple replicated read-only volumes, similar to the mechanism in AFS. This is designed for fault tolerance and load balancing but does not support file modifications.</p>
+
+<h2 id="smb2andbeyond">SMB 2 and beyond</h2>
+
+<p>The SMB protocol was known to be chatty. Common tasks often required
+several round-trip messages. It was originally designed for LANs and
+did not perform optimally either on wide area networks (WANs) or on
+today&#8217;s high-speed LANs (1&#8211;100 Gbps). The SMB protocol was dramatically
+cleaned up with the introduction of the Microsoft Vista operating
+system (SMB 2), with minor changes added in Windows 7 (SMB 2.1)
+and even more in Windows 8 (SMB 3). Apple has dropped its proprietary
+AFP protocol in favor of SMB 2 in macOS 10.10 (Mavericks).
+We will focus our discussion on the significant changes introduced in SMB 2.</p>
+
+<p>SMB 2 added six key changes to its design:</p>
+
+<dl>
+<dt><strong>Reduced complexity</strong></dt>
+<dd> The set of SMB commands went from over 100 commands down to 19.</dd>
+
+<dt><strong>Pipelining</strong></dt>
+<dd> <strong>Pipelining</strong> is the ability to send additional commands before the response
+to a prior command is received. Traditionally, SMB (and any RPC-based system) would
+have to wait for one command to complete before sending an additional command.
+The goal of pipelining is to keep more data in flight and use more of the available network bandwidth.</dd>
+
+<dt><strong>Credit-based flow control</strong></dt>
+<dd> To give the server control over getting an overly high rate of client requests,
+<strong>credit-based flow control</strong> is used. With credit-based flow control,
+the server creates a small number of <em>credits</em> and later increases this number as needed.
+The server sends these credits to each client.
+The client needs credits to send a message to the server. Each time a message is sent,
+it decrements its credit balance. This allows server to control the rate of messages from
+any client and avoid buffer overflow.
+Note that TCP implements congestion control, but this results in data loss and wild oscillations in traffic intensity
+(TCP keeps increasing its transmission window size until packet loss occurs; then it cuts the value of the
+buffer in half and starts increasing again).</dd>
+
+<dt><strong>Compounding</strong></dt>
+<dd> Compounding is similar to pipelining but now allows multiple commands to be sent
+in one message. It avoids the need to optimize the system by creating commands that combine
+common sets of operations. Instead, one can send an arbitrary set of commands in one request.
+For instance, instead of the old SMB <em>RENAME</em> command, the following set of commands
+are sent:
+<em>CREATE</em> (create new file or open existing);
+<em>SET_INFO</em>;
+<em>CLOSE</em>.
+Compounding reduces network time because multiple requests can be placed within one message.</dd>
+
+<dt><strong>Larger read/write sizes</strong></dt>
+<dd> Fast networks can handle larger packet sizes and hence transfer larger read and write buffers more efficiently.</dd>
+
+<dt><strong>Improved caching</strong></dt>
+<dd> SMB 2 improved its ability to cache folder and file properties. This avoids messages to the server to
+retrieve these properties.</dd>
+
+<dt><strong>Durable handles</strong></dt>
+<dd> If there was a temporary network disconnection, An SMB client would lose its connection to the server
+and have to reestablish all connections and remount all file systems and reopen all files.
+With SMB 2, the connection has to be reestablished but all handles to open files will remain valid.</dd>
+</dl>
+
+<h2 id="nfsversion4">NFS version 4</h2>
+
+<p>While NFS version 3 is still widely used, NFS version 4 introduced significant changes
+and is a departure from the classic stateless design of NFS. The server is now
+stateful and is able to control client-side cache coherence better, allowing clients
+to cache data for a longer time. Servers can grant clients
+the ability to do specific actions on a file to enable more aggressive client caching.
+This is similar to SMB&#8217;s oplocks.
+Because of the stateful server, NFS now acquired <em>open</em> and <em>close</em> operations.</p>
+
+<p>The addition of callbacks will notify a client when file or
+directory contents have changed.</p>
+
+<p>Like SMB 2, NFS now supports <strong>compound RPC</strong>, where multiple operations
+can be grouped together into a single request. Sending one message instead of a
+series of messages reduces overall round-trip time significantly.</p>
+
+<p>NFSv4 also added strong authentication and encryption and support file system replication
+and migration. This includes a mechanism of sending <strong>referrals</strong> similar
+to that used by AFS.</p>
+
+<!--
+## WebDAV
+
+WebDAV is a file access protocol built as an extension to the standard HTTP
+commands. Additional HTTP commands were added to copy and move resources,
+manage directory structures, and lock/unlock resources.
+
+
+Many popular applications use WebDAV (Apple's iCal and iDisk, Microsoft
+Exchange and IIS) and it is supported as a network file system type by
+popular operating systems (Linux, macOS Windows).
+
+
+## GmailFS
+
+GmailFS is an example of writing a custom file system to take advantage of
+the free storage provided by Gmail (over 7 GB). Each message
+represents a file. Subject headers identify
+the file system name so the interface can find all relevant messages that
+constitute the "file system". They also contain file names and other
+metadata (symbolic link information, user ID, size, etc.). The actual
+file data resides in attachments to the message.
+
+-->
+
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

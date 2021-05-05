@@ -1,0 +1,1952 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 352 Exam 1 Study Guide </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+.rqbox {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+        position: relative;
+	width: 15em;
+        background-color: #FDF5B6;
+        border-style: double; border-width: 3px;
+        padding: 0.5em 0.5em 0.5em 0.5em;
+}
+#main em {
+	color: darkred;
+}
+
+</style>
+</head>
+
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<P>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a>  </li>
+ 	<li> <a href="../index.html"> Rutgers CS 352 </a>  </li>
+ 	<li> <a href="../exam/index.html"> Exam info </a>  </li>
+ 	<li> <a href="../exam/study-guide-1.html"> Exam 1 study guide </a>  </li>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main"> <div id="headline">
+<h1> Exam 1 study guide </h1>
+<h2> The one-hour study guide for exam 1 </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> Latest update: Fri May  6 15:41:35 EDT 2016
+ </p>
+</div>
+
+<p class="first">
+
+<em>Disclaimer: </em>
+This study guide attempts to touch upon the most
+important topics that may be covered on the exam but does not claim to
+necessarily cover everything that one needs to know for the exam. Finally,
+don't take the <em>one hour</em> time window in the title literally.</p>
+
+<h1 id="terminologyfromthehistoryofdatacommunication">Terminology from the history of data communication</h1>
+
+<p>Data communication, the process of conveying information from one place to another, existed
+long before computers and dates back to earliest recorded history. As various pre-computer
+techniques for conveying data reliably over distances were invented, so too were a number
+of underlying mechanisms that proved to be useful in digital networks.</p>
+
+<p>The most basic form of message delivery is moving a message from one entity (person) to another.
+This is known as <strong>point-to-point</strong>, or <strong>unicast</strong> delivery. Transmitting
+a single message so that everyone gets it is known as a <strong>broadcast</strong>. It&#8217;s the
+difference between a messenger and a smoke signal.
+Two crucial categories of data are <strong>control</strong> and <strong>message</strong> data.
+Message data is the information that needs to be delivered.
+Control data comprises the information that is used to manage the delivery of the message. It
+includes things such as acknowledgements, retransmission requests, and rate controls.
+In some cases, control data is sent via a separate communication channel than message data. In
+other cases, it is intermixed with some syntax for identifying which data is control and which is message.</p>
+
+<p><strong>Synchronization</strong>, in the context of messaging, is the coordination of activity between
+the sender and receiver of messages. It includes controls such as <em>ready to send</em>, <em>ready
+to receive</em>, <em>transmission complete</em>.</p>
+
+<p><strong>Congestion</strong> is the inability of a network element
+to receive or transmit messages at the desired rate, leading to a
+buildup or possibly a loss of messages and a deterioration in the
+quality of service.
+<strong>Flow control</strong>
+is the aspect of synchronization that deals with the rate of transmission, controlling
+when the sender transmits messages to keep the receiver or network from getting overwhelmed with
+data traffic.
+Rate control is the aspect of flow control that controls just the speed of
+transmission.
+Other elements of flow control may be directives to delay for a specific time or wait until
+some feedback is received. By reducing the flow of traffic, congestion can be alleviated.</p>
+
+<p>An <strong>acknowledgement</strong> (also known as a <strong>positive acknowledgement</strong>)
+is a control message that states that a message was received.
+A <strong>negative acknowledgement</strong> is a control message that states that a message was not delivered
+to the destination or that it was received with errors. It is a form of <strong>error notification</strong>.</p>
+
+<p>Packets may be lost or corrupted during transmission.
+With <strong>best-effort</strong> message delivery the network does the best it can
+do in providing service but
+makes no guarantee that data will be delivered to its destination
+or the time it will take for it to be delivered.
+<strong>Reliable delivery</strong> ensures that data does arrive reliably. Reliable
+delivery may be implemented as a layer of software on top of
+a network that provides best-effort delivery. With reliable
+delivery, if a message does not arrive or arrive correctly,
+the transmitter will be notified and will attempt to resend the message.
+Delivery time of the message can vary (since there is an extra delay to detect
+lost data dnt to retranmit it). With flow control mechanisms to relieve
+congestion as well as reliable delivery, there is generally no guarantee on
+the resulting bit rate between two communicating parties.</p>
+
+<p>A key part of any communication is the <strong>encoding</strong> of data. This ranges from how data
+is represented in the medium (the component that carries data, whether it is radio frequency, a wire,
+or a piece of paper) to the meaning of the messages themselves. To expedite messaging in the past,
+table-based encoding was sometimes used to have a letter or a number represent an entire message
+instead of transmitting each character in the message. </p>
+
+<p>A <strong>repeater</strong>, also known as an <strong>extender</strong>,
+is a device that regenerates a
+signal to cover longer distances. Pre-networking, this would be a relay station where one would switch horses
+or runners. These days, it is a often a device such as an ethernet extender that
+regenerates incoming signals to full strength, allowing longer runs of ethernet cable.</p>
+
+<h1 id="originsoftheinternet">Origins of the Internet</h1>
+
+<p>The precursor to the Internet was ARPANET, a research project funded by DARPA, the Defense
+Advanced Research Projects Agency. This was an experiment in using packet switched networking
+to share computing resources over long distances. ARPANET got its start in late 1968 and was
+inspired by three developments. First, Leonard Kleinrock&#8217;s concept of <strong>packet switching</strong>:
+breaking messages into small chunks called <strong>packets</strong> and have them compete
+with packets from other messages on the same shared communication link. Second, J.C.R. Licklider&#8217;s
+vision of an &#8220;Intergalactic Network&#8221;, a globally connected set of computers where you can
+access data from or run programs on remote machines. Third, the demonstration of the viability
+of a wide-area network accomplished by connecting a computer in Massachusetts to one in California
+over a telephone line via a dial-up connection.</p>
+
+<p>The crucial component in the early ARPANET was the <strong>Interface
+Message Processor</strong>, or <strong>IMP</strong>. This was the device that served
+as the interface between one or more connected host computers and
+the external packet-based ARPANET, processed the flow of packets,
+and sent them to other IMPs or to a connected host . It was the
+predecessor to the <strong>router</strong>. The ARPANET went live in 1969 with
+two computers and two more by the end of the year. In the early
+ARPANET, all the protocols for delivering packets were implemented
+in the IMPs. The software that ran on the computer and interfaced
+with the IMP was the <strong>Network Control Program</strong>, or <strong>NCP</strong>. This
+allowed applications to interface with the network and provided
+them with the abstraction of having a dedicated communication stream.
+It also handled flow control to the IMP and retransmission. As the
+ARPANET evolved, NCP became TCP, which handled reliable
+application-to-application communication.</p>
+
+<h2 id="coreprinciples">Core principles</h2>
+
+<ol>
+<li><p>ARPANET was designed to support the <strong>interconnection</strong> of networks (<strong>inter-networking</strong>).
+It is a <strong>network of networks</strong> rather than a single network to which computers connect.
+For an organization to join the ARPANET, there was no requirement for it to have a specific internal network.
+This layer of networking would be a logical layer on top of any underlying physical network.</p></li>
+<li><p>Because there was no assumption on the design of any physical network, the ARPANET assumed that
+communication is not guaranteed to be reliable. Instead, it would provide <strong>best effort</strong> packet delivery.
+Software, originally NCP and later TCP, provided the ability to detect errors or lost packets and request retransmission.</p></li>
+<li><p><strong>Routers</strong> connect the various individual networks and links together that make up the Internet.
+While routers are crucial in determining where to send packets, they were designed to not store
+information about the flow of packets. Any packet can be routed on its own with no <i>a priori</i> connection setup.</p></li>
+<li><p>Finally, the entire network is decentralized. There is no central administration or control point. This
+aspect not only makes the network scalable (no single point of congestion) but aids in making it a fault
+tolerant network. If a router is not working, it is likely that there may be alternate paths to the destination.</p></li>
+</ol>
+
+<p>The ARPANET clearly demonstrated the value of wide-area, hardware agnostic networking but access to it
+was restricted to organizations working on U.S. Department of Defense projects. Other networks were
+created to cater to non-defense communities and some of these, such as NSFNET and CSNET, also chose to use the
+IP platform.</p>
+
+<p>NSFNET was a government funded (by the NSF, the National Science Foundation) network that
+was created in 1985 to connect NSF-funded supercomputing centers.
+It initially did permit commercial traffic on its networks.</p>
+
+<p>By the late 1980s, the NSF was looking for commercial partners who
+would provide wide area networking services. A collection of these
+partners removed any need for government funding. In 1990, the
+ARPANET was decommisssioned and in 1995, the NFSNET backbone was
+transitioned to commercial networks, leading to the Internet of
+today.</p>
+
+<h1 id="lanandinternetstructure">LAN and Internet structure</h1>
+
+<p>The Internet comprises the network edge and the network core. The
+network <strong>core</strong> is the set of interconnected networks that provide
+wide area connectivity to the customers of the network. The network
+<strong>edge</strong> is the set of devices and local networks that connect to
+the core network. Your computers, TV sets, thermostats, and local
+network constitute a network edge. Your Internet service provider
+and its Internet service provider are components of the network
+core.</p>
+
+<h2 id="localareanetworks">Local area networks</h2>
+
+<p>A <strong>local area network</strong>, or <strong>LAN</strong>, is a data communication network
+that covers a relatively small area, typically a building. It uses
+a the same network access protocol and usually the
+same transmission medium (e.g., Ethernet), allowing
+message delivery without the need to route messages through
+different networks. Devices that send
+and receive messages on the network are called <strong>hosts</strong> or <strong>nodes</strong>.
+These devices are <strong>peers</strong>, meaning that no device has more control
+or coordination of the network than any other device. Any host can
+initiate a data transfer with any other host on the LAN. LANs usually
+exhibit very low latency and a high data rate: typically 10s to a gigabit per
+second (Gbps) for wireless networks and a 1 gigabit per
+second (Gbps) or more for wired connections (although speeds as high as 10
+and 100 Gbps are available).</p>
+
+<p>Nodes connect to a local area
+network with an <strong>adapter</strong>. These are usually integrated onto the
+main circuit board but may be separate components, such as a USB
+ethernet adapter. Another term for these is <strong>NIC</strong>,
+which stands for <strong>Network Interface Controller</strong>.</p>
+
+<p>The physical data communication links that the adapter uses to send and
+receive data are called <strong>media</strong>. Common examples are <strong>unshielded
+twisted pair</strong> (UTP) copper wire (e.g., ethernet cable), radio
+frequency (e.g., the 5 GHz frequency bands used by
+802.11ac), coaxial cable (e.g., used by cable TV in the home and the
+MoCA standard, multimedia over coax), and optical fiber (which is not commonly
+used in the home).</p>
+
+<p>The other end of the media terminates at a <strong>switch</strong> or <strong>hub</strong>.
+A <strong>hub</strong> is a device that acts as a central point for multiple LAN
+cables. It takes any data that comes in one port and sends it to
+all the other ports. A <strong>switch</strong> is similar to a hub but smarter.
+It looks at incoming data and determines the port or ports on which
+to transmit it. Switches have largely replaced hubs. They provide
+<strong>scalable bandwidth</strong> in that they do not introduce more network
+congestion as you add more hosts onto your LAN. Switches and hubs
+are <strong>link-layer</strong> devices (more on that later). That is, they move ethernet packets
+to their destination as opposed to relaying data between networks.
+They are responsible for creating the physical network. For wireless
+networks, a wireless access point serves as link-layer switch.</p>
+
+<h2 id="accessnetwork">Access Network</h2>
+
+<p>The connection between the LAN and the Internet (via the Internet
+Service Provider) is called the <strong>access network</strong>. A <strong>residential
+gateway</strong> (a type of router) or <strong>access router</strong> connects a home
+or office LAN to the Internet. A <strong>modem</strong>, which stands for
+<strong>modulator/demodulator</strong> converts data between various analog
+formats as needed by the underlying media. Think of a modem as
+back-to-back NICs, each converting data to their type of media.
+Modems are generally built into access routers. Examples of access
+links are:</p>
+<dl>
+<dt>DSL (digital subscriber line)</dt>
+<dd><strong>DSL</strong> uses existing copper telephone wiring between your home
+and the phone company&#8217;s central office. Since voice uses only the
+0 - 4 kHz range of frequencies, there is a lot of untapped bandwidth
+in a phone wire. DSL uses the 4 kHz through 50 kHz frequency band
+for upstream data (data you send) and the 50 kHz through 1 MHz band
+for downstream data (data you receive). A DSL modem serves as an
+access router and modem. At the phone company&#8217;s central office, the
+access link terminates at a DSLAM (digital subscriber line multiplexor).
+From there, the data signals are sent to the data network (Internet)
+and the voice signals are sent to the phone network.</dd>
+
+<dt>Cable</dt>
+<dd>Internet service provided by a TV cable company uses the same
+coax cable that provides TV signals. With cable TV, hundreds of
+channels are transmitted at once, each occupying a different frequency
+band (high definition channels occupy a 6 MHz band and standard
+definition digital channels typically occupy a 1.5 GHz band). This
+type of transmission is called <strong>broadband</strong>. A certain number of
+channels are not used for TV services but instead are used for
+Internet access. The customer has an access router/modem that
+conforms to the <strong>DOCSIS</strong> (Data Over Cable Service Interface
+Specification) standard. Some number of channels are devoted to
+downstream communication (data you receive). Each channel provides
+38 Mbps service. Another set of channels are devoted to upstream
+service, with each channel providing 27 Mbps service. The cable
+terminates at the cable company&#8217;s headend on a device called the
+CMTS, the cable modem termination system. Here, the Internet service
+frequencies are filtered to separate out the data and send it to
+the cable company&#8217;s Internet link. A key distinction between DSL
+and cable service is that the phone wire between the DSL modem and
+the phone company&#8217;s central office is a dedicated, non-shared line.
+The coax cable of cable TV service is shared among a neighborhood.
+However, even though the channel is shared, the capacity of coax
+media is greater than that of a phone line and its signal attenuation
+over distance is far lower.</dd>
+
+<dt>FTTH (Fiber to the Home), FTTN (fiber to the Neighborhood)</dt>
+<dd>Fiber offers even greater bandwidth than cable and can propagate
+signals longer distances without degradation. Fiber to the Home
+(FTTH) is an optical fiber link that connects a home to a central
+office and delivers a combination of TV, telephone, and Internet
+service. Verizon&#8217;s FiOS service is an example of a service that
+delivers fiber to the home. Access links in this architecture often
+use optical splitters to allow a single fiber from the central
+office to fan out to several homes (typically 16&#8211;128). FTTH requires
+an end-to-end fiber infrastructure, which is costly to deploy
+(Verizon spent $23 billion through 2010 deploying FiOS at a cost
+of over $800 per home). An alternative architecture that is designed
+to be more cost effective is Fiber to the Neighborhood (FTTN).
+AT&amp;T&#8217;s U-verse service is an example of this. A fiber runs from the
+provider&#8217;s central office to the neighborhood (within a half mile
+of the customers&#8217; homes). There, it goes to a mini headend that
+uses copper wiring to connect to each customer&#8217;s home via VDSL (very
+high bitrate DSL).</dd>
+</dl>
+
+
+<h2 id="isps">ISPs</h2>
+
+<p>The organization that provides Internet service to a customer is called an
+<strong>Internet Service Provider</strong> (<strong>ISP</strong>). One ISP does not have
+access links to every Internet user in the world so there are thousands of ISPs: approximately 12,700
+worldwide; 7,000 in the U.S. (about 100 or so larger-sized ones and lots of tiny regional ones).
+Most smaller ISPs that serve end users purchase Internet connectivity from other ISPs.
+ISP networsk are categorized by <strong>tiers</strong>. There isn&#8217;t a formal definition
+of what constitutes a tier but there are generally accepted conventions.</p>
+
+<p>At the very top of the hierarchy, <strong>Tier 1</strong> ISPs own the infrastructure that forms
+the backbone of the Internet. Each Tier 1 ISP has a <strong>peering</strong> agreement with every other
+Tier 1 ISP. This means that they agree to forward and receive traffic from each other without charging
+the other ISP for it. Tier 1 ISPs have access to the <strong>Internet routing table</strong>,
+also known as the <strong>global routing table</strong>. What this means that they know the
+top-level ISP to which any IP address should be sent. They also know which of their lower-tier ISPs
+receive any given IP address. As such, there is no concept of a &#8220;default route&#8221; at this level. With
+lower-tier ISPs, a router can give up if it does not know where a certain packet should go and
+just send it to a higher-level ISP. Tier 1 ISPs do not pay for data transit.
+ Examples of Tier 1 ISPs include AT&amp;T, Verizon, CenturyLink, Level 3, Telefónica, and NTT. </p>
+
+<p><strong>Tier 2</strong> ISPs purchase data transit from Tier 1 ISPs and other Tier 2 ISPs but may also peer with other networks for
+direct connectivity and cost saving. They may then resell Internet access.
+Examples of Tier 2 ISPs include
+Comcast, British Telecom, Vodafone, and Sprint Communications. </p>
+
+<p>Tier 3 ISPs occupy the lowest level and solely purchase Internet
+transit from one or more Tier 1 and Tier 2 IPSs. A Tier 3 ISP will
+typically provide coverage in a limited region of a country. Examples
+of these are Powernet Global, and Excel.Net. They concentrate on
+the retail and consumer markets.</p>
+
+<p>A packet will often pass through several networks en route to its destination, both within and between
+ISPs. Each link terminates at a <strong>router</strong> which makes a decision on where the packet
+should be delivered. Each transmission of a packet is called a <strong>hop</strong>.</p>
+
+<p>Within ISPs, <strong>edge routers</strong> are placed at the edge of an ISP&#8217;s network and
+communicate with other networks. For larger organizations, an edge router may sit at the
+edge of a customer&#8217;s network and connect to one or more ISPs.
+A <strong>core router</strong> is a router that connects routes on the Internet backbone.
+A core router may also be used in dispersed organizations to interconnect routers from
+multiple locations.</p>
+
+<h1 id="networkingoverview">Networking overview</h1>
+
+<p>A network is inherently a shared resource. Lots of devices send and receive data on it.
+How do we share the network without clobbering each other&#8217;s data?</p>
+
+<p>The most basic approach is to establish a dedicated connection from the source to the destination.
+This is a <strong>physical circuit</strong> and is what was used in the early days of the phone
+system: your phone line went to the central office where it connected to a patch cord that was
+in turn connected to the wire of the person with whom you were speaking. The same stream of electrons
+flowed from one end to the other. This is not a viable use of network resources. Moreover, we will
+likely have multiple applications running on a machine and using the network. We need to find
+a way to share network links.</p>
+
+<p>One way can share the medium is to have each party communicate on
+different frequencies. This ability to transmit different data
+simultaneously is called <strong>broadband</strong> communication.
+Each transmission is assigned a frequency band: a portion of the
+total bandwidth. Broadband communications uses
+<strong>Frequency Division Multiplexing</strong> (<strong>FDM</strong>).
+Note that bidirectional communication
+on one channel is not possible: each sender-receiver set needs its
+own frequency band. Cable TV is an example of broadband. </p>
+
+<p>An alternate method is to have everyone take turns in accessing the
+medium. This is called <strong>baseband</strong> communication. Each device is allowed
+full access to the medium&#8217;s bandwidth but only for a portion of time.
+Each communication session is assigned a specific set of short, fixed-length time slots during which it
+can transmit. This is called <strong>Time Division Multiplexing</strong> (<strong>TDM</strong>).
+Time Division Multiplexing is an example of <strong>circuit switching</strong>.</p>
+
+<p>Both FDM and TDM are examples of <strong>circuit switching</strong>.
+Circuit switching sets up a dedicated communication channel, similar to
+a physical circuit.
+The key difference from a physical circuit is that the effective bandwidth is lower than
+the capacity of the medium since it is shared.
+With Frequency Division Multiplexing, the available bandwidth is sliced into frequency ranges.
+With Time Division Multiplexing, the available bandwidth is sliced into time slots.</p>
+
+<p>An althernate way of sharing a medium is to use
+variable-size time slots with no scheduling on the transmitter&#8217;s
+part. This is called <strong>packet switching</strong>.</p>
+
+<h2 id="circuitswitching">Circuit switching</h2>
+
+<p>Circuit switching requires a <strong>connection setup</strong> (or <strong>circuit setup</strong>).
+A control message is sent from the source to establish
+a path (route) from the source to the destination. Every
+switching element in the path agrees to the setup of the path and allocates the
+appropriate time slots (and other resources, such as memory buffers). The originating
+node is then informed that the connection is established and communication
+can take place. The path and all the switching resources (e.g., time slices or frequency bands)
+remain allocated to the communication session whether data is being sent or not.
+All data travels along this predetermined path from the source to the destination.
+When the communication is complete, the sender &#8220;releases&#8221; the circuit. This results
+in the sending of another control message through the path informing routers to
+de-allocate the resources they were using for the session.</p>
+
+<p>Benefits of circuit switching are that it offers constant latency and guaranteed bandwidth.
+Another benefit is that data routing decisions do not have to be made for each message
+that is transmitted. They
+are made once at the start of the communication session. Data can flow through a router
+without having to be stored first until a decision is made where and when to transmit it.
+The downside of circuit switching is that each connection ties up bandwidth and switching resources whether
+any data is being transmitted or not. Conversely, if a connection needs to transfer a
+larger amount of data, it still needs to spread it over bandwidth given to it even
+if the rest of the network is not being used at the moment.
+In short, circuit switching does not use network resources efficiently. Each circuit is
+allocated a fixed bandwidth whether it is used or not.</p>
+
+<h2 id="packetswitching">Packet switching</h2>
+
+<p>With packet switching, a communication stream is broken into chunks of data called <strong>packets</strong>.
+Each packet must contain a destination address in its message header.
+The packets travel from the source node to their final destination via <strong>packet switches</strong>.
+Routers and ethernet switches are examples of packet switches.
+Routers are used to transmit packets between different
+networks and switches are used to transmit packets within a local area network. Each packet switch
+decides on the disposition of the packet (to what port it should be transmitted) based on the packet&#8217;s destination
+address. There is no need to retain memory of a predefined route for a stream of packets that represents
+a communication stream. In fact, there is no real concept of a communication stream because no
+routes have to be set up and no resources need to be reserved ahead of time.
+Because packet switching is designed for baseband networks, each packet has full use of the
+network link. If there are no other packets transmitted on the network, a node may see its available
+bandwidth approach the maximum capacity of the network link.</p>
+
+<p>Packet switched traffic is known as <strong>datagram service</strong> in contrast to circuit switched
+virtual circuit service. Think of a datagram as a telegram or letter, where each message has to be
+addressed individually and may take a different path through the network. Think of a virtual circuit
+as a telephone call where the call is first set up but then gets an established route constant bandwidth
+for its duration.</p>
+
+<p>Packet switching employs <strong>statistical multiplexing</strong>. Multiplexing means dividing
+a communication channel among multiple data streams. With TDM&#8217;s circuit switching,
+a communication channel was divided into fixed time slots per data stream. With packet switching,
+we are still sharing the network but now using variable time slots. What this means is that
+if a node has a lot of data to transmit and others do not then it can transmit large packets
+(or a lot of smaller packets) and use more of the network. If a node has little to transmit, it
+will use less of the network and more network capacity will be available for others.
+Of course, there might be times when a node may have to wait longer for the network to be free.
+If a lot of nodes have a lot of data to transmit, they will collectively have to wait longer to use
+the network, some more than others.
+Similarly, routers may end up queuing packets for a particular outbound port. This leads to
+variable latency. Packet switching is characterized by variable bandwidth and variable latency.
+With packet switching, an entire packet needs to be received by a router before it is
+transmitted on an outgoing link. This is called <strong>store and forward</strong> delivery
+and also contributes to network latency as we will see in our discusion on delay and throughput.</p>
+
+<p>Despite its variable bandwidth and variable latency, packet switching allows for far more
+efficient use of the network than circuit switching and has no limit on the number of concurrent
+communication sessions. Because, on average, applications do not use the network non-stop,
+switching and link resources are wasted whenever data is not flowing on an established connection.
+With packet switching, there is no such reservation of these resources and more streams can be accommodated
+while providing the same bandwidth to applications.
+Packet switching is the dominant means of data communication. The Internet is built around
+packet switching.</p>
+
+<h1 id="units">Units</h1>
+
+<p>Throughout our discussions on networking, we will bring up units of measure.
+The three crucial ones for us are the size of data, the speed at which it moves,
+and the time that it takes for it to get somewhere.</p>
+<dl>
+<dt>Size</dt>
+<dd>The fundamental unit of size is a <strong>bit</strong> (b).
+Eight bits make a <strong>byte</strong> (B).
+Packet sizes are generally measured in bytes (watch out for the factor of eight when working
+with bits per second!).
+Networks tend to use base&#8211;10 units, so a <strong>kilobyte</strong> (KB)
+is 1,000 bytes rather than the 1,024 bytes we are used to in programming.
+A <strong>kilobit</strong> (Kb) is 1,000 bits.
+A <strong>megabit</strong> (Mb) is 10<sup>6</sup> bits and a <strong>gigabit</strong> (Gb) is 10<sup>9</sup> bits.
+A <strong>megabyte</strong> (1 MB) is 1,000 KB or 10<sup>6</sup> bytes or 8&times;10<sup>6</sup> bits.</dd>
+
+<dt>Time</dt>
+<dd>Time is measured in <strong>seconds</strong> (s).
+One second (1 s) = 1,000 ms (<strong>milliseconds</strong>) = 10<sup>6</sup> &mu;s (<strong>microseconds</strong>) =
+10<sup>9</sup> ns (<strong>nanoseconds</strong>).</dd>
+
+<dt>Rate</dt>
+<dd>Rate is measured in <strong>bits per second</strong> (b/s or bps).
+Moving a megabit (1 Mb) of data over a 10 Mbps (megabit per second) network will take
+(1&times;10<sup>6</sup> b &divide; 1&times;10<sup>6</sup>; bps) = 0.1 s, or 100 ms.
+Transmitting 1 kilobit on a 1 Gbps link will take (kilo &divide; giga)
+= (10<sup>3</sup> &divide; 10<sup>9</sup>) = 10<sup>&#8211;6</sup> = 1 &mu;s, or one millionth of a second.</dd>
+</dl>
+
+
+<h1 id="delayandthroughputinnetworks">Delay and throughput in networks</h1>
+
+<p>As a packet flows from its source to its ultimate destination, it goes through
+multiple routers. Each router introduces a delay as does the transit of the packet over
+the communication link.</p>
+
+<p>With packet switching, a packet must be fully received by a router before it can be
+sent out. This is <strong>store and forward</strong> packet delivery.
+To see how this contributes to overall delay, let us consider each link.
+If data is transmitted at <em>R</em> bits per second and a packet is <em>L</em> bits
+long, it takes <em>L/R</em> seconds to transmit a packet from one link to the next.
+Since transmission on the next link will not start until the packet is received,
+each link adds a delay of <em>L/R</em> seconds. With <em>N</em> links (there are <em>N&#8211;1</em> routers or transmitters
+but we also count the delay of the initial transmission),
+we have a total delay of <em>N(L/R)</em> seconds.</p>
+
+<p>Network delay is due to four factors:</p>
+
+<ol>
+<li><p><strong>Processing delay</strong>.
+The processing delay is the computation that a router has to do to
+examine the header, check for packet errors, figure out the outbound port (route), and
+move data around. It is usually not a significant contributor to the overall delay
+and consumes a few microseconds.</p></li>
+<li><p><strong>Transmission delay</strong>.
+The transmission delay is the time that it takes to get a complete packet out onto the network.
+This is a function of the speed of the link (e.g., 1 Gbps) and the number of bits in the packet:
+<em>(packet size &divide; transmission speed)</em>. If the packet size is <em>L</em> and the
+transmission rate is <em>R</em>, the transmission delay is <strong><em>L/R</em></strong>.</p></li>
+<li><p><strong>Propagation delay</strong>.
+The propagation delay is the time it actually takes the signal to move from one end of the medium to
+the other. While we might transmit the bits onto the network at, say, 100 megabits per second, there
+is a delay between the time that the signal is sent and the signal is received. This is the speed
+of signal propagation in the medium. For electrical signals in unshielded twisted pair or
+for light pulses in fiber optics, this value is approximately 2&times;10<sup>8</sup> m/s (about
+67% of the speed of light in a vacuum). An
+electrical signal propagates in air on a wireless network at approximately 3&times;10<sup>8</sup>
+m/s. Depending on the distance the packet needs to travel, the delay may be from a few nanoseconds
+to a few tens of milliseconds. It might be considerably longer for satellite transmission due to the longer
+distance covered.</p></li>
+<li><p><strong>Queuing delay</strong>.
+With packet based networks, we can only transmit one packet onto a link at a time. Any other packets
+that need to go out on that link will need to wait in a queue. The queuing delay is a function
+of the amount of bits that are ahead of the packet (number of packets &times; the size of each packet)
+and the transmission rate of the outbound link. Queuing delay can vary a lot depending on how much
+data traffic is flowing over any particular link. It is dependent on how much traffic arrives at
+a router at approximately the same time that needs to go out on the same link and on how quickly the
+router can transmit the data out (see <em>transmission delay</em>).</p></li>
+</ol>
+
+<p>One useful measure for estimating the likelihood of queuing delays is
+<strong>traffic intensity</strong>.
+Traffic intensity is the average packet transmission delay
+(<em>L/R</em>; see <em>transmission delay</em>) multiplied by the average rate of packet arrival.
+If the average rate of packet arrival is <em>a</em>, <strong>traffic intensity</strong> is <strong><em>La/R</em></strong>.
+It is technically a unitless quantity since packets/second &times; bits/packet &divide; bits/second cancel out.
+[Trivia - not on the exam: the unit of this measure is called an <em>erlang</em> and refers to the load
+on a network.]</p>
+
+<p>If the traffic intensity is greater than one, that means that, on average, packets arrive faster than
+they can be transmitted and the queue will keep growing without bound.
+This assures us that the queue will eventually overflow
+and packets will have to be <strong>dropped</strong>, leading to <strong>packet loss</strong>.</p>
+
+<p>If the traffic intensity is less than or equal to one, packets are arriving slower or at the
+same speed that they are being transmitted. This does not mean that packets will never get queued up.
+A number of packets may occasionally arrive in rapid succession &#8212; a <strong>burst</strong> &#8212; and will have to be queued.
+As traffic intensity approaches one, the probability that there will be bursts of packets that need to
+be enqueued increases drastically. Hence, as traffic intensity approaches 1, queuing delay starts
+to increase dramatically. In some cases, this will lead to lost packets due to limited queue sizes (routers
+have only a fixed amount of memory to devote to queues).</p>
+
+<p>The total delay for a node is the sum of the four delays we just mentioned: processing + queue +
+transmission + propagation. The total delay for <em>N</em> links in a store-and-forward
+network is simply <em>N</em> times that amount.</p>
+
+<h1 id="protocols">Protocols</h1>
+
+<p>Data networking is generally implemented as a stack of
+several <strong>protocols</strong> &ndash; each responsible for a specific aspect of
+networking. The <strong>OSI reference model</strong> defines seven <strong>layers</strong>
+ of network protocols.</p>
+<dl>
+<dt>1. Physical</dt>
+<dd>Deals with hardware, connectors, voltage levels, frequencies, etc.
+This layer does not care about contents but defines what constitutes a 1 or a 0.
+Examples of this layer are USB and Bluetooth.</dd>
+
+<dt>2. Data link</dt>
+<dd>Sends and receives packets
+on the physical network. It may detect and possibly correct errors but only
+on this link (for example, queue overflow at a router may still cause packet loss).
+Ethernet packet transmission is an example of this layer.</dd>
+
+<dt>3. Network</dt>
+<dd>Relays and routes data to its destination. This is where networking gets interesting
+because we are no longer confined to a single physical network but can route traffic
+between networks. IP, the Internet Protocol, is an example of this layer.</dd>
+
+<dt>4. Transport</dt>
+<dd>Provides a software endpoint for networking. Now we can communicate application-to-application
+instead of machine-to-machine. Each application can create one or more distinct streams
+of data. TCP/IP and UDP/IP are examples of this layer.</dd>
+
+<dt>5. Session</dt>
+<dd>Manages multiple logical connections over a single communication link. Examples
+are SSL (Secure Sockets Layer) tunnels and remote procedure call connection management.</dd>
+
+<dt>6. Presentation</dt>
+<dd>Converts data between machine-specific data representations.
+Examples are data representation
+formats such as MIME (for media encoding on email),
+XML, XDR (for ONC remote procedure calls), NDR (for Microsoft COM+ remote procedure calls),
+and ASN.1 (used for encoding cryptographic keys and digital certificates).</dd>
+
+<dt>7. Application</dt>
+<dd>This is a catch-all layer that includes every application-specific communication
+protocol. For example, SMTP (sending email), IMAP (receiving email), FTP (file transfer),
+HTTP (getting web pages).</dd>
+</dl>
+
+
+<p>The OSI reference model gives us a terminology to discuss and compare different
+networks. Any specific network may not necessarily implement all these layers.
+The Internet protocol stack relies on layers 1 through 4 (physical through transport)
+but it is up to applications to implement and use session, presentation, and,
+of course, application layers.</p>
+
+<p>A key aspect of this layering approach is that each layer only has to interact with the
+corresponding layer on the other side. For example, an application talks to
+another application. TCP on one system deals with issues of retransmission and
+message acknowledgement by talking to the TCP layer on the remote system.
+A layer also does not need to be aware of the implementation of layers above it or
+below it: they are just data sources and data sinks.</p>
+
+<h2 id="protocolencapsulation">Protocol encapsulation</h2>
+
+<p>if we want to send an IP packet (layer 3) out on an Ethernet network
+(layers 1 and 2), we need to send out an Ethernet packet (an Ethernet
+NIC or transceiver knows nothing about IP). The
+entire IP packet becomes the payload (data) of an Ethernet packet.
+Similarly, TCP and UDP, layers above IP, have their own headers,
+distinct from IP headers (they need a port number, for example).
+A TCP or UDP packet is likewise treated simply as data by the IP layer.
+This wrapping process is known as <strong>protocol encapsulation</strong>. Each
+layer of the networking stack can ignore the headers outside of its
+layer and treat anything from higher layers simply as part of the
+payload that needs to be sent.</p>
+
+<h1 id="theapplicationlayer">The Application Layer</h1>
+
+<h2 id="applicationarchitectures">Application architectures</h2>
+
+<p>There are two ways that network applications are structured: <strong>client-server</strong> and <strong>peer-to-peer</strong>.</p>
+<dl>
+<dt>Client-server</dt>
+<dd>This is the dominant model of interaction. One application, called the <strong>client</strong> (and usually run by the end user), requests
+something from another application, called a <strong>server</strong>. The server provides a <strong>service</strong>.
+Examples of this are a web browser (client) requesting a web page from a web server, a
+mail application (client) accessing a mail server to get mailbox contents, or a print server being given
+content to print. In this model, clients communicate with the server
+and not with other clients.</dd>
+
+<dt>Peer-to-peer</dt>
+<dd>A peer-to-peer architecture employs a collection of applications, any of which can talk to any other.
+These applications are <strong>peers</strong> and are generally run by a collection of end users
+rather than some service provider. The name <strong>peer</strong> implies that there is no leader: applications all have equal
+capabilities. An appealing aspect of a peer to peer design is <strong>self-scalability</strong>. As more
+and more nodes join the collection of peers, the system has more peers to do the work and can hence
+handle a large workload. Examples of peer-to-peer architectures are BitTorrent and Skype.</dd>
+
+<dt>Hybrid</dt>
+<dd>A difficulty with peer-to-peer architectures is that one often needs to do things such as keep track
+of peers, identify which system can take on work or has specific content, and handle user
+lookup and authentication. This led to a variation of the peer-to-peer model where
+a <strong>coordinator</strong>, a central server, is in place to deal with these centralized
+needs. However, the peers still handle all the bandwidth-intensive or compute-intensive work.</dd>
+</dl>
+
+
+<p>No matter what architecture is used, there is still a fundamental <em>client-server</em>
+relationship. One system (a client) will send some request to another (a server).</p>
+
+<h2 id="networkapplicationapi">Network Application API</h2>
+
+<p>When we write network-aware applications, they need to use the network to communicate with
+each other. These applications are no different than any other processes on the computer. Any
+process can access the network and it is up to the operating system to coordinate this
+access. When writing applications, the programmer will use a
+set of interfaces referred to as a
+<strong>Network API</strong>
+(Application Programming Interface) to interact with the network and not worry about the lower
+layers of the network.
+For example, a programmer does not need to know about ethernet or IP
+to communicate with another program but needs to have available the abstraction of being able to send data
+from one logical port on an application to one on another application.</p>
+
+<p>The communication session is the conducted by the <strong>application layer protocol</strong>.
+This is a definition of the valid sequence of requests, responses, and their respective message formats
+for a particular network service. The protocol needs to be well-defined for applications to
+be able to communicate with each other.</p>
+
+<p>Given a well-defined protocol, any application should be able to follow the rules of the protocol
+and create messages that the other side can understand, regardless of the implementation language
+or operating system. For instance, an iPad running an Swift should be able to talk to
+a mail server written in Java running on a Windows platform.</p>
+
+<p>The Network API will have core services, such as those related to sending and
+receiving data, that are provided by the operating system. These are augmented with libraries
+to handle other functions, such as looking up names, converting data, and
+simplifying certain operating-system interfaces.</p>
+
+<p>As programmers writing network-aware applications, we obviously need functions
+for sending and receiving data but we may want to be able to specify something
+about the behavior of that data over the network. For example:</p>
+<dl>
+<dt>Do we need reliable data transfer?</dt>
+<dd>Is it important to the application that data arrives reliably and in order at the
+destination? It seems like the answer should always be <em>yes</em>, but we have to
+realize that ensuring reliability entails the detection, request for, and retransmission of
+lost packets. This adds a considerable delay to the delivery of that lost packet.
+For streaming media applications, such as telephony, that packet may arrive too late.
+In this case, it is useless to the application and the application could just as
+easily unsed best-effort service.
+Moreover, some applications may choose to handle retransmission requests themselves in a
+different manner.
+Applications that can handle unreliable media streams are called <strong>loss-tolerant applications</strong>.</dd>
+
+<dt>Throughput</dt>
+<dd>An application may have specific bandwidth requirements. For example, video and voice telephony
+applications may have minimum bandwidth needs. Applications with such needs are <strong>bandwidth
+sensitive applications</strong>. Applications that can adapt to whatever bandwidth is available
+(for example, switch to a lower bandwidth codec) are known as <strong>elastic applications</strong>.</dd>
+
+<dt>Delay and Jitter</dt>
+<dd>Interactive applications, such as voice and video telephony may want to ensure minimal
+network delay to reduce the delay to the receiver. <strong>Jitter</strong> is the
+variation in delay and these applications would also like to see low jitter.</dd>
+
+<dt>Security</dt>
+<dd>Applications may need to ensure that they are truly communicating with the
+proper computer and a legitimate application on that computer. They may be concerned
+about the integrity of the data that is being transmitted and want to ensure
+that it cannot be modified or read by outside parties.</dd>
+</dl>
+
+
+<p>These are all legitimate desires. Unfortunately, IP gives us no control over
+throughput, delay, jitter, and security. We can handle security at the application layer
+and we will later examine mechanisms that were added to IP to support some degree of control
+over packet delivery.</p>
+
+<h2 id="iptransportlayers">IP Transport Layers</h2>
+
+<p>Applications interact with IP&#8217;s transport layer.
+There are two dominant transport-layer protocols on top of IP (IP is the network layer):
+TCP and UDP (there are a few others, such as the SCTP, but these two dominate).</p>
+
+<p>TCP, the <strong>Transmission Control Protocol</strong>, provides
+<strong>connection-oriented</strong> service.
+This does not imply that an actual network connection is being set up as one would
+for a circuit-switched network.
+We are strictly talking about transport-layer services here. For layer 2 and layer 3
+protocols, a connection refers to setting up a pre-defined route (circuit) and
+providing that connection with guaranteed bandwidth. At the transport layer (4),
+we still strive strive to provide the illusion of a reliable bidirectional
+communication channel but it is all done in software on top of unreliable
+datagrams (IP). At the transport layer, the software does not have any control
+of the route that packets take or the bandwidth that is available to the connection.</p>
+
+<p>The TCP layer of software ensures that
+packets are delivered in order to the application (buffering them in memory in the
+operating system if any arrive out of order) and that lost or corrupt packets are
+retransmitted. TCP keeps track of the destination so that the
+application can have the illusion of a connected data stream (just keep
+feeding data to the stream and don&#8217;t worry about addressing it). TCP provides
+a <strong>full-duplex connection</strong>, meaning that both sides can send and
+receive messages over the same link. TCP is <strong>stream oriented</strong>, meaning that
+data is received as a continuous stream of bytes and there is no preservation
+of message boundaries.</p>
+
+<p><strong>UDP</strong>, the <strong>User Datagram Protocol</strong> is designed as a very thin
+transport layer over IP. It provides <strong>connectionless</strong> service,
+also known as <strong>datagram</strong> service. While UDP drops packets with
+corrupt data, it does not ensure in-order delivery or reliable
+delivery. UDP&#8217;s datagram service preserves message boundaries. If you send
+<em>n</em> messages, you will receive <em>n</em> messages; they will not be combined into
+one message.</p>
+
+<p><strong>Port numbers</strong> in both TCP and UDP are used
+to allow the operating system to direct the data to the appropriate application
+or, more precisely, to the <strong>socket</strong> that is associated with the
+communication stream on the application. A port number is just a 16-bit number
+that is present in both TCP and UDP headers to identify a specific endpoint on a node.</p>
+
+<h1 id="sockets">Sockets</h1>
+
+<p><strong>Sockets</strong> are an interface to the network provided to
+applications by the operating system. They were created at the University of
+California at Berkeley for 4.2BSD (a derivative of UNIX) in 1983
+and most operating systems now support this interface.
+The purpose of sockets is to provide a protocol-independent interface for applications
+to communicate with each other. The underlying network does not have to by IP.
+Once set up, the socket looks like a file descriptor for an open file. With connection-oriented
+(e.g., TCP) sockets, you can use the regular file system <em>read</em> and <em>write</em> system
+calls to receive and send data.</p>
+
+<p>Sockets are the mechanism that the operating system exposes to the user for accessing
+the network.
+A socket is created with the <strong>socket</strong>
+system call and assigned a local address and port number with the <strong>bind</strong> system
+call. The OS can fill in defaults if you do not want to specify a specific address and port.
+(Note that you specify an address because your system might have multiple IP addresses; one for
+each of its network interfaces). The <em>socket</em> also requires that the programmer identify
+the <strong>address family</strong> for the socket (e.g., the protocol stack: IP, IP version 6, Bluetooth, local)
+as well as the mode of communication (e.g., connection-oriented or datagrams).</p>
+
+<h2 id="socketsforconnection-orientedprotocolsstreams">Sockets for connection-oriented protocols (streams)</h2>
+
+<p>For connection-oriented protocols (TCP), a socket on a server can be set to
+listen for connections with the <strong>listen</strong> system call. This turns it
+into a listening socket. Its only purpose will now be to receive incoming connections. </p>
+
+<p>The <strong>accept</strong>
+call waits for a connection on a listening socket.
+It blocks until a connection is received, at which point the server receives
+a <em>new</em> socket that is dedicated to that connection.</p>
+
+<p>A client establishes a connection with
+the <strong>connect</strong> system call. After the connection is accepted by the server,
+both sides now have a socket on which they can communicate.</p>
+
+<p>Sending and receiving data is
+compatible with file operations: the same <strong>read/write</strong> system calls can be
+used. Data communication is <strong>stream-oriented</strong>. A sender can transmit an
+arbitrary number of bytes and there is no preservation of message boundaries.</p>
+
+<p>When communication is complete, the socket can be closed with the <strong>shutdown</strong>
+or <strong>close</strong> system calls.</p>
+
+<h2 id="socketsforconnectionlessprotocolsdatagrams">Sockets for connectionless protocols (datagrams)</h2>
+
+<p>With connectionless protocols, there is no need to establish a connection or to close one.
+Hence, there is no need for the <em>connect</em>, <em>listen</em>, or <em>shutdown</em>
+system calls.</p>
+
+<p>Unlike connection oriented sockets, data communication
+is <strong>message-oriented</strong>.
+A sender transmits a message. The size of the message is limited to the maximum
+size allowable by the underlying network (the MTU, maximum transfer unit).</p>
+
+<p>Because you need to specify the destination as the operating system does not keep
+state of a &#8220;connection&#8221;, new system calls were created for sending and receiving
+messages.
+The <strong>sendto</strong> and <strong>recvfrom</strong> system
+calls are used to send and receive datagrams. <em>sendto</em> allows you to
+send a datagram and specify its destination. <em>recvfrom</em> allows you to
+receive a datagram and identify who sent it.</p>
+
+<h2 id="thejavainterfacetosockets">The Java interface to sockets</h2>
+
+<p>Java provides many methods to deal with sockets and some commonly-used ones
+consolidate the sequence of steps that need to be take place on the operating system.
+The constructor for the <strong>ServerSocket</strong> class creates a socket for the TCP/IP protocol,
+binds it to a specified port and host (using defaults if desired), and sets
+that socket to the listening state.
+A client&#8217;s <strong>Socket</strong> class constructor
+creates a socket for the TCP/IP protocol, binds it to any available local port and host,
+and connects to a specified host and port. It returns when the server accepts the connection.
+The connected socket object allows you to acquire an InputStream and OutputStream for
+communication.</p>
+
+<h1 id="threadsconcurrencyandsynchronization">Threads, concurrency, and synchronization</h1>
+
+<p>A process normally has one thread of execution, or flow of control.
+A process may be <strong>multithreaded</strong>, where
+the same program has multiple concurrent threads of execution.</p>
+
+<p>In a multi-threaded process, all of the process&#8217; threads share the
+same memory and open files. Within this shared memory, each thread
+gets its own stack, which is where return addresses from functions are
+placed and where local variables get allocated.
+Each thread also has its own instruction pointer and registers.
+Since memory is shared, it is important to note that there is
+no memory protection among the threads in a process. Global variables
+are freely accessible by all threads.
+In particular, the <strong>heap</strong>, the pool of memory
+that is used for dynamic memory allocation is shared and freely accessible
+to all threads in the process. </p>
+
+<h2 id="advantagesofthreads">Advantages of threads</h2>
+
+<p>There are several benefits in using threads. Threads are more efficient than
+processes.
+The operating system does not need to create and manage a new memory map
+for a new thread (as it does for a process). It also does not need to
+allocate new structures to keep track of the state of open files and
+increment reference counts on open file descriptors. Threading maps nicely
+to multicore architectures and allows for the effective use of
+multiple process cores.</p>
+
+<p>Threading also makes certain types of programming easy. While it&#8217;s true
+that there is a potential for bugs because memory is shared among threads,
+shared memory makes it trivial to share data among threads. The same
+global and static variables can be read and written among all threads
+in a process. For a network server process, threading is appealing because it
+becomes easy to write code that handles multiple client requests at
+the same time. A common programming model is to have one <strong>master thread</strong>
+that waits for client connections and then dispatches a <strong>worker thread</strong>
+to handle the request.</p>
+
+<p>While thread usage differs slightly among languages,
+there always needs to be a mechanism to create a thread and to
+wait for threads to exit.
+When a thread is created, a specific method (function) is called
+in that new execution flow. The original execution flow (the one thread
+that started when the process began) continues normally.
+When that thread eventually returns from that method, the thread terminates.
+If a thread needs to wait for another thread, it can choose to block until the
+other thread terminates. This is called a <strong>join</strong>. </p>
+
+<h2 id="mutualexclusion:avoidingsteppingoneachother">Mutual exclusion: avoiding stepping on each other</h2>
+
+<p>Because threads within a process share the same memory and hence share all global data (static variables,
+global variables, and memory that is dynamically-allocated via <em>malloc</em> or <em>new</em>),
+there is an opportunity for bugs to arise where multiple threads are reading and writing the same data
+at the same time. A <strong>race condition</strong> is a bug
+where the outcome of concurrent threads is unexpectedly dependent on
+a specific sequence of thread scheduling.
+<strong>Thread synchronization</strong> provides a way to ensure
+<strong>mutual exclusion</strong>, where we can have regions of code that only
+one thread can execute at a time.
+Any other thread that tries to run in that region of code will go to sleep (be blocked) until the lock is
+released when the current thread in that region leaves it.</p>
+
+<p>Java allows a <strong>synchronized</strong> keyword to be added to a method to ensure
+that no more than one thread will be allowed to run in that method. If that degree of
+control is too coarse, Java also allows the programmer to use the <code>synchronized</code>
+keyword to define a region of code that will be locked by a variable called a
+<strong>monitor object</strong>. Any other thread that tries to enter any region
+of code that is synchronized by the same monitor object will be blocked. This region
+of code that provides mutual exclusion is called a <strong>synchronized block</strong>.</p>
+
+<h1 id="domainnamesystem">Domain Name System</h1>
+
+<p>A node on the Internet is identified by its IP address.
+For IP version 4, the most common version deployed today, an IP address is a 32-bit value
+that is expressed as a set of four bytes, each as a decimal number and separated
+by dots. For instance, the IP address of the Rutgers web server is 199.83.128.67.
+[IP version 6, which is rapidly expanding as we are out of IPv4 addresses in some areas,
+is a 128-bit value and is expressed as a set of 8 groups of four hexadecimal digits.]
+As humans, however, we prefer to identify endpoints by name rather than by a number.
+For example, we think of the Rutgers web server by its name, www.rutgers.edu.
+We will now explore the management of IP domain names and IP addresses and converting between them.</p>
+
+<h2 id="howareipaddressesassigned">How are IP addresses assigned</h2>
+
+<p>IP addresses are distributed hierarchically. At the very top level, an organization
+called the <strong>IANA</strong> (<strong>Internet Assigned Numbers Authority</strong>)
+is responsible for the entire set of IP addresses. It allocates blocks of addresses
+to <strong>Regional Internet Registries</strong> (<strong>RIR</strong>).
+There are five RIRs, each responsible for a part of the world&#8217;s geography. For instance,
+the U.S. and Canada get addresses from <a href="http://www.arin.net">ARIN</a>,
+the American Registry for Internet Numbers. Countries in Europe and the mid-East get addresses
+from the RIPE Network Coordination Centre. These RIRs in turn allocate blocks of IP
+addresses to ISPs within their region. Since ISPs are tiered, an ISP may allocate
+a smaller block of addresses to a lower-tier ISP as well as to a company that subscribes
+to its services. </p>
+
+<h2 id="howarenamesassigned">How are names assigned</h2>
+
+<p>In the early days of the ARPANET, each machine had to have a globally unique name.
+The Network Information Center (<strong>NIC</strong>) at the Stanford Research Institute (SRI)
+kept the master list of machine names and their corresponding IP addresses.
+This solution does not scale. As the number of hosts on the Internet grew larger,
+a <strong>domain hierarchy</strong> was imposed on the name space. This created a
+a tree-structured name space with name management delegated to the various nodes of the tree, where
+each node is responsible for the names underneath it.
+Rutgers, for example, can name a new machine on the Internet
+anything it wants as long as the name is unique within Rutgers and is suffixed with rutgers.edu.
+The textual representation of <strong>Internet domain names</strong> is a set of strings delimited
+by periods with each set representing a level in the naming hierarchy. The rightmost string is
+the highest level in the hierarchy. </p>
+
+<p>The hierarchy of Internet domain names has a single root under which are
+<strong>top-level domains</strong> (<strong>TLDs</strong>). These are the .com, .edu, .org suffixes
+that you are familiar with. Currently, there are 1,239 top-level domains.
+They are divided into two categories: generic top-level domains and country-code top-level domains.</p>
+
+<p><strong>Generic TLDs</strong> (<strong>gTLD</strong>) include the .com, .edu, .gov, .net, etc. domains.
+Many of them date back to the first proposal of creating a domain hierarchy
+<a href="http://tools.ietf.org/rfc/rfc920.txt">RFC 920</a>.
+Each of these domain names is three or more characters long.
+As the Internet became international, country-specific domains were created. These <strong>Country-code TLDs</strong>
+(<strong>ccTLDs</strong>) are two-letter
+<a href="http://en.wikipedia.org/wiki/ISO_3166">ISO 3166</a>
+country codes (e.g., .ad for Andorra, .dk for Denmark, .es for Spain, .us for the U.S.A.).
+The root of the domain hierarchy initially allowed only US-ASCII (Latin) characters.
+This rule changed in 2009 and a
+new set of <strong>Internationalized Domain Names</strong> for country code top-level domains
+(<strong>IDN ccTLD</strong>) became available.
+Examples of these domains are
+السعودية. for Saudi Arabia, .рф for Russia, and .中國 for mainland China.
+In 2011, internationalized domain names were approved for generic top-level domains (IDN gTLD),
+giving us domains such as .みんな (&#8220;everyone&#8221; in Japanese), .移动 (&#8220;mobile&#8221; in Chinese), and
+.дети (&#8220;kids&#8221; in Russian).</p>
+
+<p>Each top-level domain has one administrator assigned to it. The IANA keeps track of the organizations
+that manage the various top-level domains. Until 1999, for example, a company called
+Network Solutions Inc. operated the .com, .org, and .net registries. Until that time,
+Network Solutions maintained the registry of names and processed registration requests
+from customers. Since then, the process has been decentralized to support <strong>shared registration</strong>.
+This allows multiple companies to provide domain registration services.
+One company is still assigned by the IANA to be the keeper of the master list for a specific
+top-level domain. This list of registered domain names for a particular TLD
+is called the <strong>domain name registry</strong>.
+The company that maintains this registry is called the
+<strong>domain name registry operator</strong>, also known as the <strong>network information center</strong> (<strong>NIC</strong>).
+The IANA keeps track of all these organizations.
+A <strong>domain name registrar</strong> is a company that provides <strong>domain registration services</strong>
+to customers, allowing
+them to register domain names for a fee. There are approximately 2,124 of these companies.
+Examples of these are GoDaddy (with over 60 million domains), Namecheap, eNom, and Tucows.</p>
+
+<p>When you pay GoDaddy, the <strong>registrar</strong>, $11.99 to register poobybrain.com, it consults the .com domain
+name <strong>registry</strong> at Verisign, which is the <strong>registry operator</strong> for the .com domain.
+If the domain name is available, GoDaddy becomes the <strong>designated registrar</strong> for that domain.
+This means that Verisign knows that Go Daddy has information on the owner of poopybrain.com and that changes and
+requests to transfer ownership or the registrar of your domain will have to come from that registrar.
+Of the $11.99 that you paid GoDaddy, $7.85 went to Verisign as a registry fee (different TLDs have different
+fees; .net registration costs $7.46). A $0.18 yearly fee that goes to ICANN to manage
+the registry.</p>
+
+<h2 id="associatingnameswithaddresses">Associating names with addresses</h2>
+
+<p>We now saw how IP addresses are allocated and how domain names are registered. There is no
+correlation between the two of them. A domain name does not imply a specific address and
+adjacent IP address numbers may belong to completely different domain names.
+We need a way to look up www.rutgers.edu and find out that its address is 199.83.128.67
+since the IP layer knows absolutely nothing about domain names. Since the network
+core has no interest in domain names, name-to-address resolution is handled at the
+network edge, in the application before it establishes a socket connection. The
+process of looking up a name is an <strong>application-layer protocol</strong>.</p>
+
+<p>In the past, Stanford Research Institute&#8217;s Network Information Center maintained the entire
+list of hosts on the internet (in a hosts.txt file; /etc/hosts on Unix systems). This file
+would be periodically downloaded by every system on the Internet.
+Clearly, this solution was not sustainable. We already saw that it made managing unique names
+problematic. Moreover, with millions of hosts on the Internet, there was a lot of churn
+in this database. Downloading a new copy of every host on the Internet constantly just doesn&#8217;t make sense. </p>
+
+<p>The system that was put in place was a database of <strong>DNS servers</strong>
+(Domain Name System servers). Like domain names themselves, DNS is a distributed,
+hierarchical database. </p>
+
+<p>A DNS server is responsible for a managing a sub-tree in the domain name hierarchy. For example,
+a server might be responsible for everything under rutgers.edu or even just the machines under
+under cs.rutgers.edu. This sub-tree of a group of managed nodes is called a <strong>zone</strong>.
+Each <strong>authoritative name server</strong> is responsible for answering
+queries about its <strong>zone</strong>. The authoritative name server for
+rutgers.edu is therefore responsible for the rutgers.edu zone. The question now is,
+how do you find it?</p>
+
+<p>A DNS server accepts queries from clients (called <em>questions</em>) and provides
+responses (called <em>answers</em>). By default, interactions with DNS servers use UDP for
+improved performance, although TCP is almost always supported as well.</p>
+
+<p>Any DNS server can be found by starting at the top of the name hierarchy.
+There are 13 <strong>root name servers</strong> that can provide a list of
+authoritative name servers for all the top-level domains (you can
+download the list of root name servers
+<a href="http://www.internic.net/domain/named.root">here</a>.
+By contacting any one of these servers, you can find out the address
+of a name server responsible for a specific top-level domain (such as .edu).
+Then, by querying a name server for that domain (e.g., the .edu name server),
+you can find a name server responsible for a name within that domain (such as rutgers.edu).
+The process can continue until you find a name server that is responsible for the
+zone that contains the host you need.</p>
+
+<p>There are two basic approaches for name resolution when dealing with a hierarchy of
+name servers: iterative or recursive queries.
+An <strong>iterative</strong> query is a single query to a name server. That server will return the
+best answer it can with the knowledge it has. This can be the the information
+configured for its zone (e.g., the domain names for which it is responsible) or
+cached results. If it does not have an answer to the query, it may return a <strong>referral</strong>.
+A referral is the name server for the next lower layer, taking you closer to your destination.
+For example, the root server can return a referral to tell you how to get to the .edu name server.
+A query to the .edu name server can return a referral to tell you how to get to the rutgers.edu name server.
+The advantage of this approach is that each name server can be completely stateless.
+It either knows the answer or it does not.</p>
+
+<p>With <strong>recursive resolution</strong>, the DNS server takes
+on the responsibility of performing the set of iterative queries to other DNS servers
+on behalf of the requestor and sends back a single answer.
+With recursive resolution, a DNS server
+may first send a query for the full domain name to the root name server.
+The root name server will return a referral to, for example, the .edu name server.
+A query to that server will then return a referral to the rutgers.edu name server.
+In reality, the recursive server will cache past lookups so it will likely know
+the addressses of recently-used top-level domains.</p>
+
+<p>The advantage of recursive resultion is that it
+incurs less communication at the client, simplifies the client&#8217;s protocol, and
+allows for caching of results at all the intermediate servers. The
+disadvantage is that a recursive server has to keep state about the client&#8217;s request until
+it has completed all processing and is ready to send a response back to the client.</p>
+
+<p>A DNS server is not obligated to support recursion.
+Most top-level DNS servers, such as root servers, do not support recursive queries.</p>
+
+<h2 id="howdoesadnsquerywork">How does a DNS query work?</h2>
+
+<p>The client interaction with DNS is via a <strong>DNS resolver</strong>. This is a
+a DNS server that is not necessarily part of the DNS hierarchy (that is, it does
+not have to be a server responsible for a zone). However, it is capable of taking
+a recursive request from a client and performing a set of iterative queries,
+going to the root servers if necessary, to get the result. Resolvers could be
+hosted on the client, within the organization, or by third parties such
+as Google Public DNS, or OpenDNS. Most ISPs provide a DNS resolver service.
+Many systems (such as Windows and Linux platforms)
+support extremely limited local DNS resolvers that are incapable of iterative queries
+and simply talk to another DNS server (e.g., a resolver hosted by the customer&#8217;s ISP). These
+limited DNS resolvers are called <strong>stub resolvers</strong>.</p>
+
+<p>DNS resolvers maintain a local cache of frequently used lookups
+to avoid the overhead of repeated lookups for the same name and
+to avoid the overhead of iterative queries. For example, it does not make sense to look up
+the name server responsible for .com over and over for each query (it&#8217;s 192.5.6.30, by the way).</p>
+
+<p>Let us look at the sequence of operations that a query for www.cs.rutgers.edu might take from
+an application. We assume that the client machine is configured to use OpenDNS
+as a DNS resolver service.</p>
+
+<p>Rutgers registers its domain with educause.edu, the domain registrar for names in the edu TLD.
+It provides Educause with a list of DNS servers that can answer queries for names underneath
+rutgers.edu. Educause.edu, in turn, registers its DNS servers with ICANN, who is responsible
+for the data in the root name servers.</p>
+
+<ol>
+<li><p>The client application contacts a local DNS <strong>stub resolver</strong>. This checks its
+cache to see if it already has the answer. It also checks a local hosts file to
+see if the answer is hard-coded in the configuration file. Giving up, it contacts
+a real DNS resolver (e.g., OpenDNS at 208.67.222.222) and sends it a query for &#8220;www.rutgers.edu&#8221;.</p></li>
+<li><p>The OpenDNS resolver checks its cache and doesn&#8217;t know either, so it
+contacts one of the root name servers (let&#8217;s assume the resolver&#8217;s cache is
+completely empty). It sends a query of &#8220;www.cs.rutgers.edu&#8221; to the root server
+198.41.0.4 (a.root_servers.net).</p></li>
+<li><p>The root server doesn&#8217;t have the answer but it knows the DNS server responsible
+for the edu domain, so it sends a <strong>referral</strong> back to the OpenDNS
+resolver giving it a list of name servers responsible for edu.</p></li>
+<li><p>The resolver now sends a query of &#8220;www.cs.rutgers.edu&#8221; to 192.41.162.32, one
+of the edu name servers (a.edu-servers.net at 192.5.6.30). It does not know the answer either
+but it does know the name servers for rutgers.edu, so it sends back
+a <strong>referral</strong> with a list of those servers.</p></li>
+<li><p>The resolver now sends a query of &#8220;www.cs.rutgers.edu&#8221; to 192.230.122.7,
+one of the rutgers.edu name servers (ns8.a1.incapsecuredns.net). This happens to be
+an authoritative name server for the rutgers.edu zone and it
+returns back the address, 128.6.4.24. If cs.rutgers.edu was defined as a separate zone,
+the rutgers.edu DNS server would send a referral to yet another name server.</p></li>
+<li><p>The query is now complete and the OpenDNS resolver sends the result back
+to the stub resolver that requested the query, which sends it back to the
+client application.</p></li>
+</ol>
+
+<h2 id="insideadnsserver">Inside a DNS server</h2>
+
+<p>DNS servers store various information about domain names. Each datum is called
+a <strong>resource record</strong>. A resource record contains a name, value, type of
+record, and a time to live value.
+Common records include:</p>
+
+<ul>
+<li><p><strong>Address</strong> (A record): identifies the IP address for a given host name.</p></li>
+<li><p><strong>Canonical name</strong> (CNAME record): identifies the real host name for an alias.
+For example, www.cs.rutgers.edu is really a CNAME (alias) to
+www3.srv.lcsr.rutgers.edu.</p></li>
+<li><p><strong>Name server</strong> (NS record): identifies the authoritative name servers for the domain.</p></li>
+<li><p><strong>Mail exchanger</strong> (MX record): identifies the mail server for a given host name.</p></li>
+</ul>
+
+<p>DNS uses a simple request-response protocol. Each query message from a client has
+a corresponding response message from the server. The exact same binary message structure
+is used for all DNS messages. A flag field identifies whether the message is a query
+or a response and whether recursion is desired.
+A variable-length set of fields after the fixed-length message header contains
+questions (e.g., that you are looking for the A record of www.rutgers.edu) and
+answers (the responses to the questions).</p>
+
+<h2 id="caching">Caching</h2>
+
+<p>As we mentioned earlier, DNS resolvers rely on caching to avoid performing the
+same queries over and over. Every DNS zone contains a time to live
+value, which is an estimate of how long it is safe for a resolver to keep the
+results for that zone cached. For example, systems under rutgers.edu have a TTL of 3600 seconds
+(1 hour) while systems under google.com have a TTL of 900 seconds (15 minutes).</p>
+
+<h2 id="reversedns">Reverse DNS</h2>
+
+<p>DNS servers are also able to take an IP address as a query and resolve a domain name for
+the address.
+Doing this requires a different query path: the edu server has no idea what range of IP
+addresses were allocated to Rutgers; it just knows the name servers for Rutgers.</p>
+
+<p>A special domain, <code>in-addr.arpa</code> is created for reverse lookups
+(<em>arpa</em> stands for <em>Address &amp; Routing Parameter Area</em>).
+The IP address to be queried is written in reverse order, with the first byte last, to construct a name
+that looks like 24.4.6.128.in-addr.arpa for the address 128.6.4.24.</p>
+
+<p>An organization has a range, or several ranges, of IP addresses assigned to it.
+It sets up a local DNS
+server with PTR (pointer) records that map IP addresses to names.
+It then tells its ISP what DNS servers are responsible for reverse DNS lookups.
+The ISP knows what range of addresses belong to the organization. If it gets a query for
+an address in that range, it now knows which name servers to send on a referral reply.
+A reverse query that starts at the root will contact the root name servers.
+These servers, in addition to knowing the name servers of TLDs, also know the
+name servers for the five RIRs (ARIN, RIPE NCC, etc.) - the entities that hand out IP addresses.
+The root server
+may return a referral for the ARIN server (responsible for IP addresses in North America).
+The ARIN server knows the blocks of IP addresses that were allocated to various ISPs
+and will send a referral to the name server for the appropriate ISP. That ISP, when
+queried, will then respond with a referral to the name server for the organization that
+owns that address.</p>
+
+<h2 id="dnstermsglossary">DNS Terms Glossary</h2>
+
+<ul>
+<li><strong>IANA</strong>: Internet Assigned Numbers Authority, the organization in charge of keeping track of IP addresses, port numbers, and other number-related aspects of the Internet</li>
+<li><strong>ICANN</strong>: Internet Corporation for Assigned Names and Numbers, the non-profit company that currently runs the IANA.</li>
+<li><strong>RIR</strong>: Regional Internet Registry, assigns IP addresses to ISPs within a geographic region.</li>
+<li><strong>TLDs</strong>: top-level domains.</li>
+<li><strong>gTLD</strong>: generic top-level domain (.com, .edu, .net, &#8230;).</li>
+<li><strong>ccTLD</strong>: country code top-level domain (.ac, .ae, .ie, .nl, .us).</li>
+<li><strong>IDN</strong>: Internationalized Domain Names.</li>
+<li><strong>Domain name registry</strong>: the database of registered domain names for a top-level domain.</li>
+<li><strong>Domain name registry operator</strong>: the company that keeps the database of domain names under a TLD.</li>
+<li><strong>NIC</strong>: network information center, another name for a domain name registry operator.</li>
+<li><strong>Domain name registrar</strong>: a company that lets you register a domain name.</li>
+<li><strong>DNS</strong>: Domain Name System.</li>
+<li><strong>Canonical name</strong>: a name that is an alias for a another domain name.</li>
+<li><strong>Authoritative name server</strong>: a name server that stores, and is responsible for, specific DNS records (as opposed to storing a cached copy)</li>
+<li><strong>Zone</strong>: a portion of the domain name space (a sub-tree) that is managed by a specific entity. E.g., rutgers.edu is a zone that manages all domains within rutgers.edu.</li>
+<li><strong>A (address) record</strong>: a DNS record that stores the IP address corresponding to a specific host name.</li>
+<li><strong>MX (mail exchanger) record</strong>: a DNS record that stores the name of the host that handles email for the domain.</li>
+<li><strong>DNS resolver</strong>: the client side program that is responsible for contacting DNS servers to complete a DNS query.</li>
+<li><strong>Reverse DNS</strong>: querying IP addresses to find the corresponding domain names.</li>
+</ul>
+
+<h1 id="http">HTTP</h1>
+
+<p><strong>HTTP</strong> stands for <strong>Hypertext Transfer Protocol</strong>
+and is the web&#8217;s application-layer protocol for interacting between web browsers
+and web servers.
+It is a TCP, line-oriented, text-based protocol that consists of requests to the
+server followed by responses from the servers.
+The protocol is <strong>stateless</strong>. This means that the server does not
+store any state from previous requests. This simplifies the design of the protocol,
+simplifies recovery from crashes, and makes load balancing easier. Note that
+web application that use HTTP may impose their own state but it is not a part
+of the HTTP protocol.</p>
+
+<h2 id="persistentvs.non-persistentconnections">Persistent vs. non-persistent connections</h2>
+
+<p>HTTP was originally designed to support <strong>non-persistent connections</strong>.
+This meant that the connection was alive for only a single request-response interaction.
+For each new request, the client had to re-establish a connection. That may have been fine in
+the earliest days of the web but a request for a page is now typically accompanied
+by multiple successive requests to download supporting files (stylesheet files and images). The overhead
+of the round-trip time in setting up a connection for each piece of content adds up.
+HTTP was enhanced to support <strong>persistent connections</strong>, where a client
+and server can exchange multiple request-response interactions on the same connection.</p>
+
+<h2 id="requestsandresponses">Requests and responses</h2>
+
+<p>The main function of HTTP is to request objects (content). These are identified in a
+browser
+by a <strong>URL</strong> (<strong>Uniform Resource Locator</strong>). A URL takes the format:</p>
+
+<pre><code>protocol://domain_name:port_number/path/to/object/the_object
+</code></pre>
+
+<p>Browsers support various protocols, not just HTTP. Common ones include HTTP, HTTP (HTTP
+that is made secure via SSL), FTP (file transfer protocol), and &#8220;file&#8221; (local files).
+If the protocol is &#8220;http&#8221; or &#8220;https&#8221;, the browser process it via its HTTP protocol
+module.</p>
+
+<p>The HTTP protocol comprises requests and responses. Each of these messages
+is structured as a set of text headers, one per line, followed by a blank line,
+and optionally followed by content. The first line of a request contains a command.
+The three main HTTP requests are:</p>
+
+<ul>
+<li><p><strong>GET</strong>: request an object</p></li>
+<li><p><strong>HEAD</strong>: like GET but download only the headers for the object.</p></li>
+<li><p><strong>POST</strong>: upload a sequence of name/value pairs to the server. The
+data is present in the body of the message and is often the response to a form.
+An alternate way of uploading user data as a set of name/value pairs is
+to use the <strong>GET</strong> command and place the data as a set of
+parameters at the end of the URL. For example,
+<code>http://www.pk.org/test?name=paul&amp;id=12345&amp;ref=zzz</code></p></li>
+</ul>
+
+<p>Each HTTP response contains multiple headers, the first of which contains a status code and corresponding
+message.</p>
+
+<h2 id="cookies">Cookies</h2>
+
+<p>While the HTTP protocol itself does not require keeping state, HTTP provides
+a way for web servers to store state about past sessions from the browser.
+It does this through <strong>cookies</strong>.
+A cookie is a small amount of data that is associated with the web site.
+The data is created by the server when it gets an HTTP request from the client.
+It then sends that data back in a <code>Set-Cookie</code> line in the header of the HTTP response.
+Future HTTP requests to the same server will contain a <code>Cookie</code> line in the header
+and contain the data that is associated with the cookie.</p>
+
+<p>This simple mechanism allows a web server to create a database entry indexed by
+a the cookie data to keep track of a user&#8217;s session. That database entry can include things such as
+shopping cart contents, authentication state, pages visited, time spent on a page, etc.
+The actual cookie itself does not need to store any of this; it just serves as a unique
+key into the database table.</p>
+
+<p>Because a web page may contain content from other web sites (hence, other servers),
+it is possible that requests to those sites will result in the generation of cookies.
+A <strong>first-party cookie</strong> is one that comes from the web server that
+is serving your page request.
+A <strong>third-party cookie</strong> is one that comes from another web server that
+serves some content that is present on the page you originally requested.
+There has been concern over third party cookies in that they allow these parties,
+usually advertisers, to track your visits to specific web sites. Most web browsers
+block third-party cookies by default.</p>
+
+<h2 id="caching">Caching</h2>
+
+<p>Caching avoids the need to request the same content over and over from the server.
+However, the challenge is to find out whether the content that is in the cache is
+still valid. HTTP provides a <strong>conditional GET</strong> mechanism that
+is triggered by two lines in the GET header.</p>
+
+<p>When a browser requests content from a server via an HTTP GET message, the
+response headers include two lines. One is a <code>Last-Modified</code>
+header that contains the timestamp of the last modification time of that
+content. The second is a <code>ETag</code> header that contains a hash
+of the content. The client stores both of these values along with the
+copy of the content in its cache.</p>
+
+<p>When the content is requested again, the client issues an HTTP GET
+request to the server but includes two lines in the headers. One
+is an <code>If-Modified-Since</code> line that contains the last modification
+time from the cache and the other is an <code>If-None-Match</code>
+line that contains the value from the ETag. This allows the
+server to check whether the content has changed since the
+version that the client cached. If it did not, the server responds
+with a <code>Not Modified</code> message and no content. If it did,
+the server responds just as it would with a regular GET request.</p>
+
+<h2 id="cachingproxies">Caching proxies</h2>
+
+<p>Caching does not need to be handled only by the web browser. A <strong>caching proxy</strong> is
+an HTTP server that is hosted within a company&#8217;s LAN. All HTTP requests go to
+that server instead of to the actual destinations (browsers allow you to define
+a proxy server for some or all domains). The proxy server, in turn, passes the
+request out to the requested server. This seems like an extra layer of overhead
+(the client connects to the proxy and sends its request; the proxy then does the same).
+However, the proxy can cache content. If you request content that somebody else
+previously requested, it is likely to be cached and the organization incurs less
+traffic on its outside Internet connection. Even pages that change frequently will
+usually have significant portions that can be cached, such as CSS files, JavaScript files,
+and supporting graphics.</p>
+
+<h2 id="optimizations">Optimizations</h2>
+
+<p>A web browser connects to a web server, issues an HTTP request for a web page (an
+html file), and then parses it to see what additional objects need to be requested
+to render the page. This typically includes multiple images, CSS files, and possibly
+additional content such as JavaScript files. Requests are then issued for these objects.
+One problem with issuing HTTP requests to a server one at a time is that one large
+response (or a slow one) can hold up all other requests that the client will make.
+This is called <strong>head-of-line blocking</strong>.</p>
+
+<h3 id="parallelconnections">Parallel connections</h3>
+
+<p>One way to avoid head of line blocking is to have the browser open a separate TCP connection
+for each HTTP request. There are several downsides to this. Many web pages have many dozens or
+even hundreds of objects (think of a photo thumbnails gallery, for instance). Opening a large
+number of connections can take substantial time. Moreover, it can consumer substantial resources
+at the server since each connection requires kernel and application memory resources as well as CPU time.
+Because of this, browsers support parallel connections but usually limit them to a small number
+(typically four). Once you limit the number of connections, you again have the risk of head-of-line blocking.
+Another problem with pipelining is that there&#8217;s no assurance that it will work
+if a proxy is present. Just because your browser establishes several TCP connections to
+the proxy does not mean that the proxy will, in turn, establish those connections to the server.</p>
+
+<h3 id="pipelining">Pipelining</h3>
+
+<p>Another performance optimization was <strong>HTTP pipelining</strong>. With pipelining, instead of waiting
+for each response, multiple HTTP requests can be dispatched one after another over one connection.
+However, the server is still obligated to issue responses in the order that the requests were
+received and head-of-line blocking is still an issue since one delayed or long response can
+hold up the responses behind it. Most browsers as well as proxies have disabled pipelining or do not implement it.</p>
+
+<h3 id="http2multiplexing">HTTP/2 Multiplexing</h3>
+
+<p>HTTP/2, the next major update to the HTTP protocol, which came out in 2015, supports the same commands
+as its predecessor, HTTP/1.1. However, it adds a number of optimizations.</p>
+
+<p>HTTP/2 supports <strong>multiplexing</strong>. This allows multiple messages to be interleaved on one connection. It
+is a form of a session layer (implemented in the application, of course). A large response may be broken up
+into multiple chunks with other responses interleaved among it. The browser keeps track of the pieces
+and reassembles all the objects.</p>
+
+<h3 id="http2serverpush">HTTP/2 Server Push</h3>
+
+<p>The HTTP/2 protocol adds a <strong>server push</strong> capability that allows the server to send objects to the
+client proactively. The client, upon receiving them, can add them to its cache. This is useful for
+objects such as stylesheets that are used by an HTML page. Normally, the browser would have to
+first receive the HTML page so it can parse it before issuing requests for objects that the page
+needs. If this information is given to the server, it can start sending these objects before the
+server requests them.</p>
+
+<h3 id="http2headercompression">HTTP/2 Header compression</h3>
+
+<p>HTTP request and response headers tend to be verbose and are text-based. Their size often requires
+several round trips just to get the headers for a page out to the server. Compressing headers
+can make requests and responses shorter and speed up page loads. </p>
+
+<h1 id="ftp">FTP</h1>
+
+<p><strong>FTP</strong>, the <strong>file transport protocol</strong>,
+is one of the earliest Internet protocols and was designed to transfer files between computers.
+The protocol uses TCP and is based on commands and responses.
+A command is a single line of ASCII text. A response is also a single line
+of text and contains a status code along with a message.</p>
+
+<p>To communicate, a client establishes a TCP connection from some available port <em>N</em>
+to port 21 on the server. Commands and responses are sent over this communication
+channel. Some basic commands are <strong>USER</strong> to identify a user name,
+<strong>PASS</strong> to specify the password, <strong>GET</strong> to download
+a file, <strong>PUT</strong> to upload a file, and <strong>DIR</strong> to get
+a directory listing.</p>
+
+<p>If the command is a request for data transfer (such as putting a file, getting
+a file, or getting a directory listing), the server initiates a TCP connection
+back to the client on port <em>N+1</em>. Data is then transferred over this channel
+(either from client to server or server to client, depending on the request) and the connection
+is then closed. FTP is unique compared with most other protocols in that it separates
+<strong>control</strong> and <strong>data channels</strong>. Control information is sent
+<strong>out of band</strong>, on a different channel than the data.</p>
+
+<h2 id="passivemode">Passive mode</h2>
+
+<p>Because having a server connect to a client proved problematic in some environments,
+FTP supports an alternate mechanism, called <strong>passive mode</strong>, where the
+client connects to the server to set up the data channel. This is now the more popular
+mode of operation and some FTP clients, such as web browsers, only support this mode.</p>
+
+<h1 id="smtp">SMTP</h1>
+
+<p>The <strong>Simple Mail Transfer Protocol</strong> (<strong>SMTP</strong>)
+is designed for delivering mail to a server that hosts the recipient&#8217;s mailbox.
+It is a TCP-based protocol that is line-based and uses ASCII text for all interactions.
+An SMTP server acts as a client and a server.
+Typically a mail application uses SMTP to send a message to a user&#8217;s SMTP server (e.g.,
+smtp.gmail.com). This server is often hosted by the organization that provide&#8217;s the
+sender&#8217;s email service (e.g., Google, Comcast, Rutgers). This SMTP server then queues
+the message for delivery. To deliver the message, it acts like a client. The SMTP
+server looks up the DNS MX (mail exchanger) record for the destination domain, connects
+to that SMTP server, and delivers the message. The receiving server places the message
+in the user&#8217;s mailbox. If the user has an account on that machine and runs the mail
+client locally, the mail client can access the mailbox and read the message.
+More often, the user is on a different system and needs to fetch messages. For that,
+mail retrieval protocols, such as POP or IMAP, must be used.</p>
+
+<p>The SMTP protocol consists of server identification (<code>HELO</code>),
+specifying who the mail is from (<code>MAIL FROM:</code>), and then specifying
+one or more recipients, one per line (<code>RCPT TO:</code>). Finally, the
+message is send with the <code>DATA</code> command. The message is multiple lines
+of ASCII text and typically starts with the mail headers that you see in your email.
+It is useful to note that all those mail headers are of no value to SMTP; it just
+treats them as the message data. You can have a completely different list of names
+in the <code>To:</code> header than you specified in the SMTP <code>RCPT TO</code>
+commands and the mail will only be delivered to the recipients you listed
+with the <code>RCPT TO</code> commands.</p>
+
+<p>SMTP is an example of a <strong>push protocol</strong>. The client takes content
+and sends it to the server. HTTP, on the other hand, is a <strong>pull protocol</strong>.
+The client connects to it and asks it for content.</p>
+
+<p>Because SMTP was designed to handle only text-based interaction, sending mail containing
+binary data, such as a jpeg file, was problematic. To remedy this, an encoding format
+called <strong>MIME</strong> (<strong>Multipurpose Internet Mail Extensions</strong>)
+was created. This defines formats for encoding content in a suitable format for
+message delivery. A MIME header in the body of the email identifies the content type
+and encoding used. To support mail attachments and the encoding of multiple objects,
+<strong>multipart</strong> MIME headers in the message body allow one to identify
+multiple chunks of content. MIME has nothing to do with SMTP but is designed to
+cope with the restrictions that SMTP placed on the structure of a message
+(7-bit ASCII text with line breaks). It is up to mail clients to create and
+parse MIME encodings.</p>
+
+<h1 id="pop3">POP3</h1>
+
+<p>SMTP dealt only with mail delivery.
+POP3 is a TCP-based protocol to allow a user to connect to a remote mailbox, download, and delete messages.
+The entire protocol is text-based. A user authenticates with <code>user</code> and <code>pass</code>
+commands and then sends commands to list messages, retrieve a specific message, or delete a message.</p>
+
+<p>POP3 supports two interaction models.
+The <strong>download-and-delete</strong> model has a client connect to a mail server, download messages
+to the client&#8217;s local mailbox, and then delete them from the server. With this model, the server is just
+a temporary repository for mail until the client gets around to downloading it. The problem with this
+model is that it does not work if you access mail from multiple devices. Once a message is deleted
+from the server, other devices cannot get it.</p>
+
+<p>The <strong>download-and-keep</strong> model has the client connect to a mail server, download
+messages to the client&#8217;s local mailbox, but does not delete them from the server. They only get
+deleted when a user deletes them locally and the mail client connects back to the server and
+issues a POP3 delete command for those messages. With this behavior, a user can access messages
+from multiple devices.</p>
+
+<p>The downside of POP3 is that it does not keep state across sessions. It does not know, for example,
+if a user marked several messages for deletion during a previous connection session.</p>
+
+<h1 id="imap">IMAP</h1>
+
+<p><strong>IMAP</strong>, the <strong>Internet Message Access Protocol</strong>
+was designed to operate on a mailbox remotely rather than POP&#8217;s approach
+of retrieving the contents of a mailbox onto a client. It can handle the
+case where multiple clients are accessing the same mailbox and can
+keep operations synchronized since state is maintained on the server.</p>
+
+<p>IMAP also supports the ability to move messages into folders,
+search for specific messages on the server, mark messages for deletion
+prior to actually deleting them, and fetch headers or full messages.
+It allows the same offline convenience that POP does, where all content
+can be downloaded onto a client, but also offers full state tracking
+on the server.</p>
+
+<p>Like POP, SMTP, and HTTP, IMAP commands are also sent as lines of ASCII text.
+Unlike those protocols, requests and responses can be handled asynchronously;
+a client can send multiple requests without first waiting for responses.</p>
+
+<h1 id="peertopeerprotocols">Peer to Peer Protocols</h1>
+
+<p>Traditional, and still the most common, network-based applications
+are those that follow a client-server model. A client needs a
+service (access to a file&#8217;s contents, for example) and contacts
+a server that can provide that service.
+A peer-to-peer model is an alternative application architecture
+that removes the need for dedicated servers and enables each
+host to participate in providing the service. Because all machines
+can both access as well as provide the service, they are called <strong>peers</strong>.</p>
+
+<p>A true peer-to-peer architecture has no reliance on a central
+server. In practice, some peer-to-peer architectures are really
+<strong>hybrid architectures</strong>, where a central server may provide key
+authentication or location services. Desirable (but not necessary)
+characteristics of peer-to-peer application architectures are
+robustness and self-scalability. <strong>Robustness</strong> refers to the ability
+of the overall service to run even if some systems may be down.
+<strong>Self-scalability</strong> refers to the ability of the system to handle
+greater workloads as more peers are introduced into the system.</p>
+
+<p>In our discussions, we focused on just one application domain: peer-to-peer
+file distribution.</p>
+
+<p>For file distribution, there are four key operations (primitives):
+(1) how a peer joins and leaves a peer-to-peer system;
+(2) how peers register files and their metadata (names, attributes);
+(3) how search is handled;
+and (4) how files are downloaded.</p>
+
+<p>The systems that we examine may or may not tackle all of these areas.</p>
+
+<h2 id="napster">Napster</h2>
+
+<p>Napster is the earliest of peer-to-peer systems and is the
+system that put peer-to-peer file sharing on the map. It was
+built for sharing MP3 files. Napster is not a pure peer-to-peer
+architecture since it relies on a single server to keep track
+of which peer has which content. </p>
+
+<p>A peer contacts the central server and publishes a list of files
+that it wants to share. Anyone who wants to find a file contacts
+the central server to get a list of peers that have the
+file. The peer then connects to any of the peers in that list and
+downloads the file. The download is either via a direct TCP
+connection to the server or, if the system is inaccessible because
+it is behind a firewall, it contacts the central server to send
+a message to the desired peer requesting that it connect and upload to the
+requestor.</p>
+
+<p>The advantage of Napster is that it is a simple design.
+The use of a central server, while deviating from a true
+peer-to-peer model, establishes a single point of control
+and maintains all the information on the locations of content.</p>
+
+<p>The downside is that the server can become a bottleneck
+with high query volumes. The failure of the central server
+causes the entire system to cease to operate.</p>
+
+<h2 id="gnutella">Gnutella</h2>
+
+<p>After Napster was shut down by shutting down its central server,
+Gnutella set out to create an architecture that offers truly
+distributed file sharing. Unlike Napster, Gnutella can not be shut
+down since there is no central server.</p>
+
+<p>Gnutella&#8217;s approach to finding content is based on <strong>query flooding</strong>.
+When a peer joins the system, it needs to contact at least one other
+Gnutella node and ask it for a list of nodes it knows about (its
+&#8220;friends&#8221;). This list of peers becomes its list of <strong>connected
+nodes</strong>. This builds an <strong>overlay network</strong>. An overlay network
+is a logical network that is formed by peer connections. Each peer
+knows of a limited set of other peers. These become its <strong>neighbors</strong>,
+and do not need to be physical neighbors. A peer is capable of
+communicating with any other peer; it is just the lack of knowing
+that the other peer exists that stops it.</p>
+
+<p>To search for content, a peer sends a query message to its connected
+nodes. Each node that receives a query will respond if it has
+the content. Otherwise, it forwards the content to its connected
+nodes. This is the process of <strong>flooding</strong>.
+Once the content is found, the requesting peer downloads the
+content from the peer hosting the content via HTTP.</p>
+
+<p>A facet of the original design of Gnutella was anonymity. Replies were
+sent replies through the
+same path that the queries took. A peer receiving a query would
+not know if it came from the requestor or from a peer just
+forwarding the request.</p>
+
+<p>Gnutella has a significant architectural advantage over Napster.
+Its design is fully decentralized. There is no central directory
+and hence the service cannot be shut down. On the other hand,
+flooding-based search is inefficient compared to maintaining a single database.
+Search may require contacting a large number of systems and going
+through multiple hops. Well-known nodes (e.g., those that may be
+configured in default installations) may become overly congested.</p>
+
+<p>A few optimizations were later added to Gnutella. </p>
+
+<ul>
+<li><p>The process of routing replies through the query path was
+changed to sending responses directly to the requester to reduce response times.</p></li>
+<li><p>If connecting
+to a peer that serves the content is not possible because of firewall
+restrictions at the peer, the requesting node can send a <strong>push request</strong>,
+asking the serving peer to send it the file.</p></li>
+<li><p>Much of the Gnutella network was composed of end user&#8217;s
+personal machines and these had varying levels of uptime and connectivity.
+As such, not all peers are equal. With this in mind, Gnutella
+divided its peers into two categories: <strong>leaf nodes</strong> and
+<strong>ultrapeers</strong>. Leaf nodes are normal peers. They know of a small
+number of ultrapeers and may not have fast connections. Ultrapeers
+are peers that have a high degree of connectivity (32 or more connections
+to other ultrapeers) and can hence flood queries with more hops.</p></li>
+</ul>
+
+<h2 id="kazaa">Kazaa</h2>
+
+<p>Kazaa was created a year after Gnutella with the core premise that
+not all nodes have equivalent capabilities as far as network connectivity
+and uptime are concerned. They introduced the concept of <strong>supernodes</strong>.
+These nodes have high uptime, fast connectivity, faster processors, and
+potentially more storage than regular nodes. They also know other
+supernodes. This is the same concept as Gnutella&#8217;s later enhancement
+with its addition of <strong>ultrapeers</strong>. A client (peer) needs to know
+of one supernode to join the system. It sends that supernode a list
+of all the files that it is hosting. Only supernodes are involved in
+the search process. Search is a flood over the overlay network as in Gnutella.
+Once a query reaches a supernode that has the requested content
+in its list, it sends a reply directly to the peer that initiated
+the query. The querying peer will then download the content from the peer
+that hosts the content.</p>
+
+<h2 id="bittorrent">BitTorrent</h2>
+
+<p>The design of BitTorrent was motivated by the <strong>flash crowd</strong> problem. How
+do you design a file sharing service that will scale as a huge
+number of users want to download a specific file? Systems such
+as Napster, Gnutella, and Kazaa all serve their content from
+the peer that hosts it. If a large number of users try to download
+a popular file, all of them will have to share the bandwidth that
+is available to the peer hosting that content.</p>
+
+<p>The idea behind BitTorrent is to turn a peer that is downloading
+content into a server of that content. The more peers are downloading
+content, the more servers there will be for it. BitTorrent only
+focuses on the download problem and does not handle the mechanism
+for locating the content.</p>
+
+<p>To offer content, the content owner creates a <strong>.torrent file</strong>.
+This file contains metadata, or information, about the file,
+such as the name, creation time, and size of the file. It also
+contains a list of hashes of blocks of the content.
+The content is logically divided into fixed-size blocks and the
+list of hashes in the .torrent file
+allows a downloading peer to validate that any downloaded blocks has been
+downloaded correctly. Finally, the .torrent file contains a
+list of <strong>trackers</strong>. </p>
+
+<p>The <strong>tracker</strong> is a server running a process that manages
+downloads for a set of .torrent files. When a downloading peer
+opens a .torrent file, it contacts a tracker that
+is specified in that file. The tracker is responsible for keeping
+track of which peers have which have the content. There could be
+many trackers, each responsible for different torrents.</p>
+
+<p>A <strong>seeder</strong> is a peer that has the entire file available for download
+by other peers. Seeders register themselves with trackers so
+that trackers can direct downloading peers to them. An <strong>initial seeder</strong>
+is the initial version of the file.</p>
+
+<p>A <strong>leecher</strong> is a peer that is downloading files. To start the
+download, the leecher must have a .torrent file. That identifies the
+tracker for the contents. It contacts the tracker, which keeps track of the seed nodes for
+that file as well as other leechers, some of whom may
+have already downloaded some blocks of the file. A leecher contacts
+seeders and other leechers to download random blocks of the file.
+As it gets these blocks, it can make them available to other leechers.
+This is what allows download bandwidth to scale: every downloader
+increases overall download capacity. Once a file is fully downloaded,
+the leecher has the option of turning itself into a seeder and continue to
+offer serving the file.</p>
+
+<p>BitTorrent scales very well. The more participants there are, the
+greater the aggregate bandwidth is. Peers may be given an incentive to
+share since BitTorrent software may choose to block downloads if
+you don&#8217;t offer uploads. The downside of BitTorrent is that unpopular
+files will not have leechers and will not offer this benefit of scale.
+Block sizes tend to be large (the default is often 256 KB with a maximum
+size of 4 MB). This makes the architecture not suitable for small files
+as the distributed download aspect won&#8217;t come into play unless a large
+number of leechers choose to act as future seeders. Finally, search is
+not a part of the protocol. A user needs to turn to some other mechanism
+to actually get the .torrent file.</p>
+
+<h2 id="distributedhashtables">Distributed Hash Tables</h2>
+
+<p>The systems we covered use one of three approaches for
+locating content:</p>
+
+<ol>
+<li>Central server (Napster)</li>
+<li>Flood (Gnutella, Kazaa)</li>
+<li>Nothing (BitTorrent). Search is out
+of scope for BitTorrent and it relies on
+separate solutions to allow users to locate a
+.torrent file for the desired content.</li>
+</ol>
+
+<p>Flooding can be an inefficient and indeterminate
+procedure for finding content. Some nodes may
+be slower than others and some may have fewer
+connections than others, resulting in more hops
+to query the same number of machines. Gnutella
+and Kazaa tried to ameliorate this somewhat by
+creating ultrapeers (supernodes) but the mechanism
+of the flood still exists.</p>
+
+<p>In standalone systems, <strong>hash tables</strong> are attractive
+solutions for high-speed lookup tables.
+A <strong>hash function</strong> is applied to a search <strong>key</strong>.
+That result becomes an index into a table.
+Hash tables result in O(1) lookup performance
+versus the O(log N) time for a binary tree or
+search through a sorted table. Since there is a
+chance that multiple keys hash to the same value
+(known as a <strong>collision</strong>), each table entry,
+called a <strong>slot</strong> (or <strong>bucket</strong>),
+may contain a linked list or additional hash table.</p>
+
+<p>A <strong>distributed hash table</strong>, or <strong>DHT</strong>, is
+a peer-to-peer version of a hash table: a distributed
+<em>key, value</em> database. The interface we want for
+a DHT is that a client will query a DHT server with a key
+to get the corresponding value. This DHT server may be
+a separate collection of peer-to-peer systems, all
+acting as one server from the client&#8217;s point of view or the
+querying client may also be a peer. The DHT software
+finds the host that holds the <em>key, value</em> pair
+and returns the corresponding value to the querying host.
+This should be done without the inefficiency
+of a flood. The specific implementation of a DHT that
+we examine is called <strong>Chord</strong> and it creates an overlay
+network that is a logical ring of peers.</p>
+
+<p>Chord takes a large hash of a key (e.g., a 160-bit SHA&#8211;1 hash).
+Each node in the system is assigned a position in the ring
+by hashing its IP address. Because the vast majority of bucket positions will be empty,
+<em>key, value</em> data is stored either at the node to which the key hashes (if, by some
+chance, the key hashes to the same value that the node&#8217;s IP address hashed)
+or on a <strong>successor</strong> node, the next node that would be encountered as the
+ring is traversed clockwise. For a simple example, let us suppose that we have a 4-bit
+hash (0..15) and nodes occupying positions 2 and 7. If a key hashes to 4, the <em>successor</em>
+node is 7 and hence the machine at node 7 will be responsible for storing all data
+for keys that hash to 4. It is also responsible for storing all data to keys that hash
+to 3, 5, 6, and 7.</p>
+
+<p>If a node only knows of its clockwise neighbor node, then any query that a node cannot
+handle will be forwarded to a neighboring node. This results in an unremarkable <em>O(n)</em>
+lookup time for a system with <em>n</em> nodes. An alternate, faster, approach is to have
+each node keep a list of all the other nodes in the group. This way, any node will be
+able to find out out which node is responsible for the data on a key simply by hashing
+the key and traversing the list to find the first node &ge; the hash of the key. This
+gives us an impressive <em>O(1)</em> performance at the cost of having to maintain
+a full table of all the nodes in the system on each node.
+A compromise approach to have a bounded table size is to use <strong>finger tables</strong>.
+A finger table is a partial list of nodes with each node in the table being a factor of two
+away from the current node. Element 0 of the table is the next node (2<sup>0</sup> = 1 away),
+element 1 of the table is the node after that (2<sup>1</sup> = 2 away),
+element 2 of the table four nodes removed (2<sup>2</sup>),
+element 3 of the table eight nodes removed (2<sup>3</sup>), and so on. With finger tables,
+<em>O(log n)</em> nodes need to be contacted to find the owner of a key.</p>
+
+</div>
+
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: May  6, 2016
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+		<h2> Study guides </h2>
+	<ul>
+	<li> <a href="../exam/study-guide-1.html"> Study Guide 1 </a> </li>
+	<li> <a href="../exam/study-guide-2.html"> Study Guide 2 </a> </li>
+	<li> <a href="../exam/study-guide-3.html"> Study Guide 3 </a> </li>
+	</ul>
+
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

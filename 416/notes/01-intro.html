@@ -1,0 +1,1266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Operating Systems </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 416 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/01-intro.html"> Operating Systems </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Operating Systems </h1>
+<h2> A brief look at the evolution of computer systems </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> January 27, 2015 </p>
+</div>
+<h1 id="disclaimer">Disclaimer</h1>
+
+<p>The goal of this document is to provide a high-level historical perspective on the evolution
+of computer systems and, with them, some key milestones in the development of operating systems.
+This document is <em>not</em> a complete history of computer systems or operating systems.
+It&#8217;s not even remotely thorough. If it
+was, it would be far longer. While I try to be convey accurate information, it is very
+likely that I missed more than a few things. Treat this as a presentation of a historical
+perspective rather than a treatise. Any corrections and enhancements are most welcome.</p>
+
+<h1 id="inthebeginning">In the beginning&#8230;</h1>
+
+<p>There were no operating systems, no programming languages or
+compilers, no mice and no windows, and the earth was without form,
+and void; and darkness was upon the face of the deep.</p>
+
+<p>Suppose you built a computer.
+How would you get it to read and run the programs that you will write?
+How would it access devices: read input and write output data?
+A program runs from memory, but one must get the program into memory somehow. How
+would you then run a different program? Would you have to restart the computer?
+How much does the program you write have know about your system&#8217;s hardware: the details
+of accessing a disk or scanning a keyboard? Can this information
+be hidden from application programmers?</p>
+
+<p>Questions such as this led to the development
+of operating systems. The development of operating systems is closely
+tied to the development of computer systems, how users use them,
+and what they expect of them. What follows is a quick tour of
+computing systems through the past seventy or so years (again, much has been
+omitted; the goal is to give an idea of evolution rather than a
+thorough historical treatment).</p>
+
+<h2 id="eniacmooreschoolofengineeringuniversityofpennsylvania.">1945: ENIAC, Moore School of Engineering, University of Pennsylvania.</h2>
+
+<figure>
+<img src="images/01-eniac.jpg" alt="Eniac computer" id="eniac" title="Eniac computer abc" style="height:175px;width:300px;" />
+<figcaption>Eniac computer</figcaption></figure>
+
+
+
+<p>The ENIAC (Electronic Numerical Integrator and Computer)
+is arguably the first general-purpose electronic computer (the first was really
+the <a href="http://en.wikipedia.org/wiki/Colossus_computer">Colossus</a>, but
+its very existence was shrouded in secrecy for decades). It was created
+for a very specific purpose: to compute firing tables
+for the military. These firing tables were used in combat to find
+the proper angle of elevation for a gun, taking into account the
+temperature, wind direction, and type of ammunition. As gun production
+rolled into high gear during World War II and an ever larger array
+of guns were manufactured, the army was facing a tremendous
+backlog of calculations. This led to funding the ENIAC project as
+an attempt to solve these problems.</p>
+
+<p>The machine contained:</p>
+
+<ul>
+<li>an internal memory of 200 decimal digits</li>
+<li>I/O speed of 8,000 decimal digits per minute</li>
+<li>computation speed of 5,000 operations per second</li>
+<li>built with 18,000 vacuum tubes and consumed 100,000 watts
+(40,000 watts went to the tube filaments and were converted to heat)</li>
+<li>programmed through patch panels and switches</li>
+<li>data read from punched cards</li>
+</ul>
+
+<blockquote>
+<p>&#8220;Preparing ENIAC for a series of runs was an incredibly involved
+process. First, detailed instructions had to be written defining
+the problem and a procedure for solving it. These instructions were
+programmed by adjusting switches manually and inserting thousands
+of cables into as many as forty large plug boards. A team of five
+operators might work several days on the external wiring and many
+more days searching for errors and correcting them.&#8221;<br/>
+&#8212; Breakthrough
+to the Computer Age, Harry Wulforst, Charles Scribner&#8217;s &amp; Sons Pub., 1982</p>
+</blockquote>
+
+<h2 id="canwedobetterthanthis">Can we do better than this?</h2>
+
+<p>The experience with the ENIAC led to the realization that there
+can be an easier way of entering a program into a computer; one
+that is less labor-intensive than spending several days adjusting
+switches, plugging in cables, and checking for mistakes.</p>
+
+<blockquote>
+<p>&#8220;The switches and controls of ENIAC [which are] now arranged to be
+operated manually, can be positioned by mechanical relays and
+electromagnetic telephone switches which are instructed by a Teletype
+tape. [With this arrangement] tapes could be cut for many given
+problems and reused when needed&#8221;<br/>
+&mdash; Lieut. H. Goldstine</p>
+</blockquote>
+
+<h2 id="edsacandedvac">1949: EDSAC and EDVAC</h2>
+
+<h4 id="computersgetmemory">Computers get memory</h4>
+
+<p>The EDVAC (Electronic Discrete Variable Automatic Computer) and
+EDSAC (Electronic Delay Storage Automatic Calculator) were both
+completed in 1949. The EDVAC was the successor to the ENIAC. The
+EDSAC was a project headed by Maurice Wilkes at the computing
+laboratory at Cambridge University and built based on the EDVAC
+proposal. Both were stored program computers: instructions could
+be run from the computer&#8217;s memory rather than be hard-wired.
+They used John von Neumann&#8217;s architecture where the computer&#8217;s program
+code resides in the same storage as the data.</p>
+
+<p>Mercury delay lines were used for the system&#8217;s memory. These were long
+sealed tubes containing mercury. Data was represented as waves in
+the fluid. It entered via a transducer, propagated through the fluid,
+and was extracted via a transducer at the far end. At that point the
+computer could read the data (into vacuum tubes) or cycle it back for
+recirculation through the mercury tube.</p>
+
+<p>The EDSAC had a whopping 512 35-bit words of memory.</p>
+
+<h2 id="binac--asuccessortotheeniac">1949 BINAC &#8211; a successor to the ENIAC</h2>
+
+<h4 id="programminglanguages">Programming languages</h4>
+
+<p>The first precursor to a programming language appeared: John Mauchly&#8217;s
+<em>Short Order Code</em>. It featured a simple algebraic interpreter.
+A programmer could write in pseudocode rather than in the code of the
+actual machine.
+This pseudocode could include a set of &#8220;subroutines&#8221;.
+These weren&#8217;t subroutines in the sense that we
+know them. The program looked at each statement, jumped to the
+required subroutine, executed it, and looped back. The concept of
+a stack and the return instruction came later.</p>
+
+<h2 id="univacbyremington">1951: UNIVAC by Remington</h2>
+
+<h4 id="reusablecode">Reusable code</h4>
+
+<p>The concepts of code sharing emerge. A standard set of mathematical
+subroutines was created. These were written on paper and copied
+(onto the card punch) as needed. Unfortunately, programmers don&#8217;t
+always copy very accurately, so debugging was often needed.</p>
+
+<p>John Mauchly estimated that there were perhaps twelve organizations
+in the world that needed and could afford a UNIVAC. Over 45 were
+sold.</p>
+
+<h2 id="ibm701">1952: IBM 701</h2>
+
+<h4 id="truereusablecodeandarealassembler">True reusable code and a real assembler</h4>
+
+<p>The 701 was IBM&#8217;s first commercial scientific computer. It contained
+1,024 words of random access memory and used plastic magnetic tape
+as a storage medium. The computer featured a modular construction; it
+was built in several units that would be shipped to the customer
+where it would undergo final connections. This contrasts with earlier
+machines like the UNIVAC that had to be fully assembled at the customer
+site.</p>
+
+<p>The 701 brought about: </p>
+
+<ul>
+<li><p>The emergence of an assembler-style language: IBM Speed Coding </p></li>
+<li><p>SHARE (Society to Help Alleviate Redundant Effort), an IBM user
+organization, was created. It maintained a repository of common
+routines. For example, if you needed code for advancing the tape
+to a certain position and writing a block of data, you could get
+it from SHARE. These shared I/O routines were the precursor
+to <strong>device drivers</strong> found in today&#8217;s operating systems.</p></li>
+</ul>
+
+<h2 id="theinterrupt">1956: The interrupt</h2>
+
+<p>The UNIVAC 1103A introduced the <strong>interrupt</strong>. Upon receiving
+an interrupt, the processor would store the value of its program
+counter in a fixed memory location and the program
+counter would be replaced with a preset address, forcing
+execution to switch to an <strong>interrupt service routine</strong>.
+To return, the interrupt service routine would branch to the
+value that was stored in the special memory location.
+One way in which the interrupt was used was to alllow lower-priority
+batch processes to run in between war game simulation
+programs at the Army&#8217;s Operations Research Office.
+This was the precursor to time-sharing, which would dominate
+operating system design for decades to come.</p>
+
+<h1 id="theoperatingsystememerges">The Operating System emerges</h1>
+
+<p>A big time waster in early computing was the time that it took
+to set up a computer to run a job and then reset it and load the
+next job when the first program completed. To run a program, a
+deck of punched cards containing the program was loaded into a machine&#8217;s
+memory. This program was the <em>only thing</em> that ran
+on that computer until the program terminated.
+When the
+job completed, an operator would load a program to dump memory and
+would remove the tape, cards, and any
+printout. After that, the next job would be loaded on the computer.</p>
+
+<h4 id="batchprocessing:">Batch Processing:</h4>
+
+<p>Early operating systems improved system throughput by processing
+jobs in batches rather than individually. When a job finished, it
+would branch to a location in the &#8220;operating system&#8221; that would
+contain software that would dump the state of the current job,
+and load the next job. This greatly reduced
+the need for operator intervention. In the earliest systems,
+this job transition software was encapsulated in a set of punched
+cards that were added to the deck of cards that contained the
+user&#8217;s program.</p>
+
+<p><strong>Job control languages</strong> provided a way for programs to define
+their resource needs, such as what tapes or card readers they
+need to use and what their anticipated run time is.</p>
+
+<h2 id="fortranwasdeveloped">1954&#8211;1957: FORTRAN was developed</h2>
+
+<h4 id="ahigh-levellanguage">A high-level language</h4>
+
+<p>With high-level languages, programmers no longer had to to understand
+the architecture of a computer.</p>
+
+<p>Early compilers, including early FORTRAN (FORmula TRANslator) had
+to fit in 1,024 12-character words and still leave enough room for
+data. It often took two hours to compile a program because the tape
+units were kept busy refetching data.</p>
+
+<h1 id="operatingsystemsbythelate1950s">Operating Systems by the late 1950s</h1>
+
+<p>By the late 1950s, Operating systems supported:</p>
+
+<ul>
+<li>Single stream batch processing</li>
+<li>Common, standardized, input/output routines for device access</li>
+<li>Program transition capabilities to reduce the overhead of starting a new job</li>
+<li>Error recovery to clean up after a job terminated abnormally</li>
+<li>Job control languages that allowed users to specify the job definition and resource requirements</li>
+</ul>
+
+<h1 id="intothe1960s">Into the 1960s</h1>
+
+<p>The goal of operating systems in the early 1960s was to improve
+throughput. Computers were incredibly expensive and it was important to find
+ways of utilizing every possible second of CPU time.</p>
+
+<p><strong>Multiprogramming</strong>: several programs were kept in primary storage
+at once and the processor was switched between programs. Multiprogramming
+works because of the mismatch between I/O (input/output) device speeds and processor
+speeds. Tens of thousands of cycles could be wasted while a program
+was waiting for an I/O operation to complete (tens of millions to billions on today&#8217;s processors).
+Instead of having a processor sit there and do nothing while an I/O
+operation was going on, it could switch to
+running a different program.</p>
+
+<p><strong>Multiprocessing systems</strong>: several processors cooperate with one another. Some of these began to emerge in the 1960&#8217;s.</p>
+
+<p><strong>Transaction processing systems</strong>:
+IBM developed the SABRE airline reservation system for American Airlines in 1960.
+It consisted of two connected IBM 7090 computers (built with discrete transistors)
+Travel agents communicated with the central computer via
+typewriter terminals.
+Although SABRE was a dedicated system and not a general purpose operating environment, it
+ushered in new requirements for computing. </p>
+
+<p>With systems such as SABRE:</p>
+
+<ul>
+<li><p>User accounts and concurrent access required the creation of protection mechanisms and password storage.</p></li>
+<li><p>Computers now had to operate interactively (conversationally). Because of this,
+human factors became an issue: response time and ease of use.</p></li>
+<li><p>With the widespread deployment of disks, access storage organization techniques were developed followed by file systems. </p></li>
+<li><p>Data communication links were used for remote access. For the most part, these were telephone lines.</p></li>
+</ul>
+
+<h2 id="thedawnofminicomputers">1961: The dawn of minicomputers</h2>
+
+<h4 id="computingforthemasses">Computing for the masses!</h4>
+
+<p>Digital Equipment Corporation (DEC) introduces the Programmed Data
+Processor 1 (PDP&#8211;1). It’s a veritable bargain at $125,000-$250,000 as
+any competitive systems at that time began at $1 million. Moreover, it needed no
+staff of attendants and operators. A lot more companies
+could now afford computers. In fact, individual departmeents could have
+their own computer.</p>
+
+<h2 id="compatibletime-sharingsystemctssfrommit">1962 Compatible Time-Sharing System (CTSS) from MIT</h2>
+
+<h4 id="timesharing">Time sharing</h4>
+
+<p>CTSS ran on the IBM 7094 with special hardware. It proved the value of interactive
+time sharing systems and the value of sharing data and programs
+on-line. This system was a precursor to the Multics operating system.</p>
+
+<h2 id="burroughsmastercontrolprogrammcpfortheb5000system">1963 Burroughs Master Control Program (MCP) for the B5000 system</h2>
+
+<h4 id="virtualmemoryandmultiprocessing">Virtual memory and multiprocessing</h4>
+
+<p>MCP was the first operating system written in a high-level language
+(note that this was <em>not</em> a portable operating system; it only ran
+on the B5000 computer). The B5000 system running MCP gave the user:</p>
+
+<ul>
+<li>Multiprogramming</li>
+<li>Multiprocessing</li>
+<li>Virtual storage (provides the illusion of a system having more physical memory than it really does)</li>
+<li>Source language debugging capability</li>
+</ul>
+
+<h2 id="ibmsystem360">1964: IBM System/360</h2>
+
+<h4 id="thesystem">The &#8220;system&#8221;</h4>
+
+<div class="right-sidetext">
+Traditionally, a simulator interprets all operations in software while
+an emulator has hardware to support the execution of
+instructions.
+These days, it is common to use both terms to refer to software.
+
+Emulation now usually refers to software or hardware that 
+models the interfaces and behavior of a device
+but not necessarily its internal state. 
+The emulated system may behave differently internally but
+provides the same external interface. API hooks to implement a given
+hardware function of some device are an example.
+Simulation refers to modeling the internal components of a system.
+</div>
+
+<p>IBM bet the company on this one. It created a line of five computers,
+all compatible, that gave users a migration path as their computing
+needs grew. It included the largest assortment of simulators and
+emulators ever assembled for backward compatibility. Card readers,
+tape drives, printers, and memory devices were redesigned to make
+them faster
+(for instance, the System/360 Model 1403 Chain Printer printed 1,100 lines of
+text per minute).</p>
+
+<p>R&amp;D for the project cost over $1 billion dollars. Within six months after its
+announcement, IBM booked orders for System/360s that totaled more
+than three times IBM&#8217;s entire annual income. The bet paid off big
+time. </p>
+
+<p><em>System/360 operating system goal</em>: deliver one operating system for
+the entire line of computers.</p>
+
+<p><em>The reality</em>: It proved difficult to create a system that would
+satisfy users with varying degrees of sophistication. It also didn&#8217;t
+seem fair to burden smaller machines with heavy-duty operating
+systems. A family of operating systems emerged:</p>
+
+<ul>
+<li><p>PCP/360 — sequential job system </p></li>
+<li><p>MFT: multiple job system, fixed number of tasks. The system
+memory is divided into a fixed number of partitions. Programs are
+loaded into these partitions and the processor spends some time on
+each partition</p></li>
+<li><p>MVT: multiprogramming with a variable number of tasks. A new
+job asks for a partition of a certain size, gets it, runs, and then
+the partition is free again. This later became IBM&#8217;s MVS system.
+All memory references are direct memory references at this time
+(the memory address you ask for is the one you get).</p></li>
+</ul>
+
+<h2 id="s:disksbecomemainstream">1960s: Disks become mainstream</h2>
+
+<h4 id="randomaccesshigh-capacitystorage">Random access high-capacity storage</h4>
+
+<p>The first disk drive, the IBM 350 disk storage unit, was introduced
+in 1956. It had a capacity of 3.75 megabytes stored as five million
+six-bit characters on fifty (!) 24-inch diameter disks. IBM leased
+it for $3,200 per month.</p>
+
+<p>By the 1960&#8217;s
+disk storage finally comes into widespread use. It offers high
+capacity, almost-random-access-storage. IBM created a family of Disk Operating
+Systems (DOS, DOS&#8211;2314, DOS MP, DOS VS, DOS/VSE) to take advantage
+of this technology.</p>
+
+<h2 id="minicomputersgetcheapermorepowerfulandreallyuseful">1966: Minicomputers get cheaper, more powerful, and really useful</h2>
+
+<h4 id="widespreadcomputing">Widespread computing</h4>
+
+<p>DEC introduces the PDP&#8211;8. It costs a mere $20,000 and becomes used
+by small businesses, universities, and high schools. Five operating
+systems are available. Here&#8217;s a list, paraphrased, from
+<em>Introduction
+to Programming PDP&#8211;8 Family Computers, Digital Equipment Corporation, 1969</em>:</p>
+
+<ul>
+<li><p>Paper Tape Programming System — I/O of programs and data is
+performed manually via a paper tape reader and punch All programming
+systems begin by loading certain system and utility programs into
+core via a paper tape.</p></li>
+<li><p>DECtape Programming System — I/O of programs and data is
+performed via a DECtape unit.</p></li>
+<li><p>4K Disk Monitor System — 4K system programs are run under
+control of the Disk Monitor with disk input and output. You’d use
+this with a 4K memory system. A DECtape contains over half a million
+octal words of storage.</p></li>
+<li><p>PS/8 Programming System — 8K system programs are run under
+control of the 8K executive program using either DECtape or disk
+input/output. System and utility programs include languages (FOCAL,
+BASIC, FORTRAN-D, assembler), and utilities (PIP for peripheral
+device control, DDT for debugging, and an editor).</p></li>
+<li><p>TSS/8 Time-Sharing System — More than one user is sharing the
+computer under control of he TSS/8 Monitor, using 4K system programs
+in a disk environment. Each user has a separate Teletype terminal.
+It allows device-independent access to as many as 15 I/O devices.
+The user program may call upon the executive routines for several
+services, including loading device handlers, assigning names to
+devices, creating files, and performing line input/output to the
+Teletype.</p></li>
+</ul>
+
+<h1 id="operatingsystemsforthe1970s">Operating Systems for the 1970s</h1>
+
+<p>The 1970s were characterized by the following traits:</p>
+
+<ul>
+<li>Multi-user, multi-tasking reigns supreme.</li>
+<li>Dynamic address translation hardware creates virtual memory that operating systems must handle. Virtual machines can now exist.</li>
+<li>Modular architectures</li>
+<li>Emergence of portable design</li>
+<li>Personal, interactive systems</li>
+</ul>
+
+<p>We also see two developments that will transform computing:</p>
+
+<ul>
+<li>Data networking. Computers begin to get connected over data communication links.</li>
+<li>Microprocessors. These will make computers small, cheap, and personal. For about
+20 years, these will be technological laggards, rediscovering what
+<em>real</em> computers
+already had many years earlier. By the 1990s, they transform into technology leaders.</li>
+</ul>
+
+<h2 id="themouse">1967&#8211;1968: The mouse</h2>
+
+<h4 id="introducedanewformofuserinteractiondominantuntiltheiphoneipad">Introduced a new form of user interaction &#8230; dominant until the iPhone &amp; iPad</h4>
+
+<p>The mouse was created by
+<a href="http://en.wikipedia.org/wiki/Doug_Engelbart" title="Douglas Engelbart" class="external">Douglas Engelbart</a>
+at the Stanford Research Institute&#8217;s Augmentation Research Center (ARC). He and
+his team at the ARC invented the mouse, the bit-mapped display, graphical
+user interface concepts, teleconferencing, and hypertext. This was demonstrated in
+1968 at the Fall Joint Computer Conference and is known as
+<a href="http://en.wikipedia.org/wiki/The_Mother_of_All_Demos" title="The Mother of All Demos" class="external">The Mother of All Demos</a>.
+This was back in 1968. We have not seen substantial changes to this for 47 years!</p>
+
+<h2 id="andonward:multics">1964 and onward: Multics</h2>
+
+<p>Multics was an ambitious operating system developed by MIT, General Electric, and Bell Labs. It
+was designed to be the operating system for GE&#8217;s GE&#8211;645 mainframe but was later targeted
+to Honeywell machines after Honeywell acquired GE&#8217;s computer business. It introduced
+some unique ideas:</p>
+
+<ul>
+<li>All system memory was mirrored onto the disk and available via the file system</li>
+<li>Dynamic linking: load and add code and data segments to a running process</li>
+<li>Interprocess communication via shared segments</li>
+<li>Multiprocessor support</li>
+<li>On-line reconfiguration of system hardware without downtime</li>
+<li>Hierarchical security model using protection rings</li>
+<li>Hierarchical file system with arbitrary file names</li>
+<li>Symbolic links</li>
+<li>Command processor not part of the operating system</li>
+<li>Written in a high-level language, EPL, a subset of PL/1 with extensions</li>
+<li>I/O redirection to files and programs (&#8220;pipes&#8221;)</li>
+</ul>
+
+<p>With all its features, it was big and bloated. Performance wsa poor and the compiler
+was abysmally slow. The frustrations of Multics led the Bell Labs part of the Multics
+team to create UNIX.</p>
+
+<h2 id="theunixtime-sharingsystemfrombelltelephonelaboratories">1969: The UNIX Time-Sharing System from Bell Telephone Laboratories</h2>
+
+<h4 id="smallostoolkitapproach">Small OS, toolkit approach</h4>
+
+<p>The first edition of UNIX ran on a PDP&#8211;7 and was written in assembly language.
+It emphasized a small and simple kernel and a rich set of utilities (that mostly
+handled line-oriented text-based data)
+that could be connected together to perform a variety of tasks.
+It incorporated a number of ideas from Multics,
+such as a hierarchical file system, multiple levels
+of file access permission, input/output redirection, and pipes.</p>
+
+<h2 id="intelannouncesthemicroprocessor">1971: Intel announces the microprocessor</h2>
+
+<h4 id="notabigdealyetbutjustwait">Not a big deal yet, but just wait&#8230;</h4>
+
+<p>The Intel 4004 contained 2,000 transistors and performed 60,000
+operations per second. It was a four bit machine with effectively as much power
+as the ENIAC. It found a home in some desktop calculators.</p>
+
+<h2 id="c.1970:demoslosalamos">c. 1970: DEMOS, Los Alamos</h2>
+
+<h4 id="messagepassing">Message passing</h4>
+
+<p>This system ran on the CRAY&#8211;1 supercomputer and was the first operating system to be based on message-passing.</p>
+
+<h2 id="ibmcomesoutwithvm:thevirtualmachineoperatingsystem">1972: IBM comes out with VM: the Virtual Machine Operating System</h2>
+
+<h4 id="virtualmemoryandvirtualmachines">Virtual memory and virtual machines</h4>
+
+<p>Goal: Can we build a machine on which we could run different operating systems
+concurrently to develop them, debug them, and measure their performance?</p>
+
+<p>Developing an operating system is tricky: you need a dedicated computer on
+which to run the operating systems. With mainframe computers being incredibly
+expensive (millions of dollars) and taking up a lot of space, even IBM
+programmers couldn&#8217;t get one apiece. </p>
+
+<p>IBM built a modified System/360 (the model 67) that supported address
+translation. Address translation means that the processor thinks
+it’s referencing one memory location but it really gets translated
+into another. Every process can now get its own address space and
+feel like it owns the machine.</p>
+
+<p>VM was built with a modular approach: resource management and user
+support were split into separate components.
+The Control Program (CP) is the part of VM that creates virtual
+machines on which various operating systems run. A virtual machine
+contains not only a virtual address space, but also virtual readers,
+disks, punches, printers, and tape drives.
+Accessing devices or executing
+privileged instructions, both of which operating systems do,
+causes an interrupt to the CP which maps
+the requested action into a physical action.
+With VM, one can:</p>
+
+<ul>
+<li>Test out a new operating system while still doing production work on the old one</li>
+<li>Run multiple copies of the same operating system (VM/CMS runs a copy of CMS, a single-user system, for each user).</li>
+<li>Run special-purpose operating systems for certain tasks</li>
+</ul>
+
+<p>VM started as an internal IBM project to give its engineers the ability to develop and test
+operating systems but turned out to be useful for IBM customer&#8217;s as well. Virtual machines pretty
+much died off after this until the 1990s but are enjoying a renaissance in the 2000s.</p>
+
+<h2 id="unix4theditionispublished">1973: UNIX 4<sup>th</sup> Edition is published</h2>
+
+<div class="right-sidetext">
+The number of UNIX installations is now above 20, and many more are
+expected. None of these has exactly the same complement of hardware
+or software
+<br/>
+<i>&mdash; Preface to the fourth edition.</i>
+</div>
+
+<h4 id="portableoperatingsystem">Portable operating system</h4>
+
+<p>This is the first version of UNIX that was mostly written in the C programming language.
+The system runs on a PDP&#8211;11 and comes with an editor, assembler,
+calculator, electronic mail, compiler, and a bunch of utilities.
+Since the Bell System was a regulated monopoly and could not be
+in the computer business, UNIX
+was practically free to universities (they had to pay for the documentation
+and tape). You didn&#8217;t get support, but you got source. UNIX was an
+easy system to understand and modify. It was soon ported to different
+machines. </p>
+
+<p>Three things about UNIX were crucially important:</p>
+
+<ol>
+<li>UNIX was mostly written in C. This made it easier to write,
+debug, enhance, and maintain the software. The approach of using
+a high-level language for writing an operating system was a relatively
+novel one. Operating systems were written for specific machines,
+had to be efficient, and had to access various low-level aspects
+of the machine. The main compiled high-level languages of the 1950s
+and 1960s were FORTRAN and COBOL (LISP was also out there but it
+was interpreted). Both were unsuitable for the task. Previously,
+Burroughs wrote their operating system for the B5000 in a version
+of Algol. MULTICS, a large OS project that preceded UNIX, was written
+in EPL, an early version of PL/I. The language was largely unsuited
+to operating systems and the compiler was so unoptimized that &#8220; a
+simple PL/I statement might translate into a whole page of code&#8221; [<a href="http://www.multicians.org/pl1.html">ref</a>].
+C was a
+simplified high-level language that was ideal for systems programing.
+While it incurred some inefficiencies, they were not unreasonable ones.</li>
+</ol>
+
+<ol>
+<li><p>The use of a high level language made it easier to recompile the
+operating system for a different computer architecture. Traditionally,
+operating systems were targeted for a specific machine architecture.
+For example, MULTICS, the predecessor to UNIX, was designed
+specifically for a GE&#8211;645 computer. The architecture and the OS
+went hand-in-hand. While UNIX was initially written for a PDP&#8211;8 and
+then a PDP&#8211;11, the fact that large sections of the operating system
+were architecture independent and written in a high-level language
+meant that it was not a daunting task to port the code onto different
+computer architectures.</p></li>
+<li><p>By 1975 (sixth edition), UNIX was distributed to universities.
+This exposed a large group of computer science students to the
+operating system at the source code level. Here was a system they
+could use, modify, and fully learn. This led to numerous enhancements.
+Most came from the University of California at Berkeley in the form
+of the Berkeley Software Distribution (BSD)</p></li>
+</ol>
+
+<h2 id="ethernet">1973: Ethernet</h2>
+
+<p>Robert Metcalfe invents Ethernet while at
+Xerox PARC (Palo Alto Research Center).
+It&#8217;s not the first data network but it was quickly promoted
+as a standard and its packet switching approach made it inexpensive
+and highly scalable. It quickly becomes the dominant networking
+technology for local area networks.</p>
+
+<h2 id="xeroxalto">1973: Xerox Alto</h2>
+
+<h4 id="videodisplaythedesktopthemouseethernetnetworkingwysiwygediting">Video display, the desktop, the mouse, ethernet networking, WYSIWYG editing</h4>
+
+<p>The Alto was a project developed at Xerox PARC. Although it was not a commercial
+success and Xerox abandoned the project, it was pivotal in the history of computer systems
+since it integrated the mouse, ethernet networking, a bitmapped video display, and a detachable key.
+It also introduced the desktop interaction metaphor on a graphical display.</p>
+
+<h2 id="thepersonalcomputeragebegins">1974 The Personal Computer Age begins</h2>
+
+<div class="right-sidetext">
+Intel announces the 8080 microprocessor. It has a larger instruction set than its
+predecessor, the 8008. Better yet, it requires only six additional
+chips to produce a working computer. It executes one million
+instructions per second and initially costs $360. Prices fall to
+under $100 by late 1975 thanks to competition.
+</div>
+
+<h4 id="thefirstpersonalcomputer">The first personal computer</h4>
+
+<p>Popular Electronics featured the MITS Altair computer on its cover. A kit for this 8080-based machine cost $397.
+It had no keyboard, video display, disk drive, tape storage, or software.
+Most systems had 256 bytes of memory (that&#8217;s <em>bytes</em>, not kilo-, or megabytes).
+Instructions were entered through switches on the front panel.<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a></p>
+
+<p>A later model, the Altair 8800b, had a serial line to support a video
+terminal and printer. At the time, a Lear-Siegler ADM&#8211;3A, a dumb video terminal with
+an 80x24 character display, cost $995/kit,
+$1195/fully assembled). If you couldn&#8217;t afford that, you might get a used
+teletype. Thousands upon thousands of people bought
+these computers. They couldn&#8217;t do all that much, but it was pretty
+cool for many to own your very own computer.
+This led to the <a href="http://en.wikipedia.org/wiki/Homebrew_Computer_Club">Homebrew Computer Club</a>, which led
+to the creation of more PC and peripheral manufacturers as well as to the creation of software.</p>
+
+<p>Now that there was an obvious market for this, Intel was under attack. By 1975, the
+Intel 8080 processor was being sold for $179.
+In 1975, the 6502 processor was introduced for a mere $25. With this low price, it became
+the processor of choice for a number of personal computers, including the Commodore PET, The Apple II,
+Atari, and others.
+Also, a better and cheaper processor that was backward compatible
+with the Intel 8080 instruction set was introduced by Zilog in 1976
+&#8212; the Z80.
+Mainstream personal computers would not see an Intel processor in them until the
+IBM PC.</p>
+
+<h2 id="gatesandallenwritebasicforthealtair">1974: Gates and Allen write BASIC for the Altair</h2>
+
+<h4 id="pcprogrammingmadesimple">PC programming made simple</h4>
+
+<p>Now lots of people could write programs on their PC without having to use assembly language.
+Most people stole this software, which led to Bill Gates&#8217;
+<a href="http://en.wikipedia.org/wiki/Open_Letter_to_Hobbyists">Open Letter to Hobbyists</a>.</p>
+
+<h2 id="c.1975cpm:anoperatingsystemfor8-bitintel-basedpcs">c. 1975 CP/M: An operating system for 8-bit Intel-based PCs</h2>
+
+<h4 id="theintroductionofthebiossortofintointelpcarchitectures">The introduction of the BIOS (sort of) into Intel PC architectures</h4>
+
+<p>Gary Kildall of Digital Research gives the world CP/M (Control
+Program for Microcomputers). It runs on Intel 8080 (and on the later
+8085 and Zilog Z80) machines. It was not targeted to any specific machine and was
+designed to be adaptable to any machine with an 8080-family processor and a floppy
+disk drive. It was a rudimentary operating system: a simple command interpreter,
+program loader, and file system manager. Only one program ran at a time. When
+it was done, command transferred to the console command processor code, which prompted
+the user for the next command.
+This operating system consists of:</p>
+<dl>
+<dt>CCP</dt>
+<dd>The Console Command Processor (command interpreter)</dd>
+
+<dt>BDOS</dt>
+<dd>The &#8220;Basic Disk Operating System&#8221;. This was the program loader and
+ the software that figured out how to manage and interpret the file system on a floppy-disk.</dd>
+
+<dt>BIOS</dt>
+<dd>This term should sound familiar. The Basic I/O System (BIOS). Since each machine was different,
+ you had to write the low-level functions yourself (get a character
+ from an input device, read a sector from the floppy disk, write a
+ sector, write a character to an output device, &#8230;).</dd>
+</dl>
+
+
+<p>The system also
+came with a few programs, such as an assembler, a line editor, and
+a program to copy files. This is the sort of software people expected
+to come with their computers at that time.
+CP/M was a direct precursor of MS-DOS.
+MS-DOS was derived from QDOS, the <em>Quick and Dirty Operating
+System</em>, which was essentially a reverse-engineered version
+of CP/M for the 8086 processor, Intel&#8217;s first 16-bit CPU.
+Microsoft bought QDOS from Seattle Computer Products for $50,000.
+Gary Kildall could have had the IBM contract for the IBM PC operating
+system, but he botched it.
+The first IBM PC came with a BASIC interpreter in ROM and
+an assembler, a line editor, and a program to copy files.</p>
+
+<h2 id="appleii">1976: Apple II</h2>
+
+<h4 id="aready-to-usecomputer">A ready-to-use computer</h4>
+
+<p>BASIC is built-in. It allows the display of text and graphics in
+color. This was a &#8220;plug &amp; play&#8221; machine that remained in production
+for fifteen years. This machine made personal computers accessible
+to non-geeks. That was a good chunk of the population. </p>
+
+<p>By 1977, a couple other ready-to-use PCs were sold: Radio Shack&#8217;s <a href="http://en.wikipedia.org/wiki/TRS-80">TRS&#8211;80</a> and the Commodore <a href="http://en.wikipedia.org/wiki/Commodore_PET">Pet</a>.</p>
+
+<h2 id="decintroducesthefirstvaxcomputerrunningvmsthevax11780">1977 DEC introduces the first VAX computer running VMS (the VAX 11/780)</h2>
+
+<h4 id="a32-bitfamilyofminicomputerssharingthesameinstructionsetandvirtualmemory">A 32-bit family of minicomputers sharing the same instruction set and virtual memory</h4>
+
+<p>The VAX 11/780 was a hugely popular larger
+minicomputer and one of the earliest computers
+to use <strong>virtual memory</strong> to manage the [at the time] huge 32-bit address space
+of the computer (the smaller PDP&#8211;11 series was a 16-bit machine).</p>
+
+<p>Like the IBM System/360 (but smaller and cheaper and from a different
+company), this was to become a series of computers. Despite the
+range of size and power of different models, they all have the same
+architecture.
+VAXes (also called Vaxen) could be networked together and operate in a peer-to-peer
+relationship (any machine can be a client or a server).</p>
+
+<p>VMS (Virtual Memory System) was the DEC-issued operating system for the VAX, although
+the VAX soon became a popular platform for UNIX.</p>
+
+<p>VMS was designed to take advantage of the VAX&#8217;s architecture, incorporating
+<strong>demand paging</strong>, which enabled the computer to allocate and load a page of
+memory when the process needed it and map it onto the correct memory location
+for the process. This avoided having to pre-load an entire program into memory.
+Securiy was a core facet of the design. It supported privilege checks and
+account lock0outs.
+VMS supported 32 priority
+levels for process scheduling and had support for real-time processes.</p>
+
+<h2 id="visicalcandwordstarcomeout">1979: Visicalc and WordStar come out</h2>
+
+<h4 id="killerapps">Killer apps</h4>
+
+<p>These are the first of the <em>killer apps</em> for the personal computer: programs that would justify your purchase of the computer.</p>
+
+<h1 id="operatingsystemsforthe1980s">Operating Systems for the 1980s</h1>
+
+<p>Personal computers are a strong force, but the operating systems
+are primitive: not much more than a command interpreter, program
+loader, and device drivers. Even with that, programmers often break
+convention and access devices directly. Networking, particularly
+among workstations, becomes widespread and fast. It&#8217;s feasible to
+access files across a network as one would locally. Networked
+operating systems become interesting.</p>
+
+<p>Microkernels with a message passing structure become hot topics,
+but never really become mainstream operating systems. Mach, designed
+as a microkernel,
+becomes a basis for both Windows NT (and derivatives) as well as OS&nbsp;X but is really too big to be considered a microkernel architecture.</p>
+
+<p>A key mechanism that entered operating systems was <em>multithreading</em>,
+the ability for one process to have multiple concurrent threads of execution.
+Initially, this was primarily useful for network servers since one process
+may now service many requests concurrently.</p>
+
+<p>User interfaces start becoming important. Windowing systems get refined.</p>
+
+<h2 id="august121981:ibmintroducestheibmpc">August 12, 1981: IBM introduces the IBM PC</h2>
+
+<h4 id="ibmlegitimizesthepersonalcomputer">IBM legitimizes the personal computer</h4>
+
+<p>The IBM PC was an open machine based on the Intel 8088 processor (IBM will give you
+the schematics and parts list).
+With the most respected brand in computers selling a personal computer,
+it was no longer a hobbyist&#8217;s toy but something that could be a serious personal business machine.
+A lot of people bought these. You
+couldn&#8217;t go wrong buying IBM and IBM set a standard that is still
+followed. Intel and Microsoft (not IBM) were the big winners here
+because lots of other companies started building clones of the IBM
+PC but those clones still needed the processor and needed the operating system.</p>
+
+<p>The first IBM PC featured:</p>
+
+<ul>
+<li>16K bytes memory (expandable to 256K)</li>
+<li>2 floppies, each holding 160K bytes</li>
+<li>2 displays available: a color and a monochrome</li>
+<li>PC-DOS from Microsoft. This was essentially a CP/M clone.
+Bill Gates agreed to provide an OS to IBM even though he had nothing to
+give at the time. He cleverly negotiated the rights to sell the
+operating system (probably anticipating the PC clones that would come out in the near future).</li>
+<li>A price of $2495 with 16K bytes RAM and one floppy. Add $1000 to get 256K bytes RAM</li>
+</ul>
+
+<h2 id="microsoftbeginsworkonms-windows">1983 Microsoft begins work on MS-Windows</h2>
+
+<p>It’s slow, buggy, and generally an embarrassment. People stick with MS-DOS.</p>
+
+<h2 id="applemacintoshcomesout">1984 Apple Macintosh comes out</h2>
+
+<h4 id="personalcomputersforeveryone">Personal computers for everyone</h4>
+
+<p>The Mac introduces the mass market to the mouse and windows. The
+command line is now dead as far as the average consumer is concerned.
+Popular for its user-friendly interface. The point-and-click
+mouse-based interface is derived from the Xerox Star system created
+at Xerox PARC (Palo Alto Research Center).</p>
+
+<h2 id="c.1985:networkedfilesystemsonworkstations">c. 1985: Networked file systems on workstations</h2>
+
+<h4 id="remoteresourcesthatlooklikelocalones">Remote resources that look like local ones</h4>
+
+<p>SUN’s NFS allows users to <em>mount</em> file systems from other machines
+onto their own machines. Apollo’s Domain system incorporates the
+entire network of machines into its file name space. Now you can
+access data that lives on other machines in just the same way as
+you access data on your machine. A bunch of companies start selling
+networked personal workstations for the enterprise. Sun wins.</p>
+
+<h2 id="mach">1986: Mach</h2>
+
+<h4 id="microkernels">Microkernels</h4>
+
+<p>Mach is a microkernel system that was designed to allow the emulation
+of a variety of other operating systems over it (such as various
+variants of UNIX). It allows transparent access to network resources,
+can exploit parallelism, and can support a large address space.
+The principles of Mach become a basis for Microsoft&#8217;s Windows NT and for Apple&#8217;s OS&nbsp;X.</p>
+
+<h2 id="samoeba">1980’s Amoeba</h2>
+
+<h4 id="amicrokernelwithautonomouscomponents">A microkernel with autonomous components</h4>
+
+<p>The system is a distributed collection of process servers (processor
+pools), file servers, compute servers, and others.</p>
+
+<p>Amoeba is built with a microkernel architecture. The Amoeba microkernel
+runs on all machines in the system The fundamental concept under
+Amoeba is the object (a collection of data upon which certain
+well-defined operations may be performed). These objects are named
+and created by capabilities. Amoeba demonstrated a number of interesting
+concepts but was never adopted commercially.</p>
+
+<h2 id="late1980s:plan9frombelllabs">Late 1980&#8217;s: Plan 9 from Bell Labs</h2>
+
+<h4 id="unixisgettingoldletstakethegoodideasdumpthebadandstartover">UNIX is getting old; let&#8217;s take the good ideas, dump the bad, and start over</h4>
+
+<p>Built with the realization that previous efforts of building
+distributed networks of systems and getting them appear as one
+uniform entity weren&#8217;t entirely successful.</p>
+
+<p>Goal: Build a distributed, scalable system that appears as one time-sharing
+system that can support thousands of users, terabytes of files, and
+gigabytes of memory. Plan 9 is composed of a number of separate
+components: CPU servers, terminals (with processing), file servers,
+and networks.</p>
+
+<p>Plan 9 never gained commercial traction or even much adoption within
+Bell Labs. Although it had great ideas, the user community didn&#8217;t care
+a whole lot about new operating systems; they were no longer
+satisfied when presented with an operating system and a few programs.
+They want to run their favorite applications. Backward compatibility
+was important. </p>
+
+<h2 id="microsoftwindows3.0comesout">1990 Microsoft Windows 3.0 comes out</h2>
+
+<p>Microsoft Windows 1.0 first came out in 1985, followed by Windows 2.0 in 1987.
+These were essentially just graphical shells over MS-DOS, which is a single user, single-tasking system.
+However, Windows provided users with drop-down menus, scroll bars on on-screen windows,
+and dialog boxes. Windows 1.0 required a PC with a minimum of 256 KB of memory.
+Neither of these releases were hugely popular as most applications still ran under MS-DOS.</p>
+
+<p>In 1990, Microsoft introduced Windows 3.0. This was the first hugely popular version
+of Windows, although many of the DOS underpinnings were still clearly visible.
+Performance improved, icons were better developed, and the system fully supported
+Intel&#8217;s new 386 processor. The 386 processor was the first Intel processor to provide
+support for virtual memory, which now allowed Windows to multitask multiple
+instances of MS-DOS programs, giving each program its own virtual address space.
+Equally importantly, Microsoft introduced a Windows
+Software Development Kit (SDK), which provided developers with a standard API
+for accessing system functions, including graphics, ushering in a huge wave of
+application development for the platform.</p>
+
+<h2 id="thefirstwindowsviruscomesout">1992 The first Windows virus comes out</h2>
+
+<p>The virus, named WinVir, was discovered. An infected program would search for other
+executable files and edit those files to insert copies of itself in them. Then it would
+remove itself from the original file to restore that file to its original condition.
+Viruses became an endemic problem largely because operating systems users generally
+ran with administrative privileges in systems such as Windows, allowing programs
+that they execute to have free access to all files in the system.</p>
+
+<h2 id="gnulinux">1991 GNU/Linux</h2>
+
+<h4 id="afreeunix-likeoperatingsystembecomesavailable">A free Unix-like operating system becomes available</h4>
+
+<p>UNIX, while achieving great popularity, was only freely available to universities. The
+Bell System was a regulated monopoly and could not sell computer products.
+After the breakup of the Bell System in 1984,
+AT&amp;T wanted to get into the computer business and free university licensing
+of the UNIX operating system was revoked.
+Minix was created by Andrew Tanenbaum as a small Unix-like operating system.
+Unfotrunately, like UNIX in the past,
+it was freely available only to universities and research.</p>
+
+<p>Linux started as a kernel originally written by Linus Torvalds and was complemented with a
+wide range of GNU user-level tools (gcc, make, emacs, and much of the other stuff that one
+expects in a Unix distribution). It evolved over time. Although it has not achieved widespread
+popularity in PC desktops (where Windows and OS X dominate), it runs on many
+servers as well as embedded systems. In the latter category, it serves as the underpinnings
+for Google&#8217;s Android and Chrome OS operating systems, the TiVo digital video recorder,
+various set-top boxes, automotive computers, and industrial controllers.</p>
+
+<h2 id="windowsnt">1993 Windows NT</h2>
+
+<p>The design of VMS was led by David Cutler.
+When the project was canceled in 1988, Microsoft hired Cutler and around
+20 other DEC employees from the VMS team to work on a next
+generation operating system for Windwos that would rival UNIX.
+This led to the creation of Windows NT. NT is, in many ways,
+a successor to VMS and shares much terminology and concepts in common.</p>
+
+<p>Windows NT was also inspired by Mach&#8217;s microkernel architecture.
+NT is not a microkernel but enables OS <strong>emulation subsystems</strong> to run
+as user-level server processes. This enables it to implement backward
+compatibility support with other operating systems,
+including DOS, OS/2, POSIX (UNIX interface), and 16-bit Windows. </p>
+
+<p>&#8220;NT&#8221; stood for New Technology.
+It was designed to be a better Windows, offering networking,
+per-object based processes, and file protection mechanisms.
+Unlike VMS, it was written almost entirely in C and designed to be portable
+across different processor and hardware architectures.
+MS-DOS and earlier editions of Microsoft Windows were written only
+for the Intel x86 family of processors. NT introduced a hardware abstraction layer to provide an abstract
+interface to the underlying hardware. The system was fully 32-bit while Windows was written with
+16-bit architectures in mind. At the high levels of the operating system, API modules provided the
+option to support a variety of system call interfaces, although only Win32 was ultimately supported.
+The system could also handle a variety of installable file system modules, with NTFS
+being the core file system.</p>
+
+<p>NT was arguably the last modern operating system that was written from scratch.
+Every successive version of Windows has been based on an evolution of Windows NT.</p>
+
+<h2 id="mosaic">1993: Mosaic</h2>
+
+<h4 id="thewebbrowserisborn">The web browser is born</h4>
+
+<p>Mosaic, the Netscape Navigator (1994), and Internet Explorer (1995) usher in the web.
+The web browser becomes the killer app for the mid&#8211;1990s and onward.
+At first, the web is just an information navigation tool but it very quickly becomes
+an applications and service delivery platform where the web browser serves as a user interface
+to services that reside on remote Internet-accessible servers.
+It is almost inconceivable to image life without the web.</p>
+
+<p>The browser, of course, is not an operating system, but it let many to reexamine
+the role of the operating system for consumer computing and imagine a world where
+all services are provided via a web browser.</p>
+
+<h1 id="the2000s">The 2000s</h1>
+
+<h2 id="c.1997andanothertryin2009:theinternetappliance">c. 1997 and another try in 2009: The Internet appliance</h2>
+
+<h4 id="ifallthegoodstuffisonthewebhowmuchdoyoureallyneedinapcandoperatingsystem">If all the good stuff is on the web, how much do you really need in a PC and operating system?</h4>
+
+<p>The complexity and cost of managing bloated PCs (and the requisite software and disks) led to the
+idea of <em>thin clients</em> or the <em>appliance computer</em>
+(take it out of the box, plug it in, and it works) that will run a
+very limited set of software (such as a web browser)
+All the interesting stuff will be out on the network.</p>
+
+<p>The first attempt to do this didn&#8217;t succeed. In July 2009, Google announced
+<a href="http://googleblog.blogspot.com/2009/07/introducing-google-chrome-os.html">Google Chrome OS</a>.
+The goal of Chrome OS is to create a lightweight system with a minimal user interface running a browser.
+All the applications are on the web. The jury is still out on whether this will be a success.</p>
+
+<h2 id="ios">2007: iOS</h2>
+
+<h4 id="multitouchui">Multitouch UI</h4>
+
+<p>Apple&#8217;s iPhone makes the multi-touch user interface mainstream. The user interaction model
+includes a virtual keyboard and support for tap, swipe, pinch and un-pinch gestures to zoom and unzoom to
+support direct, finger-based, manipulation of on-screen objects.
+The concept of multi-touch interfaces goes back to the 1970s, with interfaces using
+pinch-to-zoom gestures being created in the early 1980s.
+The underlying operating system, named <strong>iOS</strong>, is derived from OS X but with changes
+to support a different windowing system, restrictions on background processes to
+enable better application performance and improved battery life, and mobile services
+such as push notification and the ability to notify apps when a location changes.</p>
+
+<h2 id="androidos">2008: Android OS</h2>
+
+<h4 id="afreeitturnsoutthatandroiddidnotreallyturnouttobeasfreeorasopenasoriginallyexpected.thecoresoftwareisfree.googlemobileservicesgmshoweverrequiresafreelicenseandatestingpaymenttoauthorizedtestingfactories.moreovermicrosoftandapplebothextractpatentroyaltypaymentsfromandroidhandsetmanufacturers.patentroyaltiesfromandroidvendorshavegeneratedmicrosoft2billioninyearlyrevenue.free_androidosplatformformobilephones">A free <a href="#fn:2" id="fnref:2" title="see footnote" class="footnote">[2]</a> OS platform for mobile phones</h4>
+
+<p>Google develops a variant of Linux that is targeted to mobile phones. The Linux system and its
+libraries are stripped down of excess baggage, standard libraries for accessing components
+such as a GPS, accelerometer, telephony, and other components found on mobile phones are added,
+and a graphical UI framework is put in place.
+All applications are written in Java run on a Java-like virtual machine (Dalvik). This ensures
+that the applications are not dependent on any specific processor platform. </p>
+
+<h2 id="theinternetofthingsiot">2009 The Internet of Things (IoT)</h2>
+
+<h4 id="allsortsofappliancesanddevicestalkingwitheachother">All sorts of appliances and devices talking with each other</h4>
+
+<p>The term, <em>Internet of Things</em> was coined by Kevin Ashton in 2009 but the ideas go much
+further back in time. As microcontrollers became smaller, cheaper, and more power efficient
+and wireless networking became ubiquitous, it became clear that all manner of objects
+could be controlled or could report their status. This include things such as </p>
+
+<ul>
+<li>light bulbs (e.g., the Philips Hue connected bulb)</li>
+<li>fitness devices (e.g., the Fitbit activity wristband)</li>
+<li>home alarms, heating, AC systems (e.g., the Nest thermostat and Nest Protect smoke detectors)</li>
+<li>hot water heaters</li>
+<li>washing machines, ovens, and other appliances</li>
+<li>shipping containers</li>
+<li>vending machines</li>
+<li>digital signage, from billboards to shelf tags</li>
+</ul>
+
+<p>and many more. A key development is not just the ability to control devices from an iPhone
+but to enable intelligent machine-to-machine (<em>M2M</em>) communication. To enable this requires
+standardized APIs and network protocols. Given that many of these devices are small and
+simple, installing a bloated operating system such as Linux is overkill. However,
+security can be an important concern and needs to be incorporated at the most fundamental
+levels of the system while still providing convenience and expected functionality.
+Because these devices are not likely to get software updates and patches as often as
+PCs (or, in most cases, never), they are at risk of harboring known security vulnerabilities.
+The research
+and industrial community is still in the process of developing suitable operating environments
+and communication protocols for these systems.</p>
+
+<h1 id="referencespartial">References (partial)</h1>
+
+<ul>
+<li>Digital Equipment Corporation, <em>Digital PDP&#8211;8 Handbook Series</em>. &copy; 1970</li>
+<li>Harrison, William, <em>IBM Corporation</em>, private correspondence</li>
+<li>Ritchie, Dennis, <em>Bell Telephone Laboratories</em>, private correspondence</li>
+<li>Tanenbaum, Andrew S., <em>Modern Operating Systems</em>. Prentice Hall &copy; 1992</li>
+<li>Thompson, K. and Ritchie, D. M., <em>UNIX Programmer&#8217;sManual, Fourth Edition</em>. Bell Telephone Laboratories, © 1972, 1973</li>
+<li>Wilkes, Maurice, <em>Memoirs of a Computer Pioneer</em>r. MIT Press, © 1985</li>
+<li>Wulforst, Harry, <em>Breakthrough to the Computer Ag</em>e. Charles Scribner&#8217;s Sons, © 1982</li>
+<li><a href="http://www.guidebookgallery.org/articles/thexeroxaltocomputer">The Xerox Alto Computer</a>, Byte Magazine, September 1981, pp. 56&#8211;58</li>
+<li>and many others whose contents litter the recesses of my mind but whose sources I no longer remember. I will update
+this reference list over time.</li>
+</ul>
+
+<p>Some web sources: </p>
+
+<ul>
+<li><a href="http://people.cs.clemson.edu/~mark/interrupts.html">Interrupts</a>, Mark Smotherman, 2008</li>
+<li>[The UNIVAC 1102, 1103, and 1104][], The Unisys History Newsletter, George Gray.</li>
+<li><a href="http://en.wikipedia.org/wiki/ENIAC">ENIAC</a></li>
+<li><a href="http://www-03.ibm.com/ibm/history/exhibits/701/701_intro.html">IBM Archives on the IBM 701</a></li>
+<li><a href="http://www-03.ibm.com/ibm/history/exhibits/mainframe/mainframe_PR360.html">IBM Archives: System/360 Announcement </a></li>
+<li><a href="http://www-03.ibm.com/ibm/history/exhibits/mainframe/mainframe_intro.html">IBM Exhibits: IBM Mainframes</a></li>
+<li><a href="http://en.wikipedia.org/wiki/VM_(operating_system)">VM operating system</a>, Wikipedia</li>
+<li><a href="http://www.cpm.z80.de/">The Unofficial CP/M Web Site</a>: binaries, source code, manuals, emulators.</li>
+<li><a href="http://www.intel.com/about/companyinfo/museum/exhibits/4004/index.htm"> Intel Museum: Intel 4004</a></li>
+<li><a href="http://www.intel4004.com/">Federeico Faggin&#8217;s information on the Intel 4004 and 8080</a>. He is the creator of the 4004 processor
+and founder of Zilog, which built the competing Z80 processor.</li></li>
+<li><a href="http://www.dougengelbart.org/firsts/mouse.html">Doug Engelbart Institute</a>, the father of the mouse.</li>
+<li><a href="http://www.cs.berkeley.edu/~brewer/cs262/unix.pdf">The UNIX Time-Sharing System</a>, Dennis M. Ritchie and Ken Thompson, Bell Laboratories, 1974</li>
+<li><a href="http://cm.bell-labs.com/cm/cs/who/dmr/hist.pdf">The Evolution of the Unix Time-sharing System</a>, Dennis M. Ritchie, Bell Laboratories, 1979 </li></li>
+<li><a href="http://www-03.ibm.com/ibm/history/exhibits/pc/pc_1.html">IBM Archives: IBM Personal Computer</a></li>
+<li><a href="http://web.mit.edu/multics-history/">Multics</a> page at MIT</li>
+<li><a href="http://web.mit.edu/multics-history/source/Multics/doc/info_segments/pipes.gi.info">Multics Simplified I/O Redirection (pipes)</a></li>
+<li><a href="http://www.multicians.org/pl1.html">PL/I on Multics</a>, multicians.org</li>
+<li><a href="http://en.wikipedia.org/wiki/Multics">The Multics Operating System</a>, Wikipedia article</li>
+<li><a href="http://windowsitpro.com/windows-client/windows-nt-and-vms-rest-story">Windows NT and VMS: The Rest of the Story</a>, Mark Russinovich, WindowsIT Pro, 1998.</li>
+<li><a href="http://plan9.bell-labs.com/plan9/">Plan 9 from Bell Labs</a></li>
+<li><a href="http://www.android.com/">Google Android </a></li>
+<li>Bruce Schneier, <a href="http://www.wired.com/opinion/2014/01/theres-no-good-way-to-patch-the-internet-of-things-and-thats-a-huge-problem/">The Internet of Things Is Wildly Insecure &#8212; And Often Unpatchable</a> . Wired, January 6, 2014</li>
+</ul>
+
+<p>This document is updated from its original version of September 11, 2010.</p>
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>The first personal computer is generally considered to be
+the <a href="http://en.wikipedia.org/wiki/Kenbak-1">Kenbak&#8211;1</a>. It was made in 1970 and sold for $750. However, only 40 were ever
+made and it failed to get much notice. It predated microporcessors and was built
+using discrete TTL chips. The 8-bit computer had 256 bytes of memory and averaged
+about 1,000 instructions per second. <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:2">
+<p>It turns out that Android did not really turn out to be as free or as open
+as originally expected. The core software is free. Google Mobile Services (GMS), however, requires
+a free license and a testing payment to authorized testing factories. Moreover, Microsoft and
+Apple both extract patent royalty payments from Android handset manufacturers. Patent royalties
+from Android vendors have generated Microsoft $2 billion in yearly revenue. <a href="#fnref:2" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: October 13, 2016 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

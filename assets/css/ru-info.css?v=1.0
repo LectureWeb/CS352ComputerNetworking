@@ -1,0 +1,41 @@
+.note {
+	font-style: italic;
+	color: #444;
+}
+#main .faqlist dd {
+	margin-left: 2em;
+	margin-bottom: 2em;
+}
+#main .faqlist dt {
+	background-color: #D1DBDB;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	padding-top: 0.25em;
+	padding-left: 0.5em;
+	color: black;
+	font-weight: normal;
+}
+#main .faqlist dt strong, #main .faqlist dt b {
+	color: red;
+}
+#main .faqlist dt p + p {
+	padding-top: 1em;
+}
+#main .faqlist dt p {
+	margin-bottom: 0;
+}
+#main .newslist dt {
+	background-color: white;
+	color: #555;
+}
+#main .points {
+	font-size: 12pt;
+	font-weight: normal;
+	color: #a00000;
+}
+
+#main blockquote {
+	font-size: 12pt;
+	color: #a00000;
+}
+

@@ -1,0 +1,504 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Threads </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 416 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/05-threads.html"> Threads </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Threads </h1>
+<h2> Multiple flows of execution within a process </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> February 5, 2014 </p>
+</div>
+<h1 id="introduction">Introduction</h1>
+
+<p>When we looked at the concept of the <em>process</em>, we considered the distinction
+between a <em>program</em> and <em>process</em>. A process was a program in memory along
+with dynamically-allocated storage (the heap), the stack, and
+the execution context, which comprises the state of the processor&#8217;s registers and
+instruction pointer (program counter).</p>
+
+<p>If we take a closer look at the process, we can break it into two components:</p>
+
+<ol>
+<li>The program and dynamically allocated memory.</li>
+<li>The stack, instruction pointer, and registers.</li>
+</ol>
+
+<p>The second item is crucial for the execution flow of the program. The instruction
+pointer keeps track of which instructions to execute next, and those instructions
+affect the registers. Subroutine call/return instructions as well instructions
+that push or pop registers on the stack on entry to or exit from a function call
+adjust the contents of the stack and the stack pointer. This stream of instructions
+is the process&#8217; <strong>thread of execution</strong>.</p>
+
+<p>A traditional process has one thread of execution. The operating system
+keeps track of the memory map, saved registers, and stack pointer in the process
+control block and the operating system&#8217;s scheduler is responsible for
+making sure that the process gets to run every once in a while.</p>
+
+<h1 id="multithreading">Multithreading</h1>
+
+<figure>
+<img src="images/05-multi-thread-map.png" alt="Memory map with two threads" id="multi-thread-map" title="Memory map with two threads" style="height:296;width:100;" />
+<figcaption>Memory map with two threads</figcaption></figure>
+
+
+
+<p>A process may be <strong>multithreaded</strong>, where
+the same program contains multiple concurrent threads of execution. An operating
+system that supports multithreading has a
+scheduler that is responsible for preempting and scheduling all threads
+of all processes.</p>
+
+<p>In a multi-threaded process, all of the process&#8217; threads
+share the same memory and open files. Within the shared memory,
+each thread gets its own stack. Each thread has its own instruction
+pointer and registers.
+Since the memory is shared, it is important
+to note that there is no memory protection among the threads in
+a process.</p>
+
+<p>An operating system had to keep track of processes, and stored
+its per-process information in a data structure called a process control block (PCB).
+A multithread-aware operating system also needs to keep track of threads.
+The items that the operating system must store that are unique to each thread are:</p>
+
+<ul>
+<li>Thread ID</li>
+<li>Saved registers, stack pointer, instruction pointer</li>
+<li>Stack (local variables, temporary variables, return addresses)</li>
+<li>Signal mask</li>
+<li>Priority (scheduling information)</li>
+</ul>
+
+<p>The items that are shared among threads within a process are:</p>
+
+<ul>
+<li>Text segment (instructions)</li>
+<li>Data segment (static and global data)</li>
+<li>BSS segment (uninitialized data)</li>
+<li>Open file descriptors</li>
+<li>Signals</li>
+<li>Current working directory</li>
+<li>User and group IDs</li>
+</ul>
+
+<h1 id="advantagesofthreads">Advantages of threads</h1>
+
+<p>There are several benefits in using threads. Threads are more efficient.
+The operating system does not need to create a new memory map
+for a new thread (as it does for a process). It also does not need to
+allocate new structures to keep track of the state of open files and
+increment reference counts on open file descriptors.</p>
+
+<p>Threading also makes certain types of programming easy. While it&#8217;s true
+that there&#8217;s a potential for bugs because memory is shared among threads,
+shared memory makes it trivial to share data among threads. The same
+global and static variables can be read and written among all threads
+in a process.</p>
+
+<p>A multithreaded application can scale in performance as the number of
+processors or cores increases in a system. With a single-threaded process,
+the operating system can do nothing to make let the process take advantage of
+multiple processors. With a multithreaded application, the scheduler can
+schedule different threads to run in parallel on different cores or processors.</p>
+
+<h1 id="threadprogrammingpatterns">Thread programming patterns</h1>
+
+<p>There are several common ways that threads are used in software:</p>
+<dl>
+<dt>Single task thread</dt>
+<dd>This use of threading creates a thread for a specific task that needs to be
+ performed, usually asynchronously from the main flow of the program. When the
+ function is complete, the thread exits.</dd>
+
+<dt>Worker threads</dt>
+<dd>In this model, a process may have a number of distinct tasks that could be
+ performed concurrently with each other. A thread is created for each one
+ of these work items. Each of these threads then picks of tasks from a queue
+ for that specific work item. For example, in a word processing program, you
+ may have a separate thread that is responsible for processing the user&#8217;s input
+ and other commands while another thread is responsible for generating the on-screen
+ layout of the formatted page.</dd>
+
+<dt>Thread pools</dt>
+<dd>Here, the process creates a number of threads upon start-up. All of these
+ threads then grab work items off the same work queue. Of course, protections
+ need to be put in place that two threads don&#8217;t grab the same item for processing.
+ This pattern is commonly found in multithreaded network services, where
+ each incoming network request (say, for a web page on a web server) will be
+ processed by a separate thread.</dd>
+</dl>
+
+
+<h1 id="howtheoperatingsystemmanagesthreads">How the operating system manages threads</h1>
+
+<figure>
+<img src="images/05-tcb.png" alt="Thread control blocks" id="tcb" title="Thread control block" style="height:169;width:400;" />
+<figcaption>Thread control blocks</figcaption></figure>
+
+
+
+<p>The operating system saved information about each process in a
+process control block (PCB). These are organized in a process table
+or list. Thread-specific information is stored in a data structure
+called a <strong>thread control block</strong> (<strong>TCB</strong>). Since a process can
+have one or more threads (it has to have at least one; otherwise
+there&#8217;s nothing to run!), each PCB will point to a list of TCBs.</p>
+
+<h1 id="scheduling">Scheduling</h1>
+
+<p>A traditional, non-multithreaded operating system scheduled processes. A thread-aware
+operating system schedules threads, not processes. In the case where a process has
+just one thread, there is no difference between the two. A scheduler should be
+aware of whether threads belong to the same process or not. Switching between
+threads of different processes entails a full context switch. Because threads that
+belong to different processes access different memory address spaces, the operating
+system has to flush cache memory (or ensure that the hardware supports process tags)
+and flush the virtual memory TLB (the translation lookaside buffer, which is a cache
+of frequently-used memory translations), unless the TLB also supports process tags. It
+also has to replace the page table pointer in the memory management unit to switch
+address spaces. The distinction between scheduling threads from the same or a different
+process is also important for hyperthreaded processors, which support running multiple
+threads at the same time but require that those threads share the same address space.</p>
+
+<h1 id="kernel-levelversususer-levelthreads">Kernel-level versus user-level threads</h1>
+
+<p>What we discussed thus far assumed that the operating system is aware of the
+concept of threads and offers users system calls to create and manage threads.
+This form of thread support is known as <strong>kernel-level threads</strong>.
+The operating system has the ability to create multiple threads per process and
+the scheduler can coordinate when and how they run. System calls are provided
+to control the creation, deletion, and synchronization of threads.</p>
+
+<p>Threads can also be implemented strictly within a process, with the kernel
+treading the process as having a single execution context (the classic process:
+a single instruction pointer, saved registers, and stack).
+These threads are known as <strong>user-level threads</strong>. Users typically
+link their program with a threading library that offers functions to create,
+schedule, synchronize, and destroy threads.</p>
+
+<p>To implement user-level threads, a threading library is responsible
+for handling the saving and switching of the execution context from
+one thread to another. This means that it has to allocate a region
+of memory within the process that will serve as a stack for
+each thread. It also has to save and swap registers and the
+instruction pointer as the library switches execution from one
+thread to another. The most primitive implementation of this
+is to have each thread periodically call the threading library to yield its use
+of the processor to another thread &#8212; the analogy to a program getting
+context switched only when it requests to do so. A better approach is to have
+the threading library ask the operating system for a timer-based interrupt
+(for example, see the <em>setitimer</em> system call). When the process gets the interrupt
+(via the <em>signal</em> mechanism), the function in the threading library that
+registered for the signal is called and handles the saving of the current registers,
+stack pointer, and stack and restoring those items from the saved context of another
+thread.</p>
+
+<p>One thing to watch out for with user-level threads is the use of system calls.
+If any thread makes a system call that causes the
+process to block (remember, the operating system is unaware of the multiple threads),
+then every thread in the process is effectively blocked. We can avoid this
+if the operating system offers us non-blocking versions of system calls that tend
+to block for data. The threading library can simulate blocking system calls by
+using non-blocking versions and put the thread in a waiting queue until the
+system call&#8217;s data is ready. For example, most POSIX (Linux, Unix, OS X, *BSD) systems have
+a <em>O_NONBLOCK</em> option for the <em>open</em> system call that causes a
+<em>open</em> and <em>read</em> to return immediately with an <em>EAGAIN</em> error
+code if no data is ready. Also, the <em>fcntl</em> system call can set the
+<em>O_ASYNC</em> option on a file that will cause the process to receive a <em>SIGIO</em>
+signal when data is ready for a file. The threading library can catch this signal
+and &#8220;wake up&#8221; the thread that was waiting for that specific data.
+Note that with user-level threads, the threading library will have to implement
+its own thread scheduler since the non-thread-aware operating system scheduler
+only schedules at the process granularity.</p>
+
+<h1 id="whybotherwithuser-levelthreads">Why bother with user-level threads?</h1>
+
+<p>There are several obstacles with user-level threads. One big one is
+that if one thread executes a system call that causes the operating
+system to block then the entire process (all threads) is blocked.
+As we saw above, this could be overcome if the operating system
+gives us options to have non-blocking versions of system calls. A
+more significant obstacle is that the operating system schedules
+the process as a single-threaded entity and therefore cannot take
+advantage of multiple processors or hyperthreaded architectures.</p>
+
+<p>There are several reasons, however, why user-level threads can be
+preferable to kernel-level threads. All thread manipulation and
+thread switching is done within the process so there is no need to
+switch to the operating system. That makes user-level threading
+lighter weight than kernel-level threads. Because the threading
+library must have its own thread scheduler, this can be optimized
+to the specific scheduling needs of the application. Threads don&#8217;t
+have to rely on a general-purpose scheduler of an operating system.
+Moreover, each multithreaded process may use its own scheduler that
+is optimized for its own needs. Finally, threading libraries can
+be ported to multiple operating systems, allowing programmers to
+write more portable code since there will be less dependence on the
+system calls of a particular operating system.</p>
+
+<h1 id="combininguserandkernel-levelthreads">Combining user and kernel-level threads</h1>
+
+<p>If an operating system offers kernel-level thread support, that
+does not mean that you cannot use a user-level thread library. In
+fact, it&#8217;s even possible to have a program use both user-level and
+kernel-level threads. An example of why this might be desirable is
+to have the thread library create several kernel threads to ensure
+that the operating system can take advantage of hyperthreading or
+multiprocessing while using more efficient user-level threads when
+a very large number of threads is needed. Several user level threads
+can be run over a single kernel-level thread. In general, the
+following threading options exist on most systems:</p>
+<dl>
+<dt>1:1</dt>
+<dd>purely kernel threads, where one user thread always corresponds to a kernel thread.</dd>
+
+<dt>N:1</dt>
+<dd>only kernel threads, where <em>N</em> user-level threads are created on
+ top of a single kernel thread. This is done in cases where the
+ operating system does not support multithreading or where you
+ absolutely do not want to use the kernel&#8217;s multithreading capabilities.</dd>
+
+<dt>N:M</dt>
+<dd>This is known as <strong>hybrid threading</strong> and maps <em>N</em> user-level threads
+ are mapped onto <em>M</em> kernel-level threads.</dd>
+</dl>
+
+
+<h1 id="example:posixthreads">Example: POSIX threads</h1>
+
+<p>One popular threads programming package is <strong>POSIX Threads</strong>, defined as <em>POSIX.1c,
+Threads extensions</em> (also IEEE Std 1003.1c&#8211;1995). POSIX is a family of IEEE standards that
+defines programming interfaces, commands, and related components for UNIX-derived operating systems.
+Systems such as Apple&#8217;s Mac OS X, Sun&#8217;s (Oracle&#8217;s) Solaris, and a dozen or so other systems are
+fully POSIX compliant and system such as most Linux distributions, OpenBSD, FreeBSD, and NetBSD
+are mostly compliant.</p>
+
+<p>POSIX Threads defines an API (application programming interface) for managing threads. This interface
+is implemented as a native kernel threads interface on Solaris, Mac OS X, NetBSD, FreeBSD, and
+many other POSIX-compliant systems. Linux also supports a native POSIX thread library as of the 2.6
+kernel (as of December 2003). On Microsoft Windows systems, is available as an API library on top of Win32
+threads.</p>
+
+<p>We will not dive into a description of the POSIX threads API. There are many good references for that.
+Instead, we will just cover a few of the very basic interfaces.</p>
+
+<h1 id="createathread">Create a thread</h1>
+
+<p>A new thread is created via:</p>
+
+<pre><code>pthread_t t;
+pthread_create(&amp;t, NULL, func, arg)
+</code></pre>
+
+<p>This call creates a new thread, <em>t</em>, and starts that thread executing function <em>func(arg)</em>.</p>
+
+<h1 id="exitathread">Exit a thread</h1>
+
+<p>A thread can exit by calling <em>pthread_exit</em> or just by returning from the first function that
+was invoked when it was created via <em>pthread_create</em>.</p>
+
+<h1 id="jointwothreads">Join two threads</h1>
+
+<p>Joining threads is analogous to the <em>wait</em> system call that was used to allow the parent to detect
+the death of a child process.</p>
+
+<pre><code>void *ret_val;
+pthread_join(t, &amp;ret_val);
+</code></pre>
+
+<p>The thread that calls this function will wait (block) for thread <em>t</em> to terminate. An
+important differentiator from the <em>wait</em> system call that was used for processes is that
+with threads there is <em>no parent-child relationship</em>. Any one thread may join (wait on)
+any other thread.</p>
+
+<h1 id="steppingoneachother">Stepping on each other</h1>
+
+<p>Because threads within a process share the same memory map and hence
+share all global data (static variables, global variables, and
+memory that is dynamically-allocated via <em>malloc</em> or <em>new</em>), <strong>mutual
+exclusion</strong> is a critical part of application design. Mutual exclusion
+gives us the assurance that we can create regions in which only one
+thread may execute at a time. These regions are called <strong>critical
+sections</strong>. Mutual exclusion controls allow a thread to grab a lock
+for a specific critical section (region of code) and be sure that
+no other thread will be able to grab that lock. Any other thread
+that tries to do so will go to sleep until the lock is released.</p>
+
+<p>The pthread interface provides a simple locking and unlocking mechanism to allow programs to handle
+mutual exclusion. An example of grabbing and then releasing a critical section is:</p>
+
+<pre><code>pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+    ...
+pthread_mutex_lock(&amp;m);
+/* modify shared data */
+pthread_mutex_unlock(&amp;m);
+</code></pre>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><p><a href="https://computing.llnl.gov/tutorials/pthreads/" class="external">Posix Threads Programming</a>,
+<em>Blaise Barney</em>, Lawrence Livermore National Laboratory.</p></li>
+<li><p><a href="http://www.gentoo.org/doc/en/articles/l-posix1.xml" class="external">POSIX threads explained, part 1</a>,
+<em>Gentoo Linux Documentation</em>,
+(follow links for <a href="http://www.gentoo.org/doc/en/articles/l-posix2.xml" class="external">Part 2</a> and <a href="http://www.gentoo.org/doc/en/articles/l-posix3.xml" class="external">Part 3</a>)</p></li>
+<li><p><a href="http://en.wikipedia.org/wiki/POSIX" class="external">POSIX</a>, Wikipedia article</p></li>
+<li><p><a href="http://msdn.microsoft.com/en-us/library/ms684841(v=VS.85).aspx" class="external">Processes and Threads</a>, <em>Microsoft MSDN</em>, September 23, 2010, &copy; 2010 Microsoft Corporation</p></li>
+<li><p><a href="http://developer.apple.com/library/mac/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html" class="external">Apple Grand Central Dispatch (GCD) Reference</a>,
+<em>Mac OS X Reference Library</em>, &copy; 2010 Apple Inc.</p></li>
+<li><p><a href="http://tinyurl.com/2brq43o" class="external">Concurrency Programming Guide</a>, <em>Mac OS X Reference Library</em>, &copy; 2010 Apple Inc.</p></li>
+<li><p><a href="http://software.intel.com/en-us/articles/intel-hyper-threading-technology-your-questions-answered/" class="external">Intel Hyper-Threading Technology</a>: Your Questions Answered, Intel, May 2009.</p></li>
+</ul>
+
+<p>This is an updated version of the original document, which was written on September 21, 2010.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2014 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: February 19, 2014 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

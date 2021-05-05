@@ -1,0 +1,346 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 old exams: Exam 3 Spring 2014 </title>
+
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+#main ol h1 {
+	font-size: 140%;
+	margin-left: -1.3em;
+}
+#main ol li {
+	margin-bottom: 1em;
+}
+</style>
+</head>
+
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> 416 </a> 
+ 	<li> <a href="../../exam/index.html"> Exam info </a> 
+ 	<li> <a href="../../exam/old/index.html"> Old exams </a> 
+ 	<li> <a href="../../exam/old/exam3-2014-s.html"> Exam 3 Spring 2014 </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> CS 416 Exam 3 </h1>
+<h2>Spring 2014</h2>
+</div>
+
+<p>
+See the <a href="exam3-review-2014-s.pdf">solutions</a>
+(<a href="exam3-review-2014-s-6.pdf">6 per page</a>).
+</p>
+
+<h1>
+100 points &ndash; 4 points each </h1>
+<p>
+For each statement, select the most appropriate answer.
+I will give you credit for two incorrect answers.
+</p>
+
+<ol>
+
+<li> A weakness of using NAND flash memory for use as a file system is:
+<br/>(a) Stored data wears out over time, requiring periodic refreshing.
+<br/>(b) Its read speeds are unpredictable, making I/O scheduling difficult.
+<br/>(c) It has very long seek times compared to those of a disk.
+<br/>(d) It supports a limited number of writes per block.
+
+</li><li>  Checkpointing in a log-structured file system such as YAFFS:
+<br/>(a) Periodically writes updates of the file systemÕs superblock.
+<br/>(b) Writes data blocks and their associated metadata as a single transaction.
+<br/>(c) Replicates data in the log for reliability.
+<br/>(d) Avoids the need to reconstruct the file system hierarchy by reading all logs.
+
+</li><li> A loop device:
+<br/>(a) Enables the output of one device to be fed to the input of another.
+<br/>(b) Echoes back whataver data is sent to it.
+<br/>(c) Enables two local processes to communicate.
+<br/>(d) Converts a file to a block device.
+
+</li><li> The Address Resolution Protocol (ARP) is used to:
+<br/>(a) Enable a computer to get a unique IP address.
+<br/>(b) Find the IP address that corresponds to a systemÕs domain name.
+<br/>(c) Resolve the path that a packet must take to reach a given IP address.
+<br/>(d) Convert an IP address to the corresponding ethernet address.
+
+</li><li> The network device driver is responsible for which layer of the OSI stack?
+<br/>(a) Data link. 
+<br/>(b) Network. 
+<br/>(c) Transport. 
+<br/>(d) Presentation.
+
+</li><li> Sockets are said to be compatible with files because:
+<br/>(a)  They are implemented under the VFS layer to support all file system operations.
+<br/>(b) You can use read/write system calls with them.
+<br/>(c) They appear in the file system name space.
+<br/>(d) File data can be directed to a socket and vice versa.
+
+</li><li> A socket buffer:
+<br/>(a) Is similar to a buffer cache and stores frequently used network messages.
+<br/>(b) Is a block of memory in the kernel that holds all the sockets in the operating system.
+<br/>(c) Avoids the need to copy data as it moves up or down the network stack .
+<br/>(d) Identifies the set of operations that can be performed on each socket.
+
+</li><li> LinuxÕs NAPI, the "New API," is best described as an enhancement that:
+<br/>(a) Disables network device interrupts during times of high network traffic. 
+<br/>(b) Avoids the need to poll for incoming packets by taking advantage of interrupts.
+<br/>(c) Integrates sockets into the file system API, providing a uniform access interface.
+<br/>(d) Reduces the need to copy data between network layers.
+
+</li><li> NFS does not improve performance via:
+<br/>(a) Large reads.
+<br/>(b) Use of a stateless protocol.
+<br/>(c) Read-ahead.
+<br/>(d) Client caching.
+
+</li><li> A callback in AFS:
+<br/>(a) Tells a client that another client is modifying a file.
+<br/>(b) Tells the server that a client has changed a file.
+<br/>(c) Tells a client that a file was modified on the server.
+<br/>(d) Tells a process that the requested download of a file is complete.
+
+</li><li> Which best describes Microsoft's SMB remote file protocol?
+<br/>(a) A stateful file system with a download/upload model.
+<br/>(b) A stateful file system with a remote access model.
+<br/>(c) A stateless file system with a remote access model.
+<br/>(d) A stateless file system with a download/upload model.
+
+</li><li> Privilege separation is when:
+<br/>(a) Users on a system get unique user IDs and privilege levels. 
+<br/>(b) A process cannot create data that processes running at lower privilege levels can access. 
+<br/>(c) A process is split into components with limited privileges. 
+<br/>(d) A process cannot interact with any other process or data at another privilege level.
+
+</li><li> Permissions stored in a file's metadata are an example of:
+<br/>(a) An access matrix.
+<br/>(b) An access control list.
+<br/>(c) A capabilities list.
+<br/>(d) A sandbox.
+
+</li><li> Multi-level security and the Bell-LaPadula model are an example of:
+<br/>(a) Mandatory Access Control (MAC).
+<br/>(b) Privilege separation.
+<br/>(c) Access Matrix.
+<br/>(d) Principle of least privilege.
+
+</li><li> Password files often store hashes of passwords:
+<br/>(a) To make it difficult to steal a password even if an intruder gets the password file.
+<br/>(b) To make looking up a password very quick: an O(1) operation.
+<br/>(c) To be able to detect if somebody tampered with the password.
+<br/>(d) To ensure that a given password is associated with only one user.
+
+</li><li> For Alice to send a signature of a message to Bob, she would:
+<br/>(a) Hash the message and encrypt it with Bob's public key.
+<br/>(b) Hash the message and encrypt it with Bob's private key.
+<br/>(c) Hash the message and encrypt it with her public key.
+<br/>(d) Hash the message and encrypt it with her private key.
+
+</li><li> The Diffie-Hellman algorithm:
+<br/>(a) Uses a one-way function to create cryptographic hashes of data.
+<br/>(b) Provides users with a pair of keys for secure communication: encrypt data with one key; decrypt with the other.
+<br/>(c) Enables a user to authenticate another user.
+<br/>(d) Allows two parties to come up with a common key that they can use for encryption.
+
+</li><li> A hybrid cryptosystem:
+<br/>(a) Encrypts a message N times, once for each of N recipients.
+<br/>(b) Encrypts a message with a symmetric algorithm and then encrypts the result again with a different key.
+<br/>(c) Encrypts a message with a symmetric algorithm and then encrypts the result with a public key algorithm.
+<br/>(d) Uses public key cryptography to encrypt a session key that will be used for symmetric cryptography.
+
+</li><li> The Challenge Handshake Authentication Protocol (CHAP) relies on:
+<br/>(a) Encrypting the password with a key sent by the server.
+<br/>(b) Encrypting the user's password with a shared key.
+<br/>(c) Having the user authenticate the server before sending a password.
+<br/>(d) Hashing a structure containing a user's password and a challenge sent by the server. 
+
+</li><li> A digital certificate cannot be modified because:
+<br/>(a) It is encrypted by the certificate owner.
+<br/>(b) Only the owner knows the corresponding private key to the public key that is present in the certificate.
+<br/>(c) It contains a hash that was encrypted by the issuer.
+<br/>(d) It is stored in a trusted database.
+
+</li><li> A rootkit is:
+<br/>(a) Software that makes itself undetectable on a system.
+<br/>(b) A set of tools that allow a user to gain administrative access on a computer.
+<br/>(c) Malicious software that can gain administrative privileges on a system.
+<br/>(d) Software that replicates itself onto other systems.
+
+</li><li> If it takes you one day to test all 7.2&times;10<sup>16</sup> combinations of a 56-bit key, how long would it take with a 64-bit key?
+<br/>(a) 8 days
+<br/>(b) 256 days
+<br/>(c) 1,024 days
+<br/>(d) 1.8&times;10<sup>19</sup> days (2<sup>64</sup>)
+
+</li><li> A chroot jail:
+<br/>(a) Limits the parts of a file system that a process can access.
+<br/>(b) Prevents a process from gaining administrative privileges.
+<br/>(c) Ensures that a process cannot execute specific system calls.
+<br/>(d) Runs a process in a secure environment to detect whether it has a virus.
+
+</li><li> An interface definition language (IDL) is:
+<br/>(a) A machine-independent output language generated by the RPC precompiler. 
+<br/>(b) Processed by the RPC precompiler to generate stub functions. 
+<br/>(c) Used to implement remote procedures. 
+<br/>(d) Used by the operating system to provide user processes with an interface to remote procedure calls.
+
+</li><li> Why did earlier versions of Linux, BSD, and UNIX not implement access control lists?
+<br/>(a) They are redundant with protection mechanisms already in place. 
+<br/>(b) They opted to use capability lists instead. 
+<br/>(c) They don't fit within an inode. 
+<br/>(d) The operating system only supports discretionary access control.
+</li>
+
+
+</ol>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> Exam Info </h2>
+	<ul>
+	<li> <a href="../index.html#list">List of topics</a>
+	<li> <a href="../study-guide-1.html">Exam 1 Study Guide</a> </li>
+	<li> <a href="../study-guide-2.html">Exam 2 Study Guide</a> </li>
+	<li> <a href="../study-guide-3.html">Exam 3 Study Guide</a> </li>
+	</ul>
+		<h2> Old exams </h2>
+	<ul>
+	<li> <a href="exam1-2012-s.html"> Spring 2012 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2012-s.html"> Spring 2012 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2012-s.html"> Spring 2012 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2011-s.html"> Spring 2011 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2011-s.html"> Spring 2011 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2011-s.html"> Spring 2011 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2010-f.html"> Fall 2010 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2010-f.html"> Fall 2010 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2010-f.html"> Fall 2010 &ndash; Exam 3</a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

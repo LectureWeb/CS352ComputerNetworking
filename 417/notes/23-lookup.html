@@ -1,0 +1,786 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Distributed Lookup Services </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 417 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/23-lookup.html"> Distributed Lookup Services </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Distributed Lookup Services </h1>
+<h2> Distributed Hash Tables </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> December 5, 2012 </p>
+</div>
+<h1 id="introduction">Introduction</h1>
+
+<p><strong>Distributed Lookup Services</strong> deal with the problem of locating data
+that is distributed among a collection of machines.
+In the general case, a lookup service may involve full-content searching or a
+a directory-services or structured database query approach of finding data
+records that match multiple attributes.</p>
+
+<p>We limit the problem to the common task of looking up data that is
+associated with a specific, unique search <strong>key</strong> rather
+than, for instance, locating all items whose content
+contains some property (e.g., locate all files that contain the
+word polypeptide).
+The unique key with which data is associated may be a
+file name, shopping cart ID, session ID, or
+user name. Using the key, we need to find out on which node
+(of possibly thousands of nodes) the data is located.</p>
+
+<p>Ideally, the machines involved in managing distributed lookup
+are all cooperating peers and there
+is should be no central state that needs to be maintained.
+At any time, some nodes may be unavailable.
+The challenge is to find a way to locate a node that stores
+the data associated with a specific key in a scalable, distributed manner.</p>
+
+<p>There are three basic approaches we can take to locating such data:</p>
+
+<ol>
+<li><p><strong>Central coordinator</strong>. This uses a server that is in charge of locating
+resources that are distributed among a collection of servers. Napster is a classic example of this.
+The Google File System (GFS) is another.</p></li>
+<li><p><strong>Flooding</strong>. This relies on sending queries to a large set of machines
+in order to find the node that has the data we need.
+Gnutella is an example of this for peer-to-peer file sharing.</p></li>
+<li><p><strong>Distributed hash tables</strong>. This technique is based on hashing the key
+to locate the node that stores the associated data.
+There are many examples of this, including Chord, Amazon Dynamo, CAN, and
+Tapestry. We will focus on CAN, Chord, and Amazon Dynamo.</p></li>
+</ol>
+
+<h2 id="centralcoordinator">Central coordinator</h2>
+
+<p>A central server keeps a database of <em>key</em> &rarr; <em>node</em>
+mappings. Other nodes in the system store (key, value)
+sets. A query to the central server identifies the node
+(or, for redundancy, nodes) that hosts the data for the
+desired key. A subsequent query to that node will return
+the associated value.</p>
+
+<p>Napster, the original peer-to-peer file sharing service,
+is an example of this model. The service was focused on music
+sharing and was in operation from 1999 through 2001, when it
+was shut down for legal reasons.
+The central server holds an index of all the music
+(e.g., song names) with pointers
+to machines that host the content.</p>
+
+<p>GFS, the Google File System, also implements a central coordinator
+model. All metadata, including file names, is managed by the master
+while data is spread out among chunkservers. A distinction is that
+the contents of each file are broken into chunks and distributed among
+multiple chunkservers. In Napster, each server held complete files.</p>
+
+<p>The advantage of this model is that it is simple and easy to manage.
+As the volume of queries increases, the central server can become a
+bottleneck. With GFS, this issue was ameliorated by catering to an
+environment of huge files where the ratio of lookups to data reads was
+exceptionally low.
+The central server is also crucial to the operation of the entire
+system. If the server cannot be contacted, then the entire service is dead.
+In the case of Napster, the entire service was shut down simply by
+shutting down the server.</p>
+
+<h2 id="flooding">Flooding</h2>
+
+<p>For flooding, each node is aware of a set of other nodes that
+are a subset of the entire set of nodes. This makes up an
+<strong>overlay network</strong>. An overlay network is a logical network that
+is built on top of another network. For our needs, an overlay network
+refers to a group of nodes where each node has limited information
+about the overall network topology and uses other nodes (typically
+neighboring nodes) to route requests. </p>
+
+<figure>
+<img src="images/dht-flood.png" alt="Figure 1. Flooding in an overlay network" id="dht-flood" title="Flooding" style="width:400px;" />
+<figcaption>Figure 1. Flooding in an overlay network</figcaption></figure>
+
+
+
+<figure>
+<img src="images/dht-back-propagation.png" alt="Figure 2. Back propagation" id="dht-back-propagation" title="Back propagation" style="width:400px;" />
+<figcaption>Figure 2. Back propagation</figcaption></figure>
+
+
+
+
+<p>With <strong>flooding</strong>, a node that needs to find the content
+corresponding to a certain key will contact peers when looking for
+content. If a peer node has the needed content, it can respond to
+the requestor. If not, it will then forward the request to its peers.
+As long as any peer does not have the requested content, it will
+forward the request onward to its peers (Figure 1).
+If a node has the needed content, it will respond to
+the node from which it received the request in a process called <strong>back propagation</strong>.
+This chain of responses is followed back to the originator (Figure 2).
+For implementations where the data associated with a key is likely to be large (e.g., more than
+a packet), the response will contain the address of a node.
+The originator, having now obtained the node&#8217;s address, can then connect to
+the node directly and request the data corresponding to the key.</p>
+
+<p>To keep messages from looping or propagating without limit,
+a <strong>time-to-live</strong> (TTL) count is often associated with
+the message. This TTL count is decremented and the message is
+discarded if the TTL drops below zero (Figure 1).</p>
+
+<p>This flooding approach is the model that gnutella, a successor
+to Napster, used for distributed file sharing.
+Disadvantages to flooding include a potentially large number
+of messages on the network and a potentially large number of
+hops to find the desired key.</p>
+
+<h2 id="hashtables">Hash tables</h2>
+
+<p>Before we jump into distributed hash tables, let us refresh our memory
+of hash tables.</p>
+
+<p>In non-distributed systems, a hash function (the non-cryptographic kind) maps a key (the thing
+you are searching for) to a number in some range <em>0 &#8230; n&#8211;1</em>. The
+content is then accessed by indexing into a hash table, looking up
+look up value at table[hash(key)]. The appeal of hash tables is that
+you can often realize close to O(1) performance in lookups compared
+to O(log N) for trees or sorted tables or O(N) for a random list.
+Considerations in implementing
+a hash table include the following:</p>
+
+<ol>
+<li><p>Picking a good hash function. We want to ensure that the function
+will yield a uniform distribution for all values of keys throughout
+the hash table instead of clustering a larger chunk of values in
+specific parts of the table.</p></li>
+<li><p>Handling collisions. There is a chance that two keys will hash
+to the same value, particularly for smaller tables. To handle this,
+each entry of a table (<code>table[i]</code>)
+represents a <strong>bucket</strong>, or <strong>slot</strong>, that contains
+a collection of <em>(key, value)</em> pairs. Within each bucket, one
+can use a chaining (a linked list) or another layer of hashing.</p></li>
+<li><p>Growth and shrinkage of the table. If the size of the table
+changes, existing <em>(key, value)</em> sets will have to be rehashed and,
+if necessary, moved to new slots. Since a hash function is often
+a <em>mod N</em> function (where <em>N</em> is the table size), this means that,
+in many cases, a large percentage of data will need to be relocated.</p></li>
+</ol>
+
+<h2 id="distributedhashtables">Distributed Hash Tables</h2>
+
+<p>In a distributed implementation, known as a <strong>distributed hash
+table</strong>, or <strong>DHT</strong>, the hash table becomes a logical construct
+for (key, data) pairs that are distributed among a set of nodes.
+Each node stores a portion of the key space.
+The goal of a DHT is to find the node that is responsible for
+holding data associated with a particular key.</p>
+
+<p>A key difference between DHTs and the
+centralized or flooding approaches is that
+a specific (key, value) set is not placed on an arbitrary
+node but rather on a node that is identified in some way
+by the hash of the key.</p>
+
+<p>Some challenges with distributed hashing are:</p>
+
+<ul>
+<li><p>How do we partition the <em>(key, data)</em> sets among the
+group of nodes? That is, what sort of hashing function do
+we use and how do we use its results to allow us to locate
+the node holing the data that we want?</p></li>
+<li><p>How do we build a decentralized system so there is no coordinator?</p></li>
+<li><p>How can the system be designed to be scalable? There are two
+aspects to scalability. One is performance. We&#8217;d like to avoid
+flooding or having an algorithm that requires traversing a large
+number of nodes in order to get the desired results. The other
+aspect is the ability to grow or shrink the system as needed. We
+would like to be able to add additional nodes to the group as the
+data set gets larger and, perhaps, remove nodes as the data set shrinks.
+We&#8217;d like to do this without rehashing a large portion of the key set.</p></li>
+<li><p>How can the system be designed to be fault tolerant? This implies
+replication and we need to know where to find the replicated data and
+know what assumptions to make on its consistency.</p></li>
+</ul>
+
+<p>We will now take a look at two approaches to DHTs:</p>
+
+<ol>
+<li>CAN, a Content-Addressable Network</li>
+<li>Chord</li>
+</ol>
+
+<p>We will then follow up with a look at Amazon&#8217;s Dynamo,
+a production-grade approach to implementing
+a DHT modeled on Chord.</p>
+
+<h1 id="cancontent-addressablenetwork">CAN (Content-Addressable Network)</h1>
+
+<figure>
+<img src="images/dht-can-node.png" alt="Figure 3. A node in a CAN grid" id="dht-can-node" title="Node in a CAN grid" style="width:300px;" />
+<figcaption>Figure 3. A node in a CAN grid</figcaption></figure>
+
+
+
+<p>Think of a grid and two separate hash functions h<sub>x</sub>(key)
+and h<sub>y</sub>(key), one for each dimension of the grid.
+The key is hashed with both of them:
+i=h<sub>x</sub>(key) gives you the <em>x</em> coordinate and
+j=h<sub>y</sub>(key) produces the <em>y</em> coordinate.
+Each node in the group
+is also mapped onto this logical grid and is responsible
+for managing values within a rectangular sub-grid, called a <strong>zone</strong>: that is, some
+range
+(x<sub>a</sub>..x<sub>b</sub>, y<sub>a</sub>..y<sub>b</sub>). See
+Figure 3.
+The node responsible for the location <em>(i, j)</em> stores <em>(key, V)</em>,
+the key and its value, as long as <em>x<sub>a</sub> &le; i &lt; x<sub>b</sub></em>
+and <em>y<sub>a</sub> &le; j &lt; y<sub>b</sub></em></p>
+
+<figure>
+<img src="images/dht-can-2-zones.png" alt="Figure 4. Two zones in a CAN grid" id="dht-can-2-zones" title="Two zones in a CAN grid" style="width:300px;" />
+<figcaption>Figure 4. Two zones in a CAN grid</figcaption></figure>
+
+
+
+<figure>
+<img src="images/dht-can-3-zones.png" alt="Figure 5. Three zones in a CAN grid" id="dht-can-3-zones" title="Three zones in a CAN grid" style="width:300px;" />
+<figcaption>Figure 5. Three zones in a CAN grid</figcaption></figure>
+
+
+
+
+<p>Initially, a system can start with a single node and, hence, a single zone.
+Any zone can be split in two either horizontally or vertically.
+For example, Figure 4 shows a grid split into two zones managed
+by two nodes, n<sub>1</sub> and n<sub>2</sub>. Node
+n<sub>1</sub> is responsible for all <em>key, value</em> sets whose
+x-hashes
+are less than x<sub>max</sub>/2 and node n<sub>2</sub> manages
+all <em>key, value</em> sets whose x-hashes are between x<sub>max</sub>/2 and
+x<sub>max</sub>. Either of these zones can then be split into
+two zones. For example (Figure 5),
+zone n<sub>1</sub> can be then split into two zones,
+n<sub>0</sub> and n<sub>1</sub>. These two zones are still responsible
+for all <em>key, value</em> sets whose x-hash is less than x<sub>max</sub>/2
+but n<sub>0</sub> is responsible for those <em>key, value</em> sets whose
+y-hash is less than y<sub>max</sub>/2.</p>
+
+<figure>
+<img src="images/dht-can-neighbors.png" alt="Figure 5. Neighboring zones in a CAN grid" id="dht-can-neighbors" title="Neighboring zones in a CAN grid" style="width:300px;" />
+<figcaption>Figure 5. Neighboring zones in a CAN grid</figcaption></figure>
+
+
+
+<p>A node only knows about its immediate nodes. For looking up and
+routing messages to the node that holds the data it needs, it will
+use neighbors that minimize the distance to the destination. For
+a two-dimensional grid, a node knows its own minium and maximum
+<em>x</em> and <em>y</em> values. If the target <em>x</em> coordinate (result of the x-hash)
+is less than its own maximum <em>x</em> value, the request is passed
+to the left neighbor; if it&#8217;s greater, the result is passed to the
+right neighbor. Similarly, if the target <em>y</em> coordinate
+is greater than the node&#8217;s maximum <em>y</em> value, the request is passed
+to the top neighbor; if it&#8217;s less then it is passed to the bottom
+neighbor. If both values are out of range, other nodes will take
+care of the routing. For example, a request that is passed to
+the top node may forward the request to the right node if the
+<em>x</em> coordinate is greater than the node&#8217;s maximum <em>x</em> value.</p>
+
+<p>A new node is inserted by the following process:</p>
+
+<ul>
+<li><p>pick a random pair of values in the grid: (p,q).</p></li>
+<li><p>contact some node in the system and ask it to look up
+the node that is responsible for (p,q).</p></li>
+<li><p>Now negotiate with that node to split its zone in half.
+The new node will own half of the area.</p></li>
+</ul>
+
+<p>We discussed a CAN grid in two dimensions, which makes it
+easy to diagram and visualize but CAN can be deployed for an
+arbitrary dimension space. For <em>d</em> dimensions, each node
+has to keep track of <em>2d</em> neighbors.
+CAN is highly scalable, although the hop count to find
+the node hosting an arbitrary <em>key, value</em> pair does increase
+with an increase in the number of nodes in the system.
+It has been shown that
+the average route for a two-dimension CAN grid is <em>O(sqrt(n))</em>
+hops where <em>n</em> is the number of nodes in the system.</p>
+
+<p>To handle failure, we need to add a level of indirection: a node needs
+to know its neighbor&#8217;s neighbors. If a node fails, one of the node&#8217;s
+neighbors will take over the failed zone. For this to work, data has
+to be replicated onto that neighbor during any write operation while the
+node is still up.</p>
+
+<h1 id="consistenthashing">Consistent hashing</h1>
+
+<figure>
+<img src="images/dht-consistent-hashing.png" alt="Figure 6. Consistent hashing" id="dht-consistent-hashing" title="Consistent hashing" style="width:500px;" />
+<figcaption>Figure 6. Consistent hashing</figcaption></figure>
+
+
+
+<p>Before going on to the next DHT, we will detour to describe
+consistent hashing. Most hash functions will require
+practically all keys in the table to be remapped if the table
+size changes. For a distributed hash table, this would mean that
+the <em>(key, value)</em> sets would need to be moved from one machine
+to another. With <strong>consistent hashing</strong>, only <em>k/n</em> keys will need
+to be remapped on average, where <em>k</em> is the number of keys
+and <em>n</em> is the number of slots, or buckets, in the table.
+What this means in a distributed hash table is that most <em>(key, value)</em>
+sets remain untouched. Only those from a node that is split into
+two nodes or two nodes that are combined into one node may need
+to be relocated (Figure 6).</p>
+
+<h1 id="chord">Chord</h1>
+
+<figure>
+<img src="images/dht-chord-ring.png" alt="Figure 7. Logical ring in Chord" id="dht-chord-ring" title="Logical ring in Chord" style="width:200px;" />
+<figcaption>Figure 7. Logical ring in Chord</figcaption></figure>
+
+
+
+<p>Think of a sequence of numbers arranged in a logical ring,
+<em>0, 1, 2 &#8230; n</em>,
+and looping back to <em>0</em>. Each node in the system occupies a
+position in this ring that is the number you&#8217;d get by hashing its
+IP address and taking the value modulo the size of the ring
+<em>hash(IP)mod n</em>. Figure 7 shows a tiny ring of just 16 elements
+for illustrative purposes. Four nodes are mapped onto this ring
+at positions 3, 8, 10, and 14. These locations are obtained because
+the IP address of each node happens to hash to those values. For
+instance, the IP address of the machine in position 3 hashes to 3.
+In reality, the hash value for Chord will be a number that is much
+larger than the number of nodes in the system with a highly unlikely
+probability that two addresses will hash to the same node.</p>
+
+<p>Each node is a bucket for storing a subset of <em>key, value</em> pairs.
+Because not every potential bucket position (hash value of the key) contains a
+node (most will not),
+data is assigned to a node based on the hash of the key and is stored
+at a <strong>successor</strong> node, a node whose value is greater than or equal to the hash of the key.
+If we look at the example in Figure 7 and consider a key that hashes to 1. Since
+there is no node in position 1, the key will be managed by the successor node: the
+first node that we encounter as we traverse the ring clockwise. Node 3 is hence
+responsble for keys that hash to 15, 0, 1, 2, and 3. Node 8 is responsible for keys that
+hash to 4, 5, 6, 7, and 8. Node 19 is responsible for keys that hash to 9, and 10.
+Node 14 is responsible for keys that hash to 11, 12, 13, and 14.</p>
+
+<figure>
+<img src="images/dht-chord-new_node.png" alt="Figure 8. Adding a node in Chord" id="dht-chord-new_node" title="Adding  new node in Chord" style="width:400px;" />
+<figcaption>Figure 8. Adding a node in Chord</figcaption></figure>
+
+
+
+<p>When a new node joins a network at some position <em>j</em>,
+where <em>j=hash(node&#8217;s IP)</em>, it will take on some of the keys
+from the successor node. As such,
+some existing <em>(key, value)</em> data will have to migrate from the
+successor&#8217;s node to this new node. Figure 8 shows an example of
+adding a new node at position 6. This node now manages keys that
+hash to 4, 5, and 6. They were previously managed by node 8.
+Conversely, if a node is removed from the set then all keys managed by that
+node need to be reassigned to the node&#8217;s successor. </p>
+
+<p>For routing queries, a node only needs to know of its successor
+node. Queries can be forwarded through successors until a node that
+holds the value is found. This yields an O(n) lookup.</p>
+
+<p>We can optimize the performance and obtain O(1) lookups by having each
+node maintain a list of all the nodes in the group and know
+each node&#8217;s hash value. Finding the node that hosts a specific
+<em>(key, data)</em> set now becomes a matter of searching the table for
+a node whose value is the same as hash(key) or its successor.
+If a node is added or removed, all nodes in the system need to get the information
+so they can update their table.</p>
+
+<p>A compromise approach to having an entire list of nodes stored at
+every node is to use <strong>finger tables</strong>. A finger table allows each
+node to store a partial list of nodes but places an upper bound on
+the size of the table. The i<sup>th</sup> entry in the finger table
+contains the address of the first node that succeeds the current node
+by at least 2<sup>i&#8211;1</sup> in the circle. What this means is
+that <code>finger_table[0]</code> contains that node&#8217;s successor,
+<code>finger_table[1]</code> contains that the successor after that,
+<code>finger_table[2]</code> contains that the fourth (2<sup>2</sup> successor,
+<code>finger_table[3]</code> contains that the eighth (2<sup>3</sup> successor,
+and so on. The desired successor may not be present in the table and
+the node will need to forward the request to the lower one on the list, which
+will in turn have mode knowledge of closer successors. On average,
+O(log N) nodes need to be contacted to find the node that owns a key.</p>
+
+<h2 id="amazondynamo">Amazon Dynamo</h2>
+
+<p>As an example of a real-world distributed hash table, we will take a look
+at Amazon Dynamo, which is somewhat modeled on the idea of Chord.
+Amazon Dynamo is not exposed as a customer-facing web service but is
+used to power parts of Amazon Web Services (such as S3) as well as internal
+Amazon services. Its purpose is to be a highly available key-value storage
+system. Many services within Amazon only need this sort of primary-key access
+to data rather than a the complex querying capabilities offered by a full-featured
+database. Examples include best seller lists,
+shopping carts, user preferences, user session information, sales rank, and parts
+of the product catalog.</p>
+
+<h3 id="designgoalsandassumptions">Design goals and assumptions</h3>
+
+<p>A full relational database is overkill and limits
+the scale and availability of the system given that it is still a challenge
+to scale or load balance relational database management systems (RDBMS) on a large scale.
+Moreover, a relational database&#8217;s ACID guarantees value consistency over
+availability. Dynamo is designed with a weaker, eventual consistency model in
+order to provide high availability.
+Amazon Dynamo is designed to be highly fault tolerant. Like other systems
+we have looked at, such as GFS and Bigtable, something is always expected
+to be failing in an infrastructure with millions of components. </p>
+
+<p>Apps themselves should be able to configure Dynamo for their desired
+latency and throughput needs. One can properly balance performance,
+cost, availability, and durability guarantees for each application. Latency
+is hugely important in many of Amazon&#8217;s operations. Amazon measured
+that every 100ms of latency costs the company 1% in sales! <a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a>
+Because of this, Dynamo is designed so that at least 99.9% of read/write operations
+can must be performed within a few hundred milliseconds.
+A great way to reduce latency is to avoid routing requests through multiple
+nodes (as we do with flooding, CAN, and Chord&#8217;s finger tables). Dynamo&#8217;s
+design can be seen as a <strong>zero-hop DHT</strong>. This is accomplished by having each
+node be aware of <em>all</em> the other nodes in the group.</p>
+
+<p>Dynamo is designed to provide incremental scalability. A system should be able
+to grow by adding a node at a time. The system is decentralized and symmetric:
+each node has the same programming interface and set of responsibilities. There
+is no coordinator. However, because some servers may be more powerful than others,
+the system should support workload partitioning in proportion to the
+capabilities of servers. For instance, a machine that is faster or has
+twice as much storage may be configured to be responsible for managing twice
+as many keys as another machine.</p>
+
+<p>Dynamo provides two basic operations: <strong>get(key)</strong> and <strong>put(key, data)</strong>. The
+data is an arbitrary binary object that is identified by a unique key. These
+objects tend to be small, typically under a megabyte. Dynamo&#8217;s interface
+is simple, highly available <em>key, value</em> store. This is far more basic than
+Google&#8217;s Bigtable, which offers a column store and manages column families and
+columns within the column families and also allows the programmer to iterate
+over a sorted sequence of keys. Because Dynamo is designed to be highly
+available, updates are not rejected even in the presence of network partitions
+or server failures.</p>
+
+<h3 id="storageandretrieval">Storage and retrieval</h3>
+
+<p>As we saw in the last section, the Dynamo API provides two operations to the application.
+<em>Get(key)</em> returns the object associated with the given key or a list
+of objects if there are conflicting versions. It also returns a <em>context</em> that
+serves as a version. The user will pass this to future <em>put</em> operations to allow
+the system to keep track of causal relationships.</p>
+
+<p><em>Put(key, value, context)</em> stores a <em>key, value</em> pair and creates any necessary
+replicas for redundancy. The <em>context</em> encodes the version and was obtained from any
+previous related <em>get</em> operation and is otherwise ignored by the application.
+The <em>key</em> is hashed with an MD5 hash function to create
+a 128-bit identifier that is used to determine the storage nodes that serve
+the key.</p>
+
+<p>A key to scalability is being able to break up data into chunks that can be
+distributed over all nodes in a group of servers. We saw this in Bigtable&#8217;s
+tablets, MapReduce&#8217;s partitioning, and GFS&#8217;s chunkservers. Dynamo is also
+designed to be scalable to a huge number of servers. It relies on
+<strong>consistent hashing</strong> to identify which nodes hold data for a specific key
+and constructs a logical ring of nodes similar to Chord.</p>
+
+<p>Every node is assigned a random value in the hash space (i.e., some 128-bit
+number). This becomes its position in the ring. This node is now responsible for
+managing all key data for keys that hash to values between its value and
+its predecessor&#8217;s value. Conceptually, one would hash the key and then walk
+the ring clockwise to find the first node greater than or equal to that hash.
+Adding or removing nodes affects only the immediate neighbors of that node.
+The new node will take over values that are managed by its successor.</p>
+
+<h3 id="virtualnodes">Virtual nodes</h3>
+
+<figure>
+<img src="images/dht-dynamo-vnode.png" alt="Figure 9. Virtual nodes in Dynamo" id="dht-dynamo-vnode" title="Virtual nodes in Dynamo" style="width:600px;" />
+<figcaption>Figure 9. Virtual nodes in Dynamo</figcaption></figure>
+
+
+
+<p>Unlike Chord, a physical node (machine) is assigned to <strong>multiple</strong> points in
+the logical ring. Each such point is called a <strong>virtual node</strong>. Figure 9
+shows a simple example of two physical nodes where Node A has virtual
+nodes 3, 8, and 14 and Node B has virtual nodes 1 and 10. As with Chord,
+each key is managed by the successor node.</p>
+
+<p>The advantage of virtual nodes is that we can balance the load distribution
+of the system. If any node becomes unavailable and a neighbor takes over, the
+load is evenly dispersed among the available nodes. If a new node is added,
+it will result in the addition of multiple virtual nodes that are scattered
+throughout the ring and will thus take on load from multiple nodes rather
+a single server hosting a single neighboring node. Finally, the number of
+virtual nodes that a system hosts can be based on the capacity of that node.
+A bigger, faster machine can be assigned more virtual nodes.</p>
+
+<h3 id="replication">Replication</h3>
+
+<p>Data is replicated onto <em>N</em> nodes, where <em>N</em> is a configurable number. The
+primary node is called the <strong>coordinator</strong> node and is assigned by hashing the key
+and storing it on the successor node (as described by Chord). This coordinator
+is in charge of replicating the data and replicates it at each of <em>N&#8211;1</em> clockwise
+successor nodes in the ring. Hence, if any node is unavailable, the system
+needs to look for the next available node clockwise in the ring to find a
+replica of that data.</p>
+
+<p>The parameter for the degree of replication is configurable, as are other values
+governing the availability of nodes for <em>get</em> and <em>put</em> operations.
+The minimum number of nodes that must participate in a successful <em>get</em> operation
+and the
+minimum number of nodes that must participate in a successful <em>put</em> operation
+are both configurable. If a node was unreachable for replication in a <em>put</em>
+operation, the replica is sent to another node in the ring along with
+metadata - instructions identifying the original desired operation. Periodically,
+the node will check to see if the originally targeted node is alive. If so,
+it will transfer the object to that node. If necessary, it may also delete
+its copy of the object to keep the number of replicas in the system to the
+required amount.
+To account for data center failures, each object is replicated across multiple
+data centers.</p>
+
+<h3 id="consistencyandversioning">Consistency and versioning</h3>
+
+<p>We have seen that consistency is at odds with high availability. Because Dynamo&#8217;s
+design values high availability, it uses optimistic replication techniques that
+result in an eventually consistent model. Changes to replicas are propagated in
+the background. This can lead to conflicting data (for example, in the case of
+a temporary network partition and two writes, each applied to a different side of the
+partition). The traditional approach to resolving such conflicts is during a
+<em>write</em> operation. A <em>write</em> request is rejected if the node cannot reach a majority of
+(or, in some cases, all) replicas. Dynamo&#8217;s approach is more optimistic and it
+resolves conflicts during a <em>read</em> operation. The highly available design
+attempts to provide an <strong>always writable</strong> data store where <em>read</em> and <em>write</em>
+operations can continue even during network partitions. The rationale for
+this is that rejecting customer-originated updates will not make for a good
+user experience. For instance, a customer should always be able to add or
+remove items in a shopping cart, even if some servers are unavailable. </p>
+
+<p>Given that conflicts can arise, the question then is how to resolve them.
+Resolution can be done by either the data store system (Dynamo) or by the application.
+If we let the data store do it, we have to realize that it has minimal information.
+It has no knowledge of the meaning of the data, only that some arbitrary
+data is associated with a particular key. Because of this, if can offer only
+simple policies, such as <em>last write wins</em>. If, on the other hand, we present
+the set of conflicts to an application, it is aware of the structure of the
+data and can implement application-aware conflict resolution. For example, it
+can merge multiple shopping cart versions to produce a unified shopping cart.
+Dynamo offers both options. <strong>Application-based reconciliation</strong> is the preferred choice but
+the system can fall back on a Dynamo-implemented <em>last write wins</em> if the
+application does not want to bother with reconciling the data.</p>
+
+<p>The <em>context</em> that is passed to <em>put</em> operations and obtained from <em>get</em>
+operations is a <strong>vector clock</strong>. It captures the causal relations between
+different versions of the same object. The vector clock is a sequence of <em>&lt;node, counter&gt;</em>
+pairs of values.</p>
+
+<h3 id="storagenodes">Storage nodes</h3>
+
+<p>Each node in Dynamo has three core functions.</p>
+
+<ol>
+<li><p><strong>Request coordination</strong>. The coordinator is responsible for executing <em>get/put</em> (<em>read/write</em>)
+requests on behalf of requesting clients. A state machine contains all the logic for
+identifying the nodes that are responsible for managing a key, sending requests to that
+node, waiting for responses, processing retries, and packaging the response for the
+application. Each instance of the state machine manages a single request.</p></li>
+<li><p><strong>Membership</strong>.
+Each node is aware of all the other nodes in the group and may detect the failure of other
+nodes. It is prepared to receive <em>write</em> requests that contain metadata informing the
+node that another node was dead and needs to get a replica of the data when it is available
+once again.</p></li>
+<li><p><strong>Local persistant storage</strong>.
+Finally, each node manages a portion of the global <em>key, value</em> space and hence needs
+to store keys and their associated values. Dynamo provides multiple storage solutions
+depending on application needs. The most popular system is the Berkeley Database (BDB)
+Transactional Data Store. Alternative systems include the Berkeley Database Java
+Edition, MySQL (useful for large objects), and an in-memory buffer with a persistent
+backing store (for high performance).</p></li>
+</ol>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><p>Ion Stoica, Robert Morris, David Karger, M. Frans Kaashoek, Hari Balakrishnan,
+<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.105.3673&rep=rep1&type=pdf">Chord: A Scalable Peer-to-peer Lookup Service for Internet Applications</a>,
+SIGCOMM’01, August 27&#8211;31, 2001, San Diego, California, USA. Copyright 2001 ACM </p></li>
+<li><p>Sylvia Ratnasamy, Paul Francis, Mark Handley, Richard Karp, Scott Shenker,
+<a href="http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=807FDD6A5A1551F829812465EA967485?doi=10.1.1.19.8434&rep=rep1&type=pdf">A Scalable Content-Addressable Network<a>,
+SIGCOMM &#8217;01 Proceedings of the 2001 conference on Applications, technologies, architectures, and protocols for computer communications,
+Pages 161&#8211;172, Copyright 2001 ACM.</p></li>
+<li><p>Sylvia Paul Ratnasamy,
+<a href="https://www.tamps.cinvestav.mx/~vjsosa/clases/redes/DHT_algoritmos/can_thesis.pdf">A Scalable Content-Addressable Network</a>,
+PhD Thesis, University of California at Berkeley, Fall 2002.</p></li>
+<li><p>Giuseppe DeCandia, Deniz Hastorun, Madan Jampani, Gunavardhan
+Kakulapati, Avinash Lakshman, Alex Pilchin, Swaminathan Sivasubramanian,
+Peter Vosshall and Werner Vogels,
+<a href="http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf">Dynamo: Amazon’s Highly Available Key-value Store</a>,
+SOSP’07, October 14–17, 2007, Stevenson, Washington, USA. Copyright 2007 ACM.</p></li>
+<li><p>Todd Hoff, <a href="http://highscalability.com/blog/2009/7/25/latency-is-everywhere-and-it-costs-you-sales-how-to-crush-it.html">Latency Is Everywhere And It Costs You Sales - How To Crush It</a>, High Scalability, July 25, 2009,
+&copy; Possibility Outpost</p></li>
+</ul>
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>See <a href="http://highscalability.com/latency-everywhere-and-it-costs-you-sales-how-crush-it">Latency Is Everywhere And It Costs You Sales - How To Crush It</a> <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2017 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: October  2, 2017 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/9cbf3407-e64c-4dd9-b644-238d707b91b3"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

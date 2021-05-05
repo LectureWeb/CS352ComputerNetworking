@@ -1,0 +1,49 @@
+#main .gfigure {
+	display: inline-block;
+        margin-left: 0.4em;
+        margin-right: 0.4em;
+        text-align: center;
+        position: relative;
+	width: 190px; 
+	height: 190px; max-height: 190px; min-height: 190px;
+        margin-top: 0.25em;
+	border: solid 1px #000;
+	background: #fff;
+	vertical-align:top;
+}
+
+#main .gfigure .innerframe {
+	display: inline-block;
+	margin-top: 1.25em;
+}
+
+#main .gfigure .innerframe a:link {
+	text-decoration: none;
+}
+#main .gfigure .innerframe img {
+	border: 1px solid #000;
+}
+
+#main .gfigure .innerframe p {
+	clear: both;
+	margin: 0;
+	margin-top: 2em;
+	margin-bottom: 0em;
+	padding-bottom: 0;
+	text-align: center;
+	font: normal 1.0em  ;
+	font-size: 0.9em;
+	line-height 110%;
+	font-variant: small-caps;
+}
+
+.PopBoxImageSmall
+{
+	border: solid 1px #808080;
+	cursor: url("../images/magplus.cur"), pointer;
+}
+.PopBoxImageLarge
+{
+	border: solid 50px #fff;
+	cursor: url("../images/magminus.cur"), pointer;
+}

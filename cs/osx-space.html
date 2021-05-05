@@ -1,0 +1,582 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Freeing Space on OS X </title>
+
+<link href="../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+</style>
+</head>
+
+<body id="s_cs">
+<div id="wrapper">
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="../index.html"> Home </a> 
+ 	<li> <a href="../cs/index.html"> Computing </a> 
+ 	<li> <a href="../cs/misc/index.html"> Miscellany </a> 
+ 	<li> <a href="../cs/misc/osx-space.html"> Freeing Space on OS X </a> 
+</ul>
+</p>
+</div>
+  
+<div id="content-wrapper">
+<!-- --------------------------------------- MAIN --------------------------------------- -->
+<div id="main">
+<div id="headline">
+<h1> Clearing space on OS X </h1>
+<h2> Deleting the crud and getting back a few gigabytes</h2>
+</div>
+<p class=first>
+
+<blockquote> 
+This document is extremely outdated. 
+I wrote it when I got the very first MacBook Air, which came
+with a paltry 64 GB flash drive. Storage space was at a premium
+and I wanted to get rid of uncecessary stuff.
+My much newer MacBook Air has 512 GB of storage and my desktop systems
+have over 16 TB of storage with even more network storage. Space isn't
+quite as tight.
+</blockquote> 
+
+<h1> 1. What takes up space? </h1>
+
+<p>
+With a 64 GB drive on the first-edition MacBook Air, disk space
+no longer seems unlimited.
+These notes are in the context of an installation of OS X Leopard (10.5) on
+a MacBook Air.
+The top-level space hogs on a new, out-of-the-box system:
+</p>
+
+<table class="left">
+<thead>
+<tr>
+	<th scope="col"> directory </th>
+	<th scope="col"> space </th>
+	<th class="left" scope="col"> comments </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<th scope="row"> /usr </th>
+	<td class="right"> 947 MB </td>
+	<td> Unix commands (bin, sbin), X11 </td>
+</tr> <tr>
+	<th scope="row"> /Applications </th>
+	<td class="right"> 2439 MB </td>
+	<td> </td>
+</tr> <tr>
+	<th scope="row"> /private </th>
+	<td class="right"> 2497 MB </td>
+	<td> mostly 2 GB for the sleep image</td>
+</tr> <tr>
+	<th scope="row"> /System </th>
+	<td class="right"> 4100 MB </td>
+	<td> Frameworks, Speech, Fonts, Perl, Java, etc.</td>
+</tr> <tr>
+	<th scope="row"> /Library </th>
+	<td class="right"> 7117 MB </td>
+	<td> Application Support, Printers, Audio, core Fonts, Dictionaries, Receipts, etc.</td>
+</tr>
+</tbody>
+</table>
+<p>
+The biggest applications in an out-of-the-box system are:
+
+<table class="left">
+<thead>
+<tr>
+	<th scope="col"> application </th>
+	<th scope="col"> space </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<th scope="row"> iChat </th>
+	<td class="right"> 111 MB </td>
+</tr> <tr>
+	<th scope="row"> iDVD </th>
+	<td class="right"> 120 MB </td>
+</tr> <tr>
+	<th scope="row"> iMovie </th>
+	<td class="right"> 120 MB </td>
+</tr> <tr>
+	<th scope="row"> iTunes </th>
+	<td class="right"> 120 MB </td>
+</tr> <tr>
+	<th scope="row"> iPhoto </th>
+	<td class="right"> 169 MB </td>
+</tr>
+</tr> <tr>
+	<th scope="row"> GarageBand </th>
+	<td class="right"> 181 MB </td>
+</tr>
+</tr> <tr>
+	<th scope="row"> Mail </th>
+	<td class="right"> 287 MB </td>
+</tr>
+</tr> <tr>
+	<th scope="row"> iWeb </th>
+	<td class="right"> 338 MB </td>
+</tr>
+</tbody>
+</table>
+
+<p>
+Biggest /System stuff:
+</p>
+<table class="left">
+<thead>
+<tr>
+	<th scope="col"> application </th>
+	<th scope="col"> space </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<th scope="row"> Library/Speech/Voices </th>
+	<td class="right"> 703 MB </td>
+</tr> <tr>
+	<th scope="row"> Library/Frameworks </th>
+	<td class="right"> 1358 MB </td>
+</tr> 
+</tbody>
+</table>
+
+<p>
+The biggest /Library stuff:
+<table class="left">
+<thead>
+<tr>
+	<th scope="col"> directory </th>
+	<th scope="col"> space </th>
+	<th scope="col"> comments </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<th scope="row"> /Library/Documentation </th>
+	<td class="right"> 542 MB </td>
+	<td scope="row"> mostly help text </td>
+</tr> <tr>
+	<th scope="row"> /Library/Application Support/iPhoto </th>
+	<td class="right"> 407 MB </td>
+	<td scope="row"> </td>
+</tr> <tr>
+	<th scope="row"> /Library/Application Support/iDVD </th>
+	<td class="right"> 438 MB </td>
+	<td scope="row"> </td>
+</tr> <tr>
+	<th scope="row"> /Library/Application Support/GarageBand </th>
+	<td class="right"> 756 MB </td>
+	<td scope="row"> </td>
+</tr> <tr>
+	<th scope="row"> /Library/Printers </th>
+	<td class="right"> 3231 MB </td>
+	<td scope="row"> </td>
+</tr> 
+</tbody>
+</table>
+
+<p>
+You can go through the Printers directory and discard the manufacturers that you don't need (at the top level). 
+</p>
+<p> 
+A clean user account takes up 15 MB, with caches taking up 14 of those megabytes. The Desktop cache takes 6 MB.
+</p>
+
+<h1> 2. Removing languages </h1>
+<p>
+You don't really need Portuguese help text for a printer you never use, do you?
+It's time to remove all the extra languages from help files and applications.
+Download <a href="http://monolingual.sourceforge.net/">monolingual</a>. Click on the downloaded dmg file
+and install the monolingual program into Applications (or Application/Utilities) by dragging the monolingual
+icon to the Applications icon.
+</p>
+<p>
+Before running it, go to <em>System Preferences &gt; International &gt; Languages &gt; Edit List</em> and
+uncheck the languages you don't need. This will probably be everything except for English (you don't need U.S. English).
+</p>
+<p>
+Now run monolingual. It will take a long time. When done, it reports a space savings of 3.2 GB. Given that the initial
+space used was 17.48 GB, that's a savings of over 18%!
+</p>
+<p>
+After monolingual cleaned up languages, you might want to go to the next tab and use it to remove input menus for Korean, Kotoeri,
+Simplified Chinese, Traditional Chinese, Tamil, and Vietnamese. That will save another 53 MB.
+</p>
+<p>
+The final tab is architectures. Until recently, monolingual would
+remove critical PPC code the System Frameworks directory, disabling
+Rosetta. That's been fixed in the latest version of the software.
+Stripping out architectures saves around another 2 GB.
+<p>
+Let's look at our space offenders again:
+</p>
+<table class="left">
+<thead>
+<tr>
+	<th scope="col"> directory </th>
+	<th scope="col"> before </th>
+	<th scope="col"> after </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<th scope="row"> /usr </th>
+	<td class="right"> 947 MB </td>
+	<td> 947 MB </td>
+</tr> <tr>
+	<th scope="row"> /Applications </th>
+	<td class="right"> 2439 MB </td>
+	<td> 670 MB </td>
+</tr> <tr>
+	<th scope="row"> /private </th>
+	<td class="right"> 2497 MB </td>
+	<td> 2496 MB </td>
+</tr> <tr>
+	<th scope="row"> /System </th>
+	<td class="right"> 4100 MB </td>
+	<td> 3227 MB </td>
+</tr> <tr>
+	<th scope="row"> /Library </th>
+	<td class="right"> 7117 MB </td>
+	<td> 6090 MB </td>
+</tr>
+</tbody>
+</table>
+<p>
+The biggest applications in an out-of-the-box system now are:
+
+<table class="left">
+<thead>
+<tr>
+	<th scope="col"> application </th>
+	<th scope="col"> before </th>
+	<th scope="col"> after </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<th scope="row"> iChat </th>
+	<td class="right"> 111 MB </td>
+	<td class="right"> 15 MB </td>
+</tr> <tr>
+	<th scope="row"> iDVD </th>
+	<td class="right"> 120 MB </td>
+	<td class="right"> 63 MB </td>
+</tr> <tr>
+	<th scope="row"> iMovie </th>
+	<td class="right"> 120 MB </td>
+	<td class="right"> 76 MB </td>
+</tr> <tr>
+	<th scope="row"> iTunes </th>
+	<td class="right"> 120 MB </td>
+	<td class="right"> 51 MB </td>
+</tr> <tr>
+	<th scope="row"> iPhoto </th>
+	<td class="right"> 169 MB </td>
+	<td class="right"> 67 MB </td>
+</tr>
+</tr> <tr>
+	<th scope="row"> GarageBand </th>
+	<td class="right"> 181 MB </td>
+	<td class="right"> 87 MB </td>
+</tr>
+</tr> <tr>
+	<th scope="row"> Mail </th>
+	<td class="right"> 287 MB </td>
+	<td class="right"> 25 MB </td>
+</tr>
+</tr> <tr>
+	<th scope="row"> iWeb </th>
+	<td class="right"> 338 MB </td>
+	<td class="right"> 128 MB </td>
+</tr>
+</tbody>
+</table>
+
+<p>
+The biggest /System stuff is now:
+</p>
+<table class="left">
+<thead>
+<tr>
+	<th scope="col"> application </th>
+	<th scope="col"> before </th>
+	<th scope="col"> after </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<th scope="row"> Library/Speech/Voices </th>
+	<td class="right"> 703 MB </td>
+	<td class="right"> 703 MB </td>
+</tr> <tr>
+	<th scope="row"> Library/Frameworks </th>
+	<td class="right"> 1358 MB </td>
+	<td class="right"> 1218 MB </td>
+</tr> 
+</tbody>
+</table>
+
+<p>
+The biggest /Library stuff is now:
+<table class="left">
+<thead>
+<tr>
+	<th scope="col"> directory </th>
+	<th scope="col"> before </th>
+	<th scope="col"> after </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<th scope="row"> /Library/Documentation </th>
+	<td class="right"> 542 MB </td>
+	<td scope="row"> 32 MB </td>
+</tr> <tr>
+	<th scope="row"> /Library/Application Support/iPhoto </th>
+	<td class="right"> 407 MB </td>
+	<td scope="row"> 387 MB</td>
+</tr> <tr>
+	<th scope="row"> /Library/Application Support/iDVD </th>
+	<td class="right"> 438 MB </td>
+	<td scope="row"> 433 MB </td>
+</tr> <tr>
+	<th scope="row"> /Library/Application Support/GarageBand </th>
+	<td class="right"> 756 MB </td>
+	<td scope="row"> 756 MB </td>
+</tr> <tr>
+	<th scope="row"> /Library/Printers </th>
+	<td class="right"> 3231 MB </td>
+	<td scope="row"> 2802 MB</td>
+</tr> 
+</tbody>
+</table>
+
+<p>
+We now use 13.86 GB instead of 17.48 GB.
+
+<h1> A fresh install </h1>
+<p>
+Installing OS X from the DVD gives you the option of selecting optional components:
+</p>
+<ul>
+<li> Printer drivers (2.2 GB) </li>
+<li> Additional fonts (141 MB) </li>
+<li> Language translations (1.8 GB) </li>
+<li> X11 (117 MB) </li>
+<li> Bundled apps (4.7 GB) </li>
+</ul>
+<p>
+You probably don't need the additional fonts. These are just foreign-language fonts or foreign versions
+of existing fonts (such as Cyrillic or Hebrew versions of Helvetica). Even without installing these fonts,
+you still get a core set of foreign fonts.
+</p>
+<p>
+If you expect to enter an environment where you'll want to configure a printer on the fly then you may want
+to install the printer drivers. Otherwise, you can do without them and just download the latest driver when
+you're setting up a printer.
+</p>
+<p>
+Unless you plan on working with different languages, you don't need language translations.
+</p>
+<p>
+You know if you need X11. If you're not sure then you don't need it.
+</p>
+<p>
+Bundled apps is a judgement call. Pick what you need.
+</p>
+When all is done, the installer still installs several gigabytes of foreign-language support files! You'll need
+to run monolingual (or similar script) to remove them.
+
+<h1> Removing Applications </h1>
+<p>
+Apple would like you to think that uninstalling an application is as simple as dragging it into the trash.
+That's sometimes true but it depends on how much crud the application placed in other locations and whether
+it cleans up after itself when you trash the application.
+</p>
+<p>
+Your best bet is to use an uninstaller for an application if one was included on the installation media or
+was installed along with the application.
+</p>
+<p>
+Failing that, you can use one of several programs that are designed to delete applications along with
+related files. A few of these are:
+</p>
+<ul>
+<li> <a href="http://www.freemacsoft.net/">AppCleaner</a> (free) </li>
+<li> <a href="http://appzapper.com/">AppZapper</a> ($12.95) </li>
+<li> <a href="http://www.jibapps.com/en/products/trashme/">TrashMe</a> ($6.99) </li>
+</ul>
+<p>
+I haven't done a thorough comparison of these and have lately been using AppCleaner. Unfortunately,
+these programs tend to leave behind log files, caches, and support files. TrashMe seems to be
+the best of the bunch based on some reviews.  An all-purpose app remover, universal binary cleaner,
+language remover, and cache cleaner
+is <a href="http://macpaw.com/cleanmymac/">CleanMyMac</a> but I have not used it. You
+can read a review of it <a href="http://www.softwarehow.com/cleanmymac-review/">here<a/> from SoftwareHow.
+</p>
+<p>
+To do the job manually, check the following places:
+<dl>
+<dt> /Applications
+<dd> This is where the application lives. Applications are generally directories (application bundles,
+adapted from NeXT) that contain the executable, supporting libraries, associated images/text, plug-ins, 
+and version information.
+
+<dt> /Users/<i>your_name</i>/Library/Preferences
+<dd>
+Personal application settings are stored here (for example, a list of cities you selected
+for the weather widget).
+Most applications just create a directory indexed by their domain name, such as
+<tt>com.Google.GoogleEarthPlus.plist</tt>. Others create a directory with the
+name of their application or their company or some such variant.
+
+<dt> /Users/<i>your_name</i>/Library/Receipts
+<dd>
+Applications generally place installation information here. Included are lists of files,
+pre-installation scripts, and post-installation scripts. If you look at the package contents,
+you will often find a file named <tt>Archive.bom</tt>, a "bill of materials" file. You can
+run the shell command:
+<p>
+<div class="codeblock">
+lsbom Archive.bom
+</div>
+to see the contents and get an idea of what was installed where by the software. 
+For example, by running
+<p>
+<div class="codeblock">
+lsbom /Users/<i>your_name</i>/Library/Receipts/iDVD.pkg/Contents/Archive.bom
+</div>
+we can see that iDVD creates 6,229 files and directories in
+<tt>/Applications/iDVD.app</tt>. It also creates 51 files and directories in
+<tt>/Library/Documentation/Applications/iDVD</tt>.
+Most people advise against removing the receipts as they don't take up much
+space and give you the breadcrumbs to find stray files. If you really want to
+obliterate traces of an application, you might as well remove the receipt along
+with other files. Just do it last.
+
+<dt> /Library/Receipts
+<dd>
+Same as the per-user <tt>Receipts</tt> directory but for applications and components
+installed at the system level.
+
+<dt> /Library/Application Support
+<dd> This is analogous to the user <tt>Application Support</tt> directory but holds
+system-wide components, such as sample projects and themes.
+
+<dt> /Library/Preferences/
+<dd> This is analogous to the user <tt>Library/Preferences</tt> directory but holds
+system-wide preferences.
+
+<dt> /Library/StartupItems
+<dd> Contains a list of scripts run at system start-up.
+</dl>
+
+<h1> Example: Removing GarageBand </h1>
+<p>
+If we look in <tt>/Library/Receipts</tt>, we find: 
+<ul>
+<li> GarageBand.pkg
+<li> GarageBandFactoryContent.pkg
+<li> GarageBand_Instruments.pkg
+<li> GarageBand_Loops.pkg
+<li> GarageBand_MagicContent.pkg
+</ul>
+We can list all the files and directories created by all these packages with:
+<p>
+<div class="codeblock">
+cd /Library/Receipts
+lsbom GarageBand* >/tmp/g.txt
+</div>
+g.txt now contains a list of all the files and directories installed by GarageBand.
+The directories used solely by the program are:
+<ul>
+<li> /Applications/GarageBand.app
+<li> /Library/Audio/MIDI Drivers/EmagicUSBMIDIDriver.plugin
+<li> /Library/Documentation/Applications/GarageBand
+<li> /Library/QuickLook/GBQLGenerator.qlgenerator
+<li> /Library/Spotlight/GBSpotlightImporter.mdimporter
+<li> /Library/Application Support/GarageBand
+<li> /Library/Audio/Apple Loops
+</ul>
+<p>
+These will be reinstalled if the application gets reinstalled. 
+Together, they consume 944 MB of disk space. While all of the listed
+directories could be removed, the biggest offenders are:
+</p>
+<ul>
+<li> /Applications/GarageBand.app (87 MB)
+<li> /Library/Application Support/GarageBand (756 MB)
+<li> /Library/Audio/Apple Loops (96 MB)
+</ul>
+<h1> Example: Removing Printer Drivers </h1>
+<p>
+Navigate to <tt>/Library/Printers</tt>. You'll see a list of brands. If, for example,
+you don't plan on using Canon printers, move <tt>Canon</tt> to the trash (Canon
+drivers consume 460 MB).
+</div> <!-- main -->
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: May 10, 2019
+</p>
+<img class="stamp" src="..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> <a href="#distributed_computing">Distributed Computing</a> </h2>
+	<h2> <a href="#computer_security">Computer Security</a> </h2>
+	<h2> <a href="#tutorials">Tutorials</a> </h2>
+	<ul>
+	<li> <a href="../rutgers/notes/make/index.html"> Makefiles </a> </li>
+	<li> <a href="../rutgers/notes/sockets/index.html"> Sockets </a> </li>
+	<li> <a href="../rutgers/notes/rpc/index.html"> RPC </a> </li>
+	</ul>
+	<h2> <a href="#miscellany">Miscellany</a> </h2>
+	<ul>
+	<li> <a href="macos-setup.html"> Configuring macOS  </a> </li>
+	<li> <a href="osx-space.html"> Freeing space on OS X </a> </li>
+	<li> <a href="Cstyle.pdf"> C programming style </a> </li>
+	</ul>
+</div>
+
+
+
+</div>
+</div>
+</body>
+</html>

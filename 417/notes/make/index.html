@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 Documents </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../index.html"> Rutgers CS 417 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+	<li> <a href="../../notes/make/index.html"> Makefile Tutorial </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> About makefiles </h1>
+</div>
+
+<h1> Tutorial </h1>
+<p>
+A good, concise, and colorful tutorial on nakefiles can be found
+at the University of Hawaii's College of Engineering web site:
+<a href=http://www.eng.hawaii.edu/Tutor/Make/>
+http://www.eng.hawaii.edu/Tutor/Make/</a>.
+If you haven't used makefiles before, I strongly suggest
+that you read this.
+</p>
+
+<h2> Example </h2>
+<p>
+Here is the Makefile from the RPC demo code. It uses the
+most basic capabilities of <i>make</i>; it does not use
+any macros and shortcuts allowable by the <i>make</i> program.
+</p>
+
+<div class="codeblock-box">
+CC = gcc
+CFLAGS = -g -DRPC_SVC_FG
+
+all: client server
+
+client: client.o date_clnt.o
+        $(CC) -o client client.o date_clnt.o -lnsl
+
+server: server.o date_svc.o
+        $(CC) -o server server.o date_svc.o -lnsl
+
+date_svc.o: date.h
+        $(CC) $(CFLAGS) -c date_svc.c
+
+date_clnt.o: date.h
+        $(CC) $(CFLAGS) -c date_clnt.c
+
+server.o: server.c date.h
+        $(CC) $(CFLAGS) -c server.c
+
+client.o: client.c date.h
+        $(CC) $(CFLAGS) -c client.c
+
+# date.x produces date.h, date_clnt.c and  date_svc.c
+# make sure we generate these if they're missing or our interface changes
+
+date_clnt.c:	date.x
+        rpcgen -C date.x
+
+date_svc.c:	date.x
+        rpcgen -C date.x
+
+date.h: date.x
+        rpcgen -C date.x
+
+clean:
+        rm -f client client.o server server.o date_clnt.* date_svc.* date.h 
+</div>
+
+<p>
+<a href="files/Makefile">Download this file</a> (save it as <tt>Makefile</tt>)
+</p>
+<p>
+Lines starting with a name followed by a colon (e.g., <tt>server:</tt>)
+are <i>targets</i> - names of things you want to make. Following the colon
+is a whitespace separacted list of <i>dependencies</i>: things that need
+to be made before the target can be made. In the case of <tt>server</tt>,
+the dependencies are <tt>server.o</tt> and <tt>date_svc.o</tt>. The
+lines after that, up to the next target, are the <i>actions</i> - the
+commands that make should execute if the dependencies are met.
+</p>
+<p>
+Make treats dependencies in one of two ways. If the dependency appears
+as a target in the Makefile then the process is recursive: make looks
+at the dependencies of the respective targets and runs the actions if
+necessary. If the dependency and target are file names, then make
+compares the modification times of the target and the dependencies.
+If the dependencies are all older than the target the actions need not
+be taken.
+</p>
+<p>
+Using the <tt>server</tt> example again, make checks to see
+if <tt>server</tt>, <tt>server.o</tt> and <tt>date_svc.o</tt>
+exist as files and that
+<tt>server.o</tt> and <tt>date_svc.o</tt>
+are both older than <tt>server</tt>. If this is the case then
+the action need not be executed. If <tt>server.o</tt> has a later
+modification than <tt>server</tt>, make will execute the action: 
+</p>
+<div class="codeblock">
+$(CC) -o server server.o date_svc.o -lnsl
+</div>
+<p>
+The <tt>$(CC)</tt> states to use the value of the variable <tt>CC</tt> which
+was defined in the first line of the file to <tt>gcc</tt>. The command
+that ultimately gets executed is:
+</p>
+<div class="codeblock">
+gcc -o server server.o date_svc.o -lnsl
+</div>
+<p>
+If, in checking the target <tt>server.o</tt>, make discovered that one of its
+dependencies, <tt>server.c</tt> has a newer modification time then
+<tt>server.o</tt>, it would execute the action:
+</p>
+<div class="codeblock">
+gcc -g -DRPC_SVC_FG -c server.c
+</div>
+
+<p>
+before executing the action for the target <tt>server</tt>.
+</p>
+<p>
+When make is run with no arguments, it attempts to open a file named
+<tt>makefile</tt>. If that is not fount, it tries to open <tt>Makefile</tt>.
+It then <i>makes</i> the first target in the file. In this example, it
+is a target named <tt>all</tt> which depends on the targets <tt>client</tt>
+and <tt>server</tt>.
+</p>
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: January 27, 2020
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Grading info </a> </li>
+	<li> <a href="https://canvas.rutgers.edu/"> Canvas </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

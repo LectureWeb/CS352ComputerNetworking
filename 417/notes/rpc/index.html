@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 Documents </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../index.html"> Rutgers CS 417 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/rpc/index.html"> RPC Tutorial </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Introduction to programming with Sun/ONC RPC </h1>
+</div>
+
+<h1> Tutorial </h1>
+<p>
+This page illustrates the basics of using ONC (Sun) remote procedure calls
+(RPC). We'll start with a remote procedure to add two numbers. This
+program will accept two numbers from the command line, parse the ascii
+text to convert them to numbers, then call a remote procedure to add them
+and print the results.
+</p>
+<h2>Step 1. Create the IDL</h2>
+<p>
+The first step involves defining the interface. This has to abide by
+Sun's format for its Interface Definition Language (IDL). An IDL is a file
+(suffixed with .x) which optionally begins with a bunch of type definitions
+and then defines the remote procedures. A set of remote procedures are grouped
+into a <i>version</i>. One or more versions are grouped into a <i>program</i>.
+</p>
+<p>
+Traditionally, ONC RPC
+restricted us to remote procedures that accept a single parameter and
+return a single parameter. Later versions added an option to support
+multiple parameters, but we'll stick with the traditional mechanism to
+provide greatest compatibility. The lack of multiple parameters isn't
+really a problem since all we need to do is define a data structure
+that holds all the parameters we need.
+</p>
+<p>
+In this example we have one type definition to define a structure
+that holds two integers: this will be our input parameter for the
+<i>add</i> function.  Our interface will also have 
+one version and one progam. We have to assign a number to each function,
+version, and program. The function will be given an ID of 1. So will
+the version. The program number is a 32-bit number. Sun reserved
+the range from 0 to 0x1fffffff. We'll number this program
+0x23451111.
+</p>
+<p>
+The IDL, which we'll put in a file named <a href=add.x>add.x</a> looks like:
+<div class="codeblock-box">
+struct intpair {
+        int a;
+        int b;
+};
+
+program ADD_PROG {
+        version ADD_VERS {
+                int ADD(intpair) = 1;
+        } = 1;
+} = 0x23451111;
+</div>
+<p>
+We can compile this to test if we missed anything:
+<div class="codeblock">
+rpcgen -C add.x
+</div>
+The -C flag (upper-case C) tells <i>rpcgen</i> to generate C code that
+conforms to ANSI C. This is the default on some versions of <i>rpcgen</i>.
+If we look at the files that were generated, we'll see:
+<dl>
+<dt><tt>add.h</tt>
+<dd> This is the header file that we'll include in both our client and
+server code. It defines the structure we defined (<tt>intpair</tt>) and
+<i>typedefs</i> it to a type of the same name.
+It also defines the symbols ADD_PROG (0x23451111, our program number)
+and ADD_VERS (1, our version number). Then it defines the client
+stub interface (<i>add_1</i>) and the interface for the server-side function
+that we'll have to write (<i>add_1_svc</i>). In the past (pre ANSI-C),
+the client stub and server side functions had the same name but since
+ANSI C was strict with parameters matching their declarations, this was changed
+since the parameters are slightly different. As we'll soon see, the client
+stub accepts an extra parameter representing a handle to the remote
+server. The server function gets an extra parameter containing information
+about who is making the connection.
+
+<dt><tt>add_svc.c</tt>
+<dd>This is the server program. If you look at the code, you'll
+see that it implements the <i>main</i> procedure which registers
+the service and, if the symbol <tt>RPC_SVC_FG</tt> is not defined,
+forks a process to cause the service to run in the background; the
+parent exits.
+<p>
+The program also implements the listener for the program. This is
+the function named <i>add_prog_1</i> (the <tt>_1</tt> is used
+to distinguish the version number. The function contains a switch
+statment for all the remote procedures supported by this program and
+this version. In addition to the <i>null</i> procedure (which is
+always supported), the only entry in the switch statement is <tt>ADD</tt>,
+for our <i>add</i> function. This sets a function pointer (<tt>local</tt>)
+to server function, <i>add_1_svc</i>. Later in the procedure, the 
+function is invoked with the unmarshaled parameter and the requestor's
+information.
+
+<dt><tt>add_clnt.c</tt>
+<dd> This is client stub function that implements the <i>add_1</i>
+function. It marshals the parameter, calls the remote procedure,
+and returns the result.
+
+<dt><tt>add_xdr.c</tt>
+<dd> The <tt>_xdr.c</tt> file is not always generated; it depends on
+the parameters used for remote procedures. This file contains code
+to marshal parameters for teh <tt>intpair</tt> structure. It uses
+XDR (eXternal Data Representation) libraries to convert the two integers
+into a standard form.
+</dl>
+<h3> <a href=step2.html>Continue to step 2</a></h3>
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2017 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 23, 2017
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+        <h2> Tutorials </h2>
+        <ul>
+        <li> <a href="../../notes/sockets/index.html"> TCP Sockets tutorial </a> </li>
+        <li> <a href="../../notes/sockets/udp.html"> UDP Sockets tutorial </a> </li>
+        <li> <a href="../../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+        <li> <a href="../../notes/make/index.html"> Makefile tutorial </a> </li>
+        <li> <a href="../../notes/clocks/index.html"> Clocks tutorial </a> </li>
+        </ul>
+
+</div>
+
+<div id="sidebar2">
+
+<!--
+<h1 class="first"> Free Ph.D.! </h1>
+<p>
+Save time and money!
+Print your free PhD <a href="http://www.cbs.com/shows/the-late-show-with-stephen-colbert/news/1004741/stephen-colbert-s-totally-legitimate-online-phd-program/">here</a>.
+</p>
+<hr/>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

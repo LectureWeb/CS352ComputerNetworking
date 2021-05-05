@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 352 Grades </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+.rqbox {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+        position: relative;
+	width: 15em;
+        background-color: #FDF5B6;
+        border-style: double; border-width: 3px;
+        padding: 0.5em 0.5em 0.5em 0.5em;
+}
+</style>
+</head>
+
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="../../index.html"> Home </a> 
+	<li> <a href="../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 352 </a> 
+ 	<li> <a href="../grades/index.html"> Grades </a> 
+</ul>
+</p>
+</div>
+  
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> About grades </h1>
+</div>
+
+<div class="rqbox">
+<a href="https://sakai.rutgers.edu/portal">Check your grade on sakai</a>
+</div>
+
+<p class="first"> 
+Your final grade for this course is computed through an arcane process
+of fiddling around with weights and algorithms until I get results
+that I (not necessarily you) feel are fair and reasonably generous.
+</p>
+
+<h1> Exams </h1>
+<p>
+Your exam grades are normalized to a z-score. The z-score is: 
+</p>
+<p class="center">
+(your_grade - <a href="http://en.wikipedia.org/wiki/Arithmetic_mean">average_grade</a>)/(<a href="http://en.wikipedia.org/wiki/Standard_deviation">standard_deviation</a>)
+</p>
+<p>
+This compensates for
+different means scores and standard deviations on the exams. 
+From the z-score, a continuous-scale GPA is computed.  All exams
+carry the same weight and the lowest exam
+grade (based on the z-score) is dropped.
+</p><p>
+For example, suppose a student gets a 58 on exam 2, where the
+mean grade is 48.8 and the standard deviation is 18.5. Her z-score
+is (58-48.8)/18.5 = 0.497.  This is equivalent to a grade of 81.5 on
+exam 1, where the mean grade was 74 and the standard deviation was 15.1.
+Hence, if the same student got a score of 75 on exam 1, the 75 would
+be the lower of the two grades.
+</p>
+<p>
+To get an idea of how your grade measures up, compute your z-score
+and add 3.1 to it to get a GPA for that exam grade (disclaimer:
+I may change this factor).  Using the above example, the grade of
+58 for exam 2 corresponds to a GPA of approximately 3.6.
+</p>
+<p>
+Here are the mean grades and standard deviations for the exams:
+</p>
+<table>
+<thead>
+<tr>
+	<th scope="col"> &nbsp; </th>
+	<th scope="col"> Exam 1 </th>
+	<th scope="col"> Exam 2 </th>
+	<th scope="col"> Exam 3 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<th scope="row"> Average </th>
+	<td> 73.8 </td>
+	<td> 78.9 </td>
+	<td> 64.1 </td>
+</tr>
+<tr>
+	<th scope="row"> Std. dev. </th>
+	<td> 15.1 </td>
+	<td> 13.9 </td>
+	<td> 15.6 </td>
+</tr>
+</tbody>
+</table>
+
+
+<h1> Assignments </h1>
+<p>
+Homework assignments are not normalized to mean grades but stand on their
+own. They are normalized only to the maximum number of points allotted for
+that assignment. For example, a grade of 8 where the maximum score is 10
+is identical to a grade of 80 where the maximum score is 100.  Programming
+assignments count more than written assignments.
+</p>
+
+<h1> Quizzes </h1>
+<p>
+As with assignments, quiz grades are also not normalized to mean grades.
+</p>
+
+<h1> Final grade </h1>
+<p>
+Two sets of scrores are computed from the exam and assignment grades:
+one allots a greater weight for your assignments than the other.
+Of these two scores, the greater one is picked
+for your grade. 
+</p>
+<p>
+Two factors may override your final grade:
+</p>
+<dl>
+	<dt> Cheating:  </dt>
+	<dd> If you are caught cheating in any way, I will 
+	report you to the office of student conduct and await
+	their vertict on your grade. This may lead to failure 
+	of the course.
+	Your actions will also be reported to the
+	department and to your dean. </dd>
+
+	<dt> Not doing programming assignments: </dt>
+	<dd> If you do not turn in any programming assignments or turn
+	in truly pathetic submissions (that show little to no effort and do not come close to working)
+	you will not get a grade exceeding a D. </dd>
+
+	<dt> Missing multiple quizzes </dt>
+	<dd> This is a sign of low attendence. Please see the Rutgers policy on
+        <a href="http://sasundergrad.rutgers.edu/academics/courses/registration-and-course-policies/attendance-and-cancellation-of-class">Attendance and Cancellation of Classes</a>.
+	</dd>
+</dl>
+<div class="rqbox">
+<a href="https://sakai.rutgers.edu/portal">Check your grade on sakai</a>
+</div>
+</div> <!-- main -->
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/6f683a17-68f7-4cb4-ad35-6c245c3f4682"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Clusters</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Clusters</h1>
+								<h2>Combining systems for high performance and/or high availability</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>April 30, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal:</strong> Combine computers together to create high performing and/or highly reliable systems that provide users with a single system image.</p>
+</blockquote>
+
+<p><strong>Clustering</strong> is the aggregation of multiple independent computers to
+work together and provide a single system that offers
+increased reliability and/or performance. It is a realization
+of the <strong>single system image</strong> that we discussed at the start of
+the semester. Clusters are generally off-the-shelf computers that are connected
+to a local area network that allows them to communicate with other computers
+in the cluster. A cluster may be a collection of tens of thousands (or more)
+computers (e.g., google cluster) or just a backup computer to take over
+for a failed web server or database.</p>
+
+<p>There are two main classes of cluster architectures:</p>
+
+<dl>
+<dt><strong>Supercomputing</strong></dt>
+<dd> Also known as <strong>high-performance computing</strong>, or <strong>HPC</strong>.
+The goal of an HPC cluster is to create a computing environment that
+resembles that of a supercomputer.</dd>
+
+<dt><strong>High Availability</strong> (<strong>HA</strong>)</dt>
+<dd> The goal in this cluster it to ensure maximum availability by providing
+redundant systems for failover.</dd>
+</dl>
+
+<p>We also have two additional forms of clustering that are widely used:</p>
+
+<dl>
+<dt><strong>Load Balancing</strong></dt>
+<dd> A load balancing cluster distributes requests among a collection
+of computers. In doing so, it addresses both scalability and high availability.</dd>
+
+<dt><strong>Storage</strong></dt>
+<dd> Storage clustering is a way to ensure that systems can all access the same
+storage. It is also a way to make vast amounts of storage available to a
+computer without having to put it inside the computer (where it will not be
+available if the computer fails).</dd>
+</dl>
+
+<p>The boundaries between these cluster types are often fuzzy and many clusters will
+use elements of several of these cluster types. For example, any cluster may
+employ a storage cluster. High availability is important in supercomputing
+clusters since the likelihood of any one computer failing increases with
+an increasing number of computers. There is no such thing as a &#8220;standard&#8221; cluster.</p>
+
+<h2 id="clustercomponents">Cluster components</h2>
+
+<p>A cluster needs to keep track of its <strong>cluster membership</strong>:
+which machines are members of the cluster.
+Related to this are the configuration and service management components.
+The <strong>configuration system</strong> runs on each node (computer) in the cluster and manages
+the setup of each machine while the <strong>service management</strong> component
+identifies which nodes in the
+cluster perform which roles (e.g., standby, active, running specific
+applications).</p>
+
+<p>A <strong>quorum</strong> is the
+number of nodes in a cluster that have to be alive for the cluster to function.
+Typically, a majority is required. This provides a simple way of avoiding
+<strong>split-brain</strong> due to network partitioning where one group of
+computers cannot talk to another and two instances of the cluster may be created.
+With a majority quorum, a minority of systems will never create their own cluster.</p>
+
+<p>A <strong>cluster interconnect</strong> is the network that allows computers in a cluster
+to communicate with each other. In most cases, this is just an Ethernet local area network.
+For performance, bandwidth and latency are considerations. Communicating outside
+of a rack incurs longer cable runs and the overhead of an extra switching stage.
+Communicating outside of a data center incurs even longer latency.
+For maximum performance, we would like computers that communicate frequently
+to be close together physically. However, for maximum availability, we would like
+them to be distant. If a rack switch or an entire data center loses power, it would
+be good to have a working replica elsewhere. For high performance applications within
+a local area,
+a dedicated network is often used as a cluster interconnect. This is known as
+a <strong>System Area Network</strong> (<strong>SAN</strong>).
+A high-performance SAN will provide low latency, highly reliable, switched communication between computers.
+By using a SAN, the software overhead of having to run the TCP/IP stack, with its
+requisite fragmentation, buffer management, timers, acknowledgements, and retransmissions,
+is largely eliminated.
+<strong>Remote DMA</strong> (<strong>RDMA</strong>) allows data to be copied directly to the memory
+of another processor. SANs are often used for HPC clusters, with
+SAN/RDMA communication incorporated into the Message Passing Interface
+(MPI) library, which is commonly used in
+high performance computing applications.
+Examples of SAN interconnects are Infiniband, Myrinet, and 10 Gbps ethernet
+with Data Center Bridging. They are generally used to connect a relatively small number
+of computers together.</p>
+
+<p>A <strong>heartbeat network</strong> is the mechanism that is used to determine whether computers
+in the cluster are alive or dead. A simple heartbeat network
+exchanges messages between computers to ensure
+that they are alive and capable of responding. Since a local area network
+may go down, one or more secondary networks are often used as dedicated
+heartbeat networks in order to distinguish failed computers from failed networks.
+Asynchronous networks, such as IP, make the detection of a failed computer problematic:
+one is never certain whether a computer failed to send a message or whether the
+message is delayed beyond a timeout value.</p>
+
+<h2 id="storageclusters">Storage clusters</h2>
+
+<p>Storage in a clustered computer system can be provided in a variety of ways.
+<strong>Distributed file systems</strong>, such as NFS, SMB, or AFS can be used.
+These provide file-level remote access operations over a network.</p>
+
+<p>A <strong>Storage Area Network</strong> (<strong>SAN</strong>, not to be confused with a System Area Network)
+is a dedicated network for connecting computers to dedicated disk systems (storage
+arrays). Common SAN interconnect technologies include iSCSI, which uses the SCSI protocol over the
+Ethernet, and Fibre Channel. Computers access this remote storage at
+the block level (<em>read</em> a specific block, <em>write</em> a specific block), just like they
+would access local storage. With a SAN, however, access to the same storage can be shared
+among multiple computers. This environment is called <strong>shared disk</strong>.
+A <strong>distributed lock manager</strong>, or <strong>DLM</strong>, manages mutual exclusion by
+controlling access to key resources on the shared disk so that, for example, two computers
+will not try to write to the same disk block at the same time.
+A <strong>clustered file system</strong> is a file system that is built
+on top of a shared disk. Unlike a distributed file system (NFS, SMB, et al.),
+which uses remote access at a <strong>file level</strong>, each computer&#8217;s operating system implements
+a full file system and makes requests at the <strong>block level</strong>.
+Examples of such file systems include the Oracle Cluster File System for Linux (OCFS2),
+Red Hat&#8217;s Global File System (GFS2), and Microsoft&#8217;s Cluster Shared Volumes (CSV).
+The DLM is used to ensure that critical shared file system data
+structures, such as bitmaps of free blocks, inode structures, and file lock tables,
+are accessed exclusively and caching is coherent. It operates at the level
+of the implementation of a file system rather than high-level file systems services
+as in distributed file systems. As such, it differs from something like the
+NFS lock daemon, which kept track of file locks requested by applications rather
+than block-level locks needed to keep a file system coherent.</p>
+
+<p>A <strong>shared nothing</strong> cluster architecture is one where each system is independent and
+there is no single point of contention in the system, such as competing for access to
+a shared disk. Because there is no
+contention, there is no need for a DLM.
+In this environment, any data that is resident on a system&#8217;s disk can only
+be obtained by sending a request to the computer that owns the disk.
+If the computer dies, the data is generally unavailable but may be
+replicated on other nodes. An alternative design that uses a SAN can
+allow disk access to be switched to another computer but ensure that only
+one computer accesses the file system at any time.</p>
+
+<p>To make disks themselves highly available, <strong>RAID</strong> (<strong>redundant
+array of independent disks</strong>) is often employed. RAID 1 is disk
+mirroring. Anything that is written to one disk gets written to a
+secondary disk. If one fails then you still have the other. RAID 5 and RAID 6
+stripes the data across several disks and also adds in error
+correcting codes
+so that it data could be reconstructed from
+the available segments if one would die
+(e.g., parity to allow recovering data lost if one disk fails).</p>
+
+<h2 id="high-performancecomputinghpc">High-Performance Computing (HPC)</h2>
+
+<p>High-performance clusters (HPC) are generally custom efforts but there
+are a number of components that are common across many implementations.
+HPCs are designed for traditional supercomputing applications that
+focus on a large amount of computation on large data sets. These
+applications are designed to be partitioned into multiple communicating
+processes. The <strong>Message Passing Interface</strong>
+(<strong>MPI</strong>) is a popular programming interface for sending
+and receiving messages that handles point-to-point and group
+communication and provides support for barrier-based synchronization.
+It is sometimes used together with the <strong>Parallel Virtual
+Machine</strong> (<strong>PVM</strong>), a layer of software that
+provides an interface for creating tasks, managing global task IDs,
+and managing groups of tasks on arbitrary collections of processors.
+PVM is in many ways similar to MPI but designed to be more
+dynamic and support heterogenous environments. However, its performance
+was not up to the levels of MPI and its popularity is waning.
+<em>Beowulf</em> and <em>Rocks Cluster</em> are examples of
+HPC clusters based on Linux.
+Microsoft offers high performance clustering via the Microsoft HPC Pack.
+There are many other HPC systems as well. The
+common thread among them all is that they provide a front-end server
+for scheduling jobs and monitoring processes and offer an MPI library
+for programming.</p>
+
+<h2 id="batchprocessing:single-queueworkdistribution">Batch Processing: Single-Queue Work Distribution</h2>
+
+<p>Single queue work distribution is a form of high performance computing that does
+not rely on communication between computing nodes. Where traditional HPC
+applications usually involve large-scale array processing and a high level of
+cooperation among processing elements, the work distribution approach
+is used for applications such as render farms
+for computer animation, where a central coordinator (dispatcher)
+sends job requests to a collection of computers. When a system
+completes a job (e.g., “render frame #4,178”), the dispatcher will
+send it the next job (e.g., “now render frame #12,724”). The dispatcher
+will have the ability to list jobs, delete jobs, dispatch jobs, and
+get notified when a job is complete.
+The worker nodes have no need to communicate with each other.</p>
+
+<h2 id="loadbalancing">Load Balancing</h2>
+
+<p>Web-services load balancing is a somewhat trivial but very highly
+used technique for distributing the load of many network requests
+among a collection of computers, each of which is capable of processing
+the request.
+Load balancing serves three important functions:</p>
+
+<ol>
+<li><p><strong>Load balancing</strong>. It enables scalability by distributing requests
+among multiple computers.</p></li>
+<li><p><strong>High availability</strong> (failover). If a computer is dead, the requests
+will be distributed among the remaining live computers.</p></li>
+<li><p><strong>Planned outage management</strong>. If a computer needs to be taken out
+of service temporarily (for example, to upgrade software or replace
+hardware), requests
+will be distributed among the remaining live computers.</p></li>
+</ol>
+
+<p>The simplest form of load balancing is to have all
+requests go to a single computer that then returns an HTTP REDIRECT
+error. This is part of the HTTP protocol and will lead the client
+to re-issue the request to the computer specified by the REDIRECT
+error.</p>
+
+<p>Another, and the most popular approach, is to
+use a load-balancing router
+to map incoming requests to one of several multiple back-end computers.</p>
+
+<p>For load balancing across data centers, DNS-based load balancing may be
+used where a DNS query returns IP addresses of machines at different data
+centers for domain name queries.</p>
+
+<h2 id="highavailability">High Availability</h2>
+
+<p>High-availability clusters strive to provide a high level of system
+uptime by taking into account the fact that computers may fail.
+When this happens, applications running on those computers will resume
+on other computers that are still running.
+This is called <strong>failover</strong>.</p>
+
+<p>Low-level software to support high-availability clustering includes
+facilities to access shared disks and
+support for <strong>IP address takeover</strong>, which enables a
+computer to listen on multiple IP addresses so that IP
+packets that were sent to a failed machine can reach the backup system
+instead.</p>
+
+<p>Mid-layer software includes
+distributed elections to pick a coordinator, propagation of status
+information, and figuring out which systems and applications are
+alive. Higher-layer software includes the ability to restart
+applications, let a user assign applications to computer, and let
+a user see what&#8217;s going on in the system as a whole.</p>
+
+<p>An <strong>active/passive</strong> configuration is one where one or more
+backup (passive) systems are waiting to step in for a system that died.
+An <strong>active/active</strong> configuration allows multiple systems to handle
+requests. Requests may be load balanced across all active systems
+and no failover is needed; the dead system is simply not sent any
+requests.</p>
+
+<p>Failover can be implemented in several ways:</p>
+
+<dl>
+<dt><strong>Cold failover</strong></dt>
+<dd> This is an application restart &#8212; the application is
+started afresh from the beginning. An example is starting up a web server on
+a backup computer because the primary web server died. There is no
+state transfer.</dd>
+
+<dt><strong>Warm failover</strong></dt>
+<dd> Here, the application is checkpointed periodically.
+It can then be restarted from from the last checkpoint. Many
+cluster libraries provide the ability for a process to checkpoint itself
+(save its memory image). Pregel is an example of a software
+framework that relies on periodic checkpointing so that
+a graph computation does not have to restart from the beginning.</dd>
+
+<dt><strong>Hot failover</strong></dt>
+<dd> Here, a replica application is always kept synchronized
+with the active application on another computer.
+An example of this is a replicated state machine.
+Chubby servers, for example, implement hot failover: if the
+Chubby master fails, any other machine in the Chubby cluster can step in.</dd>
+</dl>
+
+<p><strong>Cascading failover</strong> refers to the ability of an
+application to fail over even after it already has failed over in
+the past. <strong>Multi-directional failover</strong>
+refers to the ability to restart applications from a failed system
+on multiple available systems instead of a specific computer
+that is designated for use as a standby system.</p>
+
+<p>An annoying malfunction is a Byzantine failure. In this case, the
+failed process or computer continues to communicate but communicates
+with faulty data. Related to this is the problem of fail-restart
+behavior, where a process may restart but not realize that the data
+it is working with is obsolete (e.g., a transaction coordinator might
+restart and not realize that the transaction has already been aborted).
+<strong>Fencing</strong> is the use of various techniques to isolate a node
+from the rest of the cluster. Power fencing shuts off power to the
+node to ensure that the node does not restart. SAN fencing disables
+the node from accessing shared storage, avoiding possible file system
+corruption. Other fencing techniques may block network messages from
+the node or remove processes from a replication group (as done in virtual synchrony).</p>
+
+							</section>
+							<footer class="main">
+								Last modified April 30, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

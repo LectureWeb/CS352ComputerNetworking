@@ -1,0 +1,464 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 352 Documents </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+	border: 1px #888 solid;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+	border-right: 1px #888 solid;
+}
+#main .doclist .exam {
+	vertical-align: baseline; /* for opera */
+	border-right: 1px #888 solid;
+	background-color: #d0e8ff;
+}
+#main .doclist .date {
+        white-space: nowrap;
+}
+#main .doclist tr {
+        vertical-align: baseline;
+	border: 1px #888 solid;
+}
+#main .doclist th.item {
+        text-align: left;
+	border-right: 1px #888 solid;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+</style>
+</head>
+
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 352</a> 
+ 	<li> <a href="../notes/index.html"> Documents </a> 
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> CS 352 Documents </h1>
+</div>
+<blockquote>
+<em>O you possessed of sturdy intellects,
+observe the teaching that is hidden here
+beneath the veil of verses so obscure.</em>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>&mdash; Dante Alighieri, Inferno IX:61-63, trans. A. Mandelbaum</em>
+</blockquote>
+
+<div class="figure width150">
+<a href="http://www.adobe.com/go/getreader">
+<img src="images/get_adobe_reader.png" alt="Get Acrobat Reader"
+       width=158 height=39 border=0></a>
+</div>
+<p class="first">
+This page contains links to lecture note, in-class
+lecture slides, and related reading material.
+Lecture slides are in Adobe PDF format.
+You probably have something that reads pdf files already.
+If you don't have
+a <a href="http://en.wikipedia.org/wiki/Portable_Document_Format">pdf</a>
+reader for your platform, you can 
+<a href="http://www.adobe.com/go/getreader">get one for free</a> for
+Windows, Mac OS, iOS, Android, or Windows Phone. 
+You don't need one for the Mac since Preview can render pdf files.
+You also don't need one for the iPhone or iPad.
+If you're using an Android platform and don't have
+a pdf viewer installed, you can download
+the <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.pdfviewer&hl=en"">Google PDF Viewer</a>,
+<a href="https://play.google.com/store/apps/details?id=com.adobe.reader&hl=en">Adobe Acrobat</a>, or any of dozens of other viewers.
+</p>
+<p>
+Please let me know if you find any errors or unclear wording.
+Any corrections will be most appreciated. 
+</p>
+
+<h1> Lecture notes </h1>
+<table class="doclist">
+<tr>
+    <th class="date"> Week </th>
+    <th class="item"> Title </th>
+</tr>
+
+<tr>
+	<td class="date"> Week 1. </td>
+	<td class="item"> <a href="content/01-intro-slides.pdf">Lecture slides: Introduction: a history of networking, key terms, Internet structure</a>
+	(<a href="content/01-intro-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="date"> Week 2. </td>
+	<td class="item"> <a href="content/02-sockets-slides.pdf">Lecture slides: Network stack and programming</a>
+	(<a href="content/02-sockets-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="date"> Week 3. </td>
+	<td class="item"> <a href="content/03-app_layer-slides.pdf">Lecture slides: Application layer protocols</a>
+	(<a href="content/03-app_layer-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="date"> Week 4. </td>
+	<td class="item"> <a href="content/04-p2p-slides.pdf">Peer-to-peer file sharing</a>
+	(<a href="content/04-p2p-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="exam"> Week 5 </td>
+	<td class="exam"> Exam 1: <a href="../exam/study-guide-1.html">study guide</a> </td>
+</tr> <tr>
+	<td class="date"> Week 5. </td>
+	<td class="item"> <a href="content/05-transport-slides.pdf">Transport Layer</a>
+	(<a href="content/05-transport-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="date"> Week 6. </td>
+	<td class="item"> <a href="content/06-tcp-slides.pdf">Transport Layer: TCP</a>
+	(<a href="content/06-tcp-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="date"> Week 7. </td>
+	<td class="item"> <a href="content/07-network_layer-slides.pdf">Network Layer</a>
+	(<a href="content/07-network_layer-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="date"> Week 9. </td>
+	<td class="item"> <a href="content/08-routing-1-slides.pdf">Routing </a>
+	(<a href="content/08-routing-1-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="date"> &nbsp; </td>
+	<td class="item"> <a href="content/09-routing-2-slides.pdf">Internet Routing </a>
+	(<a href="content/09-routing-2-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="date"> &nbsp; </td>
+	<td class="item"> <a href="autonomous_systems.html">Notes on autonomous systems</a>
+	</td>
+</tr> <tr>
+	<td class="exam"> Week 10 </td>
+	<td class="exam"> Exam 2: <a href="../exam/study-guide-2.html">study guide</a> </td>
+</tr> <tr>
+	<td class="date"> Week 10. </td>
+	<td class="item"> <a href="content/10-multicast-slides.pdf">Multicast</a>
+	(<a href="content/10-multicast-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="date"> Week 11. </td>
+	<td class="item"> <a href="content/11-link_layer-slides.pdf">Data Link Layer</a>
+	(<a href="content/11-link_layer-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="date"> Week 12. </td>
+	<td class="item"> <a href="content/12-wireless-slides.pdf">Wireless Networks</a>
+	(<a href="content/12-wireless-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="date"> Week 12. </td>
+	<td class="item"> <a href="content/13-QoS-slides.pdf">Network Quality of Service</a>
+	(<a href="content/13-QoS-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="date"> Week 13. </td>
+	<td class="item"> <a href="content/14-security-slides.pdf">Network security</a>
+	(<a href="content/14-security-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr> <tr>
+	<td class="exam"> Week 14 </td>
+	<td class="exam"> Exam 3: <a href="../exam/study-guide-3.html">study guide</a> </td>
+</tr> <tr>
+	<td class="date"> Week 14. </td>
+	<td class="item"> <a href="content/15-SIP-NAT-slides.pdf">VoIP and NAT traversal</a>
+	(<a href="content/15-SIP-NAT-slides-6pp.pdf">6 per page</a>)
+	<img height="16" width="38" src="images/new.gif"/>
+	</td>
+</tr> <tr>
+	<td class="date"> Week 15. </td>
+	<td class="item"> <a href="content/16-Et_cetera-slides.pdf">Things we didn’t get to talk about</a>
+	(<a href="content/16-Et_cetera-slides-6pp.pdf">6 per page</a>)
+	<img height="16" width="38" src="images/new.gif"/>
+	</td>
+</tr> 
+</table>
+
+<!--
+<h1> Recitation notes </h1>
+<table class="doclist">
+<tr>
+    <th class="date"> Week </th>
+    <th class="item"> Title </th>
+</tr>
+<tr>
+	<td class="date"> Week 1. </td>
+	<td class="item"> <a href="content/01r-review-slides.pdf">Review of key terms</a>
+	(<a href="content/01r-review-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr><tr>
+	<td class="date"> Week 2. </td>
+	<td class="item"> <a href="content/02r-sockets-programming-slides.pdf">Java sockets programming</a>
+	(<a href="content/02r-sockets-programming-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr><tr>
+	<td class="date"> &nbsp; </td>
+	<td class="item"> <a href="content/02r-hw1-review.pdf">Assignment 1 review</a>
+	(<a href="content/02r-hw1-review-6pp.pdf">6 per page</a>)
+	</td>
+</tr><tr>
+	<td class="date"> Week 3. </td>
+	<td class="item"> <a href="content/03r-app_layer-email-slides.pdf">Application protocols: email</a>
+	(<a href="content/03r-app_layer-email-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr><tr>
+	<td class="date"> &nbsp; </td>
+	<td class="item"> <a href="content/03r-hw2-review.pdf">Assignment 2 review</a>
+	(<a href="content/03r-hw2-review-6pp.pdf">6 per page</a>)
+	</td>
+</tr><tr>
+	<td class="date"> Week 4. </td>
+	<td class="item"> <a href="content/04r-exam1-review.pdf">Assignment 4 &amp; Exam 1 review</a>
+	(<a href="content/04r-exam1-review-6pp.pdf">6 per page</a>)
+	</td>
+</tr><tr>
+	<td class="date"> Week 6. </td>
+	<td class="item"> <a href="content/06a-exam1-review.pdf">2016 Exam 1 review</a>
+	(<a href="content/06a-exam1-review-6pp.pdf">6 per page</a>)
+	</td>
+</tr><tr>
+	<td class="date"> Week 7. </td>
+	<td class="item"> <a href="content/07r-review-slides.pdf">HW 6 review and IPv6 addressing </a>
+	(<a href="content/07r-review-slides-6pp.pdf">6 per page</a>)
+	</td>
+</tr><tr>
+	<td class="date"> Week 8. </td>
+	<td class="item"> <a href="content/08r-exam2-review.pdf">Pre-exam 2 review </a>
+	(<a href="content/08r-exam2-review-6pp.pdf">6 per page</a>)
+	</td>
+</tr><tr>
+	<td class="date"> Week 9. </td>
+	<td class="item"> <a href="content/10a-exam1-review.pdf">2016 Exam 2 review</a>
+	(<a href="content/10a-exam2-review-6pp.pdf">6 per page</a>)
+	</td>
+</tr>
+</tr><tr>
+	<td class="date"> Week 12. </td>
+	<td class="item"> <a href="content/12r-hw8-review.pdf">Assignment 8 review</a>
+	(<a href="content/12r-hw8-review-6pp.pdf">6 per page</a>)
+	</td>
+</tr><tr>
+	<td class="date"> Week 13. </td>
+	<td class="item"> <a href="content/13r-exam3_preview.pdf">Pre-exam 3 review</a>
+	(<a href="content/13r-exam3_preview-6pp.pdf">6 per page</a>)
+	</td>
+</tr><tr>
+	<td class="date"> Week 15. </td>
+	<td class="item"> <a href="content/15r-exam3-review.pdf">2016 Exam 3 review</a>
+	(<a href="content/15r-exam3-review-6pp.pdf">6 per page</a>)
+	<img height="16" width="38" src="images/new.gif"/>
+	</td>
+</tr>
+</table>
+-->
+
+<!--
+
+<h1> Supplemental notes </h1>
+<table class="doclist">
+<tr> <th class="item"> Title </th>
+<tr> <td class="item"> <a href="http://www.kernel.org/doc/Documentation/CodingStyle">Linux kernel coding style</a>, <i>Linux Kernel Documentation</i> </td> </tr>
+</tr> <tr>
+<td class="item"> <a href="http://flint.cs.yale.edu/cs112/help/pike.html">Notes on Programming in C</a>,
+	<i>Rob Pike</i>:<br>
+	This discusses style and is somewhat applicable to
+	java programmers as well &mdash; food for thought more than concrete rules. </td>
+</tr>
+<tr> <td class="item"> <a href="content/Cstyle.pdf">C Programming Style</a>, <i>Paul Krzyzanowski</i> </td> </tr>
+<tr>
+	<td class="item">
+	<a href="http://www.cisco.com/univercd/cc/td/doc/cisintwk/ito_doc/introint.htm">Internetworking Basics (from Cisco)</a>
+	</td>
+</tr> <tr>
+	<td class="item"> 
+	<a href="imports/cisco-introint.pdf">PDF version of Cisco's Internetworking Basics</a>
+	</td>
+</tr> <tr>
+	<td class="item">
+	<a href="http://www.rfc-editor.org/rfc/rfc1498.txt">
+	RFC 1498: naming and binding of network destinations</a>
+	</td>
+</tr> <tr>
+	<td class="item">
+	<a href="http://vampiro.rootshell.ru/manuals/programming/UnixNetworking/nicnt.htm">
+	MEC Super-UX User's Guide: chapter 6: RPCGEN</a>
+	</td>
+</tr> <tr>
+	<td class="item">
+	<a href="http://developer.java.sun.com/developer/onlineTraining/rmi/RMI.html">Fundamentals fo RMI: Short Course by JGuru</a>
+	</td>
+</tr> <tr>
+	<td class="item">
+	<a href="http://developer.java.sun.com/developer/technicalArticles/RMI/index.html">
+	RMI tutorials and info from Sun</a>
+	</td>
+</tr> <tr>
+	<td class="item">
+	<a href="http://www.securingjava.com/toc.html"><i>Securing JAVA</i>, G. McGraw, E. Felton, Wiley & Sons, pub</a>
+	</td>
+</tr>
+-->
+
+</table>
+<!--
+	<img height="16" width="38" src="images/new.gif"/>
+-->
+</div> <!-- main -->
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+        <h2> Tutorials </h2>
+        <ul>
+        <li> <a href="../notes/sockets/index.html"> C TCP Sockets tutorial </a> </li>
+        <li> <a href="../notes/sockets/udp.html"> C UDP Sockets tutorial </a> </li>
+        <li> <a href="../notes/make/index.html"> Makefile tutorial </a> </li>
+        </ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

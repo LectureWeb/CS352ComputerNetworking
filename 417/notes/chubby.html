@@ -1,0 +1,237 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Google Chubby</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Google Chubby</h1>
+								<h2>Distributed lock manager</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>March 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Create a highly-available centralized lease manager and file system for small files that can serve as a name server and configuration repository.</p>
+</blockquote>
+
+<p><strong>Chubby</strong> is a highly available and persistent distributed <strong>lock service</strong>
+and file system created by Google and used in various projects and frameworks, including
+Bigtable and MapReduce.
+Its purpose is to manage locks for resources and store configuration
+information for various distributed services throughout the Google cluster environment.
+The key design goal of Chubby was high availability and high reliability.</p>
+
+<p>By default, the service runs on five computers as five active replicas.
+This grouping is called a <strong>Chubby cell</strong>.
+One of these replicas is elected as the <strong>master</strong> to serve client requests.
+Only the master will serve client requests; the other machines in the cell are
+for fault tolerance in case the master dies. The only request they will answer
+from clients is to tell them who the master is.</p>
+
+<p>A majority of the replicas in the cell must be running for the service to work.
+Paxos is used as a leader election algorithm and is used
+to keep the replicas consistent (i.e., make sure that all updates take place
+in the same order on all replicas).
+Typically, there will be one Chubby cell per datacenter.</p>
+
+<p>In addition to providing locks, Chubby is designed for managing relatively small amounts of data:
+items such as system configuration and state information for various services.
+Chubby provides clients with a namespace of files &amp; directories.
+Every file or directory can be treated as a lock file
+and every file may, of course, be used to store data.
+The name of a lock is the name of its file: its hierarchical pathname.
+The interface to Chubby is not that of a native file system. There is no
+kernel module and client software communicates with Chubby via an API
+that sends remote procedure calls to the Chubby master.</p>
+
+<p>File operations
+are somewhat different from those offered by conventional file systems. Files can be read
+and written <em>only</em> in their entirety: there are no <em>seek</em> or byte-range
+<em>read</em> and <em>write</em> operations. When a file is opened by the client, it is downloaded
+and a lease for that file is established. In this way, Chubby keeps track of which
+clients have cached copies of a file. All writes from a client must be sent
+to the Chubby master (we have a <em>write-through</em> cache). Chubby then sends invalidations
+to all clients that have cached copies.</p>
+
+<p>Locks are advisory and can be either
+exclusive (one writer) or not (multiple readers).
+A client can send a
+request to acquire a lock for a file, release it, and also assign and check sequence numbers for a lock.
+Clients can also subscribe to receive <strong>events</strong> for an open file. These
+events include notification of file modification, the creation of directories or files under an
+open directory, and lock acquisition.</p>
+
+<p>Chubby is designed primarily for managing coarse-grained locks.
+<strong>Fine-grained locks</strong> are locks that are generally used for a small
+object, such as a row in a table of a database. They are generally held
+held for a short duration, seconds or
+less. <strong>Coarse-grained locks</strong> typically control larger structures,
+such as an entire table or an entire database. They might be held for hours or days. They
+are acquired rarely compared to fine-grained locks. Hence, a server
+that is designed for coarse-grained locks can handle more clients.</p>
+
+<p>Even though Chubby uses the term &#8220;coarse-grained&#8221;, it doesn&#8217;t exactly
+fit a &#8220;pure&#8221; coarse/fine grained lock model, but that model does not
+necessarily work well in real systems. In theory, the concept of a
+coarse-grained lock is to grant a process a lock for a large pool
+of objects of a particular class and then have that process be the
+lock manager for those objects. This is essentially what Chubby
+does but Chubby doesn&#8217;t keep track of all the objects. Instead, the
+top (coarse) level is a set of services, such as Bigtable tables,
+a GFS file system, or Pregel frameworks. Chubby allows them to
+ensure there is a single master and to lock any critical resources
+that might be shared among these applications. Those applications
+then handle the fine-grained aspect of giving out locks for data
+blocks, table cells, or synchronizing communication barriers.</p>
+
+<p>Because Chubby does not hold huge amounts of data but may serve thousands of clients,
+all Chubby data is cached in memory. For fault tolerance, all data is written through to
+the disk when modified, and is propagated to replicas via the Paxos consensus algorithm
+to ensure consistent ordering. The entire database is backed up to the
+Google File System (GFS) every few hours to ensure that critical configuration
+information is saved even if all replicas die.</p>
+
+<p>Chubby&#8217;s fault-tolerant locking makes it a good service for leader
+election. If a group of processes wants to elect a leader, they can
+each request a lock on the same Chubby file. Whoever gets the lock
+is the leader (for the lease period of the lock).</p>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

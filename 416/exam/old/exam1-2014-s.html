@@ -1,0 +1,411 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 old exams: Exam 1 Spring 2014 </title>
+
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+#main ol h1 {
+	font-size: 140%;
+	margin-left: -1.3em;
+}
+#main ol li {
+	margin-bottom: 1em;
+}
+</style>
+</head>
+
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> 416 </a> 
+ 	<li> <a href="../../exam/index.html"> Exam info </a> 
+ 	<li> <a href="../../exam/old/index.html"> Old exams </a> 
+ 	<li> <a href="../../exam/old/exam1-2014-s.html"> Exam 1 Spring 2014 </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> CS 416 Exam 1 </h1>
+<h2>Spring 2014</h2>
+</div>
+
+<p>
+See the <a href="exam1-review-2014-s.pdf">solutions</a>
+(<a href="exam1-review-2014-s-6.pdf">6 per page</a>).
+</p>
+
+<ol>
+<h1>Part I &ndash; 12 Points</h1>
+
+<li> 3 points<br/>
+<p>
+How many times does this code print "hello"?
+</p>
+<pre><code>
+main(int argc, char **argv) {
+        int i;
+        for (i=0; i < 3; i++) {
+                fork();
+                printf("hello\n");
+        }
+}
+</code></pre>
+</li>
+
+<li> 3 points <br/>
+<p>
+How many times does this code print "hello"? Note that execl is a
+wrapper over the execve system call, which executes a program. In
+this case, the echo program is run.
+</p>
+<pre><code>
+main(int argc, char **argv) {
+        int i;
+        for (i=0; i < 3; i++) {
+                execl("/bin/echo", "echo", "hello", 0);
+        }
+}
+</code></pre>
+</li>
+
+<li> 6 points <br/>
+<p>
+Your system supports messages but does not offer semaphores. Implement
+semaphore operations using messages.  Assume that messages use a
+mailbox. You may assume a unique mailbox per semaphore (i.e.,
+semaphore <em>s</em> corresponds to mailbox <em>s</em>). 
+Sending a message is a
+non-blocking operation. Receiving a message is non-blocking only
+if there is a message ready to be read. Use C/Java stytle pseudocode.
+</p>
+<p>
+Hint: you may send and receive empty messages (&Oslash;).
+The three operations you have available are 
+<em>send(mbox, m)</em> and
+<em>recv(mbox, m)</em>, which respectively send a message <em>m</em> to mailbox <em>mbox</em>
+and receive a message <em>m</em> from mailbox <em>mbox</em> and <em>new(mbox)</em>, which
+creates a mailbox <em>mbox</em>.
+</p>
+<ol>
+<li>
+Create a new semaphore <em>s</em> and initialize its value to <em>N</em>.
+<br/>
+<code>init_semaphore(s, N)</code>
+</li>
+
+<li>
+<code>up(s)</code>
+</li>
+
+<li>
+<code>down(s)</code>
+</li>
+</ol>
+
+</li>
+
+<h1>
+PART II &ndash; 88 points &ndash; 4 points each </h1>
+<p>
+For each statement, select the most appropriate answer.
+I will give you credit for two incorrect answers.
+</p>
+
+<li> Multiprogramming is:
+<br/>(a) An executable program that is composed of modules built using different programming languages.
+<br/>(b) Having multiple processors execute different programs at the same time.
+<br/>(c) Keeping several programs in memory at once and switching between them.
+<br/>(d) When one program has multiple threads that run concurrently.
+
+</li><li> With a legacy PC BIOS, the Master Boot Record:
+<br/>(a) Identifies type of file system on the disk and loads the operating system.
+<br/>(b) Contains the first code that is run by the computer when it boots up.
+<br/>(c) Contains a list of operating systems available for booting.
+<br/>(d) Contains a boot loader to load another boot loader located in the volume boot record.
+
+</li><li> Which of the following is a policy, not a mechanism?
+<br/>(a) Create a thread.
+<br/>(b) Prioritize processes that are using the graphics card.
+<br/>(c) Send a message from one process to another.
+<br/>(d) Delete a file.
+
+</li><li> Which of the following does NOT cause a trap?
+<br/>(a) A user program divides a number by zero.
+<br/>(b) The operating system kernel executes a privileged instruction.
+<br/>(c) A programmable interval timer reaches its specified time.
+<br/>(d) A user program executes an interrupt instruction.
+
+</li><li> A context switch always takes place when:
+<br/>(a) The operating system saves the state of one process and loads another.
+<br/>(b) A process makes a system call.
+<br/>(c) A hardware interrupt takes place.
+<br/>(d) A process makes a function call.
+
+</li><li> A dedicated system call instruction, such as SYSCALL, is:
+<br/>(a) Faster than a software interrupt.
+<br/>(b) More secure than a software interrupt.
+<br/>(c) More flexible than a software interrupt.
+<br/>(d) All of the above.
+
+</li><li> Which of the following is not a system call?
+<br/>(a) Duplicate an open file descriptor.
+<br/>(b) Get the current directory.
+<br/>(c) Decrement a semaphore.
+<br/>(d) Create a new linked list.
+
+</li><li> A process control block is:
+<br/>(a) A structure that stores information about a single process.
+<br/>(b) The kernel's structure for keeping track of all ready to run processes.
+<br/>(c) A linked list of blocked processes (those waiting on some event).
+<br/>(d) A kernel interface for controlling processes (creating, deleting, suspending).
+
+</li><li> A process exists in the zombie (also known as defunct) state because:
+<br/>(a) It is running but making no progress.
+<br/>(b) The user may need to restart it without reloading the program.
+<br/>(c) The parent may need to read its exit status.
+<br/>(d) The process may still have children that have not exited.
+
+</li><li> Which state transition is not valid?
+<br/>(a) Ready &rarr; Blocked
+<br/>(b) Running &rarr; Ready
+<br/>(c) Ready &rarr; Running
+<br/>(d) Running &rarr; Blocked
+
+</li><li> Threads within the same process do not share the same:
+<br/>(a) Text segment (instructions).
+<br/>(b) Data segment.
+<br/>(c) Stack.
+<br/>(d) Open files.
+
+</li><li> A race condition occurs when:
+<br/>(a) Two or more threads compete to be the first to access a critical section.
+<br/>(b) The outcome of a program depends on the specific order in which threads are scheduled.
+<br/>(c) A thread grabs a lock for a critical section, thus preventing another thread from accessing it.
+<br/>(d) Two threads run in lockstep synchronization with each other.
+
+</li><li> Which of the following techniques avoids the need for spinlocks?
+<br/>(a) Event counters
+<br/>(b) Test-and-set 
+<br/>(c) Compare-and-swap
+<br/>(d) All of the above.
+
+</li><li> Priority inversion occurs when:
+<br/>(a) A low priority thread has not been given a chance to run so its priority is temporarily increased.
+<br/>(b) The scheduler allows a low priority process to run more frequently than a high priority process.
+<br/>(c) Two or more threads are deadlocked and unable to make progress.
+<br/>(d) A low priority thread is in a critical section that a high priority thread needs.
+
+</li><li> What's the biggest problem with spinlocks?
+<br/>(a) They are vulnerable to race conditions.
+<br/>(b) They are fundamentally buggy.
+<br/>(c) They waste CPU resources.
+<br/>(d) They rely on kernel support and cannot be implemented at user level.
+
+</li><li> A condition variable enables a thread to go to sleep and wake up when:
+<br/>(a) The value of the variable is greater than or equal to some number N.
+<br/>(b) Another thread sends a signal to that variable.
+<br/>(c) Another thread increments the variable.
+<br/>(d) Another thread reads the variable.
+
+</li><li> Preemption is when an operating system moves a process between these states:
+<br/>(a) Running &rarr; Ready
+<br/>(b) Running &rarr; Blocked
+<br/>(c) Ready &rarr; Blocked
+<br/>(d) Blocked &rarr; Running
+
+</li><li> The disadvantage of round-robin process scheduling is:
+<br/>(a) It gives every process an equal share of the CPU.
+<br/>(b) It can lead to starvation where some processes never get to run.
+<br/>(c) It puts a high priority on interactive processes.
+<br/>(d) It never preempts a process, so a long-running process holds everyone else up.
+
+</li><li> The downside to using a very small quantum is:
+<br/>(a) A process might not get time to complete.
+<br/>(b) The interactive performance of applications decreases.
+<br/>(c) Some processes will not get a chance to run.
+<br/>(d) Context switch overhead becomes significant.
+
+</li><li> A time-decayed exponential average of previous CPU bursts allows a scheduler to:
+<br/>(a) Estimate when each process will complete execution and exit.
+<br/>(b) Compute the optimum number of processes to have in the run queue.
+<br/>(c) Pick the process that will be most likely block on I/O the soonest.
+<br/>(d) Determine the overall load on the processor.
+
+</li><li> Process aging is when:
+<br/>(a) A long-running process gets pushed to a lower priority level.
+<br/>(b) A process that did not get to run for a long time gets a higher priority level.
+<br/>(c) A long-running process gets pushed to a higher priority level.
+<br/>(d) Memory and other resources are taken away from a process that has run for a long time.
+
+</li><li> The goal of a multilevel feedback queue is to:
+<br/>(a) Keep the priority of interactive processes high.
+<br/>(b) Gradually raise the priority of CPU-intensive processes.
+<br/>(c) Ensure that each process gets the same share of the CPU regardless of how long it runs.
+<br/>(d) Allow the scheduler to provide feedback to the process on how often it is being run.
+
+</li><li> With soft affinity on a multiprocessor system, the scheduler will:
+<br/>(a) Try to use the same processor for the same process but move it if another processor has no work.
+<br/>(b) Associate a process with a specific processor and ensure it always runs on that processor.
+<br/>(c) Use a single run queue so that there is no ongoing association between processors and processes.
+<br/>(d) Periodically reset the association between all processes and processors.
+
+</li><li> Process A has a deadline of 100 ms and requires 80 ms of compute time.
+Process B has a deadline of 80 ms and requires 50 ms of compute time.
+Process C a deadline of 50 ms and requires 10 ms of compute time. 
+In what order will a least slack scheduler schedule these processes?
+<br/>(a) A, B, C
+<br/>(b) C, B, A
+<br/>(c) B, A, C
+<br/>(d) C, A, B
+</li>
+</ol>
+
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> Exam Info </h2>
+	<ul>
+	<li> <a href="../index.html#list">List of topics</a>
+	<li> <a href="../study-guide-1.html">Exam 1 Study Guide</a> </li>
+	<li> <a href="../study-guide-2.html">Exam 2 Study Guide</a> </li>
+	<li> <a href="../study-guide-3.html">Exam 3 Study Guide</a> </li>
+	</ul>
+		<h2> Old exams </h2>
+	<ul>
+	<li> <a href="exam1-2012-s.html"> Spring 2012 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2012-s.html"> Spring 2012 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2012-s.html"> Spring 2012 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2011-s.html"> Spring 2011 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2011-s.html"> Spring 2011 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2011-s.html"> Spring 2011 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2010-f.html"> Fall 2010 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2010-f.html"> Fall 2010 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2010-f.html"> Fall 2010 &ndash; Exam 3</a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

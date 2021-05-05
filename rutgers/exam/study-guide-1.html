@@ -1,0 +1,946 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 Exam 1 Study Guide </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+.rqbox {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+        position: relative;
+	width: 15em;
+        background-color: #FDF5B6;
+        border-style: double; border-width: 3px;
+        padding: 0.5em 0.5em 0.5em 0.5em;
+}
+#main em {
+	color: darkred;
+}
+
+</style>
+</head>
+
+<body id="s_ru">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/small-logo.png" alt="pk.org" name="logo" width="97" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru416"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<P>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a>  </li>
+ 	<li> <a href="../index.html"> Rutgers CS 417 </a>  </li>
+ 	<li> <a href="../exam/index.html"> Exam info </a>  </li>
+ 	<li> <a href="../exam/study-guide-1.html"> Exam 1 study guide </a>  </li>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main"> <div id="headline">
+<h1> Exam 1 study guide </h1>
+<h2> The one-hour study guide for exam 1 </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> February 18, 2009 </p>
+</div>
+
+<p class="first">
+
+<em>Disclaimer: </em>
+This study guide attempts to touch upon the most
+important topics that may be covered on the exam but does not claim to
+necessarily cover everything that one needs to know for the exam. Finally,
+don't take the <em>one hour</em> time window in the title literally.</p>
+
+<h1>Introduction</h1>
+
+<p>Why are distributed systems more interesting now than they
+may have been one or two dozen years ago? A number of advances in computing
+technology had a profound effect on distributed systems. Network connectivity
+increased by a factor of a thousand since the 1980s. Connectivity within a
+local area network (LAN) moved from shared to switched networking, allowing the
+network to scale without increasing congestion. On the wide area, Internet
+access has become available to the population at large, not just to researchers
+on Department of Defense projects. Processor performance, system memory, and
+disk capacity has also increased by more than a thousandfold over the past
+couple of decades.</p>
+
+<p>Even though these improvements make it easier to store,
+process, and move data between systems, what are the motivations for
+distributing computing? There are several reasons. Performance does not scale
+linearly with an increase in price with a single computer; with a collection of
+computers this scaling may be possible. Secondly, distributing systems makes
+sense in certain environments: databases may reside in different locations than
+the user, for example. Thirdly, we may need to interact with other people or
+remote data that are geographically dispersed.</p>
+
+<h2>Taxonomy</h2>
+
+<p>One way of classifying system architectures is via Flynn's
+taxonomy, proposed by Michael J. Flynn in 1972. He categorized machines based
+on the number of instruction streams and the number of data streams. <em>SISD</em>
+(single instruction stream, single data stream) refers to conventional single
+processor systems. <em>SIMD</em> (single instruction stream, multiple data streams)
+refers to single processor machines where each instruction may process a
+collection of data. Vector and array processors fall into this category. This
+includes graphics processors, cell processors, Intel's SSE3 instructions in the
+Pentium 4, and the PowerPC's AltiVec instructions. Finally, <em>MIMD</em> (multiple
+instruction streams, multiple data streams) refer to any machines with multiple
+processors, where each processor operates on its own stream of data.</p>
+
+<p>MIMD can be further categorized by identifying whether the
+system has a shared memory space or not. Systems with shared memory are known
+as <em>multiprocessor</em> <em>systems</em>. Examples are conventional PCs
+with multiple processors on a single system bus (e.g., a dual-processor Intel Xeon system).
+An architecture where multiple identical processors communicate
+with a single shared memory is called <em>SMP</em>, or <em>symmetric multiprocessing</em>.
+Systems without a shared memory are collections of separate machines, each
+with its own memory. They have to rely on a network to communicate and are
+sometimes referred to as <em>multicomputers</em>.</p>
+
+<h2>Cache coherence </h2>
+
+<p>On a bus-based multiprocessor system, all the processors,
+system memory, and peripherals are connected to a shared system bus. Only one
+device can access the bus at any time. Since processors need to access memory
+continuously, there is constant contention for the system bus. Cache memory
+alleviates this, as it is a small amount of memory that is local to each
+processor with the expectation is that most programs exhibit a certain amount
+of locality, allowing most memory references to be satisfied from the cache.</p>
+
+<p>The problem with using cached data is that if a processor
+modifies a memory location, it will only modify the local copy in the cache.
+Other processors will read the previous value. This is unacceptable but can be
+remedied by having write operations pass through to the system bus so that main
+memory can be updated. This is known as <em>write-through</em>. There is a
+performance penalty for doing this because we need to use the bus for memory
+write operations, but read operations usually far outnumber
+write operations. The second problem is that, even if a processor updates the data
+in main memory, another processor may still access its own cached data, which
+is now obsolete. This can be remedied by having each processor's cache
+controller monitor write operations on the system bus and detect whether others
+are modifying any cached addresses. This operation is known as <em>snooping</em>.
+Together, write-through and snooping comprise a <em>snoopy cache</em>. Virtually
+all multiprocessor systems employ a snoopy cache to ensure cache memory
+coherence.</p>
+
+<h2>Improving scalability</h2>
+
+<p>Because of its shared system bus, bus-based multiprocessor
+systems face increasing bus congestion as the number of CPUs in the system
+increases. Beyond eight or so processors, the effects of this congestion can
+become quite severe, rendering the architecture impractical for highly parallel
+systems.</p>
+
+<p>From a performance point of view, a <em>crossbar switch</em>
+is an ideal solution. It allows the switching of any processor to any chunk of
+memory without interfering with the traffic from any other processor accessing
+any other chunk of memory. With a sufficiently large crossbar switch, memory
+can be divided into a lot of chunks and delays will only occur when two
+processors need to access the same region of memory at the same time.</p>
+
+<p>The problem with a crossbar switch is that it is
+expensive, particularly in the large sizes needed to support a large number of
+processors and a fine-grained partitioning of memory. An attempt to alleviate
+the cost of a crossbar switch is to decrease the aggregate number of switching
+elements (crosspoint switches) by increasing the number of switching stages.
+This is known as an <em>omega network</em>. Unfortunately, this slows down all
+memory accesses, as each request to memory has to pass through a number of
+crosspoint switches. A compromise solution is a non-uniform memory
+architecture, or <em>NUMA</em>. This architecture associates part of the global
+system memory with each processor or a group of processors (node), typically on
+the same board. Every processor (or group/node) is able to access a portion
+of the system memory at high speed through a local bus. The remaining memory is
+accessible through a shared (but slower) backplane. The idea is that a program
+may be loaded in such a way that most memory references are from local memory
+(and fast). The trick is for the operating system to place programs in memory
+and assign them to the correct processor.</p>
+
+<p>AMD's HyperTransport technology (HTT) in its 64-bit Opteron CPUs is an example
+of NUMA support in current architectures. Each CPU has its
+own bank of DDR memory and communicates with inter-processor memory over the
+HTT link. Intel announced support for NUMA in 2007 with their Nehalem and Tukwila
+processors. These machines can be connected to shared memory via a Quick Path
+Interconnect (QPI).
+</p>
+
+<p>
+In operating systems, a traditional scheduler, such as the one in
+the 2.4 Linux kernel, used a single run queue.
+A multi-queue scheduler with a
+separate run queue per processor was developed in the 2.5 kernel to support the
+NUMA model (2002). Microsoft added NUMA support in their Windows Server 2003
+and added further optimizations in Windows Server 2008.
+The system attempts to improve memory access performance by
+scheduling threads on processors that are in the same node as the
+It also tries to allocate memory within the same node if possible.
+</p>
+
+<h2>Software</h2>
+
+<p>One ideal of distributed systems software is something
+known as the <em>single-system image</em>. This is software that makes a
+collection of independent computers appear as a single system to the users.</p>
+
+<h2>Service models</h2>
+
+<p>The traditional computing model is a <em>centralized one</em>,
+where all computing takes place on a single system. A <em>client-server </em>architecture
+divides computing activity between <em>servers</em> (which provide some service) and
+<em>clients</em> (which access the service). This two-tiered model can extend to
+multiple-tiers (a service requests yet another service and so on). Another
+model is a <em>processor pool</em> model, where an arsenal of CPU servers can be
+accessed for computing needs. A generalization of this is <em>grid computing</em>,
+which provides users with a collection of processing power as well as storage
+resources, often supporting heterogeneous environments. <em>Thin clients</em> are
+those where the client software is minimal; often managing the user interface
+and nothing more (e.g., a system running only a web browser or an X-server).
+These are in contradistinction to <em>thick clients</em>, which are
+generally machines running entire applications with occasional reliance on
+services from servers (e.g., full PCs).</p>
+
+<h1>Networking</h1>
+
+<p>Networks fall into two broad categories: <em>circuit-switched</em>
+versus <em>packet switched</em>. A <em>circuit-switched</em> network is one where a
+dedicated path is established between two endpoints. It provides guaranteed
+bandwidth and constant latency. The telephone network is an example of circuit
+switching, providing a maximum delay of 150 milliseconds and digitizing voice to a
+constant 64 kbps data rate. <em>Packet-switched</em> networking uses a shared
+interconnect. Data is segmented into packets and each packet must be identified
+and addressed. These networks generally cannot provide guaranteed bandwidth or
+constant latency. Ethernet is an example of a packet-switched network.</p>
+
+<p>Data goes over a network in one of two ways <em>baseband</em> or <em>broadband</em>.
+Only one node may transmit data at a time on a <em>baseband</em> network
+but, for that time, it has the full bandwidth of the network. A <em>broadband</em>
+network, on the other hand, has its available bandwidth divided into multiple
+channels, or frequency bands. Cable TV is an example of a broadband network.
+However, data services offered by cable providers are confined to two of those
+channels (one for downstream traffic and another for upstream), making IP
+access effectively baseband within broadband. Don't confuse these terms with
+the marketing community's use of <i>broadband</i> to refer to any relatively
+high-speed home networking.</p>
+
+<p>Ethernet is the most widely used data network for local
+area networking. It uses a system called <em>carrier sense multiple access with
+collision detection</em> (CSMA/CD) to access the network. This is
+analogous to making a phone call on a party line system. The network interface
+card monitors the network. Only when it detects no traffic does it send out its
+packet. While doing so, it still monitors the network to detect a collision &ndash;
+the case where two cards decided to send a packet out simultaneously. If a
+collision took place, the transmission is reattempted again at a later time.
+Progressively longer back-off times are used when collisions are encountered to
+ensure that overall performance degrades gracefully.</p>
+
+<p>Data networking is generally implemented as a stack of
+several <em>protocols</em> &ndash; each responsible for a specific aspect of
+networking. The OSI reference model defines seven layers of network protocols.
+Some of the more interesting ones are: the network, transport, and presentation
+layers. The <em>network layer </em>(3) manages the journey of packets from one
+machine to another. The <em>transport layer</em> (4) manages the communication of
+data from one application to another. The <em>presentation layer </em>(6) manages
+the representation of data and handles any necessary conversion of data types
+across architectures (for example, different byte ordering in integers,
+different character representations).</p>
+
+<h2>IP Networking</h2>
+
+<p>The <em>Internet Protocol</em> (IP) handles the
+interconnection of multiple local and wide-area networks. It is a logical
+network whose data is transported by physical networks (such as Ethernet, for
+example). Each machine on an IP network must have an IP address. The addressing
+scheme for IP divided addresses into two segments: a <em>network</em> part of the
+address, which is used in determining where to route the packet, and a <em>host</em>
+part, which is used in identifying the specific host within that local area
+network.</p>
+
+<p>Instead of using a single network-host partition, IP was designed to use
+three distinct partitions, or <em>classes</em> of networks: A, B, and C. This
+allowed for a small number of huge networks and a large number of networks with
+a small number of machines. However, the allocation of machines to networks was
+still inefficient. An organization that needed addresses for 300 machines would
+be allocated a class B network, and over 65,000 addresses would go unused (a
+class C network, accommodating only 254 machines, would have been too small). <em>Classless
+Inter-Domain Routing</em> (CIDR) was created to alleviate this inefficiency.
+Networks could be allocated to organizations on any power of two (arbitrary
+network-host partitioning). This made routing tables a bit more complex; they
+now need to have an extra datum: the number of leading bits that constitute the
+network part of the address.</p>
+
+<p>Since IP is a logical network, any machine that needs to
+send out IP packets must do so via the physical network. Typically, this is
+Ethernet (which uses a 48-bit Ethernet address, unrelated to a 32-bit IP
+address). To send an IP packet out, the system needs to identify the <em>physical</em>
+destination address (MAC, or Media Access Control address) that corresponds to
+the desired IP destination. The <em>Address Resolution Protocol</em>, or <em>ARP</em>,
+accomplishes this. It works by broadcasting a request containing an IP address
+(<em>do you know the corresponding MAC address for this IP address</em>) and then
+waiting for a response from the machine with the
+corresponding IP address. To avoid doing this for every outgoing packet, it
+maintains a cache of most recently used addresses.</p>
+
+<p>There are two transport-layer protocols on top of IP: TCP
+and UDP. TCP (<em>Transmission Control Protocol</em>) provides <em>virtual circuit</em>
+(<em>connection-oriented</em>) service. This layer of software ensures that
+packets arrive in order to the application and lost or corrupt packets are
+retransmitted. The transport layer keeps track of the destination so that the
+application can have the illusion of a connected data stream. UDP (<em>User
+Datagram Protocol</em>) provides <em>datagram</em> (<em><u>connectionless</u></em>)
+service. While UDP drops packets with corrupt data, it does not ensure in-order
+delivery or reliable delivery. <em>Port numbers</em> in both TCP and UDP are used
+to allow the operating system to direct the data to the appropriate application
+(or, more precisely, to the <em>socket</em> that is associated with the
+communication stream).</p>
+
+<p><em>Sockets</em> are an interface to the network provided to
+applications by the operating system. They are created with the <em>socket</em>
+system call and assigned an address and port number with the <em>bind</em> system
+call. For connection-oriented protocols, a socket on the server can be set to
+listen for connections with the <em>listen</em> system call. The <em>accept</em>
+call blocks until a connection is received, at which point the server receives
+a socket dedicated to that connection. A client can establish a connection with
+the <em>connect</em> system call. After this, sending and receiving data is
+compatible with file operations: the same <em>read/write</em> system calls can be
+used. When communication is complete, the socket can be closed with the <em>shutdown</em>
+or <em>close</em> system calls.</p>
+
+<h3> Quality of Service </h3>
+
+<p>As IP networks began to be used for carrying continuous
+media, such as voice and data, it became clear that the protocol has no
+provisions for controlling quality of service (QoS).
+There are two basic approaches for dealing with quality of service
+over networks: <em>hard QoS</em> and <em>soft QoS</em>.
+Soft QoS refers to prioritization
+without any reservation of resources from routers or endpoints or
+any a priori negotiation for a level of service. Hard QoS refers
+to a system where such negotiation may take place and the network
+is capable of providing a guaranteed level of service for a data
+stream.
+</p>
+
+<p>
+IP was largely designed as
+a system that would provide best-effort packet delivery but with no guarantees
+on the path a packet will take, whether it gets dropped, or what order it
+arrives in. Several approaches were taken to attempt to provide better controls
+for the delivery of IP packets.</p>
+
+<p><em>Flow detection:</em> Many routers attempt to
+detect a <em>flow</em> of a stream of packets from one address/port to another
+address/port and then dropping or delaying packets to control the flow rate.
+Routers can also be programmed to drop TCP packets over UDP or vice versa or
+drop packets when traffic exceeds an allotted bandwidth. Routers can also
+manage several queues based on flows, connected networks, or source or
+destination addresses and ports.
+
+<em>Traffic shaping</em> is when a router queues packets in certain flows during
+peak usage for later retransmission when there is available bandwidth. With
+<em>traffic policing</em>, traffic that exceeds the allocated bandwidth for
+a particular flow is discarded.
+
+</p>
+
+<p><em>Inefficient use of packets:</em> Having a system send
+lots of small packets instead of a few larger ones is clearly inefficient. For
+example, the overhead of TCP, IP, and ethernet headers is approximately 58
+bytes. Sending one byte of date requires 59 bytes &mdash; a 5,800% overhead! <em>Nagle's
+algorithm</em> adds any new transmitted TCP/IP data to a buffer rather than
+sending it immediately as long as there are any unacknowledged packets outstanding.
+
+Incidentally, Nagle's algorithm can be disabled on a socket with the TCP_NODELAY option to
+the <i>setsockopt</i> system call</p>
+
+<p><em>Differentiated services:</em> Flow control mechanisms
+are outside the purview of programmers or even the computers at either end: it
+is up to the router configuration to define the policies. Differentiated
+services provide a way for programmers to provide advisory information inside
+an IP header on how a packet should be processed by routers. A packet can be
+assigned a priority as well as high/low levels for reliability, throughput, and
+delay. It is entirely up to the routers to decide how to process this
+information or whether to process it at all. Differentiated services are referred
+to as <em>soft QoS</em>: there is no guarantee on the actual quality of service
+that will be delivered. </p>
+
+<p><em>Hard QoS approach:</em> The Reservation protocol, RSVP, has been
+developed to allow a flow of packets to be routed with rate and/or delay
+guarantees. The problem with providing this is that all routers in the path
+from the source to the destination must be configured to support RSVP: each
+intermediate router must commit to reserving the needed amount of routing
+resources to guarantee the desired level of service.</p>
+
+<h2>ATM</h2>
+
+<p>Bandwidth and latency is, of course, an issue for
+real-time and streaming media applications. We can categorize the timing
+demands of traffic into three categories: <em>asynchronous</em> data has no
+timing requirements for message delivery; <em>synchronous</em> data must
+be delivered at strict deadlines; and <em>isochronous</em> data must meet
+specific bandwidth needs but may be delivered sooner than needed (streaming
+media with a receive buffer is an example).</p>
+
+<p>ATM, or <em>Asynchronous Transfer Mode</em>, networking was
+created to bridge the synchronous needs of telephony (low bandwidth but
+precisely scheduled), asynchronous data networking (often high bandwidth), and
+isochronous streaming media applications. ATM is a packet based network that
+negotiates a circuit (route) when a connection is first established. Every
+router commits to having the requisite resources to provide for the service
+needs of the connection. The connection is created to provide ABR (available
+bit rate), CBR (constant bit rate), or VBR (variable bit rate) service.
+</p>
+<p>
+ATM routes small (53-byte) cells in contrast to the variable-size
+packets of IP. This allows a router to express its service in cells
+per second, simplifies switching, and avoids the issue of large
+packets delaying small ones.
+</p>
+
+<h1>Naming</h1>
+
+<p>Names are used for identifying a variety of things. We
+often use a name server (offering a naming service) to perform a name to
+address mapping. An address is nothing more than the lower representation of a
+name. For example, you can't just look at a string like 192.168.1.5 and say it
+is an address. To an IP driver it is treated as a name and the address is the
+underlying ethernet address. <em>Binding</em> is the association of a name to an
+address.
+<em>Resolution</em> is the process of looking up that name-to-address binding.
+</p>
+
+<p>
+<em>Static binding</em>
+refers to a hard-wired association between a name and an address
+(e.g., hard-coded in a program).
+<em>Early binding</em> refers to a resolution that is performed ahead of time
+and cached for future use.
+<em>Late binding</em> refers to performing the resolution just at the time a
+name-to-address binding is needed.
+
+
+<p>The <em>Domain Name Server</em> (DNS) is an example of a
+distributed name server for resolving domain names into IP addresses. Each
+server is responsible for answering questions about machines within its zone. A
+name server will do one of several things: (1) answer a request if it already
+knows the answer, (2) contact another name server(s) to search for the answer,
+(3) return an error fit he domain name does not exist, or (4) return a <em>referral</em>:
+the address of another name server that may know more of the answer. For
+example, searching for mail.pk.org (with no cached information) begins by
+querying one of several replicated root name servers. These keep track for name
+servers responsible for top-level domains. This query will give you a referral
+to a name server that is responsible the .org domain; querying that name server
+will give you a name server responsible for pk.org. Finally, the name server
+responsible for pk.org can provide the IP address or an authoritative "this
+host does not exist" response. Along the way, referrals are cached so that a
+name server need not go through the entire process again.</p>
+
+<h1>Case Study: The Google Cluster Architecture</h1>
+<p>
+The Google Cluster architecture is built atop over 10,000 unreliable
+commodity PCs running fault-tolerant software. The goal of the system
+is energy efficiency and the best price for the realized performance
+rather than maximizing processor performance.
+</p>
+<p>
+The Google search service contains several clusters that are distributed
+worldwide. Each of these clusters has several thousand machines. A
+user's query is directed to a specific cluster via the DNS lookup
+of google.com. The DNS load-balancing system takes the user's
+round-trip time and system capacity into account to provide the address
+of a suiteable cluster. Once the request
+gets to the cluster, a hardware load balancer forwards the request
+to one of the web servers in the cluster.
+</p>
+<p>
+The fundamental approach to exploiting distribution is to transform
+a query on a very large database into a much of queries on smaller
+databases, followed by a merge of the results.
+</p>
+<p>
+The web server performs a query against several index servers. Since
+the index is many terabytes in size, it is divided into pieces
+(shards), each holding a subset of the documents from the full
+index. Each of these index servers is replicated,
+with a load balancer assigning
+query requests. If any of the replica servers goes down then
+performance is degraded proportionally.
+The index server returns a list of document IDs to the web server
+that made the query.
+</p>
+<p>
+The next task for the web server is to take the result from the index queries and
+consult document servers that get the title, URL, and the in-context
+snippet from the document. As with index lookup, the documents are
+also randomly distributed among multiple document servers and each server
+has multiple replicas that are load balanced.
+</p>
+<p>
+Most index & document lookup operations are read-only and updates
+to the data are infrequent. Replicas can be taken off-line during
+an update, so consistency problems are not an issue.
+</p>
+<p>
+Since individual shards (pieces of the index or pieces of the
+document database) don't need to communicate with each other,
+performance can scale almost linearly with an increase in the number
+of machines. Because the performance scales so well, the emphasis
+on optimizing cost favors using commodity components instead of,
+say, quad-processor motherboards whose cost is disprportionately 
+higher as well as using inexpensive and somewhat slower disks.
+</p>
+
+
+<h1>Remote Procedure Calls</h1>
+
+<p>One problem with the interface offered by sockets was that
+it encouraged a <em>send-receive</em> model of interaction. However, most
+programs use a functional (procedure call) model. Remote procedure calls are a
+programming language construct (something provided by the compiler, as opposed
+to an operating system construct such as sockets). They provide the illusion of
+calling a procedure on a remote machine. During this time, execution of the
+local thread stops until the results are returned. The programmer is alleviated
+from packaging data, sending and receiving messages, and parsing results.</p>
+
+<p>The illusion of a remote procedure call is accomplished by
+generating <em>stub functions</em>. On the client side, the stub is a function with
+the same interface as the desired remote procedure. Its job is to take the
+parameters, <em>marshal</em> them into a network message, send them to the
+server, await a reply, and then <em>unmarshal</em> the results and return them to
+the caller. On the server side, the stub (sometimes known as a skeleton) is
+responsible for being the main program that registers the service and awaits
+incoming requests for running the remote procedure. It unmarshals the data in
+the request, calls the user's procedure, and marshals the results into a
+network message that is sent back to the recipient.</p>
+
+<h3>Sun (ONC) RPC</h3>
+
+<p>Sun's RPC was one of the first RPC systems to achieve
+widespread use. It is still in use on virtually all Unix-derived systems
+(System V, *BSD, Linux, OS X). It uses a precompiler called <em>rpcgen</em> that
+takes input from an <em>interface definition language</em> (IDL) file.
+This is a file that defines the interfaces to the remote procedures. Fron this,
+<em>rpcgen</em> creates client stub functions and a server stub program. These
+can be compiled and linked with the client and server functions, respectively.</p>
+
+<p>Every interface is assigned a unique 32-bit number, known
+as a program number. When the server starts up, it binds a socket to any
+available port and registers that port number and its program number with a
+name server, known as the <em>portmapper</em>, running on the same machine. A
+client, before invoking any remote procedure calls, contacts the portmapper on
+the desired server to find the port to which it needs to send its requests.</p>
+
+<h3>DCE RPC</h3>
+
+<p>The Distributed Computing Environment, defined by the Open
+Group created its own flavor of RPC, very similar to Sun's. They also had the
+programmer specify an interface in an IDL, which they called the <em>Interface
+Definition Notation</em> (IDN).</p>
+
+<p>To avoid the problem of picking a unique 32-bit
+identifier for the interface, DCE RPC provides the programmer with a program
+called <em>uuidgen</em>. This generates a <em>unique universal ID </em>(UUID) &ndash; a
+128-bit number that is a function of the current time and ethernet address. </p>
+
+<p>The DCE also introduced the concept of a <em>cell</em>,
+which is an administrative grouping of machines. Each cell has a cell directory
+server that maintains information about the services available within the cell.
+Each machine in the cell knows how to contact the cell directory server. When a
+server program starts up under DCE RPC, it registers its port and the
+interface's UUID with a local name server (the DCE host d&aelig;mon, <em>dced</em>,
+which is similar to the portmapper). It also registers the UUID, host mapping
+with the cell directory server. This allows a degree of location transparency
+for services: a client does not need to know what machine a service lives on <i>a
+priori</i>.</p>
+
+<p>As object oriented languages gained popularity in the late
+1980s and 1990s, RPC systems like Sun's and DCE's proved incapable of handling
+some object oriented constructs, such as instances of objects or polymorphism
+(different functions sharing the same name, with the function distinguished by
+the incoming parameters). A new generation of RPC systems dealt with these
+issues.</p>
+
+<h3>Microsoft DCOM &amp; ORPC (MS-RPC)</h3>
+
+<p>Microsoft already had a scheme in place for dynamically
+loading components into a process. This was known as COM, the Component Object
+Model and provided a well-defined mechanism for a process to identify and
+access interfaces within the component. The same model was extended to invoke
+remotely-located components to become the Distributed Component
+Object Model (<em>DCOM</em>).
+Because the components can no longer be loaded into the local process space (as
+they're on a remote system), they have to be loaded by <em>some</em> process.
+This process is known as a <em>surrogate process</em>. It runs on the server,
+accepting remote requests for loading components and invoking operations on
+them. </p>
+
+<p>DCOM is implemented through remote procedure calls.
+Microsoft enhanced DCE RPC to create what they termed <em>Object RPC</em> (ORPC).
+This is essentially DCE RPC with the addition of support for an <em>interface
+pointer identifier</em> (IPID). The IPID provides the ability to identify
+a specific instance of a remote object. Interfaces are defined via the
+Microsoft Interface Definition Language (MIDL) and compiled into client and
+server side stubs. The client-side stub becomes the <em>local</em> COM object
+that is loaded when the object is activated.</p>
+
+<p>Since objects can be instantiated and deleted remotely, the
+surrogate process needs to ensure that there isn't a build-up of objects that
+are no longer needed by any client. Microsoft accomplishes this via <em>remote
+reference counting</em>. This is an explicit action where the client can send
+requests to increment or decrement a reference count on the server. When their
+reference count drops to zero, the surrogate process deletes the object. To
+guard against programming errors or processes that terminated abnormally, a
+secondary mechanism exists, called <em>pinging</em>. The client must periodically
+send the server a <em>ping set</em> &ndash; a list of all the remote objects that are
+currently active. If the server does not receive this information within a
+certain period, it elides the objects.</p>
+
+<h3>CORBA</h3>
+
+<p><span style='text-transform:uppercase'>T</span>he <em>Common
+Object Request Broker Architecture</em> (CORBA) was created to provide a
+software platform for distributing objects that is architecture, language, and
+operating system independent. The core concept is the ORB &ndash; the <em>Object
+Request Broker</em>. This is the collection of stub functions and libraries that
+support the remote invocation of procedures and the management of objects.
+CORBA provides an Interface Definition Language (IDL) that is compiled with a
+pre-compiler to create client and server stubs.</p>
+
+<p>CORBA provides a rich set of capabilities for the management
+of objects. These include the ability to start the server if it is not running,
+discover interfaces, persist objects to persistent media, </p>
+
+<p>One of the biggest problems with CORBA (aside from its
+complexity) was the fact that, while the programming interfaces were defined,
+the underlying protocol was not. This meant that clients and servers would
+often not be able to communicate unless they used an implementation of CORBA
+from the same vendor.
+This was rectified in 1996 with the
+introduction of the <em>Internet Inter-ORB Protocol</em> (IIOP).
+By this time, however, much of the momentum of using CORBA over the 
+Internet was gone.
+</p>
+
+<h3>Java RMI</h3>
+
+<p>When Java was created, it was designed to be a language
+for deploying downloadable applets. In 1995, Sun extended Java to support <em>Remote
+Method Invocation</em> (RMI). This allows a programmer to invoke methods on
+objects that are resident on other JVMs.</p>
+
+<p>Since RMI is designed for Java, there is no need for OS,
+language, or architecture interoperability. This allows RMI to have a simple
+and clean design. 
+Classes that interact with RMI must simply play by a couple of rules.
+All parameters to remote methods must implement the <em>serializable</em>
+class. This ensures that the data can be serialized into a byte stream for
+transport over the network. All remote interfaces
+(methods that may be invoked from a remote Java virtual machine) 
+must extend the <em>remote</em>
+class.
+</p>
+
+<p>RMI provides a naming service called <em>rmiregistry</em> to
+allow clients to locate remote object references. These objects are given
+symbolic names and looked up via a URI naming scheme (e.g.,
+<tt>rmi://remus.rutgers.edu:2311/testinterface</tt>).</p>
+
+<p>Java's distributed garbage collection is somewhat simpler
+than Microsoft's. There are two operations that a client can invoke: <em>dirty</em>
+and <em>free</em>. A client JVM sends a <em>dirty</em> call to the server when the
+object is in use and is refreshed periodically. When there are no more
+references to the object, the client sends a <em>clean</em> call to the server so
+that it can delete the object.</p>
+
+<h3>XML RPC</h3>
+
+<p>As people started looking beyond the LAN for hosting
+services via RPC, firewalls stood in the way. Most server-side RPC systems had
+a habit of asking the operating system to pick any available port. This
+required opening up a whole range of ports on a firewall. Moreover, people
+often could not get firewall rules modified in some environments. A workaround
+to this is to send RPC messages via HTTP ports (e.g., 80 and 443), and have the
+messages formatted as XML messages to get around any content-inspecting
+firewalls.</p>
+
+<p>XML-RPC was created in 1998 as a simple protocol that
+marshals all requests and responses into XML messages. There are a lot of
+libraries to support this system but no IDL compiler or stub function generator
+thus far.</p>
+
+<h3>SOAP</h3>
+
+<p>XML RPC took an evolutionary fork and evolved (with the
+support of companies such as Microsoft and IBM) into something known as SOAP, the<em>
+Simple Object Access Protocol</em>. XML RPC is a subset of SOAP. In addition to
+remote procedure calls, SOAP added support for general purpose messaging (send,
+receive, asynchronous notification) of messages. SOAP invocations are XML
+messages sent via an HTTP protocol. SOAP services can be described via an XML
+document formatted to conform to an interface specified by a corresponding Web
+Services Description Language (WSDL) document &ndash; another XML document.</p>
+
+<h3>.NET</h3>
+
+<p>
+A problem with Microsoft’s DCOM was that it was a somewhat low-level
+implementation. Clients had to provide reference counting of their
+objects explicitly and the convenience of using DCOM depended very
+much on the language (easy in VB, difficult in C++). Moreover, the
+use of operating-system-selected random ports, and a binary data
+format made it difficult to use over the Internet where firewalls
+may block certain ports or requests need to in an XML format and
+be sent over HTTP.
+</p>
+<p>
+With .NET, Microsoft provided (among other things) a runtime
+environment, a set of libraries, and a web server that provides
+inbuilt support for web services. For supporting function-based
+access to web services, .NET provides a <em>remoting</em> capability that
+allows a process to interact with objects that reside on other
+processes and other machines.
+</p>
+<p>
+<em>.NET Remoting</em> was created to be a successor to DCOM that would work
+more easily over the Internet (no random ports, for example, as
+well as the ability to use XML over HTTP). As with other RPC systems,
+client and server stub functions (proxies) are created. Microsoft’s
+Visual Studio application development environment hides the mechanics
+of this and integrates remote procedure calls directly into the
+language.
+</p>
+<p>
+These stubs rely on the .NET runtime system to marshal parameters
+into one of several types, which include SOAP or binary formats.
+The .NET runtime system then sends the message over a particular
+<em>channel</em> that that was set up for transport. This channel may be
+HTTP using TCP/IP to send SOAP messages, TCP/IP with no wrapping
+protocol to send binary messages on a local-area network, or named
+pipes to send messages between processes on the same machine.
+Microsoft’s web server, IIS, can be configured to directs certain
+URLs that contain the SOAP (encapsulated in HTTP) request to specific
+objects running under the .NET framework, which then sends a response
+back to the web server, which is then returned to the caller.
+</p>
+<p class="nospace">
+.NET manages object lifetime in three ways:
+</p>
+<ol>
+<li>
+<em>Single call</em> objects
+instantiate a new instance of the object for a call and immediately
+clean it up upon return.
+</li>
+<li>
+<em>Singleton objects</em> share the same instance
+of the object among all callers. This is much like traditional
+function calls in non-object-oriented systems.
+</li>
+<li>
+Finally,
+<em>Client activated objects</em>
+are similar to objects in DCOM and created on
+demand (e.g., via a new operation).
+.NET manages object lifetime of client activated objects
+.NET manages object lifetime by setting a <em>lease timer</em> each time a
+method is called on an object. The object will be cleaned up unless
+the client either makes additional calls to reset the lease time
+or sends an explicit message to renew the lease time. This is a
+very similar concept to Java RMI. There is no more reference
+counting as under DCOM.
+</li>
+</ol>
+
+<h1>Distributed file systems</h1>
+
+<p>To provide the same system call interface for supporting
+different local file systems as well as remote files, operating systems
+generally rely on a layer of abstraction that allows different file
+system-specific interfaces to coexist underneath the common system calls. On
+most Unix-derived systems (e.g., Linux, <span style='text-transform:uppercase'>bsd</span>,
+OS X, SunOS), this is known as the <span style='text-transform:uppercase'>vfs</span>
+layer (Virtual File System).</p>
+
+<p>There are a couple of models for implementing distributed
+file systems: the <em>download/upload </em>model<em> </em>or the <em>remote
+procedure call</em> model. In a <em>stateful</em> file system, the server
+maintains varying amounts of state about client access to files (e.g., whether
+a file is open, whether a file has been downloaded, cached blocks, modes of
+access). In a <em>stateless</em> file system, the server maintains no state about
+a client's access to files. The design of a file system will influence the <em>access
+semantics</em> to files. <em>Sequential semantics</em> are what we commonly expect
+to see in file systems, where reads return the results of previous writes. <em>Session
+semantics</em> occur when an application owns the file for the entire access
+session, writing the contents of the file only upon close, thereby making the
+updates visible to others after the file is closed, and overwriting any
+modifications made by others prior to that.</p>
+
+<h3>NFS</h3>
+
+<p>NFS was designed as a stateless, RPC-based model implementing
+commands such as <em>read bytes</em>, <em>write bytes</em>, <em>link files</em>, <em>create
+a directory</em>, and <em>remove a file</em>. Since the server does not maintain
+any state, there is no need for remote <em>open</em> or <em>close</em> procedures:
+these only establish state on the client. NFS works well in faulty environments:
+there's no state to restore if a client or server crashes. To improve
+performance, a client reads data a block (8 KB by default) at a time and
+performs <em>read-ahead</em> (fetching future blocks before they are needed). It
+suffers from ambiguous semantics because the server (or other clients) has no
+idea what blocks the client has cached and the client does not know whether its
+cached blocks are still valid. The system checks modification times if there
+are file operations to the server and otherwise invalidates the blocks after a
+few seconds. File locking could not be supported because of NFS's stateless
+design but was added through a separate lock manager that maintained the state
+of locks.</p>
+
+<!--
+<h3>AFS</h3>
+
+<p>AFS was designed as an improvement over <span
+style='text-transform:uppercase'>NFS</span> to support file sharing on a
+massive scale. NFS suffered because clients would never cache data for a long
+time (not knowing if it would become obsolete) and had to frequently contact
+the server. AFS introduced the use of a partition on a client's disk to cache
+large amounts of data for a long time (<em>whole file caching</em> and <em>long-term
+caching</em>). It supports a file download-upload model. The entire file is
+downloaded on first access (<em>whole file download</em>) and uploaded back to
+the server after a <em>close</em> only if it was modified. Because of this
+behavior, AFS provides <em>session semantics</em>: the last one to
+close a modified file wins and other changes (earlier closes) are lost.</p>
+
+<p>During file access, the client need never bother the
+server: it already has the file. When a client first downloads a file, the
+server makes a <em>callback promise</em>: it maintains a list of each client that
+has downloaded a copy of a certain file. Whenever it gets an update for that
+file, the server goes through the list and sends a <em>callback</em> to each client
+that may have a cached copy so that it can be invalidated on the client. The
+next time the client opens that file, it will download it from the server.
+Files under AFS are shared in units called <em>volumes</em>. A volume is just a
+directory (with its subdirectories and files) on a file server that is assigned
+a unique ID among the <em>cell</em> of machines (remember cells from<span
+style='text-transform:uppercase'> DCE RPC</span>?). If an administrator decides
+to move the volume to another server, the old server can issue a <em>referral</em>
+to the new server. This allows the client to remain unaware of resource
+movement.</p>
+-->
+</div>
+
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2010 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.
+</p>
+<p> Last updated: August 23, 2010
+</p>
+<img class="stamp" src="../../css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> Exam Info </h2>
+	<ul>
+	<li> <a href="../exam/index.html#list">List of topics</a>
+	<li> <a href="../exam/old/index.html"> Old Exams </a> </li>
+	<li> <a href="../exam/study-guide-1.html"> Exam 1 Study Guide </a> </li>
+	<li> <a href="../exam/study-guide-2.html"> Exam 2 Study Guide </a> </li>
+	<li> <a href="../exam/study-guide-3.html"> Exam 3 Study Guide </a> </li>
+	</ul>
+	
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> Belkin F1B0280-V Slimswitch data switch. This is a manual (knob) switch that switches among four DB25 connectors. I can't imagine why anyone would need this; perhaps for switching old printers. I never used it and can't remember how it ended up in my pile of junk.
+</ul>
+-->
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

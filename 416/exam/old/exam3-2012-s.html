@@ -1,0 +1,356 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 old exams: Exam 3 Spring 2012 </title>
+
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+#main ol h1 {
+	font-size: 140%;
+	margin-left: -1.3em;
+}
+#main ol li {
+	margin-bottom: 1em;
+}
+</style>
+</head>
+
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> 416 </a> 
+ 	<li> <a href="../../exam/index.html"> Exam info </a> 
+ 	<li> <a href="../../exam/old/index.html"> Old exams </a> 
+ 	<li> <a href="../../exam/old/exam3-2012-s.html"> Exam 3 Spring 2012 </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> CS 416 Exam 3 </h1>
+<h2>Spring 2012</h2>
+</div>
+
+<p>
+See the <a href="exam3-review-2012-s.pdf">solutions</a> (<a href="exam3-review-2012-s-6.pdf">6 per page</a>).
+</p>
+
+<ol>
+<h1>
+PART I &ndash; 88 points &ndash; 23 questions &ndash; 4 points each </h1>
+<p>
+For each statement, select the most appropriate answer.
+You may omit one question. Please clearly indicate the question you choose to omit.
+</p>
+
+<li> An Ethernet device driver implements the:
+<br/>(a) Data Link layer.
+<br/>(b) Network layer.
+<br/>(c) Transport layer.
+<br/>(d) Session layer.
+
+</li><li> A virtual circuit will not guarantee:
+<br/>(a) Constant packet latency.
+<br/>(b) In-order packet delivery.
+<br/>(c) Reliable packet delivery.
+<br/>(d) Packet-based data transmission.
+
+</li><li> Packet encapsulation is useful for:
+<br/>(a) Protocol layering.
+<br/>(b) Separating the header from the data.
+<br/>(c) Encrypting packet data.
+<br/>(d) Fault-tolerant packet delivery.
+
+</li><li> How are additional protocol headers added to packet data as it goes down the network stack?
+<br/>(a) The socket buffer is allocated to be big enough to hold all anticipated headers.
+<br/>(b) Each layer of the protocol stack creates its own header and adds it via a linked list
+<br/>(c) At each layer, data is copied to a new buffer big enough to hold the existing data and new headers.
+<br/>(d) A separate socket buffer is created to manage headers.
+
+</li><li> How many times is the data in a message copied from a user process creating it to it being sent onto the network?
+<br/>(a) Zero times.
+<br/>(b) One time.
+<br/>(c) Two times.
+<br/>(d) One time for each layer of the network stack.
+
+</li><li> Linux’s New API (NAPI) added the following feature to the network stack:
+<br/>(a) Support for jumbo packets to support gigabit Ethernet transceivers.
+<br/>(b) Support for IPv6 in addition to IPv4.
+<br/>(c) A clean separation between the transport and network layer.
+<br/>(d) A combination of interrupts and polling to avoid a high rate of interrupts. 
+
+</li><li> A stub function in a remote procedure call:
+<br/>(a) Is the implementation of the remote function on the server.
+<br/>(b) Provides the interface of the server function on the client.
+<br/>(c) Is a placeholder function that needs to be filled in by the programmer.
+<br/>(d) Is a local function that is called if the server cannot be contacted.
+
+</li><li> A programmer using remote procedure calls (RPC) uses an interface definition language (IDL) to:
+<br/>(a) Implement the remote procedures in an architecture-independent manner.
+<br/>(b) Provide the kernel with the interfaces to a set of remote procedures.
+<br/>(c) Marshal parameters for the remote procedure.
+<br/>(d) Identify the names, inputs, and outputs of remote procedures.
+
+</li><li> Which caching approach yields session semantics?
+<br/>(a) Read ahead.
+<br/>(b) Write behind.
+<br/>(c) Write through.
+<br/>(d) Write on close.
+</li><li> What operation is not possible on a stateless remote file system?
+<br/>(a) Read ahead.
+<br/>(b) File locking.
+<br/>(c) Getting file attributes.
+<br/>(d) Appending to a file.
+
+</li><li> Under AFS, a callback from a callback promise:
+<br/>(a) Ensures that the client invalidates an obsolete version of a cached file.
+<br/>(b) Is used by a client to inform the server that it is modifying a file.
+<br/>(c) Informs a client that a lock has been released on a remote file.
+<br/>(d) Tells the client that it is now allowed to cache data for a specific file.
+
+</li><li> The principle of least privilege can best be enforced with:
+<br/>(a) Stack canaries.
+<br/>(b) Access control lists for all files. 
+<br/>(c) Cryptographically secure authentication.
+<br/>(d) A sandbox.
+
+</li><li> Privilege separation is useful in enforcing:
+<br/>(a) The principle of least privilege.
+<br/>(b) Mandatory access control.
+<br/>(c) Discretionary access control.
+<br/>(d) Multi-level secure access.
+
+</li><li> File permissions on Windows or Linux are an example of:
+<br/>(a) An access control list.
+<br/>(b) A capability list.
+<br/>(c) Mandatory access control.
+<br/>(d) An access matrix.
+
+</li><li> Return Oriented Programming:
+<br/>(a) Allows buffer overflow attacks to run code even if stack memory is not executable.
+<br/>(b) Is a technique for injecting executable code into a buffer (also known as stack smashing).
+<br/>(c) Is a programming technique to ensure that buffer overflow attacks cannot occur.
+<br/>(d) Is where the compiler generates code at the return of a function to check for buffer overflow.
+
+</li><li> Which technique cannot be used guard against buffer overflow attacks?
+<br/>(a) Address space layout randomization.
+<br/>(b) Stack canaries.
+<br/>(c) Signed software.
+<br/>(d) Non-executable stack memory.
+
+</li><li> A <em>chroot jail</em> disallows a process:
+<br/>(a) Access to the network.
+<br/>(b) Access to parts of the file system.
+<br/>(c) The ability to execute specific system calls.
+<br/>(d) The ability to write files.
+
+</li><li> A secure message from Alice to Bob is encrypted with:
+<br/>(a) Alice's private key.
+<br/>(b) Alice's public key.
+<br/>(c) Bob's public key.
+<br/>(d) Bob's private key.
+
+</li><li> A hybrid cryptosystem uses:
+<br/>(a) Two levels of encryption to secure data: symmetric encryption followed by public key encryption.
+<br/>(b) Two symmetric keys, <em>A</em> and <em>B</em>, and encrypts data three times: E<sub>A</sub>(D<sub>B</sub>(E<sub>A</sub>(M))).
+<br/>(c) Public key cryptography to send a key and symmetric cryptography to encrypt data.
+<br/>(d) A combination of public and private keys to encrypt data securely.
+
+</li><li> The Challenge Handshake Authentication Protocol (CHAP) is secure <em>NOT</em> because:
+<br/>(a) Both sides have a shared secret that is never sent across the network.
+<br/>(b) The server issues a random challenge for each authentication session.
+<br/>(c) Only hashed passwords are stored on the server.
+<br/>(d) All responses from the client are hashed values.
+
+</li><li> An intruder cannot deduce the next S/key password having seen the previous one because:
+<br/>(a) Passwords are hashed. 
+<br/>(b) The next password will be unrelated to the previous one.
+<br/>(c) One-way functions are used to generate passwords.
+<br/>(d) An encrypted communication session will be needed to transmit the password.
+
+</li><li> For Alice to talk to Bob, the Kerberos ticket that Alice obtains contains:
+<br/>(a) Alice's secret key.
+<br/>(b) Bob's secret key.
+<br/>(c) The session key.
+<br/>(d) A Kerberos authorization message signed by the Kerberos server.
+
+</li><li> Your digital certificate will not contain:
+<br/>(a) The certificate issuer's identification.
+<br/>(b) Your name.
+<br/>(c) Your private key.
+<br/>(d) Your public key
+</li>
+
+
+<h1>
+PART II &ndash; 10 points &ndash; 6 questions &ndash; 2 points each </h1>
+<p>
+For each statement, specify whether it is true or false by circling the correct choice. 
+</p>
+
+<li> TCP is a Transport layer protocol whereas UDP is a network layer protocol.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> The Address Resolution Protocol (ARP) converts Ethernet addresses into IP addresses.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> Sockets are implemented as a pseudo file system type under VFS (Virtual File System).
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> NFS provides session semantics.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> A digital signature is an encrypted hash.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li> Diffie-Hellman is a public key encryption algorithm.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+</li>
+
+</ol>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> Exam Info </h2>
+	<ul>
+	<li> <a href="../index.html#list">List of topics</a>
+	<li> <a href="../study-guide-1.html">Exam 1 Study Guide</a> </li>
+	<li> <a href="../study-guide-2.html">Exam 2 Study Guide</a> </li>
+	<li> <a href="../study-guide-3.html">Exam 3 Study Guide</a> </li>
+	</ul>
+		<h2> Old exams </h2>
+	<ul>
+	<li> <a href="exam1-2012-s.html"> Spring 2012 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2012-s.html"> Spring 2012 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2012-s.html"> Spring 2012 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2011-s.html"> Spring 2011 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2011-s.html"> Spring 2011 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2011-s.html"> Spring 2011 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2010-f.html"> Fall 2010 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2010-f.html"> Fall 2010 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2010-f.html"> Fall 2010 &ndash; Exam 3</a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

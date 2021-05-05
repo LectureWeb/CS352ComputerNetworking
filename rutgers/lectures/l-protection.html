@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 lecture 12 </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main .nn ul {
+	margin: 0;
+	margin-left: -1.0em;
+	padding: 0.15em 1.0em 0.15em 1.0em;
+	list-style: none;
+	float: left;
+	margin-bottom: 0.5em;
+	text-transform: uppercase;
+	width: 100%;
+}
+#main .nn li { 
+	float: left;
+	padding: 0;
+	margin: 0;
+}
+#main .nn li.right { 
+	float: right;
+	text-align: right;
+	padding: 0;
+	margin: 0;
+}
+</style>
+</head>
+
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../index.html"> Rutgers </a> 
+ 	<li> <a href="../hw/index.html"> Lecture 12 </a> 
+</ul>
+</p>
+</div>
+  
+<div id="content-wrapper">
+
+<div id="main">
+<div class="nn">
+<ul>
+	<li> <a href="l-sandbox.html">Previous Lecture</a> </li>
+	<li class="right"> <a href="l-fault_tol.html">Next Lecture</a> </li>
+</ul>
+</div>
+<div id="headline">
+    <h1>
+	Week 12: Protection and Security
+    </h1>
+</div>
+    <dl>
+    <dt> Lecture notes: 
+    <dd>
+	<p>
+	<a href="../notes/content/firewalls.pdf">Firewalls - lecture notes</a>
+	<p>
+	<a href="../notes/content/19-security-slides.pdf">
+	System protection slides
+	</a>
+	( <a href="../notes/content/19-security-slides-6up.pdf">6 per page</a>)
+	<br/>
+	<a href="../notes/content/20-firewalls-slides.pdf">
+	Firewalling Slides
+	</a>
+	(<a href="../notes/content/20-firewalls-slides-6up.pdf">6 per page</a>)
+	<br/>
+	<a href="../notes/content/21-vpn-slides.pdf">
+	VPN slides
+	</a>
+	(<a href="../notes/content/21-vpn-slides.pdf">6 per page</a>)
+    <p>
+    <dt> Recitation notes:
+    <dd>
+
+    <p>
+    <dt> Supplemental notes:
+    <dd>
+	<p> <a href="http://www.smashingmagazine.com/2010/01/14/web-security-primer-are-you-part-of-the-problem/">
+		Web Security: Are You Part Of The Problem? &emdash; Smashing Magazine </a>
+	</p>
+
+	<p> <a href=http://sunsite.uakom.sk/sunworldonline/swol-02-1998/swol-02-security.html>
+	Enter the secure shell</a>
+	</p>
+	<p> <a href=http://en.wikipedia.org/wiki/Spyware>Wikipedia article
+	on spyware</a></p>
+    <p>
+    <dt> Buzzwords:
+    <dd>
+Domains of protection, access rights, access matrix, access control
+lists (ACLs), capabilities, dictionary attack, social engineering,
+trojan horse, sequence number attack, SYN flooding, worm, virus, 
+denial of service attack (DoS), distributed denial of service attack (DDoS),
+botnets, key loggers, rootkits
+<p>
+identification, authentication, authorization, virus scanner, signed software,
+
+<p>
+packet filter/screening router, stateless inspection, stateful inspection,
+application proxy, dual-homed host, bastion host,
+access router, choke router, screened subnet, 
+VPN, tunnel, 
+    </dl>
+</div> <!-- main -->
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2011 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.
+</p>
+<p> Last updated: September  8, 2011
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> Belkin F1B0280-V Slimswitch data switch. This is a manual (knob) switch that switches among four DB25 connectors. I can't imagine why anyone would need this; perhaps for switching old printers. I never used it and can't remember how it ended up in my pile of junk.
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

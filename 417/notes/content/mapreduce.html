@@ -1,0 +1,543 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> MapReduce </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../index.html"> Rutgers CS 417 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/mapreduce.html"> MapReduce </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> MapReduce </h1>
+<h2> A framework for large-scale parallel processing </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> November 2011 </p>
+</div>
+
+<h1> Introduction </h1>
+
+<p class="first">
+Traditional programming tends to be serial in design and execution. We tackle many
+problems with a sequential, stepwise approach and this is reflected in the
+corresponding program. With <em>parallel programming</em>, we break up the processing
+workload into multiple parts, that can be executed concurrently on multiple
+processors. Not all problems can be parallelized.
+The challenge is to identify as many tasks as possible that 
+can run concurrently. Alternatively, we can identify data groups that
+can be processed concurrently. This will allow us to divide the data among
+multiple concurrent tasks.
+</p>
+<p>
+The most straightforward situation that lends itself to parallel programming
+is one where there is no dependency among data. Data can be split into
+chunks and each process can be assigned a chunk to work on. If we have lots
+of processors, we can split the data into lots of chunks. A
+<strong>master/worker</strong> approach is a design where a <em>master</em>
+process coordinates overall activity. It identifies the data, splits it
+up based on the number of available workers, and assigns a data segment
+to each worker. A <strong>worker</strong> receives the data segment from
+the master, performs whatever processing is needed on the data, and then
+sends results to the master. At the end, the master does whatever final
+processing (e.g., merging) is needed to the resultant data.
+</p>
+
+<h1> MapReduce Etymology </h1>
+<p>
+MapReduce is was created at Google in 2004
+by Jeffrey Dean and Sanjay Ghemawat. The name is inspired from map
+and reduce functions in the LISP programming language.
+In LISP, the <em>map</em> function takes as parameters a function and 
+a set of values. That function is then applied to each of the values.
+For example:
+</p>
+<div class="codeblock">
+(map ‘length ‘(() (a) (ab) (abc)))
+</div>
+<p>
+applies the <em>length</em> funciton to each of the three items in the list.
+Since <em>length</em> returns the length of an item, the result of <em>map</em>
+is a list containing the length of each item:
+</p>
+<div class="codeblock">
+(0 1 2 3)
+</div>
+<p>
+The <em>reduce</em> function is given a binary function and a set of values as
+parameters. It combines all the values together using the binary function.
+If we use the <em>+</em> (add) function to reduce the list (0 1 2 3):
+</p>
+<div class="codeblock">
+(reduce #'+ '(0 1 2 3))
+</div>
+<p>
+we get:
+</p>
+<div class="codeblock">
+6
+</div>
+<p>
+If we think about how the <em>map</em> operation, we realize that each application of
+the function to a value can be performed in parallel (concurrently) since there is no
+dependence of one upon another. The <em>reduce</em> operation can take place only after
+the <em>map</em> is complete.
+</p>
+<p>
+MapReduce is not an implementation of these LISP functions; they are merely an
+inspiration and etymological predecessor.
+</p>
+
+<h1> MapReduce </h1>
+<p>
+<strong>MapReduce</strong> is a framework for parallel computing.
+Programmers get a simple API and do not have to deal with issues of
+parallelization, remote execution, data distribution, load balancing, 
+or fault tolerance. The framework makes it easy for one to use thousands
+of processors to process huge amounts of data (e.g., terabytes and petabytes).
+</p>
+<p>
+From a user's perspective, there are two basic operations in MapReduce:
+<em>Map</em> and <em>Reduce</em>.
+</p>
+<p>
+The <strong>Map</strong> function reads a stream of data and parses it into
+intermediate <em>(key, value)</em> pairs. When that is complete, the <strong>Reduce</strong>
+function is called once for each unique key that was generated by <em>Map</em>
+and is given the key and a list of all values that were generated for that 
+key as a parameter. The keys are presented in sorted order.
+</p>
+<p>
+As an example of using MapReduce, consider the task of counting the number of 
+occurrences of each word in a large collection of documents. The user-written <em>Map</em> 
+function reads the document data and parses out the words. For each word,
+it writes the (key, value) pair of (word, 1). That is, the word is treated as
+the key and the associated value of 1 means that we saw the word once.
+This intermediate data is then sorted by MapReduce by keys and the user's
+<em>Reduce</em> function is called for each unique key. Since the only values are
+the count of 1, <em>Reduce</em> is called with a list of a "1" for each occurence
+of the word that was parsed from the document. The function simply adds them up to
+generate a total word count for that word. Here's what the code looks like:
+</p>
+<div class="codeblock">
+map(String key, String value): 
+// key: document name,  value: document contents 
+for each word w in value: 
+  EmitIntermediate(w, "1"); 
+
+reduce(String key, Iterator values):
+// key: a word;  values: a list of counts
+int result = 0;
+for each v in values:
+  result += ParseInt(v);
+Emit(AsString(result)); 
+</div>
+
+<p>
+Let us now look at what happens in greater detail.
+</p>
+
+<h1> MapReduce: More Detail </h1>
+<p>
+To the programmer, MapReduce is largely seen as an API: communication with the 
+various machines that play a part in execution is hidden. MapReduce is implemented
+in a master/worker configuration, with one master serving as the coordinator
+of many workers. A worker may be assigned a role of either a <em>map worker</em>
+or a <em>reduce worker</em>.
+</p>
+
+<h2> Step 1. Split input </h2>
+<div class="figure width400">
+<img src="images/mr-step1x.png" width=381 height="66">
+Figure 1. Split input into shards
+</div>
+<p>
+The first step, and the key to massive parallelization in the next step,
+is to split the input into multiple pieces. Each piece is called a
+<strong>split</strong>, or <strong>shard</strong>.
+For <em>M</em> map workers, we want to have <em>M</em> shards, so that
+each worker will have something to work on. The number of workers is
+mostly a function of the amount of machines we have at our disposal.
+</p>
+<p>
+The MapReduce library of the user program performs this split. The
+actual form of the split may be specific to the location and form
+of the data. MapReduce allows the use of custom
+readers to split a collection of inputs into shards,
+based on specific format of the files.
+</p>
+
+
+<h2> Step 2. Fork processes </h2>
+<div class="figure width400">
+<img src="images/mr-step2x.png" width=344 height="90">
+Figure 2. Remotely execute worker processes
+</div>
+<p>
+The next step is to create the master and the workers.
+The <strong>master</strong> is responsible for dispatching jobs to
+workers, keeping track of progress, and returning results.
+The master picks idle workers and assigns them either a
+<strong>map task</strong> or a <strong>reduce task</strong>.
+A map task works on a single shard of the original data.
+A reduce task works on intermediate data generated by the map
+tasks. In all, there will be <em>M</em> map tasks and
+<em>R</em> reduce tasks. The number of reduce tasks is
+the number of partitions defined by the user.
+A worker is sent a message by the master identifying the
+program (map or reduce) it has to load and the data it has to
+read.
+</p>
+
+<h2> Step 3. Map </h2>
+<div class="figure width200">
+<img src="images/mr-step3x.png" width=188 height="41">
+Figure 3. Map task
+</div>
+<p>
+Each <em>map</em> task reads from the input shard that
+is assigned to it. It parses the data and generates
+<em>(key, value)</em> pairs for data of interest. 
+In parsing the input, the <em>map</em> function
+is likely to get rid of a lot of data that is of no
+interest. By having many map workers do this in parallel,
+we can linearly scale the performance of the task of extracting data.
+</p>
+
+<h2> Step 4: Map worker: Partition </h2>
+<div class="figure width350">
+<img src="images/mr-step4x.png" width=335 height="132">
+Figure 4. Create intermediate files
+</div>
+<p>
+The stream of <em>(key, value)</em> pairs that each
+worker generates is buffered in memory and periodically stored
+on the local disk of the map worker.
+This data is partitioned into <em>R</em> regions
+by a partitioning function.
+</p>
+<p>
+The <strong>partitioning function</strong>
+is responsible for deciding which of the <em>R</em>
+reduce workers will work on a specific key. 
+The default partitioning function is simply a hash 
+of <em>key</em> modulo <em>R</em> but a user can replace
+this with a custom partition function if there is a need to have
+certain keys processed by a specific reduce worker.
+</p>
+
+<h2> Step 5: Reduce: Sort (Shuffle) </h2>
+<div class="figure width400">
+<img src="images/mr-step5x.png" width=367 height="144">
+Figure 5. Sort and merge partitioned data
+</div>
+<p>
+When all the map workers have completed their work, the master
+notifies the <strong>reduce workers</strong> to start working.
+The first thing a reduce worker needs to is to get the data
+that it needs to present to the user's <em>reduce</em>
+function. 
+The reduce worker contacts every map worker via remote procedure calls
+to get the <em>(key, value)</em> data that was targeted for its partition.
+This data is then sorted by the keys. Sorting is needed since
+it will usually be the case that there are many occurrences of the same
+key and many keys will map to the same reduce worker (same partition).
+After sorting,
+all occurrences of the same key are grouped together so that it is
+easy to grab all the data that is associated with a single key.
+</p>
+<p>
+This phase is sometimes called the <strong>shuffle</strong> phase.
+</p>
+
+<h2> Step 6: Reduce function </h2>
+<div class="figure width400">
+<img src="images/mr-step6x.png" width=372 height="127">
+Figure 6. Reduce function writes output
+</div>
+<p>
+With data sorted by keys, the user's <em>Reduce</em> function can now be called.
+The reduce worker calls the <em>Reduce</em> function once for each unique
+key. The function is passed two parameters: the key and the list of 
+intermediate values that are associated with the key.
+</p>
+<p>
+The <em>Reduce</em> function writes output sent to file.
+</p>
+
+<h2> Step 7: Done! </h2>
+<p>
+When all the reduce workers have completed execution, the master
+passes control back to the user program. Output of MapReduce is 
+stored in the <em>R</em> output files that the <em>R</em> reduce
+workers created.
+</p>
+
+<h2> The big picture </h2>
+<p>
+Figure 7 illustrates the entire MapReduce process. The client library
+initializes the shards and creates map workers, reduce workers, and
+a master. Map workers are assigned a shard to process. If there are more
+shards than map workers, a map worker will be assigned another shard
+when it is done. Map workers invoke the user's <em>Map</em> function
+to parse the data and write intermediate 
+<em>(key, value)</em> results onto their local disks. This intermediate
+data is partitioned into <em>R</em> partitions according to a partioning
+function.  Each of <em>R</em> reduce workers contacts all of the
+map workers and gets the set of <em>(key, value)</em> intermediate
+data that was targeted to its partition. It then calls the user's
+<em>Reduce</em> function once for each unique key and gives it a list of
+all values that were generated for that key. The <em>Reduce</em>
+function writes its final output to a file that the user's program
+can access once MapReduce has completed.
+</p>
+
+<div class="figure width600">
+<img src="images/mr-step7x.png" width=576 height="368">
+Figure 7. MapReduce
+</div>
+<hr/>
+
+<h1> Dealing with failure </h1>
+<p>
+The master pings each worker periodically. If no response is received within
+a certain time, the worker is marked as <em>failed</em>. Any map or reduce tasks that
+have been assigned to this worker are reset back to the inital state and rescheduled
+on other workers.
+</p>
+
+<h1> Locality</h1>
+<p>
+MapReduce is built on top of GFS, the Google File System.  Input and output
+files are stored on GFS. The MapReduce workers run on GFS chunkservers. The
+MapReduce master attempts to schedule a <em>map</em> worker onto one of the 
+machines that holds a copy of the input chunk that it needs for processing.
+Alternatively, MapReduce may read from or write to BigTable.
+</p>
+
+<h1> What is it good for and who uses it? </h1>
+<p>
+MapReduce is clearly not a general-purpose framework for all forms of parallel programming.
+Rather, it is designed specifically for problems that can be broken up into the the
+map-reduce paradigm. Perhaps surprisingly, there are a lot of data analysis tasks that
+fit nicely into this model.
+While MapReduce is heavily used within Google, it also found 
+use in companies such as Yahoo, Facebook, and Amazon.
+</p>
+<p>
+The original, and proprietary, implementation was done by Google. It is used internally
+for a large number of Google services.
+The Apache Hadoop project built a clone to specs defined by Google. 
+Amazon, in turn, uses Hadoop MapReduce running on their EC2 (elastic cloud) computing-on-demand
+service to offer the Amazon Elastic MapReduce service.
+</p>
+<p>
+Some problems it has been used for include:
+</p>
+<dl>
+<dt> Distributed grep (search for words) </dt>
+	<dd> <em>Map</em>: emit a line if it matches a given pattern </dd>
+	<dd> <em>Reduce</em>: just copy the intermediate data to the output </dd>
+<dt>  Count URL access frequency </dt>
+	<dd> <em>Map</em>: process logs of web page access; output <URL, 1> </dd>
+	<dd> <em>Reduce</em>: add all values for the same URL </dd>
+<dt>  Reverse web-link graph </dt>
+	<dd> <em>Map</em>: output <target, source>for each link to target in a page source </dd>
+	<dd> <em>Reduce</em>: concatenate the list of all source URLs associated with a target.  Output <target, list(source)> </dd>
+<dt>  Inverted index </dt>
+	<dd> <em>Map</em>: parse document, emit <word, document-ID> pairs </dd>
+	<dd> <em>Reduce</em>: for each word, sort the corresponding document IDs; emits a <word, list(document-ID)> pair. The set of all output pairs is an inverted index </dd>
+</dl>
+
+<h1> References </h1>
+<dl>
+<dt>
+Jeffrey Dean and Sanjay Ghemawat,
+<em><a href="http://research.google.com/archive/mapreduce.html">MapReduce: Simplified Data Processing on Large Clusters</a></em>,
+OSDI'04: Sixth Symposium on Operating System Design and Implementation,
+San Francisco, CA, December, 2004.
+</dt>
+<dd> The introductory and definitive paper on MapReduce </dd> <dt>
+Jerry Zhao, Jelena Pjesivac-Grbovic,
+<em><a href="http://research.google.com/pubs/pub36249.html">MapReduce: The programming model and practice</a></em>,
+SIGMETRICS'09 Tutorial, 2009.
+</dt>
+<dd>Tutorial of the MapReduce programming model. </dd>
+
+<dt>
+
+<em><a href="http://www.mapreduce.org/">MapReduce.org</a></em>,
+
+</dt>
+<dd>  </dd>
+
+<dt>
+<em><a href="http://aws.amazon.com/elasticmapreduce/">Amazon Elastic MapReduce</a></em>,
+</dt>
+<dd> Amazon's MapReduce service </dd>
+
+<dt>
+
+<em><a href="http://code.google.com/edu/submissions/mapreduce/listing.html">Google: MapReduce in a Week </a></em>,
+Google Code University
+</dt>
+<dd>  </dd>
+
+<dt>
+
+<em><a href="http://sites.google.com/site/mriap2008/">MapReduce course</a></em>,
+a part of 2008 Independent Activities Period at MIT 
+</dt>
+<dd>  </dd>
+
+</dl>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/6f683a17-68f7-4cb4-ad35-6c245c3f4682"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Bulk Synchronous Parallel and Pregel</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Bulk Synchronous Parallel and Pregel</h1>
+								<h2>Large-scale graph processing</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>March 24, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Create a software framework for fault tolerant, deadlock-free parallel processing. Then, adapt that to create an software framework makes it easy to operate on graphs on a massive scale.</p>
+</blockquote>
+
+<h2 id="bulksynchronousparallelbsp">Bulk Synchronous Parallel (BSP)</h2>
+
+<figure>
+<img src="images/bsp-500.png" alt="BSP" id="bsp" title="Bulk Synchronous Processing" width="500" />
+<figcaption>BSP</figcaption>
+</figure>
+
+<p><strong>Bulk Synchronous Parallel</strong> (<strong>BSP</strong>) is a programming model
+and computation framework for parallel computing.
+Computation is divided into a sequence of <strong>supersteps</strong>.
+In each superstep, a set of processes, running the same code, executes
+concurrently and creates messages that are sent to other
+processes. The superstep ends when all the computation in
+the superstep is complete and all messages have been sent.
+A <strong>barrier synchronization</strong> at the end of the superstep
+ensures that all messages have been transmitted
+(but not yet delivered to the processes). The
+next superstep begins with the delivery of all those messages
+to the processes, that then execute their superstep and
+send messages that will be delivered at the start
+of the next superstep. This process continues until
+<em>all</em> processors <strong>vote to halt</strong>.</p>
+
+<p>Note that no process is permitted to send and receive
+messages from or to another process during a superstep.
+Any sent messages will be delivered only at the start of the
+next superstep. This restriction ensures deadlock-free execution.</p>
+
+<p>A popular implementation of the BSP framework is <a href="https://hama.apache.org">Apache Hama</a>.</p>
+
+<h2 id="pregel">Pregel</h2>
+
+<h4 id="whatsagraph">What&#8217;s a graph?</h4>
+
+<p>A graph is a set of vertices connected by edges. Edges are
+directed from one vertex to another or bidirectional. In computing, a vertex is
+represented by an object and a directed edge is a link to another object.</p>
+
+<h4 id="graphsareallaroundus">Graphs are all around us</h4>
+
+<p>They represent computer networks, social groups, roads, disease outbreaks,
+phone call connections, Twitter followers, Facebook friends, web page links, etc.
+Some of these graphs have an enormous scale. The world wide web
+has billions of pages and Facebook has around a billion users.</p>
+
+<h4 id="whatswrongwithmapreduce">What&#8217;s wrong with MapReduce?</h4>
+
+<p>Nothing is wrong with MapReduce. It&#8217;s great for many problems. However,
+many graph traversal problems, when written for MapReduce, end up
+having to take multiple iterations of MapReduce, with the output
+of one iteration feeding the input of another. This is not only
+slow, but it is also inefficient as data has to be written to files
+at the end of every <em>map</em> and <em>reduce</em> operation and moved between
+machines. The entire state of the graph needs to be transmitted
+in each stage, which requires a lot more communication overhead
+than Pregel, where the vertices and edges remain on the machine
+that performs the computation. Moreover, MapReduce is not the most
+direct way of thinking about and logically solving many problems.</p>
+
+<h4 id="introducingpregel">Introducing Pregel</h4>
+
+<p>Pregel is a software framework created by Google to make it easy
+to work on huge graphs (e.g., ones with billions of vertices) that span
+many machines (e.g., tens of thousands). Like MapReduce,
+the framework relieves the programmer from having to deal with
+assigning tasks to processors, monitoring jobs, handling failures,
+and managing communications.</p>
+
+<p>The Pregel framework allows you to write &#8220;vertex-centric&#8221; code. That is,
+the same user code, a <em>compute()</em> function,
+is run concurrently on each vertex of the graph.
+Each instance of this function keeps track of information, can iterate
+over outgoing edges (each of which has a value), and can send messages
+to the vertices connected to those edges or to any other vertices it
+may know about (e.g., having received a vertex ID via a message).</p>
+
+<p>When a function does not have any more work to do, it
+<strong>votes to halt</strong>. This puts the corresponding vertex in an <em>inactive</em> state. When
+all vertices are in an <em>inactive</em> state, the framework terminates.
+However, if a vertex&#8217;s <em>compute</em> function sends a message to an
+inactive vertex, that vertex will be made <em>active</em> at the next superstep.</p>
+
+<p>Pregel is an adaptation of the Bulk Synchronous Parallel (BSP) model that is
+specifically designed with graph processing in mind. Like BSP, Pregel executes
+in <strong>supersteps</strong>. Each superstep consists of computation followed by
+message sending. All messages are synchronized with a <strong>barrier</strong>, which
+marks the end of the superstep. At the next superstep, the
+messages from the previous superstep are delivered to, and available at,
+the <strong>compute</strong> function. The downside of using BSP directly for graph processing
+is that significant additional work would be needed to define, propagate, and maintain
+the topology (connections) of a graph and map vertices to compute nodes.</p>
+
+<h4 id="advancedapis">Advanced APIs</h4>
+
+<p>Since there is overhead in sending messages to vertices, particularly
+when they are on other machines,
+Pregel supports the optional use of <strong>combiners</strong>. A combiner is a user-defined
+function that is applied to a bunch of messages all targeted to the same vertex.
+The <em>Combine</em> method processes the values and creates a single input to
+that vertex. For example, if the goal is to take the sum of a
+set of values or to choose data from the highest-numbered vertex,
+the combiner can merge several messages into one before they are
+transmitted over the network. This does not alter the <em>compute</em>
+function since it still has to be prepared to receive multiple messages
+from multiple sources.</p>
+
+<p>To manage global state, such as overall statistics, total
+edges of a graph, global flags, or minium or maximum values
+of a vertex, Pregel allows a user to define an <strong>aggregator</strong>.
+An aggregator comines received values into one value and makes that
+value available to <em>all</em> vertices at the next superstep.</p>
+
+<h4 id="pregeldesign">Pregel design</h4>
+
+<p>Pregel uses a master-worker architecture. Many copies of the program
+are started on a cluster of machines. One copy becomes the <strong>master</strong>
+and is responsible for coordinating activity rather than processing
+the graph. The others are workers. The master registers itself with a
+name server (Chubby). Each worker process contacts the name
+server to find the master.</p>
+
+<p>The Pregel framework divides the graph into <strong>partitions</strong>. Each partition
+contains a set of vertices and their outgoing edges.
+A vertex is assigned to a partition based on its ID.
+By default, this is simply a hash function: <em>hash(vertex_ID) mod N</em>, where
+<em>N</em> is the number of partitions.</p>
+
+<p>The master assigns one or more partitons to each worker. Each partition
+will run in a separate thread, so multiple partitions per worker enables
+better use of the CPU and better load balancing. Also, more powerful machines
+can be assigned more partitions.</p>
+
+<p>The master assigns chunks of input, which is usually resident in
+GFS or Bigtable (s large structured table), to each worker. Each input item is a set of vertices
+and its edges. Workers read this input and create either local messages
+for the vertices they manage or, if the input record is for a remote vertex,
+send the message to the worker that owns that vertex.</p>
+
+<p>All vertices are initially
+marked as <em>active</em>. The master then asks each worker to
+perform a <em>superstep</em>. To do this, the worker will run concurrent threads,
+one for each partition. Each thread loops through all the active vertices
+in that partition, calling the <em>Compute()</em> method for the vertex.
+The <em>compute</em>
+function consumes input, runs its algorithm, and generates zero
+or more messages to other vertices. Workers send these messages
+asynchronously but they will not be delivered to their target
+functions until the next superstep starts. When a worker is done with
+its processing for one superstep, it informs the master. It also
+tells the master how many of the vertices it manages will be in the <em>active</em> state in
+the next superstep. The master
+waits for <em>all</em> workers to complete before starting the next superstep.
+This cycle continues until there are no more vertices in the <em>active</em> state.</p>
+
+<h4 id="faulttolerance">Fault tolerance</h4>
+
+<p>Pregel uses <strong>checkpointing</strong> for fault tolerance. The master
+tells each worker to checkpoint itself every <em>N</em> supersteps.
+Checkpointing means that each vertex has to save its entire state
+in stable storage. This state will include vertex values, edge
+values, incoming messages, and possibly any other state that
+the algorithm needs to track. A master will periodically send
+<strong>ping</strong> messages to workers to see if they are alive.
+If a master does not hear from a worker within a certain window
+of time, it assumes that the worker has failed. In this case,
+the master reassigns the set of vertices to other workers
+and tells <em>all</em> workers to restart their computation from the
+superstep at the most recent checkpoint.</p>
+
+<p>A popular implementation of Pregel is <a href="http://giraph.apache.org">Apache Giraph</a>,
+which has been used by Facebook to analyze its graph of social connections among its user community. Facebook <a href="http://www.vldb.org/pvldb/vol8/p1804-ching.pdf">improved</a> the platform to allow Giraph to handle over a billion users, hundreds of billions of social connections, and a trillion edges.</p>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

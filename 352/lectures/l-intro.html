@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 352 lecture 1 </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main .nn ul {
+	margin: 0;
+	margin-left: -1.0em;
+	padding: 0.15em 1.0em 0.15em 1.0em;
+	list-style: none;
+	float: left;
+	margin-bottom: 0.5em;
+	text-transform: uppercase;
+	width: 100%;
+}
+#main .nn li { 
+	float: left;
+	padding: 0;
+	margin: 0;
+}
+#main .nn li.right { 
+	float: right;
+	text-align: right;
+	padding: 0;
+	margin: 0;
+}
+#main dt {
+	margin-top: 2em;
+}
+#main dt dd {
+	margin-top: 1em;
+	font-weight: normal;
+}
+#main dd > dl {
+	margin-left: 1em;
+}
+#main dd > dl > dt {
+	display: list-item;
+	list-style-type: square;
+	font-weight: normal;
+	color: black;
+}
+#main dd > dl > dd {
+	font-weight: normal;
+	color: #888;
+}
+#main > dd > dl > dt > a:link {
+	color: #8f0000;
+}
+#main dd > dl > dt > a:visited {
+	color: #000080;
+}
+
+#xxmain dd > dl > dt:before {
+	content: "- "
+}
+
+#main .rbox {
+	background-color: #f8f0f0;
+	border-color: green;
+	border: 1px solid;
+	border-radius: 5px;
+	-mos-border-radius:5px;
+	margin: 1em 1em 1em 1em;
+	padding: 0.5em 1em 0.5em 1em;
+	box-shadow: 3px 5px 5px #888888;
+}
+</style>
+</head>
+
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 352 </a> 
+ 	<li> <a href="../notes/index.html"> Lecture 1 </a> 
+</ul>
+</p>
+</div>
+  
+<div id="content-wrapper">
+
+<div id="main">
+<div class="nn">
+<ul>
+	<li> &nbsp; </li>
+	<li class="right"> <a href="l-sockets.html">Next Lecture</a> </li>
+</ul>
+</div>
+<div id="headline">
+<h1>
+	Week 1: Introduction: History and structure of the Internet
+</h1>
+</div>
+<p class="rbox">
+History and structure of the Internet, terminology, ISP tiers, packet switching vs. circuit switching,
+sources of delay.
+</p>
+<dl>
+<dt> Lecture notes: </dt>
+<dd>
+	<a href="../notes/content/01-intro-slides.pdf"> Introduction - Lecture slides</a>
+	(<a href="../notes/content/01-intro-slides-6pp.pdf">6 per page</a>)
+</dd>
+
+<dt> Recitation notes: </dt>
+<dd>
+	<a href="../notes/content/01r-review-slides.pdf"> Introduction - Recitation slides</a>
+	(<a href="../notes/content/01r-review-slides-6pp.pdf">6 per page</a>)
+</dd>
+
+<dt> Supplemental notes: </dt>
+<dd>
+	<dl>
+	<dt>
+	Gerard J. Holzmann, Björn Pehrson,
+	<a href="http://people.seas.harvard.edu/~jones/cscie129/papers/Early_History_of_Data_Networks/The_Early_History_of_Data_Networks.html">The Early History of Data Networks</a>, Wiley-IEEE Computer Society,
+	December 1994
+	</dt>
+	<dd>
+	Discusses the emergence of communication networks through history. The link above
+	contains the first three chapters of the <a href="http://www.amazon.com/dp/0818667826">book</a>.
+	</dd>
+
+	<dt> 
+	<a href="http://www.nsf.gov/about/history/nsf0050/pdf/internet.pdf">
+	The Internet: changing the way we communicate</a>, National Science Foundation
+	</dt>
+	<dd>
+	Light reading on a brief history of the Internet from the NSF's perspective
+	</dd>
+
+	<dt>
+	<a href="http://www.nsf.gov/news/special_reports/nsf-net/">NSF and the Birth of the Internet</a>
+	</dt>
+	<dd>
+	NSF's interactive timeline with a set of vidoes discussing the development of the Internet.
+	</dd>
+
+	<dt>
+	Cooke, J. Robert, 
+	<a href="http://hdl.handle.net/1813/22368">The Origin and History of the Internet, a lecture by Ken King</a>, Cornell Univeristy video, February 17, 2011.
+	</dt>
+	<dd>
+	Kenneth M. King traces the evolution of the Internet from its roots in higher education.
+	</dd>
+
+	<dt>
+	Barry M. Leiner, Vinton G. Cerf, David D. Clark, Robert E. Kahn, Leonard Kleinrock, Daniel C. Lynch, Jon Postel, Lawrence G. Roberts, Stephen S. Wolff,
+	<a href="http://ccrg.soe.ucsc.edu/CMPE252A/FALL2012/PAPERS/history1.pdf">
+	The Past and Future History of the Internet</a>,
+	Communications of the ACM, February 1997, Vol. 40, No. 2, Copyright held by the authors.
+	</dt>
+	<dd>
+	A story of the origins of the Internet by a few of its creators.
+	</dd>
+
+	<dt>
+	Barry M. Leiner, Vinton G. Cerf, David D. Clark, Robert E. Kahn, Leonard Kleinrock, Daniel C. Lynch, Jon Postel, Larry G. Roberts, Stephen Wolff,
+	<a href="http://www.internetsociety.org/brief-history-internet">Brief History of the Internet</a>,
+	Internet Society, &copy; 2012.
+	</dt>
+	<dd>
+	Very similar to the above paper with slight extensions.
+	</dd>
+
+	</dl>
+</dd>
+
+<dt> Terms with which you should be familiar: </dt>
+<dd>
+Broadcast, unicast, synchronization, relay,
+control data, message data, acknowledgement, negative acknowledgement,
+congestion, flow control, message encoding, best-effort delivery,
+IMP, router, NCP, network core, network edge, peers,
+internetwork,
+media, switch, modem, ISP, ISP tier, FDM (frequency division multiplexing),
+TDM (time division multiplexing), circuit switching, packet switching,
+baseband, broadband, processing delay, queuing delay, transmission delay,
+propagation delay.
+</dd>
+</dl>
+</div> <!-- main -->
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: May  6, 2016
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/6f683a17-68f7-4cb4-ad35-6c245c3f4682"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

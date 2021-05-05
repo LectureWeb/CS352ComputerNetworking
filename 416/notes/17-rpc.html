@@ -1,0 +1,512 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Remote Procedure Calls </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 416 </a> 
+ 	<li> <a href="../notes/index.html"> Documents </a> 
+ 	<li> <a href="../notes/17-rpc.html"> Remote Procedure Calls </a> 
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Remote Procedure Calls </h1>
+
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> Last update: April 20, 2012 </p>
+</div>
+
+<h1> Introduction, or <em>what's wrong with sockets?</em> </h1>
+<p>
+Sockets are a fundamental part of client-server networking. They
+provide a relatively easy mechanism for a program to establish a
+connection to another program, either on a remote or local machine
+and send messages back and forth (we can even use read and write
+system calls). Moreover, they are the only interface to the network
+that most operating systems provide.
+</p>
+<p>
+The sockets interface, however, forces us to design our distributed
+applications using a read/write (input/output) interface which is
+not how we generally think about application design and how not how
+different functional blocks of an application communicate.  In designing
+single-process applications, the procedure (function) call is 
+the most familiar interface model. If we
+want to make distributed computing look like centralized computing,
+input-output-based streams are not the way to accomplish
+this.
+</p>
+<p>
+In 1984, Birrell and Nelson devised a mechanism to allow programs
+to call procedures on other machines. A process on machine <em>A</em>
+can call a procedure on machine <em>B</em>. The process on <em>A</em>
+is suspended and execution continues on <em>B</em> . When <em>B</em>
+returns, the return value is passed to <em>A</em> and <em>A</em>
+continues execution. This mechanism is called the <strong>Remote
+Procedure Call</strong> (<strong>RPC</strong>). To the programmer,
+the goal is that it should appear as if a normal procedure call is
+taking place. Obviously, a remote procedure call is different from
+a local one in the underlying implementation.
+</p>
+
+<h1> Implementing remote procedure calls </h1>
+<p>
+Let's think about how local procedure (function) calls work.
+A local procedure call generally involves placing the calling
+parameters on the stack and executing some form of a call instruction
+to the address of the procedure. The procedure will then read the
+parameters from the stack, allocate more stack space for local
+variables, do its work, place the return value in a register,
+readjust the stack pointer, and then return to the address on top
+of the stack. The instructions to perform these operations are
+generated by the compiler and then executed by the processor.
+</p>
+<p>
+Processors do not offer us architectural support for making remote
+calls of any sort.  If we want remote procedure calls, we will
+need to simulate the entire process with
+the tools that we do have, namely local procedure calls
+and operating systems sockets for network communication.
+Operating systems do not give us a remote procedure call
+facility but rather access to the network via sockets.
+Just as the instructions for local procedure calls are generated by
+the compiler, the instructions for invoking remote procedures 
+also have to be generated by the compiler.
+This makes remote procedure calls a <strong>language-level construct</strong> as opposed to
+sockets, which are an <strong>operating system level construct</strong>. This means
+that our compiler will have to know that remote procedure call
+invocations need the presence of special code.
+</p>
+<figure> <img width="400" height="234" src="images/17-rpc-flow.png">
+<figcaption>Figure 1. RPC flow</figcaption>
+</figure>
+<p>
+The entire trick in making remote procedure calls work is in the
+creation of <strong>stub functions</strong> that make it appear to
+the user that the call is really a local one. A stub function has
+the same interface as the remote function that the user intends to
+call but really contains just code for gathering parameters, sending,
+and receiving messages over a network. Figure 1 shows the sequence of
+operations that takes place in making a remote procedure call
+(adapted from p. 693 of W. Richard Steven’s <em>UNIX
+Network Programming</em>). The sequence of operations is:
+</p>
+
+<ol>
+<li>
+The client calls a local procedure, called the <strong>client stub</strong>.
+To the client process, it appears that this is the actual remote procedure,
+which it can call using a local procedure call (since the stub is a local procedure).
+The client stub packages the arguments to the remote procedure
+(this may involve converting them to a standard format) and
+builds one or more network messages.
+The packaging of arguments into a network message is called <strong>marshaling</strong>.
+</li>
+
+<li>
+Network messages are sent by the client stub to the remote system (by writing to a socket via system calls to the local kernel).
+</li>
+
+<li>
+Network messages are transferred by the kernel to the remote system via some protocol
+(either connectionless or connection-oriented).
+</li>
+<li>
+A <strong>server stub</strong> process, sometimes called a <strong>skeleton</strong>,
+on the server receives the messages. It <strong>unmarshals</strong> the arguments from the messages and,
+if needed, converts them from a standard format into a machine-specific format.
+</li>
+<li>
+The server stub calls a local procedure call to the actual server function,
+passing it the arguments that it received from the client.
+The server function gets the illusion that it was called locally by the client
+since the server stub calls it locally with the same parameters that the client
+transmitted.
+</li>
+<li>
+When the server is finished, it returns to the server stub with its return values.
+</li>
+<li>
+The server stub converts the return values to a standard format (if necessary)
+and marshals them into one or more network messages to send to the client stub.
+</li>
+<li>
+Messages get sent back across the network to the client stub.
+</li>
+<li>
+The client stub reads the messages from the local kernel.
+</li>
+<li>
+It then returns the results to the client function (possibly converting them first).
+The client feels that it just received a return value from the remote function, unaware
+that all the network messaging took place.
+</li>
+</ol>
+
+<p>
+The client code then continues its execution...
+</p>
+<p>
+The major benefits of RPC are twofold: the programmer can now use
+procedure call semantics and writing distributed applications is
+simplified because RPC hides all of the network code into stub
+functions. Also, application programs don’t have to worry about details
+(such as sockets, port numbers, byte ordering).
+Using the OSI reference model, RPC can be viewed as a presentation layer service.
+</p>
+<p>
+Several issues arise when we think about implementing such a facility.
+</p>
+<h1> How do you pass parameters? </h1>
+</p>
+<p>
+<strong>Passing by value</strong> is simple (just copy the value into the network
+message). <strong>Passing by reference</strong> is hard: it makes no sense to pass
+an address to a remote machine. A memory location in a process on one machine is meaningless
+to another process on another machine. 
+If we want to support passing by
+reference, we will have to copy the referenced items in order to ship them
+over in network messages and then copy the new values back to the reference. If remote
+procedure calls are to support more complex structures, such as
+trees and linked lists, they will have to copy the structure into
+a pointerless representation (e.g., a flattened tree), transmit
+it, and reconstruct the data structure on the remote side.
+</p>
+
+<h1> How do we represent data? </h1>
+<div class="right-sidetext">
+Big endian storage stores the most significant byte(s) in low memory.
+Little endian storage stores the most significant byte(s) of a word
+in high memory. Processors such as Sun Sparcs and the old Motorola 680x0 series
+of processors used big
+endian storage. The Intel architecture uses little endian. A number
+of architectures, such as ARM, PowerPC, MiPS, SPARC v-9, and the 
+Intel Itaniam (IA-64) allow you to set a flag in the processor
+to indicate which mode you want to use for data storage.
+</div>
+<p>
+On a local system there are no data incompatibility problems&mdash;the
+data format is always the same. With RPC, a remote machine may have
+different byte ordering, different sizes of integers, and a different
+floating point representation. The problem was dealt with in the IP
+protocol suite by forcing everyone to use big endian byte ordering
+for all 16- and 32-bit fields in headers (hence the use of
+<em>htons</em> and <em>htonl</em> functions when you manipulate IP
+fields). For RPC, we need to select a "standard" encoding for
+all data types that can be passed as parameters if we are to
+communicate with heterogeneous systems. Sun's RPC, for example,
+uses XDR (eXternal Data Representation) for this process. This is an
+implementation that uses <strong>implicit typing</strong>, where only the value
+is transmitted, not the name or type of the variable). Formats such as the ISO data
+representation format (ASN.1—Abstract Syntax Notation), JSON (JavaScript Object Notation), and
+SOAP (Simple Object Access Protocol) use <strong>explicit typing</strong>,
+where the type of each field is transmitted along with the value.
+</p>
+
+<h1>
+What should we bind to?
+</h1>
+<p>
+We need to locate a remote host and the proper process (port or
+transport address) on that host. One of two solutions can be used. One
+solution is to maintain a centralized database that can locate a
+host that provides a type of service (proposed by Birell and Nelson
+in 1984). A server sends a message to a central authority stating
+its willingness to accept certain remote procedure calls. Clients
+then contact this central authority when they need to locate a
+service. Another solution, less elegant but easier to administer,
+is to require the client to know which host it needs to contact. A
+server on that host maintains a database of locally provided services.
+</p>
+
+<h1> 
+What transport protocol should be used?
+</h1>
+<p>
+Some implementations allow only one to be used (e.g. TCP). Most RPC
+implementations support several and allow the user to choose.
+</p>
+
+<h1>
+What happens when things go wrong?
+</h1>
+<p>
+There are more opportunities for errors now. A server can generate
+an error, there might be problems in the network, the server can
+crash, or the client can disappear while the server is running code
+for it. The transparency of remote procedure calls breaks here since
+local procedure calls have no concept of the failure of the procedure
+call. Because of this, programs using remote procedure calls have
+to be prepared to either test for the failure of a remote procedure
+call or catch an exception.
+</p>
+
+<h1> 
+What are the semantics of calling remote procedures?
+</h1>
+<p>
+The <strong>semantics</strong> of calling a regular procedure are simple: a procedure
+is executed exactly once when we call it. With a remote procedure,
+the <strong>exactly once</strong> aspect is quite difficult to achieve. A remote
+procedure may be executed:
+</p>
+<ul>
+<li> 0 times if the server crashed or process died before running the server code.
+</li>
+<li>
+Once if everything works fine. 
+</li>
+<li>
+Once or more if the server crashed
+after returning to the server stub but
+before sending the response. The client won't get the return response
+and may decide to try again, thus executing the function more than
+once. If it doesn’t try again, the function is executed once.
+</li>
+<li>
+More than once if the client times out and retransmits.
+It's possible that the original request may have been delayed. Both may get executed (or not).
+</li>
+</ul>
+
+<p>
+If a function may be run any number of times without harm, it
+is called an <strong>idempotent</strong> function. Examples are functions
+such as time of day, math functions, read static data).
+Otherwise, the function is a <strong>nonidempotent function</strong>.
+An example is a function that appends to or modifies a file.
+</p>
+
+<h1> 
+What about performance?
+</h1>
+<p>
+A regular procedure call is fast&mdash;typically only a few instruction cycles. What
+about a remote procedure call? Think of the extra steps involved.
+Just calling the client stub function and getting a return from it
+incurs the overhead of a procedure call. On top of that, we need
+to execute the code to marshal parameters, call the network routines
+in the OS (incurring a context switch), deal with network latency,
+have the server receive the message and switch to the server process,
+unmarshal parameters, call the server function, and do it all over
+again on the return trip. The overhead of a remote procedure call
+will be much thousands of times slower than a regular procedure call.
+</p>
+
+<h1> Programming with remote procedure calls </h1>
+<figure> <img width="500" height="296" src="images/15-rpc-comp.png">
+<figcaption>Figure 2. RPC complication</figcaption>
+</figure>
+
+<p>
+Although RPC is a language construct, it turns out that most popular programming
+languages (C, C++, Java, Scheme, <em>et alia</em>) do not have
+a concept of remote procedures and are therefore incapable of
+generating the necessary stub functions. To enable the use of remote
+procedure calls with these languages, the commonly adopted solution
+is to provide a separate compiler that generates the client and
+server stub functions. This compiler takes its input from a programmer-specified
+definition of the remote procedure call interface.
+Such a definition is written in an <strong>interface definition language</strong> 
+(<strong>IDL</strong>).
+</p>
+<p>
+The interface definition generally looks similar to function prototype
+declarations: it enumerates the set of functions along with input
+and return parameters. After the <strong>RPC compiler</strong> is run, the client
+and server programs can be compiled and linked with the appropriate
+stub functions (Figure 2). The client procedure has to be modified
+to initialize the RPC mechanism (e.g. locate the server and possibly
+establish a connection) and to handle the failure of remote procedure
+calls.
+</p>
+
+<h1>
+Advantages of remote procedure calls
+</h1>
+<ul>
+<li>
+You don't have to worry about getting a unique transport address
+(a socket on a machine). The server can bind to any port and register
+the port with its RPC name server. The client will contact this
+name server and request the port number that corresponds to the
+program it needs.
+</li>
+<li>
+The system is transport independent. This makes code more portable
+to environments that may have different transport providers in use.
+It also allows processes on a server to make themselves available
+over every transport provider on a system.
+</li>
+<li>
+Applications on the client only need to know one transport address: that
+of the name server process. They don't need to know the port number
+of each server-side process that they want to contact.
+</li>
+<li>
+A function-call interface can be used instead of the send/receive
+(read/write) interface provided by sockets.
+</li>
+</ul>
+
+<!--
+<h1> References </h1>
+<ul>
+<li>
+
+</li>
+
+</ul>
+-->
+
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

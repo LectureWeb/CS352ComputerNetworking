@@ -1,0 +1,495 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Operating Systems Design Syllabus </title>
+
+<link href="../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+#main .schedule {
+	border: 1px solid #888;
+	text-align: left;
+}
+#main .schedule .name, #main .schedule .value {
+	vertical-align: baseline; /* for opera */
+}
+#main .schedule tr {
+	vertical-align: baseline;
+	border-bottom: 1px #888 solid;
+}
+#main .schedule tr.lecture {
+	vertical-align: baseline;
+	/* background: url(images/green-gradient.jpg) repeat-x left top; */
+	background-color: #f4f2f1;
+}
+#main .schedule tr.recitation {
+	vertical-align: baseline;
+	/* background: url(images/pink-gradient.jpg) repeat-x left top; */
+	background-color: #e0d8d8;
+}
+#main .schedule th.week {
+	text-align: right;
+	color: #008080;
+}
+#main .schedule th.week, #main .schedule th.date, #main .schedule th.topic {
+	text-align: left;
+	color: #008080;
+}
+#main td.date {
+	border-left: 1px #888 solid;
+	border-right: 1px #888 solid;
+	white-space:nowrap;
+}
+#main .schedule td.week {
+	text-align: right;
+}
+#main .schedule td.date, #main .schedule td.topic {
+	text-align: left;
+}
+#main .schedule .week, #main .schedule .date, #main .schedule .topic{
+	vertical-align: baseline; /* for opera */
+}
+</style>
+</head>
+
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../about/index.html">About</a></li>
+    <li class="separator"><a href="../about/contact.html">Contact</a></li>
+    <li><a href="../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="../index.html"> Home </a> 
+ 	<li> <a href="../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="index.html"> CS 416 </a> 
+ 	<li> <a href="syllabus.html"> Syllabus </a> 
+</ul>
+</div>
+<!-- --------------------------------------- CONTENT WRAPPER --------------------------------------- -->
+<div id="content-wrapper">
+<!-- --------------------------------------- MAIN --------------------------------------- -->
+<div id="main">
+<div id="headline">
+<h1> Operating Systems: Course Syllabus </h1>
+<h2> Spring 2015 </h2>
+</div>
+
+<p>
+This is an initial version of the syllabus. The syllabus and underlying content may change throughout the semester and
+this page will be updated to reflect those changes.
+</p>
+
+<table class="schedule">
+<tr>
+	<th class="week"> week  </th>
+	<th class="date"> date </th>
+	<th class="topic"> topic<sup>*</sup> </th>
+</tr>
+
+<tr class="recitation"><td class="week"> 0.5 </td>
+	<td class="date"> Jan 21 </td><td class="topic">
+	<strong>recitation canceled</strong>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 1 </td>
+	<td class="date"> Jan 26 </td><td class="topic">
+	<a href="lectures/l-intro.html">
+	Introduction, definitions, & history.
+	<br/>
+	Boot process & EFI/BIOS,
+	OS structure and components
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 1.5 </td>
+	<td class="date"> Jan 28 </td><td class="topic">
+	Introductory recitation
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 2 </td>
+	<td class="date"> Feb 2</td><td class="topic">
+	<a href="lectures/l-processes.html">
+	Process states, context switching, programming processes,
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 2.5 </td>
+	<td class="date"> Feb 4</td><td class="topic">
+	<a href="lectures/l-threads.html">Threads</a>
+<!--
+	<a href="notes/c-tutorials/index.html">
+	Programming processes
+	</a> 
+-->
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 3 </td>
+	<td class="date"> Feb 9 </td><td class="topic">
+	<a href="lectures/l-sync.html">Process synchronization:
+	messages, mailboxes, rendezvous,
+	synchronization with messages</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 3.5 </td>
+	<td class="date"> Feb 11 </td><td class="topic">
+	Assignment discussion
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 4 </td>
+	<td class="date"> Feb 16 </td><td class="topic">
+	<a href="lectures/l-scheduling.html">Process scheduling,
+	real-time scheduling</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 4.5 </td>
+	<td class="date"> Feb 18 </td><td class="topic">
+	Review for exam 1
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 5 </td>
+	<td class="date"> Feb 23 </td><td class="topic">
+	<a href="lectures/l-memory.html">
+	Memory management: virtual memory, MMU architecture
+	</a>
+	<br/>
+	<a href="./exam/index.html"><strong>EXAM 1</strong></a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 5.5 </td>
+	<td class="date"> Feb 25 </td><td class="topic">
+	<strong>Recitation canceled</strong>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 6 </td>
+	<td class="date"> Mar 2 </td><td class="topic">
+	Exam review
+	<br/>
+	<a href="lectures/l-memory.html">
+	Memory management: working sets, paging algorithms
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 6.5 </td>
+	<td class="date"> Mar 4 </td><td class="topic">
+	Programming project discussion
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 7 </td>
+	<td class="date"> Mar 9 </td><td class="topic">
+	<a href="lectures/l-memory.html">Kernel memory management</a>,
+	<br/>
+	<a href="lectures/l-devices.html">
+	Devices: block & character I/O, disks
+	</a>
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 7.5 </td>
+	<td class="date"> Mar 11 </td><td class="topic">
+	No recitation: project help
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 8 </td>
+	<td class="date"> Mar 16 </td><td class="topic">
+	<strong>Spring break: no class </strong>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 8.5 </td>
+	<td class="date"> Mar 18 </td><td class="topic">
+	<strong>Spring break: no recitation </strong>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 9 </td>
+	<td class="date"> Mar 23 </td><td class="topic">
+	<a href="lectures/l-filesystems.html">
+	File systems 
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 9.5 </td>
+	<td class="date"> Mar 25 </td><td class="topic">
+	Pre-exam review
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 10 </td>
+	<td class="date"> Mar 30 </td><td class="topic">
+	<a href="lectures/l-specialfs.html">
+	Log-structured and
+	special file systems</a>
+	<br/>
+	<a href="./exam/index.html"><strong>EXAM 2</strong></a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 10.5 </td>
+	<td class="date"> Apr 1 </td><td class="topic">
+	Project discussion
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 11 </td>
+	<td class="date"> Apr 6 </td><td class="topic">
+	Exam review
+	<br/>
+	<a href="lectures/l-net.html">
+	Network protocols
+	</a>
+	<br/>
+	<a href="lectures/l-sockets.html">
+	Sockets architecture
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 11.5 </td>
+	<td class="date"> Apr 8 </td><td class="topic">
+	<strong>recitation canceled</strong>
+<!--
+	<a href="lectures/l-crypto.html">
+	Security concepts: intro to cryptography
+	</a>
+-->
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 12 </td>
+	<td class="date"> Apr 13 </td><td class="topic"> 
+	<a href="lectures/l-nfs.html">
+	Remote file systems
+	</a>
+	<br/>
+	<a href="lectures/l-protection.html">
+	Protection
+	</a>,
+	<a href="lectures/l-security.html">
+	Security
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 12.5 </td>
+	<td class="date"> Apr 15 </td><td class="topic">
+	<a href="lectures/l-crypto.html">
+	Cryptography - intro</a>,
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 13 </td>
+	<td class="date"> Apr 20 </td><td class="topic"> 
+	<a href="lectures/l-security.html">
+	Security</a> (continued),
+	<br/>
+	<a href="lectures/l-auth.html">
+	Authentication
+	</a>
+	</td></tr>
+
+<tr class="recitation"><td class="week"> 13.5 </td>
+	<td class="date"> Apr 22 </td><td class="topic"> 
+	Pre-exam review
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 14 </td>
+	<td class="date"> Apr 27 </td><td class="topic">
+	<a href="lectures/l-vm.html">
+	Virtualization, Virtual machines
+	</a>
+	<br/>
+	<a href="./exam/index.html"><strong>EXAM 3</strong></a>
+	</td></tr>
+
+<tr class="reciatation"><td class="week"> 14.5 </td>
+	<td class="date"> Apr 29 </td><td class="topic">
+	<strong>recitation canceled</strong>
+	</td></tr>
+
+<tr class="lecture"><td class="week"> 15 </td>
+	<td class="date"> May 4 </td><td class="topic">
+	Exam review
+	<br/>
+	<a href="lectures/l-windowing.html">
+	Graphics &amp; windowing systems
+	</a>
+	<br/>
+	<a href="lectures/l-power.html">
+	Power management
+	</a>
+	<!-- Mobility, Android OS 
+	<br/>
+	Concepts from operating systems.
+	-->
+	</td></tr>
+
+<tr class="reciatation"><td class="week"> 15.5 </td>
+	<td class="date"> May 6 </td><td class="topic">
+	<strong>Reading days: no recitation</strong>
+	</td></tr>
+
+<tr><td class="week"> 16 </td>
+	<td class="date"> May 11 </td><td class="topic">
+	<strong>FINAL EXAM: 8:00-11:00pm </strong> 
+	</td></tr>
+	</table>
+<p>
+Go
+<a href="./notes/index.html"> here </a>
+to get lecture notes and other course documentation.
+</p>
+<div id="footnotes">
+<sup>*</sup>Subject to change without notice.
+</div>
+
+</div> <!-- main -->
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="index.html"> Main course page </a> </li>
+	<li> <a href="news.html"> News </a> </li>
+	<li> <a href="syllabus.html"> Syllabus </a> </li>
+	<li> <a href="hw/index.html"> Homework </a> </li>
+	<li> <a href="notes/index.html"> Documents </a> </li>
+	<li> <a href="exam/index.html"> Exam info </a> </li>
+	<li> <a href="grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="about.html"> About the course </a> </li>
+	<li> <a href="prereq.html"> Prerequisites </a> </li>
+	<li> <a href="things.html"> Things you need </a> </li>
+	<li> <a href="policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

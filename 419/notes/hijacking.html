@@ -1,0 +1,592 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Program hijacking</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Program hijacking</h1>
+								<h2>Code injection</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>September 20, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<h1 id="programhijacking">Program Hijacking</h1>
+
+<p>Program hijacking refers to techniques that can be used to take control
+of a program and have it do something other than what it was intended to
+do. One class of techniques uses <strong>code injection</strong>, in which an
+adversary manages to add code to the program and change the
+program’s execution flow to run that code.</p>
+
+<p>The best-known set of attacks are based on <strong>buffer overflow</strong>.
+Buffer overflow is the condition where a programmer allocates a
+chunk of memory (for example, an array of characters) but neglects
+to check the size of that buffer when moving data into it.
+Data will spill over into adjacent memory and overwrite whatever
+is in that memory.</p>
+
+<p>Languages such as C, C++, and assembler are susceptible to
+buffer overflows since the language does not have a means of
+testing array bounds. Hence, the compiler cannot generate code
+to validate that data is only going into the allocated buffer. For example,
+when you copy a string using <em>strcpy</em>(char *dest, char *src), you
+pass the function only source and destination pointers. The
+<em>strcpy</em> function has no idea how big either of the buffers are.</p>
+
+<h2 id="stack-basedoverflows">Stack-based overflows</h2>
+
+<p>When a process runs, the operating system’s program loader
+allocates a region for the executable code and static data (called
+the <strong>text</strong> and <strong>data</strong> segments), a region for the <strong>stack</strong>,
+and a region for the <strong>heap</strong> (used for dynamic memory
+allocation, such as by <em>malloc</em>).</p>
+
+<p>Just before a program calls a function, it pushes
+the function&#8217;s parameters onto
+the stack. When the call is
+made, the return address gets pushed on the stack.
+On entry to the function that was called,
+the function pushes the current <strong>frame pointer</strong>
+(a register in the CPU)
+on the stack, which
+forms a linked list to the previous frame pointer and provides
+an easy way to revert the stack to where it was before making the
+function call. The frame pointer register is then set
+to the current top of the stack.
+The function then adjusts the stack pointer to make room
+for hold local variables, which live on the stack.
+This region for the function&#8217;s local data is called the <strong>stack frame</strong>.
+Ensuring that the stack pointer is always pointing
+to the top of the stack enables the function to get interrupts
+or call other functions without overwriting
+anything useful on the stack.
+The compiler generates code to
+reference parameters and local
+variables as offsets from the current frame pointer register.</p>
+
+<p>Before a function returns, the compiler generates code to:</p>
+
+<ul>
+<li><p>Adjust the stack back to point to where it was before the stack expanded to make room for local variables. This is done by copying the frame pointer to the stack pointer.</p></li>
+<li><p>Restore the previous frame pointer by popping it off the stack (so that local variables for the previous function could be referenced properly).</p></li>
+<li><p>Return from the function. Once the previous frame pointer has been popped off the stack, the
+stack pointer points to a location on the stack that holds the return address.</p></li>
+</ul>
+
+<h3 id="simplestackoverflows">Simple stack overflows</h3>
+
+<p>Local variables are allocated on the stack and the stack grows <em>downward</em> in memory. Hence, the top of the stack is in lower memory than the start, or bottom,
+of the stack. If a buffer (e.g., <code>char buf[128]</code>) is defined as a local variable,
+it will reside on the stack. As the buffer gets filled up, its contents
+will be written to higher and higher memory addresses. If the buffer
+overflows, data will be written further down the stack (in higher memory),
+overwriting the
+contents of any other variables that were allocated for that function
+and eventually overwriting the saved frame pointer and the saved
+return address.</p>
+
+<p>When this happens and the function tries to return, the return address
+that is read from the stack will contain garbage data, usually a
+memory address that is not mapped into the program’s memory.
+As such, the program will crash when the function returns and tries to
+execute code at that invalid address. This is an <strong>availability attack</strong>.
+If we can exploit the fact that a program does not check the bounds
+of a buffer and overflows the buffer, we can cause a program to crash.</p>
+
+<h3 id="subvertingcontrolflowthroughastackoverflow">Subverting control flow through a stack overflow</h3>
+
+<p>Buffer overflow can be used in a more malicious manner.
+The buffer itself can be filled with bytes of valid machine code.
+If the attacker knows the exact size of the buffer, she can write
+just the right number of bytes to write a new return address into
+the very same region of memory on the stack that held the return address
+to the parent function. This new return address points to the
+start of the buffer that contains the <strong>injected</strong> code. When
+the function returns, it will “return” to the new code in the buffer
+and execute the code at that location.</p>
+
+<h2 id="off-by-onestackoverflows">Off-by-one stack overflows</h2>
+
+<p>As we saw, buffer overflow occurs because of programming bugs: the
+programmer neglected to make sure that the data written to
+a buffer does not overflow. This often occurs because the
+programmer used old, <strong>unsafe</strong> functions that do not
+allow the programmer to specify limits. Common functions
+include:</p>
+
+<pre><code>- strcpy(char *dest, char *src)
+
+- strcat(char *dest, char *src)
+
+- sprintf(char *format, ...)
+</code></pre>
+
+<p>Each of these functions has a <strong>safe</strong> counterpart that accepts
+a <em>count</em> parameter so that the function will never copy more than
+<em>count</em> number of bytes:</p>
+
+<pre><code>- strcpy(char *dest, char *src, int count)
+
+- strcat(char *dest, char *src, int count)
+
+- sprintf(char *format, int count,  ...)
+</code></pre>
+
+<p>You’d think this would put an end to buffer overflow problems.
+However, programmers may miscount or they may choose
+to write their own functions that do not check array bounds correctly.
+A common error is an <strong>off-by-one error</strong>. For example, a programmer
+may declare a buffer as:</p>
+
+<pre><code>char buf[128];
+</code></pre>
+
+<p>and then copy into it with:</p>
+
+<pre><code>for (i=0; i &lt;= 128; i++)
+    buf[i] = stuff[i];
+</code></pre>
+
+<p>The programmer inadvertently used a <code>&lt;=</code> comparison instead of <code>&lt;</code>.</p>
+
+<p>With off-by-one bounds checking, there is no way that
+malicious input can overwrite the return address on the
+stack: the copy operation would stop before that time.
+However, if the buffer is the first variable that is
+allocated on the stack, an off-by-one error can overwrite
+one byte of the saved frame pointer.</p>
+
+<p>The potential for damage depends very much on what the
+value of that saved frame pointer was and how the
+compiler generates code for managing the stack. In the worst case,
+it could be set up to a value that is 255 bytes lower in memory.
+If the frame pointer is modified, the function will still
+return normally. However, upon returning, the compiler
+pops the frame pointer from the stack to restore the
+saved value of the calling function&#8217;s frame pointer, which
+was corrupted by the buffer overflow.
+Now the program has a modified frame pointer.</p>
+
+<p>Recall that references to a function&#8217;s variables and parameters are
+expressed as offsets from the current frame pointer.
+Any references
+to local variables may now be references to data in the
+buffer. Moreover, should that function return, it
+will update its stack pointer to this buffer area and
+return to an address that the attacker defined.</p>
+
+<h2 id="heapoverflows">Heap overflows</h2>
+
+<p>Not all data is allocated on the stack: only local variables.
+Global and static variables are placed in a region of memory
+right above the executable program. Dynamically allocated
+memory (e.g., via <em>new</em> or <em>malloc</em>) comes from an area
+of memory called the <em>heap</em>. In either case, since this memory
+is <em>not</em> the stack, it does not contain return addresses so
+there is no ability for a buffer overflow attack to overwrite
+return addresses.</p>
+
+<p>We aren&#8217;t totally safe, however. A buffer overflow will
+cause data to spill over into higher memory addresses above
+the buffer that may contain other variables. If the attacker
+knows the order in which variables are allocated, they could be overwritten.
+While these overwrites will not change a return address,
+they can change things such as filenames, lookup tables,
+or linked lists. Some programs make extensive use of function
+pointers, which may be stored in global variables or in dynamically-allocated structures
+such as linked lists on a heap. If a buffer
+overflow can overwrite a function pointer then it can change
+the execution of the program: when that function is called,
+control will be transferred to a location of the attacker&#8217;s
+choosing.</p>
+
+<p>If we aren’t sure of the exact address at which execution will
+start, we can fill a buffer with a bunch of NOP (no operation)
+instructions prior to the injected code. If the processor jumps
+anywhere in that region of memory, it will happily execute these
+NOP instructions until it eventually reaches the injected code.
+This is called a
+<strong>NOP slide</strong>, or a <strong>landing zone</strong>.</p>
+
+<h2 id="formatstringattackswithprintf">Format string attacks with printf</h2>
+
+<p>The family of <em>printf</em> functions are commonly used in C and C++
+to create formatted output. They accept a format string that
+defines what will be printed, with % characters representing formatting
+directives for parameters. For example, </p>
+
+<pre><code>printf(&quot;value = %05d\n&quot;, v);
+</code></pre>
+
+<p>Will print a string such as</p>
+
+<pre><code>value = 01234
+</code></pre>
+
+<p>if the value of <code>v</code> is 1234. </p>
+
+<h3 id="readingarbitrarymemory">Reading arbitrary memory</h3>
+
+<p>Occasionally, programs will use a format string that could be modified.
+For instance, the format string may be a local variable that is a pointer
+to a string. This local variable may be overwritten by a buffer overflow
+attack to point to a different string.
+It is also common, although improper, for a programmer to use
+<code>printf(s)</code> to print a fixed string <code>s</code>.
+If <code>s</code> is a string that is generated by the attacker, it may
+contain unexpected formatting directives.</p>
+
+<p>Note that <em>printf</em> takes
+a variable number of arguments and matches each
+% directive in the format string with a parameter. If there are not
+enough parameters passed to <em>printf</em>, the function does not know that:
+it assumes they are on the stack and will happily read whatever value
+is on the stack where it <em>thinks</em> the parameter should be.
+This gives an attacker the ability to read arbitrarily deep into the
+stack. For example, with a format string such as:</p>
+
+<pre><code>printf(&quot;%08x\n%08x\n%08x\n%08x\n&quot;);
+</code></pre>
+
+<p>printf will expect four parameters, all of which are missing. It will instead
+read the next four values that are on the top of the stack and print each of those
+integers as an 8-character-long hexadecimal value prefixed with leading
+zeros (&#8220;%08x\n&#8221;). </p>
+
+<h3 id="writingarbitrarymemory">Writing arbitrary memory</h3>
+
+<p>The <em>printf</em> function also contains a somewhat obscure formatting directive: %n.
+Unlike other % directives that expect to <em>read</em> a parameter and format it,
+%n instead <em>writes</em> to the address corresponding to that parameter.
+It writes the number of characters that it has output thus far. For example,</p>
+
+<pre><code>printf(“paul%n says hi”, &amp;printbytes);
+</code></pre>
+
+<p>will store the number 4 (<code>strlen(&quot;paul&quot;)</code>) into the variable <code>printbytes</code>.
+An attacker who can change the format specifier may be able to write to
+arbitrary memory. Each % directive to print a variable will cause <em>printf</em>
+to look for the next variable in the next slot in the stack. Hence,
+format directives such as %x, %lx, %llx will cause <em>printf</em> to skip over the
+length of an int, long, or long long and get the next variable from
+the following location on the stack. Thus, just like reading the stack, we
+can skip through any number of bytes on the stack until we get to the address
+where we want to modify a value. At that point, we insert a %n directive in the
+format string, which will modify that address on the stack with the number
+of bytes that were output.
+We can precisely control the value that will be written
+by specifying how many bytes are output as part of the format string.
+For example, a format of <code>%.55000x</code> tells printf to output a value to
+take up 55,000 characters. By using formats like that for output values,
+we can change the count that will be written with %n. Remember, we don&#8217;t care
+what printf actually prints; we just want to force the byte count to be
+a value we care about, such as the address of a function we want to call.</p>
+
+<h2 id="defenseagainsthijackingattacks">Defense against hijacking attacks</h2>
+
+<h3 id="betterprogramming">Better programming</h3>
+
+<p>Hijacking attacks are the result of sloppy programming: a lack of bounds
+checking that results in overflows. They can be eliminated if the programmer
+never uses unsafe functions (e.g., use <em>strncpy</em> instead of <em>strcpy</em>) and
+is careful about off-by-one errors.</p>
+
+<p>A programer can use a technique called <strong><em>fuzzing</em></strong> to locate buffer overflow
+problems. Whenever a string can be provided by the user, the user will enter
+extremely long strings with well-defined patterns (e.g., &#8220;$$$$$$&#8230;&#8221;). If the app
+crashes because a buffer overflow destroyed a return address on the stack,
+the programmer can then load the core dump into a debugger, identify where
+the program crashed and search
+for a substring of the entered pattern (&#8220;$$$$$&#8221;) to identify which buffer was
+affected.</p>
+
+<p>Buffer overflows can be avoided by using languages with stronger type
+checking and array bounds checking. Languages such as Java, C#, and Python
+check array bounds. C and C++ do not. However, it is sometimes difficult
+to avoid using C or C++.</p>
+
+<p>Tight specification of requirements, coding to those requirements, and
+constructing tests based on those requirements helps avoid buffer overflow
+bugs. If input lengths are specified, they are more likely to be coded
+and checked. Documentation should be explicit, such as
+<em>&quot;user names longer than 32 bytes must be rejected.”</em></p>
+
+<h3 id="dataexecutionpreventiondep">Data Execution Prevention (DEP)</h3>
+
+<p>Buffer overflows affect data areas: either the stack, heap, or static data areas.
+There is usually no reason that those regions of code should contain executable code.
+Hence, it makes sense for the operating system to set the processor&#8217;s
+memory management unit (MMU) to turn off execute
+permission for memory pages in those regions.</p>
+
+<p>This was not possible with early Intel or AMD processors: their MMU did not
+support enabling or disabling execute permissions. All memory could
+contain executable code. That changed in 2004, when Intel and AMD finally
+added an <strong>NX</strong> (<strong>no-execute</strong>) bit to their MMU&#8217;s page tables. On Intel
+architectures, this was called the <strong>Execute Disable Bit</strong> (<strong>XD</strong>).
+Operating system support followed.
+Windows, Linux, and macOS all currently support DEP.</p>
+
+<p>DEP cannot always be used. Some environments, such as some LISP
+interpreters actually do need execution enabled in their stack and
+some environments need executable code in their heap section (to support dynamic
+loading, patching, or just-in-time compilation). DEP also does not guard against data modification
+attacks, such as heap-based overflows or some printf attacks.</p>
+
+<h3 id="depattacks">DEP attacks</h3>
+
+<p>Attackers came up with some clever solutions to defeat DEP.
+The first of these is called <strong>return-to-libc</strong>*.
+Buffer overflows still allow us to corrupt the stack. We just
+cannot execute code on the stack. However, there is already
+a lot of code sitting in the program and the libraries it uses.
+Instead of adding code into the buffer, the attacker merely
+overflows a buffer to create a new return address and
+parameter list on the stack. When the function returns,
+it switches control to the new return address. This
+return address will be an address in the standard C library (libc),
+which contains functions such as <em>printf</em>, <em>system</em>, and
+front ends to system calls. All that an attacker often needs to
+do is to push parameters that point to a string in the buffer
+that contains a command to execute and then &#8220;return&#8221; to the
+libc <em>system</em> function, whose function is to execute a parameter
+as a shell command.</p>
+
+<p>A more sophisticated variant of return-to-libc is
+<strong>Return Oriented Programming</strong> (<strong>ROP</strong>).
+Return oriented programming is similar to return-to-libc
+but realizes that execution can branch to any arbitrary point
+in any function in any loaded library. The function will
+execute a series of instructions and eventually return.
+The attacker will overflow the stack with
+data that now tells this function where to &#8220;return&#8221;.
+Its return can jump to yet another arbitrary point in another
+library. When that returns, it can &#8211; once again &#8211; be
+directed to an address chosen by the intruder that
+has been placed further down the stack, along with frame pointers,
+local variables, and parameters.</p>
+
+<p>There are lots and lots of <em>return</em> instructions among
+all the libraries normally used by programs.
+Each of these tail ends of a function is called a <strong>gadget</strong>.
+It has been
+demonstrated that using carefully chosen gadgets
+allows an attacker to push a string of return addresses that
+will enable the execution of arbitrary algorithms.
+To make life easier for the attacker, tools have been
+created that search through libraries and identify
+useful gadgets. A ROP compiler then allows the attacker to
+program operations using these gadgets.</p>
+
+<h3 id="addressspacelayoutrandomization">Address Space Layout Randomization</h3>
+
+<p>Stack overflow attacks require knowing and injecting an
+address that will be used as
+a target when a function returns. ROP also requires
+knowing addresses of all the entry points of gadgets.
+<strong>Address Space Layout Randomization</strong> (<strong>ASLR</strong>)
+is a technique that was developed to have the operating system&#8217;s program
+loader pick random starting points for the executable
+program, static data, heap, stack, and shared libraries.
+Since code and data resides in different locations each
+time the program runs, the attacker is not able to program
+buffer overflows with useful known addresses.
+For ASLR to work, the program and all libraries must be
+compiled to use <strong>position independent code</strong> (<strong>PIC</strong>),
+which uses relative offsets instead of absolute memory
+addresses.</p>
+
+<h3 id="stackcanaries">Stack canaries</h3>
+
+<p>A <strong>stack canary</strong> is a compiler technique to ensure that
+a function will not be allowed to return if a buffer overflow
+took place that may have clobbered the return address.</p>
+
+<p>At the start of a function,
+the compiler adds code to generate a random integer (the <strong>canary</strong>)
+and push it onto the stack before allocating space for
+the function&#8217;s local variables (the entire region of the stack used by a local function is called a frame).
+The canary sits between the return address and these variables. If
+there is a buffer overflow in a local variable that tries to change
+the return address, that overflow will have to clobber the value
+of the canary.</p>
+
+<p>The compiler generates code to have the function
+check that the canary has a valid value before returning. If the
+value of the canary is not the original value then a buffer overflow
+occurred and it’s very likely that the return value has been altered.</p>
+
+<p>However, you may still have a buffer overflow that does not change
+the value of the canary or the return address. Consider a function
+that has two local arrays (buffers). They’re both allocated on the
+stack within the same stack frame. If array A is in lower memory
+than array B then an overflow in A can affect the contents of B.
+Depending on the code, that can alter the way the function works.
+The same thing can happen with scalar variables (non-arrays). For
+instance, suppose the function allocates space for an integer
+followed by an array. An overflow in the array can change the value
+of the integer that’s in higher memory. The canary won’t detect
+this. Even if the overflow happened to clobber the return value as
+well, the check is made only when the function is about to return.
+Meanwhile, it’s possible that the overflow that caused other variables
+to change also altered the behavior of the function.</p>
+
+<p>Stack canaries cannot fix this problem in general. However, the
+compiler (which creates the code to generate them and check them)
+can take steps to ensure that a buffer overflow cannot overwrite
+non-array variables, such as integers and floats. By allocating
+arrays first (in higher memory) and then scalar variables, the
+compiler can make sure that a buffer overflow in an array will not
+change the value of scalar variables. One array overflowing to
+another is still a risk, however, but it is most often the scalar
+variables that contain values that define the control flow of a
+function.</p>
+
+<h1 id="intelcontrol-flowenhancementtechnologycet">Intel Control-Flow Enhancement Technology (CET)</h1>
+
+<p>Intel introduced a set of features called Control-Flow Enhancement technology.
+This adds two new protection mechanisms to the processor and was made available on processors in mid&#8211;2020.</p>
+
+<p>Overflowing a buffer has the ability modify the return address of a function. This is because local variables share the same stack as return addresses.</p>
+
+<p>With CET, Intel introduces a secondary stack that stores only return addresses.
+This is called a <strong>shadow stack</strong>. It is protected from tampering by an extra attribute in the MMU that disallows the use of regular store instructions to modify its contents. Writes to this stack are restricted only to control flow transfer instructions.</p>
+
+<p>Buffer overflows on the main stack cannot touch the shadow stack and thus cannot change the control flow. </p>
+
+<p>The second feature Intel introduced is called <strong>indirect branch tracking</strong>.
+This was designed to restrict a program’s ability to use jump tables.</p>
+
+<p>A jump table is a table of memory locations to which a program branch. It is commonly used for operations such as implementing switch statements and lookup tables. Jump tables are lists of indirect branches. When implemented in C, they are a list of function pointers.</p>
+
+<p>An attack related to Return Oriented Programming is <strong>Jump Oriented Programming</strong>, or <strong>JOP</strong>. JOP uses sequences of code that end in indirect jumps or calls. Like ROP, these sequences are used to cause unintended program behavior. Also like ROP, they cause a program to jump some chosen point within a function.</p>
+
+<p>Indirect branch tracking adds a new ENDBRANCH instruction to allow a programmer to specify valid targets for indirect jumps or calls in a program. An indirect branch must jump to an ENDBRANCH instruction. If a hijacked program forces a branch to some other location, it will not hit an ENDBRANCH instruction and be treated as a violation.</p>
+
+							</section>
+							<footer class="main">
+								Last modified November 25, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

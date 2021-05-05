@@ -1,0 +1,532 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Assignment 3 </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+
+.subhead {
+	background-color: #ddd;
+	text-align: center;
+	margin-left: 5em;
+	margin-right: 5em;
+	border: 1px solid #555;
+}
+.note {
+	font-style: italic;
+	color: #444;
+}
+#main .faqlist dd {
+        margin-left: 2em;
+        margin-bottom: 2em;
+}
+#main .faqlist dt {
+        background-color: #D1DBDB;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        padding-top: 0.25em;
+        padding-left: 0.5em;
+        color: black;
+	font-weight: normal;
+}
+#main .faqlist dt strong, #main .faqlist dt b {
+	color: red;
+}
+#main .faqlist dt p + p {
+	padding-top: 1em;
+}
+#main .faqlist dt p {
+	margin-bottom: 0;
+}
+#main .newslist dt {
+        background-color: white;
+        color: #555;
+}
+#main .answer {
+	color: #a00000;
+}
+
+#main table.doclist {
+	width: 80%;
+}
+
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+#main figure {
+	float: left; 
+	display: block
+}
+
+</style>
+</head>
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 352 </a>
+        <li> <a href="../notes/index.html"> Assignments </a>
+        <li> <a href="../notes/a-3.html"> Assignment 3 </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Assignment 3 </h1>
+</div>
+<div class="subhead"> Due February 26, 2016 11:59pm via sakai </div>
+<h1 id="supplementalinformation">Supplemental information</h1>
+
+<ul>
+<li><a href="a-3-faq.html">FAQ</a></li>
+<li><a href="../notes/content/02-sockets-slides.pdf">Lecture 2 notes</a> the network stack and sockets</li>
+<li><a href="../notes/content/02r-sockets-programming-slides.pdf">Recitation notes</a> Java TCP sockets programming</li>
+<li><a href="java-tcp-demo.zip">Files</a> for the Java TCP sockets programming example</li>
+<li><a href="../notes/sockets/index.html">Sockets programming tutorial</a></li>
+</ul>
+
+<h1 id="objective">Objective</h1>
+
+<p>Your goal in this assignment is to write a multi-threaded TCP sockets-based messaging system.
+You will write one server and two command-line clients:</p>
+
+<ul>
+<li><strong>Server</strong>: stores all messages</li>
+<li><strong>Post</strong> client: post a new message to a group</li>
+<li><strong>Get</strong> client: retrieve all messages from a specific group</li>
+</ul>
+
+<h1 id="languages">Languages</h1>
+
+<p>You may do this assignment in C, C++, Java, or Python.</p>
+
+<h1 id="groups">Groups</h1>
+
+<p>You may work on this assignment either individually or in a group of up to four members.
+Your work will be judged to a higher standard if you have more group members.
+With a group of four, for example, I expect flawless program execution, cleanly formatted
+code with good comments, and a report with detailed test cases explained that
+is so beautifully written that I will weep tears of joy upon seeing it.</p>
+
+<h1 id="deadline">Deadline</h1>
+
+<p>Be sure to allot sufficient time to do this assignment. If you are comfortable with
+programming, you should be able to finish this assignment within an hour. Do not assume that,
+however. You may find yourself spending a lot more time than you budgeted in parsing requests and
+responses, formatting a date, or wondering why your client is not connecting to your server.</p>
+
+<p>Develop incrementally. Take a look at the recitation notes as an example of how you can add
+tiny amounts of code and then test it. Do not write a few hundred lines of code and then try to debug it.
+That is a recipe for disaster.</p>
+
+<p>Be aware that there is an exam coming up soon as well as possible other projects and activities in
+your life. Start early and budget your time. Make sure that you allot enough time for testing and writing your report.</p>
+
+<h1 id="background">Background</h1>
+
+<p>First be sure that you understand sockets programming.
+The textbook covers basic examples using Python.
+We covered sockets using Java in recitation and you can consult the notes in the <em>Supplemental information</em>
+section above for a walkthrough in Java and C along with example code.
+There are also numerous resource on the web.</p>
+
+<h1 id="requirements:postclient">Requirements: <em>post</em> client</h1>
+
+<p>The <strong>post</strong> client allows you to post a message to a specific group on the server.
+The command line accepts an optional <strong>-h</strong> followed by the server&#8217;s host name, an optional <strong>-p</strong> followed by the server&#8217;s port number, and a mandatory group name:</p>
+
+<pre><code>post [-h hostname] [-p port] groupname
+</code></pre>
+
+<p>If a hostname is missing, use <strong>&#8220;localhost&#8221;</strong> as the default name. The name <strong>localhost</strong> is a reserved
+name that refers to the local computer and accesses the network via the loopback network interface, bypassing
+the network hardware. DO NOT hardcode the name of any specific host. Chances are high that I will not be using that host in my testing. If a port number is missing, use a hard-coded default port number that is the same as the default port that your server uses (a number in the range 1024 through 65535).</p>
+
+<p>Examples of valid command lines are:</p>
+
+<pre><code>post -h ls.cs.rutgers.edu -p 3311 notices
+post -h ls.cs.rutgers.edu jokes
+post -p 3311 garbage
+post stuff
+</code></pre>
+
+<p>The command will be invoked in a manner that makes sense to the environment. For example, if the assignment is written in java, you would run</p>
+
+<pre><code>java post -h ls.cs.rutgers.edu -p 3311 notices
+</code></pre>
+
+<p>or, if programming in python</p>
+
+<pre><code>python post.py -h ls.cs.rutgers.edu -p 3311 notices
+</code></pre>
+
+<p>Any invalid command line should result in an error message and the program exiting with an exit
+status of 1.</p>
+
+<p>After the client connects to the server, it will read from the standard input and send all bytes read to the server, where they will constitute a new message for that group. For example:</p>
+
+<pre><code>echo &quot;What do you call a bear with no teeth? -- A gummy bear!&quot; | post -h ls.cs.rutgers.edu jokes
+</code></pre>
+
+<p>or</p>
+
+<pre><code>post -h null.cs.rutgers.edu -p 30123 test &lt;&lt;!
+This is just a test.
+It is a test message to a test group.
+!
+</code></pre>
+
+<p>Of course, you can just type a message after running the <em>post</em> command and end it by
+typing whatever your end-of-file character is. Note that your client should <em>not</em> check for any specific end-of-file character but should just detect an end of file condition on the input stream since end of file characters only make sense to, and are processed by, the terminal driver.</p>
+
+<h2 id="postprotocolspecification">Post protocol specification</h2>
+
+<p>The <strong>post</strong> client follows the following protocol.</p>
+
+<figure>
+<img src="images/post-protocol.png" alt="post-protocol" id="post-protocol" title="Post protocol" style="width:600px;" />
+<figcaption>post-protocol</figcaption></figure>
+
+
+
+<hr />
+
+<p>Once the command line is parsed and validated, the client sends a <strong>post</strong> command to the server that contains the name of the group. This is a text message containing the string &#8220;post&#8221; followed by one or more spaces, the group name, and a newline characger (&#8216;\n&#8217;). The group name contains only printable characters and no white space (you may assume the ASCII character set; see the FAQ).</p>
+
+<p>The server either accepts or rejects this request and sends a response back to the client. This is a newline-terminated line of text. If the response starts with the string &#8220;error&#8221;, the remainder of the line contains the error message. The client will print this message and exit. If the response is the string &#8220;ok&#8221; then the client continues on.</p>
+
+<p>Next, the client sends the user&#8217;s ID name. This is the user&#8217;s login name. In Java, you can obtain this via a call to</p>
+
+<pre><code>System.getProperty(&quot;user.name&quot;)
+</code></pre>
+
+<p>This call is not foolproof since it reads an environment variable but it is portable and good enough for the assignment. If you&#8217;re using C, you can get the login name as a string (char *) via a call to</p>
+
+<pre><code>getlogin()
+</code></pre>
+
+<p>The server validates the syntax of the commnd and the user name to ensure that it is a string of printable text and returns either an error message or an &#8220;ok&#8221; message. Again, the client prints any returned error and exits. </p>
+
+<p>Otherwise, the client now reads from the standard input and writes everything it reads to the socket. Once it receives an end of file on the input stream, it closes the socket and exits.</p>
+
+<h1 id="requirements:getclient">Requirements: <em>get</em> client</h1>
+
+<p>The <strong>get</strong> client allows you to retrieve all message from a specific group on the server.
+Just like the <strong>post</strong> command, the <strong>get</strong> command line accepts an optional <strong>-h</strong> followed byt the server&#8217;s host name, an optional <strong>-p</strong> followed by the server&#8217;s port number, and a mandatory group name:</p>
+
+<pre><code>get [-h hostname] [-p port] groupname
+</code></pre>
+
+<p>If a hostname is missing, use <strong>localhost</strong> as the default name. If a port number is missing, use a hard-coded default port number that is the same as the default port that your server uses.</p>
+
+<p>Examples of valid command lines are:</p>
+
+<pre><code>get -h grep.cs.rutgers.edu -p 3311 notices
+get -h vi.cs.rutgers.edu jokes
+get -p 3311 garbage
+get stuff
+</code></pre>
+
+<p>Any invalid command line should result in an error message and the program exiting with an exit
+status of 1.</p>
+
+<p>After the client connects to the server and sends its request, it will receive message count followed by a list of messages for that group. Each message is preceded with a header that identifies when it was posted, from where, and by whom. For example:</p>
+
+<pre><code>$ get -h ls.cs.rutgers.edu jokes
+2 messages
+From paul /192.168.60.142:58713 Fri Feb 05 16:13:14 EST 2016
+
+What do you call a bear with no teeth? -- A gummy bear!
+
+From paul /192.168.60.132:42786 Fri Feb 05 16:15:38 EST 2016
+
+If at first you don't succeed,
+destroy all evidence that you tried.
+</code></pre>
+
+<p>When the client has no more content to read from the server, it exits.</p>
+
+<h2 id="getprotocolspecification">Get protocol specification</h2>
+
+<p>The <strong>get</strong> client follows the following protocol.</p>
+
+<figure>
+<img src="images/get-protocol.png" alt="get-protocol" id="get-protocol" title="Get protocol" style="width:600px;" />
+<figcaption>get-protocol</figcaption></figure>
+
+
+
+<hr />
+
+<p>Once the command line is parsed and validated, the client sends a <strong>get</strong> command to the server that contains the name of the group. This is a text message containing the string &#8220;get&#8221; followed by one or more spaces, the group name, and a newline characger (&#8216;\n&#8217;). The group name contains only printable characters and no white space.</p>
+
+<p>The server either accepts or rejects this request and sends a response back to the client. This is a newline-terminated line of text. If the response starts with the string &#8220;error&#8221;, the remainder of the line contains the error message. The client will print this message and exit. If the response is the string &#8220;ok&#8221; then the client continues on.</p>
+
+<p>Next, the client receives a message count. This tells it the number of messages that are present in that particular group. This information will be parsed and presented to the user but the count does not need to be used in any way since the server then sends a stream of message headers and messages. The client simply prints every byte it receives from the server until it receives an end of file on the socket. At that time, it closes the socket and exits.</p>
+
+<h1 id="requirements:server">Requirements: Server</h1>
+
+<p>The server implements the server side of the protocols defined above.
+the <strong>server</strong> command line accepts an optional <strong>-p</strong> followed by the port number:</p>
+
+<pre><code>server [-p port]
+</code></pre>
+
+<p>If the port number is not provided, use a hard-coded default port number that is the same as the default port that your clients use.</p>
+
+<p>The server waits for incoming TCP connections from clients. <strong>The server is multi-threaded</strong> and can handle multiple concurrent requests.</p>
+
+<p>Upon receiving a command from a client, the server checks to see if it is a <strong>get</strong> or <strong>post</strong> command. If it is anything else, it returns a string stating:</p>
+
+<pre><code>error: invalid command
+</code></pre>
+
+<p>and closes the connection.</p>
+
+<p>It then validates the group name to ensure that the name contains only printable text. A bad name results in a return message of:</p>
+
+<pre><code>error: invalid group name
+</code></pre>
+
+<h2 id="groupmanagement">Group management</h2>
+
+<p>The server does not have to persist its contents into files. All data can be kept in memory. You will need to have the server keep track of any number of groups and any number of messages within a group. Each message will be identified by the creator&#8217;s IP address, port number, user name, and timestamp.</p>
+
+<h2 id="postrequests">Post requests</h2>
+
+<p>If a group name is valid but does not exist, the server creates the group and initializes its message count to zero. The server then reads the <strong>id</strong> directive, validates the command, and validates the username to ensure that it is a string of printable characters. </p>
+
+<p>The server is now ready to receive the message. It stores the source IP address and port (you can store them as
+ one string if you use Java&#8217;s <em>getRemoteSocketAddress())</em> method), the user name, and the timestamp for this new message. It then reads data from the socket. Every byte read becomes part of the message. Once the server receives an end-of-file on the socket, it closes the socket and terminates the message.</p>
+
+<h2 id="getrequests">Get requests</h2>
+
+<p>When the server receives a <strong>get</strong> request, it first validates the syntax of the request. If the group name is not a valid format <em>or</em> the group does not exist, the server responds back with:</p>
+
+<pre><code>error: invalid group name
+</code></pre>
+
+<p>If the group does exist, the server responds back with a message count and then, for each message, sends:</p>
+
+<ol>
+<li><p>A header of the format &#8220;From <em>username</em> <em>host:port</em> <em>timestamp</em>&#8221; For example:</p>
+
+<p>From paul /192.168.60.142:58713 Fri Feb 05 16:13:14 EST 2016</p></li>
+<li><p>A blank line</p></li>
+<li><p>The message (which may span an arbitrary number of lines)</p></li>
+<li><p>A blank line <em>only</em> if there is another message</p></li>
+</ol>
+
+<p>When there are no more messages to send, the server closes the connection.</p>
+
+<h1 id="submission">Submission</h1>
+
+<p>Submit everything I need to compile your program. At a minimum, you will submit a writeup and three source files: the two clients and one server.</p>
+
+<h2 id="report">Report</h2>
+
+<p>Your report can be brief and can be in plain text or pdf. Be sure that it contains the following:</p>
+
+<ol>
+<li>Names of all group members</li>
+<li>Precise and detailed instructions for compiling and running the programs. I suggest that you test these out on your friends and make sure that they work exactly. I will not have the patience to fiddle with getting your program compiled and running and you will lose a huge percentage of the grade if I cannot compile and run it.</li>
+<li>A discussion of the data structures you use to manage your groups.</li>
+<li>Any bugs or peculiarities.</li>
+<li>A discussion of the tests that you ran. These should include tests to ensure that concurrency works correctly (multi-threading) and that proper syntax is enforced.</li>
+</ol>
+
+<h2 id="sourcecode">Source code</h2>
+
+<p>Submit <strong>only</strong> the source code for your assignment. Do not include executables, C object files, or Java class files. Do not include any temporary files.</p>
+
+<p>Make sure that <em>every</em> file has the names of the group members in it.</p>
+
+<p>Make sure that the code looks clean. Indentations should be consistent; do not mix leading tabs and spaces. Use clear variable names. You do not need a lot of comments but be sure to have a comment that identifies each function or method in your program.</p>
+
+<p>Make sure that your code does not have confusing debugging statements or blocks of commented-out code. Basic server-side messages, such as indications that you received a connection and what commands you are parsing, are fine.</p>
+
+<h2 id="submit">Submit</h2>
+
+<p>Before uploading your files to sakai, make sure that all the components
+are there. If we can&#8217;t compile it (or can&#8217;t figure out how to), you will lose virtually all credit for the assignment.</p>
+
+<p>Hand the assignment in via <a href="https://sakai.rutgers.edu/portal">sakai</a>.</p>
+
+<p>Only one group member should submit the assignment. You will be penalized for duplicate submissions.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: June 26, 2016
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 352 Assignments </h2>
+	<ul>
+	<!-- <li> <a href="../hw/a-1.html">Assignment 1</a> </li> -->
+	</ul>
+<!--
+	<h2> Tutorials </h2>
+	<ul>
+	<li> <a href="../notes/sockets/index.html"> TCP Sockets tutorial </a> </li>
+	<li> <a href="../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+	<li> <a href="../notes/make/index.html"> Makefile tutorial </a> </li>
+	</ul>
+-->
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

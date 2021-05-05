@@ -1,0 +1,765 @@
+/* fonts for layout.css */
+
+
+
+
+
+
+
+
+
+
+
+/* default font, navbar  */
+
+
+/* left sidebar (sidebar1) default font */
+
+
+/* sidebar1 heading 2 */
+
+
+/* sidebar1 content list (ul) */
+
+
+/* right sidebar (sidebar2) default font */
+
+
+
+
+
+
+
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+/* ----- reset all ----- */
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td {  
+    margin:0; 
+    padding:0; 
+} 
+table { 
+    border-collapse:collapse; 
+    border-spacing:0; 
+} 
+fieldset,img {  
+    border:0; 
+} 
+address,caption,cite,code,dfn,em,strong,th,var { 
+    font-style:normal; 
+    font-weight:normal; 
+} 
+ol,ul { 
+    list-style:none; 
+} 
+caption,th { 
+    text-align:left; 
+} 
+h1,h2,h3,h4,h5,h6 { 
+    font-size:100%; 
+    font-weight:normal; 
+} 
+q:before,q:after { 
+    content:''; 
+} 
+abbr,acronym { border:0; 
+} 
+
+
+/* ----- basic styles - pk ----- */
+#main {
+	font: normal 1.0em "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+	background-color: #FCFDFF;
+}
+
+/* ------------ headings: defaults -------------- */
+
+#main h1, #main h2, #main h3, #main h4, #main .author, #main .date, #main .figure, #main .figure-center, #main .figure-left, #main .figure-right,  #main .framedphoto {
+	font-family:"Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+	color: #008080;
+}
+
+/* ------headline components -------*/
+
+#headline {
+	pointer-events:none;
+	margin-bottom: 40.5em;
+}
+
+#main {
+	min-height:400px;
+  	height:auto !important;
+  	height:400px;
+}
+
+#main #headline h1  {
+	clear: none;
+	font-weight: bold;
+	font-size: 2.0em;
+	line-height: 1.2em;
+	position: relative;
+	color: #CC352F;
+}
+
+#main #headline h2 {
+	font: normal 1.8em; 
+	border: none;
+	margin-top: -0.3em;
+	padding: 0;
+	color: #aaa;
+	margin-bottom: 1em;
+}
+
+#main #headline .author:before {
+	content: "By"
+}
+
+#main #headline .author {
+	font-size: 1.0em;
+	font-style: italic; 
+	line-height: 1.2em;
+	margin: 0em;
+}
+#main #headline .date {
+	font-size: 0.9em;
+	line-height: 1.2em;
+	margin-top: 0em;
+}
+
+/* ------------ headings -------------- */
+
+#main h1 {
+	clear: both;
+	padding-top: 15px;
+	margin-bottom: 10px; 
+	border-bottom: 1px dotted #008080;
+	font-size: 2.0em;
+	font-weight: bold;
+}
+
+#main h2 {
+	font-size: 1.5em;
+	font-weight: bold;
+	margin-bottom: 5px;
+	padding-top: 1em;
+}
+
+#main h3 {
+	font-size: 1.2em;
+	font-weight: bold;
+	margin-bottom: 0.25em;
+	padding-top: 1em;
+}
+
+#main h4 {
+	font-size: 1.0em;
+	font-weight: bold;
+	margin-bottom: 0.25em;
+	padding-top: 1em;
+}
+
+#main h1 a:link, #main h2 a:link, #main h3 a:link {
+	color: #008080;
+}
+#main h1 a:visited{
+	color: #008080;
+}
+#main h1 a:after, #main h2 a:after, #main h3 a:after {
+	content: "\21D2"; 
+	color: #CCC;
+}
+
+/* ------------ standard elements -------------- */
+
+#main p, #main blockquote, #main td, #main div, #main dl, #main ol, #main ul {
+	margin-bottom: 1.6em;
+	font: normal 1.0em/160% "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+	/* font: normal 1.2em/160% "Hoefler Text", Georgia, Times, "Times New Roman", serif; */
+	/* font: normal 1.0em/160%  Palatino, "Palatino Linotype", Georgia, Times, "Times New Roman", serif; */
+}
+#main a:link {
+	color: #751A1B;
+}
+
+#main a:visited {
+	color: #000000;
+	/* text-decoration: none; */
+	/* border-bottom: 1px dashed #888; */
+}
+
+#main a:hover {
+	color: #FF0000;
+}
+
+#main p { text-align: left; }
+
+#main b {font-weight: bold; color: #008080; }
+
+#main h1.strong, #main h2.strong, #main h3.strong {
+	color: #CC352F;
+}
+
+#main strong {
+	color: #CC352F;
+	font-weight: normal; 
+}
+
+#main em {
+	font-style: italic; 
+}
+
+#main tt, #main code {
+	font-size: 1.0em;
+	font-family: Consolas, "Lucida Console", Courier, "Courier New", monospace;
+}
+
+#main hr {
+	clear: both;
+	margin-top: 2em;
+	margin-bottom: 2em;
+	margin-left: 2em;
+	margin-right: 2em;
+	border-top: 1px solid #bbb;
+}
+#main hr.none {
+	clear: both;
+	margin: 0;
+	border: none;
+}
+
+#main pre {
+	white-space: pre;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-left: 2em;
+	line-height: 1.3em;
+	font-family: Consolas, "Lucida Console", Courier, "Courier New", monospace;
+}
+
+#main p+pre {
+	margin-top: -1.0em;
+}
+
+
+/* ------------ lists -------------- */
+#main ul {
+	list-style-type: square;
+	margin-left: 0em;
+	padding-left: 1.5em;
+	margin-top: 0;
+}
+#main ol {
+	list-style-type: decimal;
+	margin-left: 0.5em;
+	margin-bottom: 0.5em;
+	padding-left: 1.5em;
+}
+#main ol.separated li,
+#main ul.separated li {
+	margin-bottom: 1em;
+}
+
+#main ol.together li,
+#main ul.together li {
+	margin-bottom: 0em;
+}
+
+#main ul ul {
+	list-style: none;
+	text-indent: -1em;
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left: 0em;
+}
+#main ul  ul > li:before {
+	content: "- ";
+}
+#main ul > ul > ul > li:before {
+	content: &ndash;;
+}
+#main ul > ul > ul > ul > li:before {
+	content: &ndash;;
+}
+#main ol ol {
+	list-style-type: lower-alpha;
+	margin-left: 0;
+	margin-bottom: 0;
+	margin-bottom: 0.5em;
+}
+#main ol ol ol {
+	list-style-type: lower-roman;
+	margin-bottom: 0;
+	margin-bottom: 0.5em;
+}
+#main li p {
+	font-size: 1.0em;
+	margin-bottom: 1em;
+}
+#main .romanlist {
+	list-style-type: upper-roman;
+}
+#main .lromanlist {
+	list-style-type: lower-roman;
+}
+#main .alphalist {
+	list-style-type: lower-alpha;
+}
+#main dt {
+	font-weight: bold;
+	color: #555;
+}
+#main dd {
+	margin-bottom: 1em;
+	margin-left: 1em;
+}
+
+#main p + ol, #main p + ul, #main p + dl {
+	margin-top: -0.8em;
+}
+
+
+/* ------------ tables -------------- */
+#main table {
+	background: #fff;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 1em;
+	/*border: 1px #888 solid; */
+	border-spacing: 5px;
+	border-collapse: collapse;
+	border-top: 2px #888 solid;
+	border-bottom: 2px #888 solid;
+}
+#main table.clear {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 0em;
+	border: none;
+	border-spacing: 5px;
+	border-collapse: collapse;
+}
+#main table.left {
+	margin-left: 2em;
+}
+#main table caption {
+	caption-side: bottom;
+	text-align: left;
+	font-size: 90%;
+	font-weight: bold;
+}
+#main table th, #main table td {
+	padding: 0.25em;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+	font-weight: normal;
+}
+#main table th {
+	border-bottom: 1px #888 solid;
+}
+#main table.clear th, #main table.clear td {
+	border: 0px;
+	padding: 0.25em;
+	padding-left: 0.25em;
+	padding-right: 0.25em;
+	font-weight: normal;
+}
+#main table td.right {
+	text-align: right;
+}
+#main table td.inverse {
+	color: white;
+	background-color: #008080;
+}
+#main table td.inverse a, #main table td.inverse a:link, #main table td.inverse a:visited {
+	color: white;
+	background-color: #008080;
+}
+#main table th {
+	font-weight: bold;
+	text-align: left;
+}
+#main table th.left {
+	font-weight: bold;
+	text-align: left;
+}
+
+/* ------------ boxes and blocks -------------- */
+
+#main blockquote-old {
+	background: #f2f2f5; 
+	padding-top: 0.0em;
+	padding-bottom: 0.0em;
+/* Top Right Bottom Left */
+	margin: 1em 2em 1em 2em;
+	padding-top: 1.0em;
+	padding-bottom: 1.0em;
+	padding-left: 2.0em;
+	padding-right: 2.0em;
+}
+
+#main blockquote {
+	/* clear: both; */
+	background: #f2f2f5;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	padding-left: 1em;
+	padding-right: 1em;
+	margin: 0.5em 2em 1em 2em;
+	border: 1px solid #d0d0d0;
+	border-radius:5px;
+}
+
+#main blockquote p:last-child {
+	margin-bottom: 0.25em;
+}
+
+#main .right-sidetext {
+	font-size: 0.9em/110%;
+	float: right;
+	position: relative; width: 5em; 
+	/* position: relative; width: 20em; */
+	background-color: white;
+	border-style: double; border-width: 3px;
+	margin-left: 2em;
+	margin-right: 0em;
+	padding: 0.5em 1em 0.5em 1em;
+}
+
+#main .right-sidetext h1 {
+	font-size: 1.0em/120%;
+	text-align: center;
+
+	padding-top: 0;
+	margin: 0.25em 0em 0.5em 0.5em;
+	font-size: 1.5em;
+	font-weight: bold;
+	position: relative;
+	color: #CC352F;
+}
+
+#main .right-sidetext p {
+	margin-top: 0;
+	margin-bottom: 1.0em;
+	margin-left: 0.5em;
+	margin-right: 0.25em;
+	text-align: left;
+}
+
+#main pre code {
+	color: #004080;
+	white-space: pre;
+	font-size: 0.9em;
+	line-height: 1.3em;
+	font-family: Consolas, "Lucida Console", Courier, "Courier New", monospace;
+}
+
+#main .codeblock {
+	white-space: pre;
+	margin-top: -1em; 
+	margin-left: 2em;
+	font-size: 0.9em;
+	line-height: 1.3em;
+	font-family: Consolas, "Lucida Console", Courier, "Courier New", monospace;
+}
+
+#main .codeblock-noindent {
+	white-space: pre;
+	margin-left: 0em;
+	font-size: 0.9em;
+	line-height: 1.3em;
+	font-family: Consolas, "Lucida Console", Courier, "Courier New", monospace;
+}
+
+#main .codeblock-box {
+	white-space: pre;
+	background: white;
+	padding: 0.5em 1em 0.5em 1em;
+	margin: 0em 2em 1em 2em;
+	font-size: 0.9em;
+	font-family: Consolas, "Lucida Console", Courier, "Courier New", monospace;
+	border: 1px solid #f82;
+}
+#main .comment {	/* comments for code */
+	font: italic 0.9em/120% "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+	color: #CC352F;
+	font-style: oblique; 
+}
+#main .codeblock em, #main .codeblock-box em {	/* comments for code */
+	color: #CC352F
+	font-style: normal;
+}
+
+#main .codeblock-box strong {
+	font-weight: bold;
+	color: #CC352F;
+}
+
+#main .box {
+	clear: both;
+	background: white;
+	padding-top: 0.0em;
+	padding-bottom: 0.0em;
+	padding-left: 1em;
+	padding-right: 1em;
+	margin: 0em 2em 0em 2em;
+	border: 1px solid #f82;
+}
+
+/* ------------ custom elements -------------- */
+#main .sm { /* small caps */
+	text-transform: uppercase;
+	font-size: 80%;
+	/* font-variant: small-caps; */
+}
+
+#main .nospace { /* no line spacing at the end of a paragraph */
+	margin-bottom: 0.8em;
+}
+
+
+/* stretch side borders all the way down in case pictures fall below text */
+#main .end {
+	clear: both;
+	border: none;
+}
+
+#main .strike {
+	text-decoration:line-through;
+}
+
+#main .center {
+	text-align: center;
+}
+
+/* ------------ figures -------------- */
+
+#main figure {
+	background-color: white;
+	float: right;
+	clear: right;
+	text-align: center;
+	position: relative;
+	/* width: 250px; */
+	margin-top: 1.00em; 
+	margin-bottom: 0em;
+	margin-left: 10px;
+	padding: 5px;
+}
+#main .figure {
+	background-color: white;
+	float: right;
+	clear: right;
+	text-align: center;
+	position: relative;
+	width: 250px;
+	margin-top: 1.00em; 
+	margin-bottom: 0em;
+	margin-left: 10px;
+	padding: 5px;
+}
+#main .figure-unframed-center {
+	clear: both;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	position: relative;
+	margin-top: 0.25em;
+	margin-bottom: 0.25em;
+	padding: 5px;
+	border: none;
+}
+#main .figure-center {
+	clear: both;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	position: relative;
+	margin-top: 0.25em;
+	margin-bottom: 0.25em;
+	padding: 5px;
+}
+#main .figure-right {
+	float: right;
+	text-align: center;
+	position: relative;
+	width: 250px;
+	/* margin-top: 1.25em; */
+	margin-bottom: 0.25em;
+	margin-left: 0;
+	margin-right: 10px;
+	padding: 5px;
+}
+
+#main .figure-unframed-center img {	
+	float: center;
+	width: 100%;
+	display: block;
+}
+
+#main .figure-center img {	
+	float: center;
+	max-width: 100%;
+	max-height: 100%;
+	display: block;
+}
+#main .border {
+	background: #FFF;
+	border: 1px #888 solid;
+}
+#main figure figcaption {
+	text-align: left;
+	font-size: 90%;
+	font-weight: bold;
+	color: #808080;
+	color: #CC352F;
+}
+
+#main .width100 { width: 100px; }
+#main .width150 { width: 150px; }
+#main .width200 { width: 200px; }
+#main .width250 { width: 250px; }
+#main .width300 { width: 300px; }
+#main .width350 { width: 350px; }
+#main .width400 { width: 400px; }
+#main .width450 { width: 450px; }
+#main .width500 { width: 500px; }
+#main .width550 { width: 550px; }
+#main .width600 { width: 600px; }
+
+#main .figure p, .figure-center p, #main .figure-unframed-center p {
+	clear: both;
+	padding: 5px;
+	padding-top: 2px;
+	margin: 0;
+	text-align: left;
+	line-height: 1.2em;
+	font-size: 0.9em;
+}
+#main .figure-left p {
+	clear: both;
+	padding: 5px;
+	padding-top: 2px;
+	margin: 0;
+	text-align: left;
+	font: normal 0.9em/130%; 
+}
+
+#main .figure img, .figure-center img, .figure-left img, .figure-right img {	
+	float: center;
+	border: thin #888 solid;
+	display: block;
+}
+
+#main .framedphoto {
+	clear: both;
+	text-align: center;
+	width: 620px;
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
+	padding: 40px;
+	background-color: #FFF;
+	border: 2px #888 solid;
+}
+
+#main .fwidth100 { width: 120px; }
+#main .fwidth150 { width: 170px; }
+#main .fwidth200 { width: 220px; }
+#main .fwidth250 { width: 270px; }
+#main .fwidth300 { width: 320px; }
+#main .fwidth350 { width: 370px; }
+#main .fwidth400 { width: 420px; }
+#main .fwidth450 { width: 470px; }
+#main .fwidth500 { width: 520px; }
+#main .fwidth550 { width: 570px; }
+#main .fwidth600 { width: 620px; }
+#main .fwidth650 { width: 670px; }
+#main .fwidth700 { width: 720px; }
+#main .fwidth750 { width: 770px; }
+#main .fwidth800 { width: 820px; }
+
+#main .framedphoto p {
+	clear: both;
+	margin: 0;
+	margin-top: 1em;
+	margin-bottom: 1em
+	padding-bottom: 0;
+	text-align: center;
+	font: normal 1.0em  Georgia, "Times New Roman", Times, serif;
+	font-variant: small-caps;
+	font-size: 1.5em;
+	line-height 160%;
+	letter-spacing: 0.2em;
+	background-color: #FFF;
+}
+
+#main .framedphoto p + p {
+	margin-top: 1em;
+	letter-spacing: 0.2em;
+	font-size: 1.0em;
+}
+
+#main .framedphoto img {	
+	float: center;
+	padding: 10px;
+	border: thin #888 solid;
+	display: block;
+	max-height: 100%;
+}
+
+/* ------------ footnotes -------------- */
+
+#footnotes {
+	clear: both;
+	margin-top: 5px;
+	margin-bottom: 0px;
+	text-indent: 0;
+	line-height: 1.2em;
+	font: normal 0.8em/130% "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+	color: #555;
+}
+#footnotes p {
+	font-size: 0.8em;
+	margin-bottom: 0.5em;
+}
+/* ------------ output format selectors  -------------- */
+
+#downloadmsg {
+	float: right; 
+	/* text-transform: uppercase; */
+	font-size: 70%;
+	color: #555;
+}
+#downloadmsg img {
+	vertical-align:text-top;
+}

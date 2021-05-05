@@ -1,0 +1,628 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Assignment 7 </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+
+.subhead {
+	background-color: #ddd;
+	text-align: center;
+	margin-left: 5em;
+	margin-right: 5em;
+	border: 1px solid #555;
+}
+.note {
+	font-style: italic;
+	color: #444;
+}
+#main .faqlist dd {
+        margin-left: 2em;
+        margin-bottom: 2em;
+}
+#main .faqlist dt {
+        background-color: #D1DBDB;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        padding-top: 0.25em;
+        padding-left: 0.5em;
+        color: black;
+	font-weight: normal;
+}
+#main .faqlist dt strong, #main .faqlist dt b {
+	color: red;
+}
+#main .faqlist dt p + p {
+	padding-top: 1em;
+}
+#main .faqlist dt p {
+	margin-bottom: 0;
+}
+#main .newslist dt {
+        background-color: white;
+        color: #555;
+}
+#main .answer {
+	color: #a00000;
+}
+
+#main table.doclist {
+	width: 80%;
+}
+
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+#main figure {
+	float: left; 
+	display: block
+}
+
+</style>
+</head>
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 352 </a>
+        <li> <a href="../notes/index.html"> Assignments </a>
+        <li> <a href="../notes/a-7.html"> Assignment 7 </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Assignment 7 </h1>
+</div>
+<div class="subhead"> Due April 3, 2016 11:59 via sakai </div>
+<h1 id="referencematerial">Reference material</h1>
+
+<ul>
+<li><a href="../notes/sockets/index.html">Sockets tutorial</a></li>
+<li><a href="../notes/sockets/udp.html">UDP sockets tutorial</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Domain_Name_System">Domain Name System</a></li>
+<li><a href="http://tools.ietf.org/html/rfc1035">RFC 1035</a></li>
+<li><a href="http://www.tcpipguide.com/free/t_TCPIPDomainNameSystemDNS.htm">The TCP/IP Guide: DNS</a></li>
+<li><a href="http://www.networksorcery.com/enp/protocol/dns.htm">Network Sorcery: DNS</a></li>
+<li><a href="https://docs.oracle.com/javase/tutorial/networking/datagrams/">Java Programming - All About Datagrams</a></li>
+<li><a href="https://wiki.python.org/moin/UdpCommunication">UDP Communication in Python</a></li>
+<li><a href="hosts.txt">Sample hosts file</a></li>
+<li><a href="udp.java">Sample Java UDP and bit fields demo file</a></li>
+<li><a href="dns.h">C header file for DNS structures</a></li>
+</ul>
+
+<h1 id="faqandaddenda">FAQ and addenda</h1>
+
+<p>Be sure to periodically check the <a href="a-7-faq.html">FAQ</a> for
+updates and additional details.</p>
+
+<h1 id="objective">Objective</h1>
+
+<p>We covered DNS when we discussed the application layer and saw that it is a
+critical component in mapping user-friendly domain names to IP addresses.
+This assignment is to write a very simple DNS server.
+All it will do is accept queries for domain names and return the corresponding addresses.
+The server will be single-threaded, will not support DNS recursion (forwarding requests to other name servers),
+and will return only IP addresses (no name server information, mail servers, etc.) that correspond to the name.</p>
+
+<h1 id="languages">Languages</h1>
+
+<p>You may do this assignment in Java, C, C++, or Python. Be aware that you will need to look at bit ranges and move bits around.</p>
+
+<h1 id="groups">Groups</h1>
+
+<p>You may work on this assignment either individually or in a group of up to four members. Your work will be judged to a higher standard if you have more group members. With a group of four, for example, I expect flawless program execution, cleanly formatted code with good comments, and a report with detailed test cases explained that is so beautifully written that I will weep tears of joy upon seeing it.</p>
+
+<h1 id="deadline">Deadline</h1>
+
+<p>Be sure to allot sufficient time to do this assignment. If you are comfortable with programming, you should be able to finish this assignment within an hour. Do not assume that, however. You may find yourself spending a lot more time than you budgeted in parsing requests and responses, formatting a date, or wondering why your client is not connecting to your server.</p>
+
+<p>Develop incrementally. Take a look at the recitation notes as an example of how you can add tiny amounts of code and then test it. Do not write a few hundred lines of code and then try to debug it. That is a recipe for disaster.</p>
+
+<p>Be aware that there is an exam coming up soon as well as possible other projects and activities in your life. Start early and budget your time. Make sure that you allot enough time for testing and writing your report.</p>
+
+<h1 id="background">Background</h1>
+
+<p>First be sure that you are familiar with UDP sockets programming.
+If working in C, check out the <a href="../notes/sockets/index.html">TCP</a> and <a href="../notes/sockets/udp.html">UDP</a>
+sockets tutorials and run the UDP sample code to make sure that you have no problems compiling or
+communicating.
+You can read the Oracle documentation for UDP programming with Java:
+<a href="https://docs.oracle.com/javase/tutorial/networking/datagrams/">All About Datagrams</a>.</p>
+
+<h1 id="operations">Operations</h1>
+
+<p>Here&#8217;s what your program should do:</p>
+
+<ol>
+<li><p>Read a file of domain names and addresses. The format is plain text with an IP address
+at the start of a line followed by white space (spaces and/or tabs) followed by a domain name.
+ You can download <a href="hosts.txt">this sample hosts file</a>.</p>
+
+<pre><code># this is a comment 
+12.14.101.22    www.test.org  
+51.234.1.1  another.domain.blah  
+</code></pre></li>
+<li><p>Wait for a UDP packet to arrive on a port you specify.</p></li>
+<li><p>Parse the DNS header.</p></li>
+<li><p>If it&#8217;s not a valid query, return a &#8220;format error&#8221; (code 1) or &#8220;not implemented error&#8221; (code 4).</p></li>
+<li><p>Look up the given domain name in the list of names that you read in initially.</p></li>
+<li><p>Create a reply message.
+If you find a match, add an answer record identifying the name to address mapping.
+If you don&#8217;t find a match then don&#8217;t add an answer record.</p></li>
+<li><p>Send the response.</p></li>
+<li><p>Go back to step 2 and wait for the next packet.</p></li>
+</ol>
+
+<h1 id="step-by-stepguidance">Step-by-step guidance</h1>
+
+<h2 id="step0.commandnamesandcommandlineprocessing">Step 0. Command names and command line processing</h2>
+
+<p>Your server will be named <code>dns-server</code>.
+You do not need to write a client since you can use existing DNS query clients
+such as <em>dig</em>.</p>
+
+<p>To make it easy to select a port number, the server should accept a
+port number as an option on the command line with the <code>-p</code> parameter. To
+make it easy for me to test different host files, the server should accept
+a host file with the <code>-f</code> parameter. The command syntax is:</p>
+
+<pre><code>dns-server [-p port#] [-f hostfile]
+</code></pre>
+
+<p>No extra arguments should be allowed. Both the -p and -f arguments are optional and
+you can have hard-coded defaults. The -p and -f parameters can appear in any order;
+use <em>getopt</em> to parse them. If you&#8217;re not familiar with this,
+<a href="../../416/notes/c-tutorials/getopt.html">here&#8217;s a quick tutorial and demo</a>.</p>
+
+<h2 id="step1.readaboutthednsprotocol">Step 1. Read about the DNS protocol</h2>
+
+<p>A really good explanation of the protocol and structures is presented in
+<a href="http://www.tcpipguide.com/free/t_TCPIPDomainNameSystemDNS.htm">The TCP/IP Guide</a>.
+Also, some nice tables &amp; explanations are presented
+<a href="http://www.networksorcery.com/enp/protocol/dns.htm">here</a>.</p>
+
+<h2 id="step2.writeasimpleserverthatreceivesaudppacketonaport">Step 2. Write a simple server that receives a UDP packet on a port</h2>
+
+<p>Make sure this part works!
+If you&#8217;re programming in C, you can use code from the <a href="../notes/sockets/udp.html">UDP sockets tutorial</a>.
+Basically, you do the same as with TCP but don&#8217;t listen or accept:</p>
+
+<ol>
+<li><p><code>s = socket()</code>: <em>create a socket </em></p></li>
+<li><p><code>bind(s, address)</code>:
+<em>bind the socket to any valid address (INADDR_ANY) and a port number that you define.
+You will need to use this port number in the client to send messages.</em></p></li>
+<li><p><code>size = recvfrom(s, buf, maxsize, 0, &amp;remoteaddr, &amp;addrlen)</code>: <em>receive a message</em></p></li>
+</ol>
+
+<p>Test it out via a DNS query program such as <em>dig</em>. For example, start your server in one window and
+in another run:</p>
+
+<pre><code>dig @localhost -p 1153 test.mydomain.abc
+</code></pre>
+
+<p>If you are running <em>dig</em> from another machine, replace <code>@localhost</code>
+with the name of that machine. Replace <code>1153</code> with a port number on which your
+server is receiving messages. A port number is a 16-bit value in the range 1 through 65535.
+Purt numbers under 256 are reserved for well-known services and port numbers under 1024
+require administrative privileges, so pick a number in the range 1024 through 65535.</p>
+
+<p>Don&#8217;t expect dig to show anything since you&#8217;re not returning any data but your server should
+print debugging messages so you can see what you got (# bytes and you can dump the bytes).</p>
+
+<h2 id="step3.parsethednsmessage">Step 3. Parse the DNS message</h2>
+
+<p>The DNS messaging protocol was originally defined in <a href="http://tools.ietf.org/html/rfc883">RFC 833</a>
+but there have been a few RFCs that made updates to the core protocol. The latest version is <a href="http://tools.ietf.org/html/rfc1035">RFC 1035</a>.</p>
+
+<p>Headers are nicely illustrated in various pages in the
+<a href="http://www.tcpipguide.com/free/t_TCPIPNameSystemsHostTablesandDomainNameSystemDNS.htm">The TCP/IP Guide</a>
+as well as in:
+<a href="http://www.networksorcery.com/enp/protocol/dns.htm">Network Sorcery</a>.</p>
+
+<p>I am providing you with the <a href="dns.h">C data structure</a> for the three DNS headers that you need to handle.
+If you&#8217;re programming in Java, you&#8217;ll have to extract the bit ranges explicitly with shifts and masks since
+the language does not support bit fields.</p>
+
+<h3 id="step3a.parsethednsheader">Step 3a. Parse the DNS header</h3>
+
+<p>The DNS format is the same for requests and responses:</p>
+
+<pre><code>[ DNS header (fixed size) ]
+[ zero or more question records ]
+[ zero or more answer records ]
+[ zero or more authority records (identifies the name servers for this zone) ]
+[ zero or more additional records ]
+</code></pre>
+
+<p>The header is always present. Among other things, it identifies that the message is a DNS
+query and identifies which and how many other sections are present. The sections after the header
+are:</p>
+<dl>
+<dt>Question</dt>
+<dd>The query that is issued to the name server (typically the domain name). You
+expect to get this.</dd>
+
+<dt>Answer</dt>
+<dd>The answer to a query. If you were able to find an address for a name, you will
+ send back an answer record that contains the IP address. Your response will also contain the
+ original query in the query section.
+ If you cannot match the name, then return a response code (RCODE) of 3,
+ which is the code for <em>no name</em>, defined in
+ <a href="http://www.networksorcery.com/enp/rfc/rfc1035.txt">RFC 1035</a>.</dd>
+
+<dt>Authority</dt>
+<dd>This will contain a set of records that identify the zone your name server is responsible
+ for and other name servers. You can ignore this.</dd>
+
+<dt>Additional</dt>
+<dd>This is a set of records that hold any additional information. You can ignore this as well.</dd>
+</dl>
+
+
+<p>Your server will receive DNS queries. You can check that a message is indeed a
+query by looking at the QR field of the header. A value of 0 means it is a query.
+The header also contains counts for each of the other fields (questions, answers, name servers, additional records).</p>
+
+<p>For debugging, print a few of the fields to make sure they make sense.
+For a <em>dig</em> query, the <strong>query</strong> (<code>qr</code>) field should be 0,
+<strong>recursion desired</strong> (<code>rd</code>) should be 1,
+<strong>question count</strong> (<code>qd</code>)
+should be 1, and the three other counts should be 0.</p>
+
+<h3 id="watchoutfornetworkvs.hostbyteorder">Watch out for network vs. host byte order</h3>
+
+<p>One thing to realize is that the structures are defined in a &#8220;network byte order&#8221; called
+big endian, which is different from the little endian format used by the intel architecture
+(and most machines today). The Java Virtual Machine (JVM) <em>stores</em> its data in big endian format
+but uses the native machine&#8217;s byte order when using them. Python also uses the native
+machine&#8217;s byte order. You will, most likely, need to flip bytes around to ensure
+that the bits are in the correct order.</p>
+
+<p>With big endian, the most significant byte is in low memory. A 32-bit value</p>
+
+<pre><code>0x12345678
+</code></pre>
+
+<p>will be stored (from low to high memory) as </p>
+
+<pre><code>0x12, 0x34, 0x56, 0x78
+</code></pre>
+
+<p>On an Intel processor, the value will be stored with the most significant byte in high memory:</p>
+
+<pre><code>0x78, 0x56, 0x34, 0x12
+</code></pre>
+
+<p>Hence, if you&#8217;re reading a 16 bit value from a network format structure, you will need to convert.
+Four macros do this:</p>
+<dl>
+<dt><code>unsigned int local_format = htonl(network_format);</code></dt>
+<dd>convert a long value (32 bits) from the host format to the network format</dd>
+
+<dt><code>unsigned short local_format = htons(network_format);</code></dt>
+<dd>convert a short value (16 bits) from the host format to the network format</dd>
+
+<dt><code>unsigned int network_format = ntohl(local_format); </code></dt>
+<dd>convert a long value (32 bits) from the network format to the host format</dd>
+
+<dt><code>unsigned short network_format = ntohs(local_format); </code></dt>
+<dd>convert a short value (16 bits) from the network format to the host format</dd>
+</dl>
+
+
+<h2 id="step3b.parseoutthequerystring">Step 3b. Parse out the query string</h2>
+
+<p>Parse out the query in the query record. This is in a format of </p>
+
+<pre><code>&lt;query name&gt; &lt;query type&gt; &lt;query class&gt;
+</code></pre>
+
+<p>The query name is the name whose address is being requested. Instead of a domain name format
+such as</p>
+
+<pre><code>test.mydomain.abc
+</code></pre>
+
+<p>each component contains a byte count (occupying one byte) followed by the characters. So this
+is stored in the message as:</p>
+
+<pre><code>4, 't', 'e', 's', 't', 8, 'm', 'y', 'd', 'o', 'm', 'a', 'i', 'n', 3, 'a', 'b', 'c', 0
+</code></pre>
+
+<p>A zero signifies there are no more components.</p>
+
+<p>The query type should be 1, which represents an address (A) query.
+The class should also be 1, which represents an Internet query.</p>
+
+<h2 id="step4.createaresponse">Step 4. Create a response</h2>
+
+<p>The response will contain the same message ID and will contain the same query string.
+The easiest way to create this is to just suffix zero or more responses to the message that
+was received.
+If you didn&#8217;t write code to process the hosts file, you can just create a hard-coded IP address
+for debugging purposes.</p>
+
+<p>You&#8217;ll need to change the following in the DNS header:</p>
+
+<ul>
+<li>QR field: set to 1 to indicate a response</li>
+<li>AA field: set to 1 to indicate an authoritative answer</li>
+<li>TC field: set to 0 to indicate the reply is not truncated</li>
+<li>RA field: set to 0 to indicate recursion is not available.</li>
+<li>RCODE field: 0 for no error; 3 for a <em>name error</em> (domain name does not exist).</li>
+</ul>
+
+<p>If there&#8217;s a single response, set the answer count to 1 (set the value to htons(1) so that
+the bytes will go in the correct order.</p>
+
+<p>Suffix the answer to the message that you received from the client. An answer is a resource record and is in the format:</p>
+
+<pre><code>&lt;name&gt; &lt;type&gt; &lt;class&gt; &lt;ttl&gt; &lt;rdlength&gt; &lt;rdata&gt;
+</code></pre>
+
+<p>Where:</p>
+<dl>
+<dt>&lt;name&gt;</dt>
+<dd>the query string just like in the query with byte counts and components instead of dots.</dd>
+
+<dt>&lt;type&gt;</dt>
+<dd>1, for an address query answer</dd>
+
+<dt>&lt;class&gt;</dt>
+<dd>1, for the Internet</dd>
+
+<dt>&lt;rdlength&gt;</dt>
+<dd>4, the length of a 32-bit IP address</dd>
+
+<dt>&lt;rdata&gt;</dt>
+<dd>this is the 4-byte address. Convert the format 1.2.3.4 to an unsigned int and then store it in network form via htonl(addr).</dd>
+</dl>
+
+
+<p>Write the response with <code>sendto()</code>.</p>
+
+<h2 id="step5.processthehostsfile">Step 5. Process the hosts file</h2>
+
+<p>Now that you know the networking part works, you can turn to the easy part: reading the hosts file.
+You are provided with a sample <a href="hosts.txt">hosts.txt</a> file. It is a simplified format
+of a normal hosts file that most DNS servers use. It looks like this:</p>
+
+<pre><code># a basic hosts file for DNS 
+# ignore blank lines, lines containing whitespace (spaces and/or tabs) 
+# format: &lt;domain_name&gt; &lt;whitespace&gt; &lt;address&gt; 
+# ignore anything after &lt;address&gt; 
+
+# some sample entries below 
+
+127.0.0.1   localhost 
+1.0.0.1   test.name     # ignore any comments after the address 
+
+128.6.4.2   cs.rutgers.edu 
+129.42.38.1   ibm.com 
+
+123.45.67.8   a.domain.name.with.many.levels.of.hierarchy.net
+</code></pre>
+
+<p>You should process this file only when you start the server, not for each query.
+An easy storage format is to just have a simple linked list of &lt;name, address&gt;
+pairs. You&#8217;re not managing a lot of addresses so there is no need for more sophisticated
+storage structures.</p>
+
+<h1 id="submission">Submission</h1>
+
+<h2 id="report">Report</h2>
+
+<p>Your report can be brief and can be in plain text or pdf. Be sure that it contains the following:</p>
+
+<ol>
+<li><p>Names of all group members</p></li>
+<li><p>Precise and detailed instructions for compiling and running the program. I suggest that you test these out on your friends and make sure that they work exactly. I will not have the patience to fiddle with getting your program compiled and running and you will lose a huge percentage of the grade if I cannot compile and run it.</p></li>
+<li><p>Any bugs or peculiarities.</p></li>
+<li><p>A discussion of the tests that you ran. </p></li>
+</ol>
+
+<h2 id="sourcecode">Source code</h2>
+
+<p>Submit <strong>only</strong> the source code for your assignment. Do not include executables, C object files, or Java class files. Do not include any temporary files.</p>
+
+<p>If submitting multiple files, make sure that every file has the names of the group members in it.</p>
+
+<p>Make sure that the code looks clean. Indentations should be consistent; do not mix leading tabs and spaces. Use clear variable names. You do not need a lot of comments but be sure to have a comment that identifies each function or method in your program.</p>
+
+<p>Make sure that your code does not have confusing debugging statements or blocks of commented-out code. Basic server-side messages, such as indications that you received a connection and what commands you are parsing, are fine.</p>
+
+<p>You may submit a <strong>Makefile</strong> so that we can run <strong>make</strong>
+to compile your program. You need not do this if compiling your application is trivial.</p>
+
+<h2 id="submit">Submit</h2>
+
+<p>You must to submit everything we need to compile your program.
+This will, at minimum, be one file that implements the server.
+There is no need to submit a hosts file since we can create our own.</p>
+
+<p>Do not submit object files, executables, or temporary editor files. </p>
+
+<p>Before uploading the, make sure that all the components
+are there. If we can&#8217;t compile any part, you will get <strong>no</strong> credit.</p>
+
+<p>Hand the assignment in via <a href="https://sakai.rutgers.edu/portal">sakai</a>.
+<strong>Only one group member should submit the assignment. You will be penalized for duplicate submissions.</strong></p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: June 26, 2016
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 352 Assignments </h2>
+	<ul>
+	<!-- <li> <a href="../hw/a-1.html">Assignment 1</a> </li> -->
+	</ul>
+<!--
+	<h2> Tutorials </h2>
+	<ul>
+	<li> <a href="../notes/sockets/index.html"> TCP Sockets tutorial </a> </li>
+	<li> <a href="../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+	<li> <a href="../notes/make/index.html"> Makefile tutorial </a> </li>
+	</ul>
+-->
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

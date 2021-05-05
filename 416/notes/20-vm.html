@@ -1,0 +1,463 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Virtualization </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 416 </a> 
+ 	<li> <a href="../notes/index.html"> Documents </a> 
+ 	<li> <a href="../notes/20-vm.html"> Virtualization </a> 
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Virtualization </h1>
+<h2> Virtual storage & virtual machines </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> April 25, 2009; Revised December 2, 2010 </p>
+</div>
+
+<h1> Introduction </h1>
+
+<p>
+<strong>Virtualization</strong> is a general term for referring to presenting an abstract
+view of system resources.
+For example, <em>virtual memory</em> allows each process to have the illusion that it has
+sole access to the processor's complete memory address space. The reality, of course, is
+that multiple processes are all using different regions of the computer's memory, with
+some regions moved over to the disk if there isn't enough memory for everyone.
+This illusion of access to all of the memory is provided
+by a processor's memory management unit (MMU), which translates <em>virtual addresses</em> 
+used by the program into <em>physical addresses</em> that represent real memory locations.
+</p>
+
+<h2> Storage virtualization </h2>
+<p>
+<strong>Storage virtualization</strong> refers to abstracting the knowledge of physical disks from
+the operating system. The disk system presents the operating system with a set of 
+<em>virtual disks</em>, each identified by a <em>logical unit number</em> (LUN) and each containing
+a set of logical block numbers. The operating system makes requests to read and write blocks
+on various virtual disks. The disk system converts these logical requests into physical
+requests to the actual disk units. For example, four 500 GB disks may appear to the operating system as one 2 TB disk.
+The virtualization software will convert the logical block number to a read/write operation
+on a physical block number for one of those four disks. A simple approach to this is to translate as follows:
+</p>
+<pre>
+blocks_per_disk = 500 GB / block_size;
+physical_disk_number = logical_block / blocks_per_disk;
+physical_block_number = logical_block - (physical_disk number * blocks_per_disk);
+</pre>
+
+<p>
+Physical storage can also be split up instead of aggregated. A 500 GB disk can be made to
+appear as two 200 GB disks and one 100 GB disk.
+</p>
+
+<p>
+There are several ways in which storage may be connected to computers:
+</p>
+<dl>
+<dt> NAS (Network Attached Storage) </dt>
+<dd>
+NAS refers to network (distributed) file systems, where the client operating system does not manage
+the file system and its related mapping of data to disk blocks but instead makes high-level
+requests for files or pieces of files from a server over a network.
+For example, the family <a href="http://www.readynas.com/">Netgear ReadyNAS</a> provide you
+with ethernet-connected CIFS/SMB, NFS, and AFP file servers.
+Storage virtualization
+doesn't factor into this as far as the client is concerned because all storage is managed by the
+server &mdash; it is up to the server to be configured with a specific disk architecture.
+</dd>
+
+<div class="right-sidetext">
+<h1>About SCSI</h1>
+<p>
+SCSI is a protocol, standardized in 1986, for computers to connect to and communicate with disks.
+The communication protocol allows one to send commands to logical units (identified by a
+logical unit number (LUN) within a physical device. While there are about 60 commands in SCSI, the
+basic ones are for reading and writing logical blocks, formatting the unit, and spinning the disk
+up and down (starting/stopping).
+</p>
+</div>
+
+<dt> DAS (Direct Attached Storage) </dt>
+<dd>
+DAS refers to storage that is directly connected to your computer, either internally via 
+a SATA (serial ATA) interface or externally via USB, Firewire, or eSATA.
+If virtualization is provided here, it is up to the disk controller. For example, 
+devices such as the
+<a href="http://www.drobo.com/Products/drobo.html" target="_blank">Data Robotics Drobo</a>
+provide your computer with a view of a single USB or Firewire-connected disk while
+in reality the system manages several disks to offer expandability and fault tolerance.
+</dd>
+
+<dt> SAN (Storage Area Network) </dt>
+<dd>
+<p>
+SANs are common in the enterprise world where it is important to be able to connect
+large amounts of storage and manage that storage separately from the computer.
+A SAN is a dedicated switched network connecting computers with storage systems.
+The most common network is <em>Fibre Channel</em>, which uses optical fibers offering
+gigabit speeds and sends SCSI commands to read and write blocks on disks. In
+recent years, iSCSI has been rapidly gaining popularity. Instead of using the 
+special-purpose cables of Fibre Channel, iSCSI uses TCP/IP to send SCSI
+commands over an IP network. For performance, the TCP/IP processing is sometimes
+built into the firmware of the network adapter card.
+</p>
+<p>
+A Fibre Channel switch can be configured to allow specific hosts to access only
+certain disks. If we add a virtualization layer here, we can perform the types
+of block translations discussed earlier, such as pooling multiple storage units
+into one larger virtual storage unit or partitioning a disk into multiple smaller
+virtual disks. We can also force writes to certain logical disks to be mirrored (copied
+onto other disks) for fault tolerance.
+</p>
+</dd>
+</dl>
+
+<h2> Virtual CPU (sort of) </h2>
+<p>
+A simple abstraction of CPU virtualization is provided to processes by the operating system:
+each process has the illusion of "owning" the CPU. This illusion is created by the operating
+system process scheduler and preemption mechanism. At certain points, the process' allocated
+time slice expires and the operating system will stop the current process from running, pick another
+process that is ready to run, reload the memory management unit for that process' address
+space, and let that process run for a while. On Linux systems, "a while" means between 10
+and 300 msec, depending on the priority and interactivity level of the process.
+</p>
+<p>
+While the process feels it owns the CPU, its access to the hardware is limited to what it
+can do through the operating system. It cannot, for example, program the memory management 
+unit or the system interval timer, halt the processor, access the ethernet card,
+or access certain I/O ports directory.
+</p>
+
+
+<h2> Process virtual machine </h2>
+<p>
+A <strong>virtual machine</strong> is software (a <em>pseudo-machine</em> )
+that interprets the instructions of some processor. Probably the earliest
+of these was created in 1966: an O-code interpreter for the programming language
+BCPL (the precursor of B, which was the precursor of the C programming language).
+This effort was followed in 1973 by the Pascal-P compiler that generated p-code, for
+a hypothetical p-machine. The most popular of these approaches is the
+Java Virtual Machine (JVM). Java programs are compiled into bytecodes for
+the JVM (which does not exist physically) and interpreted by the JRE (Java Runtime
+Environment). Most recently, we experienced the soaring popularity of Android for
+mobile phone and tablet platforms. Most applications on this platform are compiled
+for the Dalvik virtual machine, which is very similar to the Java Virtual Machine.
+</p>
+<p>
+The motivation for writing compilers to generate pseudo cade was that it takes
+more effort to write code generators for lots of different architectures (the 1970s
+were not the Intel monoculture we have today) than it does to write a bunch of 
+interpreters that run on different platforms. For languages such as Pascal and Java,
+an interpreter also makes it easier to impose real-time checks to enforce array bounds
+and data types. The pseudo machines usually provided abstractions for I/O so that
+the programmer would not have to program to a specific operating system's system
+calls.
+Finally, Java's tagline of "<em>write once, run anywhere</em>" shows
+the convenience of having portable object code that runs on any system that contains
+an interpreter for that machine.
+</p>
+<p>
+These virtual machines, running a program via an interpreter were generally
+designed to run a single process and not to emulate all the hardware that would be  
+available on a real system. They are started by the user to execute the program
+and exit when the program terminates. To distinguish them from the virtual machine model that
+we discuss next, they are sometimes called <strong>process virtual machines</strong>
+(even though they were never called that originally).
+<h2> 
+
+<h2> Virtual machines </h2>
+
+<p>
+Another form of virtual machine is one that allows us to run multiple operating
+systems concurrently, sharing access to the physical machine resources. With
+this form of virtual machine, we can partition one computer to act like several
+computers, each with its own operating system (and IP address on the network). 
+We can also migrate an entire OS (along with all of its applications) from one
+machine to another.
+</p>
+
+<p>
+To understand how this form of virtualization works, we need to consider what an
+operating system does. Basically, it provides a set of interfaces (system calls)
+that applications use to access system resources (file system, network, semaphores, etc.).
+The operating system is just a program. It spends its time doing table look-ups, copying
+blocks of data, formatting network packet headers, and other mundane tasks. Every once
+in a while, however, it needs to access system hardware or special registers in the CPU:
+to configure the memory management unit,
+set a timer, set the task register, and perform certain types of input and output.
+These instructions are called <strong>privileged</strong> instructions, in contrast to
+all the other instructions on the processor, which are <strong>unprivileged</strong>.
+To execute them, the operating system kernel runs in privileged, or <em>supervisor</em>
+(or <em>kernel</em>)
+mode, while regular processes do not; they run in <em>user mode</em>.
+If a regular application attempts to execute a
+privileged instruction, it will generate a <em>trap</em> on many architectures.
+</p>
+
+<h3>The hypervisor, or virtual machine monitor </h3>
+
+<p>
+If we want to run an operating system in a virtual environment (virtual machine),
+we can run that operating system as a
+regular program in user mode. The catch is that whenever the operating system needs to execute 
+one of these special instructions, special software will need to catch the trap that
+gets generated and emulate that instruction. The software that is in charge of
+picking up these traps, and hence providing the virtualization, is known as the 
+<strong>virtual machine monitor</strong> (<strong>VMM</strong>), or <strong>hypervisor</strong>.
+Its job is to arbitrate access to physical resources and to present a set of virtual 
+device interfaces to each virtual operating system. For instance, the VMM can present
+a common ethernet card as a virtual (nonexistent) device and translate any attempts to
+send and receive ethernet packets to the real ethernet card on the machine, which is
+being shared among other operating systems. Continuing with the ethernet card example, 
+the VMM can program the real ethernet card to listen on several MAC (physical ethernet)
+addresses. When the VMM (not any OS) gets the interrupt of an incoming ethernet packet,
+it can generate a pseudo-interrupt to the operating system to whom that packet belongs so
+that the operating system can process the packet. We can consider another popular device: the
+disk. Multiple operating systems cannot access the disk directly since they will try to
+grab the same disk blocks for different data. What the VMM can do is ensure that
+each operating system uses its own partition.
+</p>
+
+<h3> Hosted versus native virtual machines </h3>
+<p>
+There are two configurations in which virtual machines can run.
+</p>
+<p>
+A <strong>hosted</strong> virtual machine is one where the system has a primary
+operating system installed that has access to the raw machine (all devices, memory,
+and file system). One or more <strong>guest</strong> operating systems can run
+on virtual machines. An example is having a machine running Windows 7 and then
+running Linux on a virtual machine. In this case, Windows owns the disk and all
+devices. The VMM serves as a proxy to operations performed under Windows. For example,
+Linux may issue disk block read and write operations. The VMM converts these
+low-level requests into Windows operations that seek into and read/write a file
+under Windows. To a user under Windows, the entire Linux "disk" appears as one file.
+</p>
+<p>
+A <strong>native</strong> virtual machine is one where there is no "primary"
+operating system that owns the system hardware. The hypervisor is in charge of 
+access to the devices and provides each operating system drivers for an abstract
+view of all the devices.
+</p>
+
+<h3>Intel ugliness</h3>
+<p>
+One problem with virtualization has been that the dominant processor platform, the
+Intel IA-32 (x86, Pentium, ...) and AMD architecture did not support trapping of privileged 
+instructions until late 2005 and 2006. 
+
+If a process
+not running in privileged mode attempted to execute a privileged instruction 
+<em>nothing would happen</em>. This means that you couldn't just run the operating 
+system code as an unprivileged process and have a hypervisor catch a trap to emulate the
+privileged instructions. 
+</p>
+
+<p>
+Two approaches were adopted for dealing with Intel (pre-Core 2 Duo) architectures:
+<em>binary translation</em> and <em>paravirtualization</em>.
+</p>
+<p>
+<strong>Binary translation</strong> is an approach used by VMWare, the
+most popular virtualization software for Intel platforms. This technique
+pre-scans the instruction stream for code that is supposed to run in
+privileged mode (kernel code) and replace privileged instructions with
+traps taht the VMM can intercept. After this, code is executed at full
+speed &ndash; instructions are executed by the processor and not interpreted.
+Non-privileged code can simply be executed directly by the processor.
+</p>
+
+<p>
+<strong>Paravirtualization</strong> is an approach used by Xen. It requires
+that the operating system be modified to not use privileged instructions. Instead,
+those calls are replaced with API calls to the VMM (which act like OS system calls,
+causing a trap and a context switch to the VMM). This approach yields higher
+performance than binary translation but requires access to the kernel source
+code so that it may be modified. Hence, proprietary operating systems such as
+the Windows family cannot work with paravirtualization.
+</p>
+
+<p>
+Both AMD and Intel have modified their architectures to support virtualization.
+At that time, Intel introduced Virtualization Technology (VT) onto their Itanium,
+Xeon, and Centrino processors. AMD introduced their somewhat similar Pacifica
+virtualization technology for their Athlon and Opteron processors.
+Certain privileged instructions
+can now be intercepted as virtual machine exits to the VMM (similar to an operating
+system mode switch; control switches from the operating system on the virtual machine
+to the virtual machine monitor). Exceptions, faults, and external interrupts are all
+intercepted as virtual machine exits (transfers to the VMM). The VMM can also create
+virtualized exceptions and faults as virtual machine entries &ndash; simulating 
+an interrupt to the operating system that is running on a virtual machine.
+</p>
+
+<h3>Hypervisor-based rootkits</h3>
+<p>
+One security threat that has emerged with the introduction of virtual machine
+support is that of <strong>hypervisor-based rootkits</strong>. The target machines
+are those that have no virtual machine software installed but have hardware
+support for virtualization. The intruding software runs as a VMM, intercepting
+all privileged operations. Since it runs at a higher privilege level thant the
+operating system, the operating system kernel has a very limited (and difficult)
+ability to detect its presence. Meanwhile, this software that masquerades as
+a VMM can intercept all disk and network operations (among other things).
+</p>
+<p>
+If you are curious about this approach, you can read about
+<a href="http://blogs.zdnet.com/Ou/index.php?p=295" target="_blank">Blue Pill:
+The first effective hypervisor rootkit</a>.
+
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

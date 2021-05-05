@@ -1,0 +1,2284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 419 Exam 1 Study Guide </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+.rqbox {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+        position: relative;
+	width: 15em;
+        background-color: #FDF5B6;
+        border-style: double; border-width: 3px;
+        padding: 0.5em 0.5em 0.5em 0.5em;
+}
+#main em {
+	color: darkred;
+}
+
+</style>
+</head>
+
+<body id="s_ru419">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Computer Security </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<P>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a>  </li>
+ 	<li> <a href="../../index.html"> Rutgers </a>  </li>
+ 	<li> <a href="../index.html"> CS 419 </a>  </li>
+ 	<li> <a href="../exam/index.html"> Exam info </a>  </li>
+ 	<li> <a href="../exam/guide-1.html"> Exam 1 study guide </a>  </li>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main"> <div id="headline">
+<h1> Exam 1 study guide </h1>
+<h2> The one-hour study guide for exam 1 </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> Latest update: Fri Oct  2 10:10:51 EDT 2020
+ </p>
+</div>
+
+<p class="first">
+
+<em>Disclaimer: </em>
+This study guide attempts to touch upon the most
+important topics that may be covered on the exam but does not claim to
+necessarily cover everything that one needs to know for the exam. Finally,
+don't take the <em>one hour</em> time window in the title literally.</p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>Computer security is about keeping computers, their programs, and the data they manage &#8220;safe.&#8221;
+Specifically, this means safeguarding three areas: confidentiality, integrity, and availability.
+These three are known as the <strong>CIA Triad</strong> (no relation to the Central Intelligence Agency).</p>
+<dl>
+<dt>Confidentiality</dt>
+<dd><strong>Confidentiality</strong> means that we do not make a system&#8217;s data and its resources
+(the devices it connects to and its ability to run programs) available to
+everyone. Only authorized people and processes should have access.
+<strong>Privacy</strong> specifies limits on what information can be shared with others
+while confidentiality provides a means to block access to such information.
+Privacy is a reason for confidentiality. Someone being able to access a protected
+file containing your medical records without proper access rights is a violation
+of confidentiality.</dd>
+
+<dt>Integrity</dt>
+<dd>
+<p><strong>Integrity</strong> refers to the <strong>trustworthiness</strong> of a system. This means
+that everything is as you expect it to be: users are not imposters and processes
+are running correctly.</p>
+
+<ul>
+<li><p><strong>Data integrity</strong> means that the data in a system has not been corrupted.</p></li>
+<li><p><strong>Origin integrity</strong> means that the person or system sending a message or creating a file truly is that person and not an imposter.</p></li>
+<li><p><strong>Recipient integrity</strong> means that the person or system receiving a message truly is that person and not an imposter.</p></li>
+<li><p><strong>System integrity</strong> means that the entire computing system is working properly; that it has not been damaged or subverted. Processes are running the way they are supposed to.</p></li>
+</ul></dd>
+
+<dd>
+<p>Maintaining integrity means not just defending against intruders that want to modify a program or masquerade as others.
+It also means protecting the system against against accidental damage, such as from user or programmer errors.</p></dd>
+
+<dt>Availability</dt>
+<dd><strong>Availability</strong> means that the system is available for use and performs properly.
+A denial of service (DoS) attack may not steal data or damage any files but may cause a system
+to become unresponsive.</dd>
+</dl>
+
+
+<p>Security is difficult.
+Software is incredibly complex. Large systems may comprise tens or hundreds of millions
+of lines of code.
+Systems as a whole are also complex. We may have a mix of cloud and local resources,
+third-party libraries, and multiple administrators.
+If security was easy, we would not have
+<a href="http://www.informationisbeautiful.net/visualizations/worlds-biggest-data-breaches-hacks/">massive security breaches year after year</a>.
+Microsoft wouldn&#8217;t have <a href="https://en.wikipedia.org/wiki/Patch_Tuesday">monthly security updates</a>.
+There are no magic solutions &#8230; but there is a lot that can be done to mitigate the risk of attacks and their resultant damage.</p>
+
+<p>We saw that computer security addressed three areas of concern.
+The design of <strong>security systems</strong> also has three goals.</p>
+<dl>
+<dt>Prevention</dt>
+<dd><strong>Prevention</strong> means preventing attackers from violating established security policies.
+It means that we can implement mechanisms into our hardware, operating systems, and application
+software that users cannot override &#8211; either maliciously or accidentally.
+Examples of prevention include enforcing access control rules for files and authenticating
+users with passwords.</dd>
+
+<dt>Detection</dt>
+<dd><strong>Detection</strong> detects and reports security attacks.
+It is particularly important when prevention mechanisms fail.
+It is useful because it can identify weaknesses with certain prevention mechanisms.
+Even if prevention mechanisms are successful, detection mechanisms
+are useful to let you know that attempted attacks are taking place.
+An example of detection is notifying an administrator that a new user has been
+added to the system. Another example is being notified that there have been
+several consecutive unsuccessful attempts to log in.</dd>
+
+<dt>Recovery</dt>
+<dd>If a system is compromised, we need to stop the attack and repair any damage
+to ensure that the system can continue to run correctly and the integrity of data is preserved.
+Recovery includes <strong>forensics</strong>, the study of identifying what happened and what
+was damaged so we can fix it.
+An example of recovery is restoration from backups.</dd>
+</dl>
+
+
+<p><strong>Security engineering</strong> is the task of implementing the necessary mechanisms
+and defining policies across all the components of the system.
+Like other engineering disciplines, designing secure systems involves
+making <strong>compromises</strong>. A highly secure system will be disconnected from any communication
+network, sit in an electromagnetically shielded room that is only accessible to trusted users,
+and run software that has been thoroughly audited. That environment is
+not acceptable for most of our computing needs. We want to download apps, carry our
+computers with us, and interact with the world. Even in the ultra-secure example,
+we still need to be concerned with how we monitor access to the room, who wrote the
+underlying operating system and compilers, and whether authorized users can be
+coerced to subvert the system. Systems have to be designed with some idea of who are
+likely potential attackers and what the threats are.
+<strong>Risk analysis</strong> is used to understand the difficulty of an attack on a system, who
+will be affected, and what the worst thing that can happen is.
+A <strong>threat model</strong> is a data flow model (e.g., diagram) that identifies each place
+where information moves into or out of the software or between subsystems of the program.
+It allows you to identify areas where the most effort should be placed to secure a system.</p>
+
+<p>Secure systems have two parts to them: mechanisms and policies.
+A <strong>policy</strong> is a description of what is or is not allowed.
+For example, &#8220;users must have a password to log into the system&#8221; is a policy.
+<em>Mechanisms</em>* are used to implement and enforce policies.
+An example of a mechanism is the software that requests user IDs and passwords,
+authenticates the user, and allows entry to the system only if the
+correct password is used.</p>
+
+<p>A <strong>vulnerability</strong> is a weakness in the security system. It could
+be a poorly defined policy, a bribed individual, or a flaw in the
+underlying mechanism that enforces security. An <strong>attack</strong> is the
+exploitation of a vulnerability in a system.
+An <strong>attack vector</strong> refers to the specific technique that an attacker
+uses to exploit a vulnerability. Example attack vectors include
+phishing, keylogging, and trying common passwords to log onto a system.
+An attack surface is the sum of <em>possible</em> attack vectors in a system:
+all the places where an attacker might <em>try</em> to get into the system.</p>
+
+<p>A <strong>threat</strong> is the potential adversary who may attack the system. Threats
+may lead to attacks.</p>
+
+<p>Threats fall into four broad categories:</p>
+
+<p><strong>Disclosure</strong>: Unauthorized access to data, which covers exposure,
+interception, interference, and intrusion. This includes stealing data,
+improperly making data available to others, or snooping on the flow
+of data.</p>
+
+<p><strong>Deception</strong>: Accepting false data as true. This includes masquerading,
+which is posing as an authorized entity; substitution or insertion
+of includes the injection of false data or modification of existing
+data; repudiation, where someone falsely denies receiving or
+originating data.</p>
+
+<p><strong>Disruption</strong>: Some change that interrupts or prevents the correct
+operation of the system. This can include maliciously changing the
+logic of a program, a human error that disables a system, an
+electrical outage, or a failure in the system due to a bug. It can
+also refer to any obstruction that hinders the functioning of the
+system.</p>
+
+<p><strong>Usurpation</strong>: Unauthorized control of some part of a system. This
+includes theft of service as well as any misuse
+of the system such as tampering or actions that result in the
+violation of system privileges.</p>
+
+<p>The Internet increases opportunities for attackers. The core protocols
+of the Internet were designed with decentralization, openness, and interoperability
+in mind rather than security. Anyone can join the Internet and send messages &#8230; and untrustworthy
+entities can provide routing services. It allows bad actors to hide and
+to attack from a distance. It also allows attackers to amass <strong>asymmetric power</strong>:
+harnessing more resources to attack than the victim has for defense. Even small
+groups of attackers are capable of mounting Distributed Denial of Service (DDoS)
+attacks that can overwhelm large companies or government agencies.</p>
+
+<p>Adversaries can range from lone hackers to industrial spies, terrorists, and intelligence agencies.
+We can consider two dimensions: <strong>skill</strong> and <strong>focus</strong>.
+Regarding focus, attacks are either opportunistic or targeted.
+<strong>Opportunistic attacks</strong> are those where the attacker is not out to get you
+specifically but casts a wide net, trying many systems in the hope of finding a few
+that have a particular vulnerability that can be exploited. <strong>Targeted attacks</strong>
+are those where the attacker targets you specifically. The term <strong>script kiddies</strong>
+is used to refer to attackers who lack the skills to craft their own exploits but download malware
+toolkits to try to find vulnerabilities (e.g., systems with poor or default passwords, hackable cameras).
+<strong>Advanced persistent threats</strong> (<strong>APT</strong>) are highly-skilled, well-funded,
+and determined (hence, persistent) attackers. They can craft their own exploits,
+pay millions of dollars for others, and may carry out complex, multi-stage attacks.</p>
+
+<p>We refer to the <strong>trusted computing base</strong> (<strong>TCB</strong>) as the
+collection of hardware and software of a computing system that is
+critical to ensuring the system&#8217;s security. Typically, this is the operating
+system and system software. If the TCB is compromised, you no longer have
+<strong>assurance</strong> that any part of the system is secure. For example. the
+operating system may be modified to ignore the enforcement of file access
+permissions. If that happens, you no longer have assurance that any
+application is accessing files properly.</p>
+
+<h1 id="accesscontrol">Access control</h1>
+
+<blockquote>
+<p>See <a href="../notes/access.html">lecture notes</a></p>
+</blockquote>
+
+<h1 id="programhijacking">Program Hijacking</h1>
+
+<p>Program hijacking refers to techniques that can be used to take control
+of a program and have it do something other than what it was intended to
+do. One class of techniques uses <strong>code injection</strong>, in which an
+adversary manages to add code to the program and change the
+program’s execution flow to run that code.</p>
+
+<p>The best-known set of attacks are based on <strong>buffer overflow</strong>.
+Buffer overflow is the condition where a programmer allocates a
+chunk of memory (for example, an array of characters) but neglects
+to check the size of that buffer when moving data into it.
+Data will spill over into adjacent memory and overwrite whatever
+is in that memory.</p>
+
+<p>Languages such as C, C++, and assembler are susceptible to
+buffer overflows since the language does not have a means of
+testing array bounds. Hence, the compiler cannot generate code
+to validate that data is only going into the allocated buffer. For example,
+when you copy a string using <em>strcpy</em>(char *dest, char *src), you
+pass the function only source and destination pointers. The
+<em>strcpy</em> function has no idea how big either of the buffers are.</p>
+
+<h2 id="stack-basedoverflows">Stack-based overflows</h2>
+
+<p>When a process runs, the operating system’s program loader
+allocates a region for the executable code and static data (called
+the <strong>text</strong> and <strong>data</strong> segments), a region for the <strong>stack</strong>,
+and a region for the <strong>heap</strong> (used for dynamic memory
+allocation, such as by <em>malloc</em>).</p>
+
+<p>Just before a program calls a function, it pushes
+the function&#8217;s parameters onto
+the stack. When the call is
+made, the return address gets pushed on the stack.
+On entry to the function that was called,
+the function pushes the current <strong>frame pointer</strong>
+(a register in the CPU)
+on the stack, which
+forms a linked list to the previous frame pointer and provides
+an easy way to revert the stack to where it was before making the
+function call. The frame pointer register is then set
+to the current top of the stack.
+The function then adjusts the stack pointer to make room
+for hold local variables, which live on the stack.
+This region for the function&#8217;s local data is called the <strong>stack frame</strong>.
+Ensuring that the stack pointer is always pointing
+to the top of the stack enables the function to get interrupts
+or call other functions without overwriting
+anything useful on the stack.
+The compiler generates code to
+reference parameters and local
+variables as offsets from the current frame pointer register.</p>
+
+<p>Before a function returns, the compiler generates code to:</p>
+
+<ul>
+<li><p>Adjust the stack back to point to where it was before the stack expanded to make room for local variables. This is done by copying the frame pointer to the stack pointer.</p></li>
+<li><p>Restore the previous frame pointer by popping it off the stack (so that local variables for the previous function could be referenced properly).</p></li>
+<li><p>Return from the function. Once the previous frame pointer has been popped off the stack, the
+stack pointer points to a location on the stack that holds the return address.</p></li>
+</ul>
+
+<h3 id="simplestackoverflows">Simple stack overflows</h3>
+
+<p>Local variables are allocated on the stack and the stack grows <em>downward</em> in memory. Hence, the top of the stack is in lower memory than the start, or bottom,
+of the stack. If a buffer (e.g., <code>char buf[128]</code>) is defined as a local variable,
+it will reside on the stack. As the buffer gets filled up, its contents
+will be written to higher and higher memory addresses. If the buffer
+overflows, data will be written further down the stack (in higher memory),
+overwriting the
+contents of any other variables that were allocated for that function
+and eventually overwriting the saved frame pointer and the saved
+return address.</p>
+
+<p>When this happens and the function tries to return, the return address
+that is read from the stack will contain garbage data, usually a
+memory address that is not mapped into the program’s memory.
+As such, the program will crash when the function returns and tries to
+execute code at that invalid address. This is an <strong>availability attack</strong>.
+If we can exploit the fact that a program does not check the bounds
+of a buffer and overflows the buffer, we can cause a program to crash.</p>
+
+<h3 id="subvertingcontrolflowthroughastackoverflow">Subverting control flow through a stack overflow</h3>
+
+<p>Buffer overflow can be used in a more malicious manner.
+The buffer itself can be filled with bytes of valid machine code.
+If the attacker knows the exact size of the buffer, she can write
+just the right number of bytes to write a new return address into
+the very same region of memory on the stack that held the return address
+to the parent function. This new return address points to the
+start of the buffer that contains the <strong>injected</strong> code. When
+the function returns, it will “return” to the new code in the buffer
+and execute the code at that location.</p>
+
+<h2 id="off-by-onestackoverflows">Off-by-one stack overflows</h2>
+
+<p>As we saw, buffer overflow occurs because of programming bugs: the
+programmer neglected to make sure that the data written to
+a buffer does not overflow. This often occurs because the
+programmer used old, <strong>unsafe</strong> functions that do not
+allow the programmer to specify limits. Common functions
+include:</p>
+
+<pre><code>- strcpy(char *dest, char *src)
+
+- strcat(char *dest, char *src)
+
+- sprintf(char *format, ...)
+</code></pre>
+
+<p>Each of these functions has a <strong>safe</strong> counterpart that accepts
+a <em>count</em> parameter so that the function will never copy more than
+<em>count</em> number of bytes:</p>
+
+<pre><code>- strcpy(char *dest, char *src, int count)
+
+- strcat(char *dest, char *src, int count)
+
+- sprintf(char *format, int count,  ...)
+</code></pre>
+
+<p>You’d think this would put an end to buffer overflow problems.
+However, programmers may miscount or they may choose
+to write their own functions that do not check array bounds correctly.
+A common error is an <strong>off-by-one error</strong>. For example, a programmer
+may declare a buffer as:</p>
+
+<pre><code>char buf[128];
+</code></pre>
+
+<p>and then copy into it with:</p>
+
+<pre><code>for (i=0; i &lt;= 128; i++)
+    buf[i] = stuff[i];
+</code></pre>
+
+<p>The programmer inadvertently used a <code>&lt;=</code> comparison instead of <code>&lt;</code>.</p>
+
+<p>With off-by-one bounds checking, there is no way that
+malicious input can overwrite the return address on the
+stack: the copy operation would stop before that time.
+However, if the buffer is the first variable that is
+allocated on the stack, an off-by-one error can overwrite
+one byte of the saved frame pointer.</p>
+
+<p>The potential for damage depends very much on what the
+value of that saved frame pointer was and how the
+compiler generates code for managing the stack. In the worst case,
+it could be set up to a value that is 255 bytes lower in memory.
+If the frame pointer is modified, the function will still
+return normally. However, upon returning, the compiler
+pops the frame pointer from the stack to restore the
+saved value of the calling function&#8217;s frame pointer, which
+was corrupted by the buffer overflow.
+Now the program has a modified frame pointer.</p>
+
+<p>Recall that references to a function&#8217;s variables and parameters are
+expressed as offsets from the current frame pointer.
+Any references
+to local variables may now be references to data in the
+buffer. Moreover, should that function return, it
+will update its stack pointer to this buffer area and
+return to an address that the attacker defined.</p>
+
+<h2 id="heapoverflows">Heap overflows</h2>
+
+<p>Not all data is allocated on the stack: only local variables.
+Global and static variables are placed in a region of memory
+right above the executable program. Dynamically allocated
+memory (e.g., via <em>new</em> or <em>malloc</em>) comes from an area
+of memory called the <em>heap</em>. In either case, since this memory
+is <em>not</em> the stack, it does not contain return addresses so
+there is no ability for a buffer overflow attack to overwrite
+return addresses.</p>
+
+<p>We aren&#8217;t totally safe, however. A buffer overflow will
+cause data to spill over into higher memory addresses above
+the buffer that may contain other variables. If the attacker
+knows the order in which variables are allocated, they could be overwritten.
+While these overwrites will not change a return address,
+they can change things such as filenames, lookup tables,
+or linked lists. Some programs make extensive use of function
+pointers, which may be stored in global variables or in dynamically-allocated structures
+such as linked lists on a heap. If a buffer
+overflow can overwrite a function pointer then it can change
+the execution of the program: when that function is called,
+control will be transferred to a location of the attacker&#8217;s
+choosing.</p>
+
+<p>If we aren’t sure of the exact address at which execution will
+start, we can fill a buffer with a bunch of NOP (no operation)
+instructions prior to the injected code. If the processor jumps
+anywhere in that region of memory, it will happily execute these
+NOP instructions until it eventually reaches the injected code.
+This is called a
+<strong>NOP slide</strong>, or a <strong>landing zone</strong>.</p>
+
+<h2 id="formatstringattackswithprintf">Format string attacks with printf</h2>
+
+<p>The family of <em>printf</em> functions are commonly used in C and C++
+to create formatted output. They accept a format string that
+defines what will be printed, with % characters representing formatting
+directives for parameters. For example, </p>
+
+<pre><code>printf(&quot;value = %05d\n&quot;, v);
+</code></pre>
+
+<p>Will print a string such as</p>
+
+<pre><code>value = 01234
+</code></pre>
+
+<p>if the value of <code>v</code> is 1234. </p>
+
+<h3 id="readingarbitrarymemory">Reading arbitrary memory</h3>
+
+<p>Occasionally, programs will use a format string that could be modified.
+For instance, the format string may be a local variable that is a pointer
+to a string. This local variable may be overwritten by a buffer overflow
+attack to point to a different string.
+It is also common, although improper, for a programmer to use
+<code>printf(s)</code> to print a fixed string <code>s</code>.
+If <code>s</code> is a string that is generated by the attacker, it may
+contain unexpected formatting directives.</p>
+
+<p>Note that <em>printf</em> takes
+a variable number of arguments and matches each
+% directive in the format string with a parameter. If there are not
+enough parameters passed to <em>printf</em>, the function does not know that:
+it assumes they are on the stack and will happily read whatever value
+is on the stack where it <em>thinks</em> the parameter should be.
+This gives an attacker the ability to read arbitrarily deep into the
+stack. For example, with a format string such as:</p>
+
+<pre><code>printf(&quot;%08x\n%08x\n%08x\n%08x\n&quot;);
+</code></pre>
+
+<p>printf will expect four parameters, all of which are missing. It will instead
+read the next four values that are on the top of the stack and print each of those
+integers as an 8-character-long hexadecimal value prefixed with leading
+zeros (&#8220;%08x\n&#8221;). </p>
+
+<h3 id="writingarbitrarymemory">Writing arbitrary memory</h3>
+
+<p>The <em>printf</em> function also contains a somewhat obscure formatting directive: %n.
+Unlike other % directives that expect to <em>read</em> a parameter and format it,
+%n instead <em>writes</em> to the address corresponding to that parameter.
+It writes the number of characters that it has output thus far. For example,</p>
+
+<pre><code>printf(“paul%n says hi”, &amp;printbytes);
+</code></pre>
+
+<p>will store the number 4 (<code>strlen(&quot;paul&quot;)</code>) into the variable <code>printbytes</code>.
+An attacker who can change the format specifier may be able to write to
+arbitrary memory. Each % directive to print a variable will cause <em>printf</em>
+to look for the next variable in the next slot in the stack. Hence,
+format directives such as %x, %lx, %llx will cause <em>printf</em> to skip over the
+length of an int, long, or long long and get the next variable from
+the following location on the stack. Thus, just like reading the stack, we
+can skip through any number of bytes on the stack until we get to the address
+where we want to modify a value. At that point, we insert a %n directive in the
+format string, which will modify that address on the stack with the number
+of bytes that were output.
+We can precisely control the value that will be written
+by specifying how many bytes are output as part of the format string.
+For example, a format of <code>%.55000x</code> tells printf to output a value to
+take up 55,000 characters. By using formats like that for output values,
+we can change the count that will be written with %n. Remember, we don&#8217;t care
+what printf actually prints; we just want to force the byte count to be
+a value we care about, such as the address of a function we want to call.</p>
+
+<h2 id="defenseagainsthijackingattacks">Defense against hijacking attacks</h2>
+
+<h3 id="betterprogramming">Better programming</h3>
+
+<p>Hijacking attacks are the result of sloppy programming: a lack of bounds
+checking that results in overflows. They can be eliminated if the programmer
+never uses unsafe functions (e.g., use <em>strncpy</em> instead of <em>strcpy</em>) and
+is careful about off-by-one errors.</p>
+
+<p>A programer can use a technique called <strong><em>fuzzing</em></strong> to locate buffer overflow
+problems. Whenever a string can be provided by the user, the user will enter
+extremely long strings with well-defined patterns (e.g., &#8220;$$$$$$&#8230;&#8221;). If the app
+crashes because a buffer overflow destroyed a return address on the stack,
+the programmer can then load the core dump into a debugger, identify where
+the program crashed and search
+for a substring of the entered pattern (&#8220;$$$$$&#8221;) to identify which buffer was
+affected.</p>
+
+<p>Buffer overflows can be avoided by using languages with stronger type
+checking and array bounds checking. Languages such as Java, C#, and Python
+check array bounds. C and C++ do not. However, it is sometimes difficult
+to avoid using C or C++.</p>
+
+<p>Tight specification of requirements, coding to those requirements, and
+constructing tests based on those requirements helps avoid buffer overflow
+bugs. If input lengths are specified, they are more likely to be coded
+and checked. Documentation should be explicit, such as
+<em>&quot;user names longer than 32 bytes must be rejected.”</em></p>
+
+<h3 id="dataexecutionpreventiondep">Data Execution Prevention (DEP)</h3>
+
+<p>Buffer overflows affect data areas: either the stack, heap, or static data areas.
+There is usually no reason that those regions of code should contain executable code.
+Hence, it makes sense for the operating system to set the processor&#8217;s
+memory management unit (MMU) to turn off execute
+permission for memory pages in those regions.</p>
+
+<p>This was not possible with early Intel or AMD processors: their MMU did not
+support enabling or disabling execute permissions. All memory could
+contain executable code. That changed in 2004, when Intel and AMD finally
+added an <strong>NX</strong> (<strong>no-execute</strong>) bit to their MMU&#8217;s page tables. On Intel
+architectures, this was called the <strong>Execute Disable Bit</strong> (<strong>XD</strong>).
+Operating system support followed.
+Windows, Linux, and macOS all currently support DEP.</p>
+
+<p>DEP cannot always be used. Some environments, such as some LISP
+interpreters actually do need execution enabled in their stack and
+some environments need executable code in their heap section (to support dynamic
+loading, patching, or just-in-time compilation). DEP also does not guard against data modification
+attacks, such as heap-based overflows or some printf attacks.</p>
+
+<h3 id="depattacks">DEP attacks</h3>
+
+<p>Attackers came up with some clever solutions to defeat DEP.
+The first of these is called <strong>return-to-libc</strong>*.
+Buffer overflows still allow us to corrupt the stack. We just
+cannot execute code on the stack. However, there is already
+a lot of code sitting in the program and the libraries it uses.
+Instead of adding code into the buffer, the attacker merely
+overflows a buffer to create a new return address and
+parameter list on the stack. When the function returns,
+it switches control to the new return address. This
+return address will be an address in the standard C library (libc),
+which contains functions such as <em>printf</em>, <em>system</em>, and
+front ends to system calls. All that an attacker often needs to
+do is to push parameters that point to a string in the buffer
+that contains a command to execute and then &#8220;return&#8221; to the
+libc <em>system</em> function, whose function is to execute a parameter
+as a shell command.</p>
+
+<p>A more sophisticated variant of return-to-libc is
+<strong>Return Oriented Programming</strong> (<strong>ROP</strong>).
+Return oriented programming is similar to return-to-libc
+but realizes that execution can branch to any arbitrary point
+in any function in any loaded library. The function will
+execute a series of instructions and eventually return.
+The attacker will overflow the stack with
+data that now tells this function where to &#8220;return&#8221;.
+Its return can jump to yet another arbitrary point in another
+library. When that returns, it can &#8211; once again &#8211; be
+directed to an address chosen by the intruder that
+has been placed further down the stack, along with frame pointers,
+local variables, and parameters.</p>
+
+<p>There are lots and lots of <em>return</em> instructions among
+all the libraries normally used by programs.
+Each of these tail ends of a function is called a <strong>gadget</strong>.
+It has been
+demonstrated that using carefully chosen gadgets
+allows an attacker to push a string of return addresses that
+will enable the execution of arbitrary algorithms.
+To make life easier for the attacker, tools have been
+created that search through libraries and identify
+useful gadgets. A ROP compiler then allows the attacker to
+program operations using these gadgets.</p>
+
+<h3 id="addressspacelayoutrandomization">Address Space Layout Randomization</h3>
+
+<p>Stack overflow attacks require knowing and injecting an
+address that will be used as
+a target when a function returns. ROP also requires
+knowing addresses of all the entry points of gadgets.
+<strong>Address Space Layout Randomization</strong> (<strong>ASLR</strong>)
+is a technique that was developed to have the operating system&#8217;s program
+loader pick random starting points for the executable
+program, static data, heap, stack, and shared libraries.
+Since code and data resides in different locations each
+time the program runs, the attacker is not able to program
+buffer overflows with useful known addresses.
+For ASLR to work, the program and all libraries must be
+compiled to use <strong>position independent code</strong> (<strong>PIC</strong>),
+which uses relative offsets instead of absolute memory
+addresses.</p>
+
+<h3 id="stackcanaries">Stack canaries</h3>
+
+<p>A <strong>stack canary</strong> is a compiler technique to ensure that
+a function will not be allowed to return if a buffer overflow
+took place that may have clobbered the return address.</p>
+
+<p>At the start of a function,
+the compiler adds code to generate a random integer (the <strong>canary</strong>)
+and push it onto the stack before allocating space for
+the function&#8217;s local variables (the entire region of the stack used by a local function is called a frame).
+The canary sits between the return address and these variables. If
+there is a buffer overflow in a local variable that tries to change
+the return address, that overflow will have to clobber the value
+of the canary.</p>
+
+<p>The compiler generates code to have the function
+check that the canary has a valid value before returning. If the
+value of the canary is not the original value then a buffer overflow
+occurred and it’s very likely that the return value has been altered.</p>
+
+<p>However, you may still have a buffer overflow that does not change
+the value of the canary or the return address. Consider a function
+that has two local arrays (buffers). They’re both allocated on the
+stack within the same stack frame. If array A is in lower memory
+than array B then an overflow in A can affect the contents of B.
+Depending on the code, that can alter the way the function works.
+The same thing can happen with scalar variables (non-arrays). For
+instance, suppose the function allocates space for an integer
+followed by an array. An overflow in the array can change the value
+of the integer that’s in higher memory. The canary won’t detect
+this. Even if the overflow happened to clobber the return value as
+well, the check is made only when the function is about to return.
+Meanwhile, it’s possible that the overflow that caused other variables
+to change also altered the behavior of the function.</p>
+
+<p>Stack canaries cannot fix this problem in general. However, the
+compiler (which creates the code to generate them and check them)
+can take steps to ensure that a buffer overflow cannot overwrite
+non-array variables, such as integers and floats. By allocating
+arrays first (in higher memory) and then scalar variables, the
+compiler can make sure that a buffer overflow in an array will not
+change the value of scalar variables. One array overflowing to
+another is still a risk, however, but it is most often the scalar
+variables that contain values that define the control flow of a
+function.</p>
+
+<h1 id="commandinjection">Command Injection</h1>
+
+<p>We looked at buffer overflow and printf format string attacks that enable the modification of
+memory contents to change the flow of control in the program and, in the case of buffer overflows,
+inject executable binary code (machine instructions). Other injection attacks enable you
+to modify inputs used by command processors, such as interpreted languages or databases.
+We will now look at these attacks.</p>
+
+<h2 id="sqlinjection">SQL Injection</h2>
+
+<p>It is common practice to take user input and make it part of a database query. This is particularly
+popular with web services, which are often front ends for databases.
+For example, we might ask the user for a login name and password and then create a SQL
+query:</p>
+
+<pre><code>sprintf(buf,
+    ”SELECT * from logininfo WHERE username = '%s' AND password = '%s’;&quot;,
+    uname, passwd);
+</code></pre>
+
+<p>Suppose that the user entered this for a password:</p>
+
+<pre><code>' OR 1=1 --
+</code></pre>
+
+<p>We end up creating this query string<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a>:</p>
+
+<pre><code>SELECT * from logininfo WHERE username = 'paul' AND password = '' OR 1=1 -- ';
+</code></pre>
+
+<p>The &#8220;--&#8221; after &#8220;1=1&#8221; is a SQL comment, telling it to ignore everything else on the line.
+In SQL, OR operations have precendence over AND so the query checks for a null password (which the user probably does not have) or the condition 1=1, which is always true. In essence, the user&#8217;s &#8220;password&#8221; turned the query
+into one that ignores the user&#8217;s password and unconditionally validates the user.</p>
+
+<p>Statements such as this can be even more destructive as the user can use semicolons to add multiple
+statements and perform operations such as dropping (deleting) tables or changing values in the database.</p>
+
+<p>This attack can take place because the programmer blindly allowed user input to
+become part of the SQL command without validating that the user data does not change
+the quoting or tokenization of the query. A programmer can avoid the problem
+by carefully checking the input. Unfortunately, this can be difficult. SQL
+contains too many words and symbols that may be legitimate in other contexts (such
+as passwords) and escaping special characters, such as prepending backslashes or
+escaping single quotes with two quotes can be error prone as these escapes
+differ for different database vendors. The safest defense is to use parameterized queries,
+where user input never becomes part of the query but is brought in as parameters to it.
+For example, we can write the previous query as:</p>
+
+<pre><code>uname = getResourceString(&quot;username&quot;);
+passwd = getResourceString(&quot;password&quot;);
+query = &quot;SELECT * FROM users WHERE username = @0 AND password = @1&quot;;
+db.Execute(query, uname, passwd);
+</code></pre>
+
+<p>A related safe alternative is to use stored procedures. They have the same property that the
+query statement is not generated from user input and parameters are clearly identified.</p>
+
+<p>While SQL injection is the most common code injection attack, databases are not the only
+target. Creating executable statements built with user input is common in interpreted
+languages, such as Shell, Perl, PHP, and Python. Before making user input part of any
+invocable command, the programmer must be fully aware of parsing rules for that command
+interpreter.</p>
+
+<h2 id="shellattacks">Shell attacks</h2>
+
+<p>The various POSIX<a href="#fn:2" id="fnref:2" title="see footnote" class="footnote">[2]</a> shells (sh, csh, ksh, bash, tcsh, zsh) are commonly used as scripting tools
+for software installation, start-up scripts, and tying together workflow that involves processing
+data through multiple commands. A few aspects of how many of the shells work and the underlying
+program execution environment can create attack vectors.</p>
+
+<!--
+### IFS
+
+The shell variable **IFS**, **Internal Field Separator**, defines set of characters that
+will be used as separators when parsing
+arguments. By default, IFS is set to space, tab, and newline. However, it can be set to
+anything else. This can change how the shell parses its input data without modifying
+the shell code. IFS can also affect output, depending on what is used to generate it. 
+If a shell uses ```"$*"``` to expand a list of arguments, it will replace white space
+with the first character in the IFS variable. 
+
+More dangerously, IFS can cause the pathname separator character / to be treated 
+as whitespace. A program might use a function such as this to send an email alert:
+
+    FILE *fp = popen("/usr/bin/mail –s \"system alert\"  user", "w");
+
+The _popen_ function simply launches a shell to execute the supplied string as a command
+and allows input to the command to be written to the FILE pointer ```fp```.
+If the IFS variable is set to ```/```, then instead of executing the command /usr/bin/mail, 
+the shell will try to execute the command ```usr``` with parameters of ```bin```, ```mail```, ...
+If an attacker can place a command called ```usr``` somewhere in the user's search path then
+that command would be run instead.
+-->
+
+<h3 id="systemandpopenfunctions">system() and popen() functions</h3>
+
+<p>Both <em>system</em> and <em>popen</em> functions are part of
+the Standard C Library and are common
+functions that C programmers use to execute shell commands. The <em>system</em> function
+runs a shell command while the <em>popen</em> function also runs the shell command but
+allows the programmer to capture its output and/or send it input via the returned
+FILE pointer.</p>
+
+<p>Here we again have the danger of turning improperly-validated data into a command.
+For example, a program might use a function such as this to send an email alert:</p>
+
+<pre><code>char command[BUFSIZE];
+snprintf(command, BUFSIZE, &quot;/usr/bin/mail –s \&quot;system alert\&quot; %s&quot;, user);
+FILE *fp = popen(command, &quot;w&quot;);
+</code></pre>
+
+<p>In this example, the programmer uses <em>snprintf</em> to create
+the complete command with the desired user name into a buffer. This incurs the possibility
+of an injection attack if the user name is not carefully validated.
+If the attacker had the option to set the user name, she could enter a string
+such as:</p>
+
+<pre><code>nobody; rm -fr /home/*
+</code></pre>
+
+<p>which will result in <em>popen</em> running the following command:</p>
+
+<pre><code>sh -c &quot;/usr/bin/mail -s \&quot;system alert\&quot; nobody; rm -fr /home/*&quot;
+</code></pre>
+
+<p>which is a sequence of commands, the latter of which deletes all user directories.</p>
+
+<h3 id="otherenvironmentvariables">Other environment variables</h3>
+
+<p>The shell PATH environment variable controls how the shell searches for commands.
+For instance, suppose</p>
+
+<pre><code>PATH=/home/paul/bin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games
+</code></pre>
+
+<p>and the user runs the <code>ls</code> command. The shell will search through the PATH sequentially
+to find an executable filenamed <code>ls</code>:</p>
+
+<pre><code>/home/paul/bin/ls
+/usr/local/bin/ls
+/usr/sbin/ls
+/usr/bin/ls
+/bin/ls
+/usr/local/games/ls
+</code></pre>
+
+<p>If an attacker can either change a user&#8217;s PATH environment variable or if one of the
+paths is publicly writable and appears before the &#8220;safe&#8221; system directories,
+then he can add a booby-trapped command in one of those directories. For example,
+if the user runs the <strong>ls</strong> command, the shell may pick up a booby-trapped version
+in the <code>/usr/local/bin</code> directory. Even if a user has trusted locations, such
+as /bin and /usr/bin foremost in the PATH, an intruder may place a misspelled
+version of a common command into another directory in the path. The safest remedy
+is to make sure there are no untrusted directories in PATH.</p>
+
+<p>Some shells allow a user to set an ENV or BASH_ENV variable that contains the name
+of a file that will be executed as a script whenever a non-interactive shell is
+started (when a shell script is run, for example). If an attacker can change
+this variable then arbitrary commands may be added to the start of every shell script.</p>
+
+<h3 id="sharedlibraryenvironmentvariables">Shared library environment variables</h3>
+
+<p>In the distant past, programs used to be fully linked, meaning that all the code
+needed to run the program, aside from interactions with the operating system,
+was part of the executable program. Since so many programs use common libraries,
+such as the Standard C Library, they are not compiled into the code of an executable
+but instead are dynamically loaded when needed.</p>
+
+<p>Similar to PATH, <strong>LD_LIBRARY_PATH</strong> is an environment variable used by the
+operating system&#8217;s <a href="http://man7.org/linux/man-pages/man8/ld.so.8.html">program loader</a>
+that contains a colon-separated list of directories where
+libraries should be searched.
+If an attacker can change a user&#8217;s LD_LIBRARY_PATH, common library functions
+can be overwritten with custom versions.
+The <strong>LD_PRELOAD</strong> environment variable allows one to explicitly specify shared
+libraries that contain functions that override standard library functions. </p>
+
+<p>LD_LIBRARY_PATH and LD_PRELOAD will not give an attacker root access but they can be
+used to change the behavior of program or to log library interactions.
+For example, by overwriting standard functions, one may change how a program
+generates encryption keys, uses random numbers, sets delays in games,
+reads input, and writes output.</p>
+
+<p>As an example, let&#8217;s suppose we have a trial program that checks the current
+time against a hard-coded expiration time:</p>
+
+<pre><code>#include &lt;time.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int
+main(int argc, char **argv)
+{
+    unsigned long expiration = 1483228800;
+    time_t now;
+
+    /* check software expiration */
+    now = time(NULL);
+    if (time(NULL) &gt; (time_t)expiration) {
+        fprintf(stderr, &quot;This software expired on %s&quot;, ctime(&amp;expiration));
+        fprintf(stderr, &quot;This time is now %s&quot;, ctime(&amp;now));
+    }
+    else
+        fprintf(stderr, &quot;You're good to go: %lu days left in your trial.\n&quot;,
+            (expiration-now)/(60*60*24));
+    return 0;
+}
+</code></pre>
+
+<p>When run, we may get output such as:</p>
+
+<pre><code>$ ./testdate
+This software expired on Sat Dec 31 19:00:00 2016
+This time is now Sun Feb 18 15:50:44 2018
+</code></pre>
+
+<p>Let us write a replacement <em>time</em> function that always returns a fixed value
+that is less than the one we test for. We&#8217;ll put it in a file called <code>time.c</code>:</p>
+
+<pre><code>unsigned long time() {
+    return (unsigned long) 1483000000;
+}
+</code></pre>
+
+<p>We compile it into a shared library:</p>
+
+<pre><code>gcc -shared -fPIC time.c -o newtime.so
+</code></pre>
+
+<p>Now we set LD_PRELOAD and run the program:</p>
+
+<pre><code>$ export LD_PRELOAD=$PWD/newtime.so
+$ ./testdate
+You're good to go: 2 days left in your trial.
+</code></pre>
+
+<p>Note that our program now behaves differently and we never had to recompile
+it or feed it different data!</p>
+
+<h2 id="inputsanitization">Input sanitization</h2>
+
+<p>The important lesson in writing code that uses any user input in forming commands is
+that of <strong>input sanitization</strong>. Input must be carefully <strong>validated</strong> to make sure it conforms
+to the requirements of the application that uses it and does not try to execute additional
+commands, escape to a shell, set malicious environment variables, or specify out-of-bounds
+directories or devices.</p>
+
+<h2 id="filedescriptors">File descriptors</h2>
+
+<p>POSIX systems have a convention that programs expect to receive three open file descriptors
+when they start up: </p>
+
+<ul>
+<li><p>file descriptor 0: standard input</p></li>
+<li><p>file descriptor 1: standard output</p></li>
+<li><p>file descriptor 2: standard error</p></li>
+</ul>
+
+<p>Functions such as <em>printf</em>, <em>scanf</em>, <em>puts</em>, <em>getc</em> and others expect these file desciptors
+to be available for input and output.
+When a program opens a new file, the operating system searches through the file descriptor table
+and allocates the first available unused file descriptor. Typically this will be file descriptor 3.
+However, if any of the three standard file descriptors are closed, the operating system will
+use one of those as an available, unused file descriptor.</p>
+
+<p>The vulnerability lies in the fact that we may have a program running with elevated privileges
+(e.g., setuid root) that modifies a file that is not accessible to regular users.
+If that program also happens to write to the user via, say, <em>printf</em>, there is an
+opportunity to corrupt that file. The attacker simply needs to close the standard output
+(file descriptor 1) and run the program. When it opens its secret file, it will be
+given file descriptor 1 and will be able to do its read and write operations on the
+file. However, whenever the program will print a message to the user, the output
+will not be seen by the user as it will be directed to what <em>printf</em> assumes is
+the standard output: file descriptor 1. Printf output will be written onto the secret
+file, thereby corrupting it.</p>
+
+<p>The shell command (bash, sh, or ksh) for closing the standard output file is
+an obscure-looking <code>&gt;&amp;-</code>. For example:</p>
+
+<pre><code>./testfile &gt;&amp;-
+</code></pre>
+
+<h2 id="comprehensionerrors">Comprehension Errors</h2>
+
+<p>The overwhelming majority of security problems are caused by bugs or misconfigurations.
+Both often stem from <strong>comprehension errors</strong>. These are mistakes created when someone &#8211;
+usually the programmer or administrator &#8211; does not understand the details and every nuance
+of what they are doing. Some example include:</p>
+
+<ul>
+<li><p>Not knowing all possible special characters that need escaping in SQL commands.</p></li>
+<li><p>Not realizing that the standard input, output, or error file descriptors may be closed.</p></li>
+<li><p>Not understanding how access control lists work or how to configure mandatory access control mechanisms such as type enforcement correctly.</p></li>
+</ul>
+
+<p>If we consider the Windows <em>CreateProcess</em> function, we see it is defined as:</p>
+
+<pre><code>BOOL WINAPI CreateProcess(
+  _In_opt_    LPCTSTR               lpApplicationName,
+  _Inout_opt_ LPTSTR                lpCommandLine,
+  _In_opt_    LPSECURITY_ATTRIBUTES lpProcessAttributes,
+  _In_opt_    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+  _In_        BOOL                  bInheritHandles,
+  _In_        DWORD                 dwCreationFlags,
+  _In_opt_    LPVOID                lpEnvironment,
+  _In_opt_    LPCTSTR               lpCurrentDirectory,
+  _In_        LPSTARTUPINFO         lpStartupInfo,
+  _Out_       LPPROCESS_INFORMATION lpProcessInformation);
+</code></pre>
+
+<p>We have to wonder whether a programmer who does not use this frequently will take the time
+to understand the ramifications of correctly setting process and thread security attributes,
+the current directory, environment, inheritance handles, and so on. There&#8217;s a good chance
+that the programmer will just look up an example on places such as github.com or stackoverflow.com
+and copy something that seems to work, unaware that there may be obscure side effects that
+compromise security.</p>
+
+<p>As we will see in the following sections, comprehension errors also apply to the proper understanding
+of things as basic as various ways to express characters.</p>
+
+<h2 id="directoryparsing">Directory parsing</h2>
+
+<p>Some applications, notably web servers, accept hierarchical filenames from a
+user but need to ensure that they restrict access only to files within a specific
+point in the directory tree. For example, a web server may need to ensure that
+no page requests go outside of <code>/home/httpd/html</code>.</p>
+
+<p>An attacker may try to gain access by using paths that include <code>..</code> (dot-dot), which
+is a link to the parent directory. For example, an attacker may try to download
+a password file by requesting</p>
+
+<pre><code>http://poopybrain.com/../../../etc/passwd
+</code></pre>
+
+<p>The hope is that the programmer did not implement parsing correctly and might try
+simply suffixing the user-requested path to a base directory:</p>
+
+<pre><code>&quot;/home/httpd/html/&quot; + &quot;../../../etc/passwd&quot;
+</code></pre>
+
+<p>to form</p>
+
+<pre><code>/home/httpd/html/../../../etc/passwd
+</code></pre>
+
+<p>which will retrieve the password file, <code>/etc/passwd</code>.</p>
+
+<p>A programmer may anticipate this and check for dot-dot but has to
+realize that dot-dot directories can be anywhere in the path. This
+is also a valid pathname but one that should be rejected for trying
+to escape to the parent:</p>
+
+<pre><code>http://poopybrain.com/419/notes/../../416/../../../../etc/passwd
+</code></pre>
+
+<p>Moreover, the programmer cannot just search for <code>..</code> because that can be a valid part of
+a filename. All three of these should be accepted:</p>
+
+<pre><code>http://poopybrain.com/419/notes/some..other..stuff/
+http://poopybrain.com/419/notes/whatever../
+http://poopybrain.com/419/notes/..more.stuff/
+</code></pre>
+
+<p>Also, extra slashes are perfectly fine in a filename, so this is acceptable:</p>
+
+<pre><code>http://poopybrain.com/419////notes///////..more.stuff/
+</code></pre>
+
+<p>The programmer should also track where the request is in the hierarchy. If dot-dot doesn&#8217;t escape
+above the base directory, it should most likely be accepted:</p>
+
+<pre><code>http://poopybrain.com/419/notes/../exams/
+</code></pre>
+
+<p>These are not insurmountable problems but they illustrate that a quick-and-dirty
+attempt at filename processing may be riddled with bugs.</p>
+
+<h2 id="unicodeparsing">Unicode parsing</h2>
+
+<p>If we continue on the example of parsing pathnames in a web server, let us consider a bug
+in early releases of Microsoft&#8217;s IIS (Internet Information Services, their web server).
+IIS had proper pathname checking to ensure that attempts to get to a parent are blocked:</p>
+
+<pre><code>http://www.poopybrain.com/scripts/../../winnt/system32/cmd.exe
+</code></pre>
+
+<p>Once the pathname was validated, it was passed to a decode function that decoded any
+embedded <a href="https://en.wikipedia.org/wiki/Unicode">Unicode</a> characters and then processed the request.</p>
+
+<p>The problem with this technique was that non-international characters (traditional
+<a href="https://en.wikipedia.org/wiki/ASCII">ASCII</a>) could also be written as Unicode characters.
+A &#8220;/&#8221; could also be written in HTML as its hexadecimal value, %2f (decimal 47). It could also
+be represented as the two-byte Unicode sequence %c0%af.</p>
+
+<p>The reason for this stems from the way Unicode was designed to support compatibility with
+one-byte ASCII characters. This encoding is called UTF&#8211;8. If the first bit of a character
+is a 0, then we have a one-byte ASCII character (in the range 0..127). However, if the first
+bit is a 1, we have a multi-byte character. The number of leading 1s determine the number of
+bytes that the character takes up. If a character starts with 110, we have a two-byte
+Unicode character.</p>
+
+<p>With a two-byte character, the UTF&#8211;8 standard defines a bit pattern of </p>
+
+<pre><code>110a bcde   10fg hijk
+</code></pre>
+
+<p>The values <em>a-k</em> above represent 11 bits that give us a value in the range 0..2047.
+The &#8220;/&#8221; character, 0x2f, is 47 in decimal and <code>0010 1111</code> in binary. The
+value represents offset 47 into the character table (called <strong>codepoint</strong> in Unicode parlance).
+Hence we can represent the &#8220;/&#8221; as 0x2f or as the two byte Unicode sequence:</p>
+
+<pre><code>1100 0000   1010 1111
+</code></pre>
+
+<p>which is the hexadecimal sequence %c0%af. Technically, this is disallowed. The standard
+states that codepoints less than 128 must be represented as one byte but the two byte
+sequence is supported by most Unicode parsers. We can also construct a valid three-byte
+sequence too.</p>
+
+<p>Microsoft&#8217;s bug was that they ignored parsing %c0%af as being equivalent to a <code>/</code> because
+it should not have been used to represent the character. However, the Unicode parser
+was happy to translate it and attackers were able to use this to access <em>any</em> file in
+on a server running IIS. This bug also gave attackers the ability to invoke <code>cmd.com</code>, the
+command interpreter, and execute any commands on the server.</p>
+
+<p>After Microsoft fixed the multi-byte Unicode bug, another problem came up.
+The parsing of escaped characters was recursive, so if the resultant string looked
+like a Unicode hexadecimal sequence, it would be re-parsed.</p>
+
+<p>As an example of this, let&#8217;s consider the backslash (<code>\</code>), which Microsoft treats
+as equivalent to a slash (<code>/</code>) in URLs since their native pathname separator is
+a backlash<a href="#fn:3" id="fnref:3" title="see footnote" class="footnote">[3]</a>.</p>
+
+<p>The backslash can be written in a URL in hexadecimal format as %5c.
+The &#8220;%&#8221; character can be expressed as %25.
+The &#8220;5&#8221; character can be expressed as %35.
+The &#8220;c&#8221; character can be expressed as %63.
+Hence, if the URL parser sees the string <code>%%35c</code>, it would expand the <code>%35</code> to the character &#8220;5&#8221;, which would result in <code>%5c</code>, which would then be converted to a <code>\</code>.
+If the parser sees <code>%25%35%63</code>, it would expand each of the <code>%nn</code> components to get the string <code>%5c</code>, which would then be converted to a <code>\</code>.
+As a final example, if the parser comes across <code>%255c</code>, it will expand <code>%25</code> to <code>%</code> to get the string <code>%5c</code>, which would then be converted to a <code>\</code>.</p>
+
+<p>It is not trivial to know what a name relates to but it is clear
+that all conversions have to be done before the validity of the
+pathname is checked. As for checking the validity of the pathname
+in an application, it is error-prone. The operating system itself
+parses a pathname a component at a time, traversing the directory
+tree and checking access rights as it goes along. The application
+is trying to recreate a similar action without actually traversing
+the file system but rather by just parsing the name and mapping it
+to a subtree of the file system namespace.</p>
+
+<!--
+## Homograph (or homoglyph) attacks
+
+While we have been looking at issues resulting from Unicode, let us take a brief
+digression from system attacks and consider some deception attacks that are enabled 
+by Unicode.
+
+Unicode was designed to represent practically all of the world's glyphs[^footnote_glyphs] and
+contains over 128,000 characters. It includes scripts for
+Latin, Greek, Cyrillic, Armenian, Hebrew, Arabic, Syriac, Thaana,
+Devanagari, Bengali, Gurmukhi, Oriya, Tamil, Telugu, Kannada,
+Malayalam, Sinhala, Thai, Lao, Tibetan, Myanmar, Georgian, Hangul,
+Ethiopic, Cherokee, Canadian Aboriginal Syllabics, Khmer, Mongolian,
+Han (Japanese, Chinese, Korean ideographs), Hiragana, Katakana, and
+Yi, as well as emojis and ancient scripts.
+
+[^footnote_glyphs]: a _glyph_ is a printable character. Unicode is designed around the concept of _scripts_ rather than _languages_ since multiple languages often share the same set of scripts.
+
+If we consider the lowly slash character, there are several variations with different representations:
+
+     / = solidus (slash) = U+002F
+     ⁄ = fraction slash = U+2044
+     ∕  = division slash = U+2215
+     ̷  = combining short solidus overlay = U+0337
+     ̸  = combining long solidus overlay = U+0338
+    ／ = fullwidth solidus = U+FF0F
+
+Only one of these is a valid pathname separator (the solidus). Using
+others will create strings that look like pathnames but are not.
+Some characters may have multiple representations. For example, an
+accented a (á) is a distinct Unicode character, U+00C1, but also
+a two-character sequence, U+0041, U+0301. This is not a two-byte
+Unicode character but rather a combining accent followed by an "a".
+
+Situations like this make string comparisons a nightmare.
+
+Moreover, some characters look similar. In the Latin alphabet, depending
+on the font, certain characters may look identical or similar. The
+number one (1), lowercase L (l), and capital i (I) can look virtually
+identical in some fonts. Zero (0) and the letter O may be confusing. 
+
+A **homograph attack** (sometimes more accurately called a **homoglyph attack**)
+is deception based on the fact that different characters may look similar to a user.
+
+We can create a simple deception attack by registering the website
+paypai.com and writing the last letter as a capital I to create
+paypaI.com, which may confuse people with paypal.com in a phishing message.
+
+The deception attack became more insidious with the introduction of internationalized
+domain names (IDN), which made Unicode characters valid elements of a 
+domain name. While Unicode represents virtually all of the world's scripts,
+may characters look identical in those scripts. For example the Greek
+letters A, B, and E (and many others!) look identical to the Latin A, B, and E
+as well as to the Cyrillic A, B, and E but have different encodings:
+
+|   | Latin | Greek | Cyrillic |
+------- | :---: | :---: | :---: |
+ A  | U+0041 | U+0391 | U+0410 |
+ B  | U+0042 | U+0392 | U+0412 |
+ E  | U+0045 | U+0395 | U+0415 |
+ K  | U+004B | U+039A | Ua041A |
+ X  | U+0058 | U+03A7 | U+0425 |
+
+As an example, we can spell out [wikipedia.org](https://en.wikipedia.org/wiki/IDN_homograph_attack)
+using the following non-Latin characters:
+
+    Cyrillic a (U+0430), e (U+435), p (U+0440)
+    Belarusian-Ukranian i (U+0456)
+
+Or we can spell out paypal.com using Cyrillic lookalikes for p, a, and y.
+-->
+
+<h2 id="tocttouattacks">TOCTTOU attacks</h2>
+
+<p><strong>TOCTTOU</strong> stands for <strong>Time of Check to Time of Use</strong>. If we have code of the form:</p>
+
+<pre><code>if I am allowed to do something
+    then do it
+</code></pre>
+
+<p>we may be exposing ourselves to a race condition. There is a window of time between
+the test and the action. If an attacker can change the condition after the check then
+the action may take place even if the check should have failed.</p>
+
+<p>One example of this is the print spooling program, <em>lpr</em>. It runs as a setuid
+program with root privileges
+so that it can copy a file from a user&#8217;s directory into a privileged spool directory
+that serves as a queue of files for printing. Because it runs as root, it can
+open any file, regardless of permissions. To keep the user honest, it will check
+access permissions on the file that the user wants to print and then, only
+if the user has legitimate read access to the file, it will copy it over to the
+spool directory for printing. An attacker can create a link to a readable file
+and then run <em>lpr</em> in the background. At the same time, he can change the link
+to point to a file for which he does not have read access. If the timing is just
+perfect, the <em>lpr</em> program will check access rights before the file is re-linked
+but will then copy the file for which the user has no read access.</p>
+
+<p>Another example of the TOCTTOU race condition is the set of temporary filename
+creation functions (<em>tempnam, tempnam, mktemp, GetTempFileName</em>, etc.).
+These functions create a unique filename when they are called but there
+is no guarantee that an attacker doesn’t create a file with the same name
+before that filename is used. If the attacker creates and opens a file with
+the same name, she will have access to that file for as long as it is open,
+even if the user&#8217;s program changes access permissions for the file later on.</p>
+
+<p>The best defense for the temporary file race condition is to use the <strong>mkstemp</strong>
+function, which creates a file based on a template name and opens it as well,
+avoiding the race condition between checking the uniqueness of the name
+and opening the file.</p>
+
+<!-- 
+## Metrics
+
+It is challenging to establish just how secure a piece of software is. We can
+search for bugs that we know about but we don't know where the next bug that can
+compromise security is lurking. In general, the fewer opportunities for attack
+that we give the adversary, the more likely our code is to be secure. We
+want to **minimize** interactions  with outside elements: with
+users, files, and sockets. Any interactions may be attack targets, such
+as improper access controls, changed files, bad inputs, and network protocol
+attacks. All interactions must be given special attention and carefully
+validated and monitored.
+
+Microsoft attempted to create a general metric to assess whether one piece
+of software is more likely to be vulnerable than another.
+It is called the **Relative Attack Surface Quotient**, or **RASQ**.
+Very roughly, this is a weighted measure of the various interactions of a program.
+An **attack surface** identifies how exposed a system is to attacks: it is the 
+set of all possible interactions in a program with the outside. 
+An **attack vector** is the set of software by which an attacker may carry out an attack
+(e.g., a web application).
+
+RASQ looks at "data elements" that may pose security risks, such as open ports, named 
+pipes, RPC endpoints, number of installed services, number of services running as
+SYSTEM (_root_ in Unix terms), number of users, etc. Each of these is treated as the
+**root vector**, the primary mechanism by which an adversary may attack the system.
+
+RASQ basically multiplies each of these root vectors by a **bias**, an estimate
+of how harmful that particular attack may be to the system. It then sums up all of
+these products for all possible vectors in the system to get a final score. The higher
+the score, the more likely it is that the system will have vulnerabilities.
+
+For example, _open sockets_ has the highest possible value of 1.0 since it is 
+an easy target for remote attacks. _Enabled accounts_ have a bias of 0.7 since 
+default accounts on a system make brute-force password attacks easier, but you 
+still need to get past password authentication to carry out an attack. 
+_Weak ACLs_ in a local file system, on the other hand, have a bias of only 0.2
+since files in a system become targets only _after_ a system is compromised.
+
+-->
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>Note that <em>sprintf</em> is vulnerable to buffer overflow. We should use <em>snprintf</em>, which allows one to specify the maximum size of the buffer. <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:2">
+<p>Unix, Linux, macOS, FreeBSD, NetBSD, OpenBSD, Android, etc. <a href="#fnref:2" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:3">
+<p>the official Unicode name for the slash and backslash characters are solidus and reverse solidus, respectively. <a href="#fnref:3" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+
+<h1 id="appconfinement">App confinement</h1>
+
+<p>Two lessons we learned from experience are that applications can be compromised and
+that applications may not always be trusted. Server applications, in particular, such
+as web servers and mail servers have been compromised over and over again. This is
+particularly harmful as they often run with elevated privileges and on systems on which
+normal users do not have accounts. The second category of risk is that we may not
+always trust an application. We trust our web server to work properly but we cannot
+necessarily trust that the game we downloaded from some unknown developer will not
+try to upload our files, destroy our data, or try to change our system configuration.
+In fact, unless we have the ability to scrutinize the codebase of a service, we will
+not know for sure if it tries to modify any system settings or writes files to unexpected
+places. </p>
+
+<p>With this resignation to security in mind, we need to turn our attention to
+limiting the resources available to an application and making sure that a
+misbehaving application cannot harm the rest of the system. These are the
+goals of <strong>confinement</strong>.</p>
+
+<p>Our initial thoughts to achieving confinement may involve proper use
+of access controls. For example, we can run server applications as low-privilege
+users and make sure that we have set proper read/write/execute permissions on
+files, read/write/search permissions on directories, or even set up role-based
+policies. </p>
+
+<p>However, access controls usually do not give us the ability to set permissions
+for &#8220;<em>don&#8217;t allow access to anything else</em>.&#8221; For example, we may want our web
+server to have access to all files in <code>/home/httpd</code> but nothing outside of
+that directory. Access controls do not let us express that rule. Instead, we
+are responsible for changing the protections of every file on the system
+and making sure it cannot be accessed by &#8220;other&#8221;.
+We also have to hope that
+no users change those permissions. In essence, we must disallow the ability
+for anyone to make files publicly accessible because we never want
+our web server to access them. We may be able to use mandatory access control
+mechanisms if they are available but, depending on the system, we
+may not be able to restrict access properly either. More likely, we will
+be at risk of comprehension errors and be likely to make a configuration
+error, leaving parts of the system vulnerable. To summarize, even if we
+can get access controls to help, we will not have <em>high assurance</em> that
+they do.</p>
+
+<p>Access controls also only focus on protecting access to files and devices.
+A system has other resources, such as CPU time, memory, disk space,
+and network. We may want to control how much of all of these an application
+is allowed to use.
+POSIX systems provide a <a href="https://linux.die.net/man/2/setrlimit">setrlimit</a>
+system call that allows one to set limits on certain resources for the current process
+and its children. These controls include the ability to set file size limits, CPU time limits,
+various memory size limits, and maximum number of open files.</p>
+
+<p>We also may want to control the network identity for an application.
+All applications share the same IP address on a system but this may
+allow a compromised application to exploit address-based access controls.
+For example, you may be able to connect to or even log into system that
+believe you are a trusted computer. An exploited application may
+end up confusing network intrusion detection systems.</p>
+
+<p>Just limiting access through resource limits and file permissions is
+also insufficient for services that run as root.
+If an attacker can compromise an app and get root access to execute
+arbitrary functions, she can change resource limits (just call <em>setrlimit</em>
+with different values), change any file permissions, and even change
+the IP address and domain name of the system.</p>
+
+<p>In order to truly confine an application, we would like to create
+a set of mechanisms that enforce access controls to <em>all</em> of a system&#8217;s
+resources, are easy to use so that we have high assurance in knowing
+that the proper restrictions are in place, and work with a large class
+of applications. We can&#8217;t quite get all of this yet but we can come close.</p>
+
+<h2 id="chroot">chroot</h2>
+
+<p>The oldest app confinement mechanism is Unix&#8217;s <a href="https://en.wikipedia.org/wiki/Chroot">chroot</a>
+system call and command, originally introduced in 1979 in the seventh edition<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a>.
+The <a href="http://man7.org/linux/man-pages/man2/chroot.2.html">chroot</a> system call changes the root
+directory of the calling process to the directory specified as a parameter.</p>
+
+<pre><code>chroot(&quot;/home/httpd/html&quot;);
+</code></pre>
+
+<p>Sets the root of the file system to <code>/home/httpd/html</code> for the process and any processes it creates.
+The process cannot see any files outside that subset of the directory tree. This isolation is
+often called a <strong>chroot jail</strong>.</p>
+
+<h3 id="jailkits">Jailkits</h3>
+
+<p>If you run <em>chroot</em>, you will likely get an error along the lines of:</p>
+
+<pre><code># chroot newroot
+chroot: failed to run command ‘/bin/bash’: No such file or directory
+</code></pre>
+
+<p>This is because /bin/bash is not within the root (in this case, the <em>newroot</em> directory).
+You&#8217;ll then create a <code>bin</code> subdirectory and try running <em>chroot</em> again and get the
+same error:</p>
+
+<pre><code># mkdir newroot/bin
+# ln /bin/bash newroot/bin/bash
+# chroot newroot
+chroot: failed to run command ‘/bin/bash’: No such file or directory
+</code></pre>
+
+<p>You&#8217;ll find that is also insufficient and that you&#8217;ll need to bring in
+the shared libraries that /bin/bash needs by mounting <code>/lib</code>, <code>/lib64</code>, and
+<code>/usr/lib</code> within that root just to enable the shell to run. Otherwise, it
+cannot load the libraries it needs since it cannot see above its root (i.e., outside
+its jail). To simplify this process, a <a href="https://linux.die.net/man/8/jailkit">jailkit</a>
+simplifies the process of setting up a chroot jail by providing a set of utilities
+to make it easier to create the desired environment within the jail and populate
+it with basic accounts, commands, and directories.</p>
+
+<h3 id="problemswithchroot">Problems with chroot</h3>
+
+<p>Chroot only limits access to the file system namespace. It does not restrict access
+to resources and does not protect the machine&#8217;s network identity. Applications
+that are compromised to give the attacker root access make the entire system vulnerable
+since the attacker has access to all system calls.</p>
+
+<p>Chroot is available only to administrators. If this was not the case then
+any user would be able to get root access within the chroot jail. You
+would:
+ 1. Create a chroot jail
+ 2. Populate it with the shell program and necessary support libraries
+ 3. Link the <strong>su</strong> command (<em>set user</em>, which allows you to authenticate to become any user)
+ 4. Create password files within the jail with a known password for root.
+ 5. Use the <strong>chroot</strong> command to enter the jail.
+ 6. Run <strong>su root</strong> to become the root user. The command will prompt you for a password and validate it against the password file. Since all processes run within the jail, the password file is the one you set up.</p>
+
+<p>You&#8217;re still in the jail but you have root access.</p>
+
+<h3 id="escapingfromchroot">Escaping from chroot</h3>
+
+<p>If someone manages to compromise an application running inside a chroot jail and become
+root, they are still in the jail but have access to all system calls. For example,
+they can send signals to kill all other processes or shut down the system. This
+would be an attack on availability.</p>
+
+<p>Attaining root access also provides a few
+ways of escaping the jail. On POSIX systems, all non-networked devices are accessible
+as files within the filesystem. Even memory is accessible via a file (<code>/dev/mem</code>).
+An intruder in a jail can create a memory device (character device, major number = 1,
+minor number = 1):</p>
+
+<pre><code>mknod mem c 1 1
+</code></pre>
+
+<p>With the memory device, the attacker can patch system memory to change the root
+directory of the jail. More simply, an attacker can create a block device with
+the same device numbers as that of the main file system. For example, the root
+file system on my Linux system is /dev/sda1 with a major number of 8 and a minor
+number of 1. An attacker can recreate that in the jail:</p>
+
+<pre><code>mknod rootdisk b 8 1
+</code></pre>
+
+<p>and then mount it as a file system within the jail:</p>
+
+<pre><code>mount -t ext4 rootdisk myroot
+</code></pre>
+
+<p>Now the attacker, still in the jail, has full access to the entire file system,
+which is as good as being out of the jail. He can add user accounts, change
+passwords, delete log files, run any commands, and even reboot the system to get a clean login.</p>
+
+<h2 id="freebsdjails">FreeBSD Jails</h2>
+
+<p>Chroot was good in confining the namespace of an application but useless against
+providing security if an application had root access and did nothing to restrict
+access to other resources.</p>
+
+<p><strong>FreeBSD Jails</strong> are an enhancement to the idea of <em>chroot</em>. Jails provide
+a restricted filesystem namespace, just like chroot does, but also place
+restrictions on what processes are allowed to do within the jail, including
+selectively removing privileges from the root user in the jail. For example,
+processes within a jail may be configured to:</p>
+
+<ul>
+<li>Bind only to sockets with a specified IP address and specific ports</li>
+<li>Communicate only with other processes within the jail and none outside</li>
+<li>Not be able to load kernel modules, even if root</li>
+<li>Have restricted access to system calls that include:
+
+<ul>
+<li>Ability to create raw network sockets</li>
+<li>Ability to create devices</li>
+<li>Modify the network configuration</li>
+<li>Mount or unmount filesystems</li>
+</ul></li>
+</ul>
+
+<p>FreeBSD Jails are a huge improvement over chroot since known escapes,
+such as creating devices and mounting filesystems and even rebooting the
+system are disallowed. Depending on the application, policies may be
+coarse. The changed root provides all or nothing access to a part of
+the file system. This does not make Jails suitable for applications
+such as a web browser, which may be untrusted but may need access to
+files outside of the jail. Think about web-based applications such as
+email, where a user may want to upload or download attachments. Jails
+also do not prevent malicious apps from accessing the network and
+trying to attack other machines &#8230; or from trying to crash the host
+operating system. Moreover, FreeBSD Jails is a BSD-only solution.
+With an <a href="https://en.wikipedia.org/wiki/Usage_share_of_operating_systems">estimated</a>
+0.95&#8230;1.7% share of server deployments, it is a great solution on
+an operating system that is not that widely used.</p>
+
+<h2 id="linuxnamespacescgroupsandcapabilities">Linux namespaces, cgroups, and capabilities</h2>
+
+<p>Linux&#8217;s answer to FreeBSD Jails was a combination of three elements:
+control groups, namespaces, and capabilities.</p>
+
+<h3 id="controlgroupscgroups">Control groups (cgroups)</h3>
+
+<p>Linux <strong>control groups</strong>, also called <strong>cgroups</strong>,
+allow you to allocate resources such as
+CPU time, system memory, disk bandwidth, network bandwidth,
+and the ability to monitor resource usage among user-defined
+groups of processes.
+This allows, for example, an administrator to allocate a larger share
+of the processor to a critical server application. </p>
+
+<p>An administrator creates one or more cgroups and assigns resource limits to each of them.
+Then any application can be assigned to a control group and will not be able to use more
+than the resource limits configured in that control group.
+Applications are unaware of these limits.
+Control groups are organized in a hierarchy similar to processes. Child cgroups
+inherit some attributes from the parents. </p>
+
+<h3 id="linuxnamespaces">Linux namespaces</h3>
+
+<p>Chroot only restricted the filesystem namespace. The filesystem
+namespace is the best known namespace in the system but not the only one.
+Linux <a href="http://man7.org/linux/man-pages/man7/namespaces.7.html">namespaces</a>
+Namespaces provide control over how processes are isolated in the following
+namespaces:</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Namespace</th>
+	<th style="text-align:left;">Description</th>
+	<th style="text-align:left;">Controls</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">IPC</td>
+	<td style="text-align:left;">System V IPC, POSIX message queues</td>
+	<td style="text-align:left;">Objects created in an IPC namespace are only visible to other processes in that namespace (CLONE_NEWIPC)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">Network</td>
+	<td style="text-align:left;">Network devices, stacks, ports</td>
+	<td style="text-align:left;">Isolates IP protocol stacks, IP routing tables, firewalls, socket port numbers ( CLONE_NEWNET)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">Mount</td>
+	<td style="text-align:left;">Mount points</td>
+	<td style="text-align:left;">A set of processes can have their own distinct mount points and view of the file system (CLONE_NEWNS)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">PID</td>
+	<td style="text-align:left;">Process IDs</td>
+	<td style="text-align:left;">Processes in different PID namespaces can have their process IDs &#8211; the child cannot see parent processes or other namespaces (CLONE_NEWPID)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">User</td>
+	<td style="text-align:left;">User &amp; group IDs</td>
+	<td style="text-align:left;">Per-namespace user/group IDs. Also, you can be root in a namespace but have restricted privileges ( CLONE_NEWUSER )</td>
+</tr>
+<tr>
+	<td style="text-align:left;">UTS</td>
+	<td style="text-align:left;">host name and domain name</td>
+	<td style="text-align:left;">setting hostname and domainname will not affect rest of the system (CLONE_NEWUTS)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">Cgroup</td>
+	<td style="text-align:left;">control group</td>
+	<td style="text-align:left;">Sets a new control group for a process (CLONE_NEWCGROUP)</td>
+</tr>
+</tbody>
+</table>
+<p>A process can dissociate any or all of these namespaces from its parent via the
+<a href="http://man7.org/linux/man-pages/man2/unshare.2.html">unshare</a> system call. For example,
+by unsharing the PID namespace, a process gets a no longer sees other processes and will only
+see itself and any child processes it creates. </p>
+
+<p>The Linux <a href="http://man7.org/linux/man-pages/man2/clone.2.html">clone</a> system call
+is similar to <a href="http://man7.org/linux/man-pages/man2/fork.2.html">fork</a> in that
+it creates a new process. However, it allows you to pass flags that will specify
+which parts of the execution context will be shared with the parent. For example,
+a cloned process may choose to share memory and open file descriptors, which
+will make it behave like threads. It can also choose to share &#8211; or not &#8211; any of
+the elements of the namespace.</p>
+
+<h3 id="capabilities">Capabilities</h3>
+
+<p>A problem that FreeBSD Jails tackled was that of restricting the power of root inside a Jail.
+You could be a root user but still disallowed from executing certain system calls.
+POSIX (Linux) capabilities<a href="#fn:2" id="fnref:2" title="see footnote" class="footnote">[2]</a> tackle this issue as well.</p>
+
+<p>Traditionally,
+Unix systems distinguished <strong>privileged</strong> versus <strong>unprivileged</strong> processes. Privileged
+processes were those that ran with a user ID of 0, called the <em>root</em> user. When running
+as root, the operating system would allow access to all system calls and all access permission
+checks were bypassed. You could do anything.</p>
+
+<p>Linux <a href="http://man7.org/linux/man-pages/man7/capabilities.7.html">capabilities</a>
+identify groups of operations, called <em>capabilities</em>, that can be controlled independently
+on a per-thread basis. The list is somewhat long, 38 groups of controls, and includes capabilities such as:</p>
+
+<ul>
+<li><strong>CAP_CHOWN</strong>: make arbitrary changes to file UIDs and GIDs</li>
+<li><strong>CAP_DAC_OVERRIDE</strong>: bypass read/write/execute checks</li>
+<li><strong>CAP_KILL</strong>: bypass permission checks for sending signals</li>
+<li><strong>CAP_NET_ADMIN</strong>: network management operations</li>
+<li><strong>CAP_NET_RAW</strong>: allow RAW sockets</li>
+<li><strong>CAP_SETUID</strong>: arbitrary manipulation of process UIDs</li>
+<li><strong>CAP_SYS_CHROOT</strong>: enable chroot</li>
+</ul>
+
+<p>The kernel keeps track of four capability sets for each thread. A capability set
+is a list of zero or more capabilities. The sets are:</p>
+
+<ul>
+<li><p><strong>Permitted</strong>: If a capability is not in this set, the thread or its children can never require that capability. This limits the power of what a process and its children can do.</p></li>
+<li><p><strong>Inheritable</strong>: These capabilities will be inherited when a thread calls <em>execve</em> to execute a program (POSIX programs are executed with the same thread; we are not creating a new process)</p></li>
+<li><p><strong>Effective</strong>: This is the current set of capabilities that the thread is using. The kernel uses these to perform permission checks.</p></li>
+<li><p><strong>Ambient</strong>: This is similar to <em>Inheritable</em> and contains a set of capabilities that are preserved across an <em>execve</em> of a program that is not privileged. If a setuid or setgid program is run, will clear the ambient set. These are created to allow a partial use of root features in a controlled manner. It is useful for user-level device drivers or software that needs a specific privilege (e.g., for certain networking operations).</p></li>
+</ul>
+
+<p>A child process created via <em>fork</em> (the standard way of creating processes) will inherit copies
+of its parent&#8217;s capability sets following the rules of which capabilities have been marked as <em>inheritable</em>.</p>
+
+<p>A set of capabilities can be assigned to an executable file by the administrator. They are stored
+as a file&#8217;s <em>extended attributes</em> (along with access control lists, checksums, and arbitrary user-defined name-value pairs).
+When the program runs, the executing process may further restrict the set of capabilities under
+which it operates if it chooses to do so (for example, after performing an operation that required the
+capability and knowing that it will no longer need to do so).</p>
+
+<p>From a security point of view, the key concept of capabilities is that they allow us to provide
+<strong>limited elevation of privileges</strong> to a process. A process does not need to run as root (user ID 0) but
+can still be granted very specific privileges.
+For example, we can grant the <a href="https://linux.die.net/man/8/ping">ping</a> command the ability to access raw sockets
+so it can send an ICMP ping message on the network but not have any other administrative powers. The application
+does not need to run as root and even if an attacker manages to inject code, the opportunities for attack will be restricted.</p>
+
+<p>The Linux combination of <em>cgroups</em>, <em>namespaces</em>, and <em>capabilities</em> provides a powerful set of mechanisms to</p>
+
+<ol>
+<li><p>Set limits on the system resources (processor, disk, network) that a group of processes will use.</p></li>
+<li><p>Constrain the namespace, making parts of the filesystem or the existence of other processes or users invisible.</p></li>
+<li><p>Give restricted privileges to specific applicatiosn so they do not need to run as root.</p></li>
+</ol>
+
+<p>This enables us to create stronger jails and have a fine degree of control as to what processes
+are or are not allowed to do in that jail.</p>
+
+<p>While bugs have been found these mechanisms, the more serious problem is that of
+<strong>comprehension</strong>. The system has become far, far more complex than it was in the
+days of <em>chroot</em>. A user has to learn quite a lot to use these mechanisms properly.
+Failure to understand their behavior fully can create vulnerabilities.
+For example, namespaces do not prohibit a process from making privileged system calls. They
+simply limit what a process can see. A process may not be able to send a kill signal to
+another process only because it does not share the same process ID namespace.</p>
+
+<p>Together with capabilities, namespaces allow a restricted environment that also places limits on the
+abilities to perform operations even if a process is granted root privileges. This enables
+ordinary users to create namespaces. You can create a namespace and even create a process running as
+a root user (UID 0) within that namespace but it will have no capabilities beyond
+those that were granted to the user; the user ID of 0 gets mapped by the kernel to a non-privileged user.</p>
+
+<!--
+# App Confinement
+
+We examined several mechanisms created to handle compromised applications and
+limit the amount of damage they can do. Confinement assumes that these mechanisms
+may fail or that an application be be malicious or buggy and seeks to **isolate**
+one set of processes from others on a system.
+
+The earliest of these, the
+_chroot_ mechanism, constrains the namespace (the directory tree it could access)
+but made it easy for an
+application to bypass that if it was able to get elevated privileges
+and run as _root_.
+FreeBSD Jails were a substantial improvement in
+that they not only restrict the namespace to a given subtree of the file system
+but allow an administrator to give processes in a Jail a different hostname and IP address
+and limit which resources they can mount even if they are root.
+
+
+to limit which system calls a process can invoke even with root
+privileges. FreeBSD Jails also allow a group of processes in a jail
+to have separate IP addresses from the main computer, a separate hostname,
+
+Linux followed up with three distinct mechanisms:
+
+- **Control groups**: allowed processes to be grouped together and control the amount of system resources (e.g., CPU percentage, file system space) that the group could use.
+
+- **Capabilities**: restricted the system calls a process could execute as root.
+
+- **Namespaces**: restricted what parts of the file system, process IDs, user IDs. mount points, and network that a process group could see.
+
+-->
+
+<h2 id="containers">Containers</h2>
+
+<p>Software rarely lives as an isolated application. Some software requires multiple applications and most software relies on the installation of other libraries, utilities, and packages. Keeping track of these dependencies can be difficult. Worse yet, updating one shared component can sometimes cause another application to break. What was needed was a way to isolate the installation, execution, and management of multiple software packages that run on the same system.</p>
+
+<p>Various attempts were undertaken to address these problems.</p>
+
+<ol>
+<li><p>The most basic was to fix problems when they occurred. This required carefully following instructions for installation, update, and configuration of software and extensive testing of all services on the system when anything changed. Should something break, the service would be unavailable until the problems were fixed. </p></li>
+<li><p>A drastic, but thorough, approach to isolation was to simply run each service on its own computer. That avoids conflicts in library versions and other dependencies. However, it is an expensive solution, is cumbersome, and is often overkill in most environments. </p></li>
+<li><p>Finally, administrators could deploy <em>virtual machines</em>. This is a technology that allows one to run multiple operating systems on one computer and gives the illusion of services running on distinct systems. However, this is a heavyweight solution. Every service needs its own installation of the operating system and all supporting software for the service as well as standard services (networking, device management, shell, etc.). It is not efficient in terms of CPU, disk, or memory resources &#8211; or even administration effort.</p></li>
+</ol>
+
+<p><strong>Containers</strong> are a mechanism that were originally created not for security but to
+make it easy to package, distribute, relocate, and deploy collections
+of software. The focus of containers is not to enable end users to install and run their favorite apps but rather for administrators to be able to deploy a variety of services on a system. A container encapsulates all the necessary software for a service, all of its dependencies, and its configuration into one package that can be easily passed around, installed, and removed.</p>
+
+<p>In many ways, a container feels like a virtual machine. Containers provide a service with a private process namespace, its own network interface, and its own set of libraries to avoid problems with incompatible versions used by other software. Containers also allow an administrator to give the service restricted powers even if it runs with root (administrator) privileges. Unlike a virtual machine, however, multiple containers on one system all share the same operating system and kernel modules.</p>
+
+<p>Containers are not a new mechanism. They are implemented using Linux&#8217;s control groups, namespaces, and capabilities to provide resource control, isolation, and privilege control, respectively. They also make use of a <strong>copy on write</strong> file system. This makes it easy to create new containers where the file system can track the changes made by that container over a clean base version of a file system. Containers can also take advantage of <strong>AppArmor</strong>, which is a Linux kernel module that provides a basic form of mandatory access controls based on the pathnames of files. It allows an administrator to restrict the ability of a program to access specific files even within its file system namespace.</p>
+
+<p>The best-known and first truly popular container framework is
+<a href="http://www.docker.com">Docker</a>. A <strong>Docker Image</strong> is a file format that creates a package of applications, their supporting libraries, and other needed files. This image can be stored and deployed on many environments. Docker made it easy to deploy containers using git-like commands (<em>docker push</em>, <em>docker commit</em>) and also to perform incremental updates. By using a copy on write file system, Docker images can be kept immutable (read-only) while any changes to the container during its execution are stored separately.</p>
+
+<p>As people found Docker to be useful, the next design goal was to make it easier to manage containers across a network of many computers. This is called <strong>container orchestration</strong>. There are many solutions for this, including <em>Apache Mesos</em>, <em>Kubernetes</em>, <em>Nomad</em>, and <em>Docker Swarm</em>. The best known of these is <a href="https://kubernetes.io">kubernetes</a>, which was designed by Google. It coordinates storage of containers, failure of hardware and containers, and dynamic scaling: deploying the container on more machines to handle increased load. Kubernetes is coordination software, not a container system; it uses the Docker framework to run the actual container. </p>
+
+<p>Even though containers were designed to simplify software deployment rather than provide security to services, they do offer several benefits in the area of security:</p>
+
+<ul>
+<li><p>They make use of namespaces, cgroups, and capabilities with
+restricted capabilities configured by default. This provides isolation among containers.</p></li>
+<li><p>Containers provide a strong separation of policy (defined by the container
+configuration) from the enforcement mechanism (handled
+by the operating system).</p></li>
+<li><p>They improve availability by
+providing the ability to have a <strong>watchdog timer</strong> monitor the
+running of applications and restarting them if necessary. With orchestration systems such as Kubernetes, containers can be re-deployed on another system if a computer fails.</p></li>
+<li><p>The environment created by a container is <strong>reproducible</strong>. The same container can be deployed on multiple systems and tested in different environments. This provides consistency and aids in testing and ensuring that the production deployment matches the one used for development and test. Moreover, it is easy to inspect exactly how a container is configured. This avoids problems encountered by manual installation of components where an administrator may forget to configure something or may install different versions of a required library.</p></li>
+<li><p>While containers add nothing new to security, they help avoid
+<strong>comprehension errors</strong>. Even default configurations will provide improved security over the defaults in the operating system and configuring
+containers is easier than learning and defining the rules
+for capabilities, control groups, and namespaces. Administrators
+are more likely to get this right or import containers that
+are already configured with reasonable restrictions.</p></li>
+</ul>
+
+<p>Containers are not a security panacea. Because all containers run under the same operating system, any kernel exploits can affect the security of all containers. Similarly, any denial of service attacks, whether affecting the network or monopolizing the processor, will impact all containers on the system. If implemented and configured properly, capabilities, namespaces, and control groups should ensure that privilege escalation cannot take place. However, bugs in the implementation or configuration may create a vulnerability. Finally, one has to be concerned with the integrity of the container itself. Who configured it, who validated the software inside of it, and is there a chance that it may have been modified by an adversary either at the server or in transit?</p>
+
+<h2 id="virtualmachines">Virtual Machines</h2>
+
+<p>As a general concept, virtualization is the addition of a layer of abstraction
+to physical devices. With <em>virtual memory</em>, for example,
+a process has the impression that it owns the entire memory address
+space. Different processes can all access the same virtual memory
+location and the memory management unit (MMU) on the processor maps
+each access to the unique physical memory locations that are assigned
+to the process.</p>
+
+<p><strong>Process virtual machines</strong> present a <strong>virtual CPU</strong> that
+allows programs to execute on
+a processor that does not physically exist. The instructions are interpreted
+by a program that simulates the architecture of the pseudo machine.
+Early pseudo-machines included o-code for BCPL and P-code for Pascal.
+The most popular pseudo-machine today is the Java Virtual Machine (JVM).
+This simulated hardware does not even pretend to access the underlying
+system at a hardware level. Process virtual machines will often allow
+&#8220;special&#8221; calls to invoke system functions or provide a simulation
+of some generic hardware platform.</p>
+
+<p><strong>Operating system virtualization</strong> is provided by containers, where
+a group of processes is presented with the illusion of running on a separate
+operating system but in reality shares the operating system with other groups
+of processes &#8211; they are just not visible to the processes in the container.</p>
+
+<p><strong>System virtual machines</strong> allow a physical computer
+to act like several real machines with each machine running its own
+operating system (on a virtual machine) and applications that
+interact with that operating system. The key to this machine virtualization
+is to not allow each operating system to have direct access
+to certain privileged instructions in the processor.
+These instructions
+would allow an operating system to directly access I/O ports, MMU
+settings, the task register, the halt instruction and other parts
+of the processor that could interfere with the processor&#8217;s behavior
+and with the other operating systems on the system.
+Instead, a <strong>trap and emulate</strong>
+approach is used. Privileged instructions, as
+well as system interrupts, are caught by the <strong>Virtual
+Machine Monitor</strong> (<strong>VMM</strong>), also known as a
+<strong>hypervisor</strong>. The hypervisor arbitrates access to
+physical resources and presents a set of virtual device interfaces
+to each guest operating system (including the memory management
+unit, I/O ports, disks, and network interfaces). The hypervisor also
+handles preemption. Just as an operating system may suspend a process
+to allow another process to run, the hypervisor will suspend an operating
+system to give other operating systems a chance to run.</p>
+
+<p>The two configurations of virtual machines are <strong>hosted virtual
+machines</strong> and <strong>native virtual machines</strong>.
+With a <strong>hosted virtual machine</strong> (also called a <strong>type 2 hypervisor</strong>),
+the computer has a primary
+operating system installed that has access to the raw machine (all devices,
+memory, and file system). This host operating system does not run
+in a virtual environment. One or more <strong>guest operating
+systems</strong> can then be run on virtual machines. The VMM serves as
+a proxy, converting requests from the virtual machine into operations
+that get sent to and executed on the <strong>host operating system</strong>. A
+<strong>native virtual machine</strong> (also called a <strong>type 1 hypervisor</strong>)
+is one where there is no
+&#8220;primary&#8221; operating system that owns the system hardware. The
+hypervisor is in charge of access to the devices and provides each
+operating system drivers for an abstract view of all the devices.</p>
+
+<!-- 
+Earlier Intel and AMD processors (prior to 2006), as well as ARM processors (prior to 2011) did not generate a trap when privileged were executed by non-privileged users; the instructions were simply ignored. This made implementing a virtual machine challenging. Two mechanisms were employed:
+
+**Binary Translation**
+: Kernel code is translated to replace non-virtualizable privileged instructions with new sequences of instructions that act on the virtual hardware. Everything else is executed directly. This is transparent to the operating system; it does not know it's being virtualized. VMware used this for Intel platforms.
+
+**Paravirtualization**
+: With paravirtualization, the operating system is written in a way that it does not use non-virtualizable instructions. Any privileged operations are invoked as direct calls to the hypervisor. While this is straightforward, it does require modifying the operating system and precludes virtualizing closed-source systems, such as Windows. Xen is an example of a system that uses paravirtualization.
+
+The latest processors
+from Intel and AMD support the concept of a virtual machine layer
+and the ability to intercept privileged instructions.
+Prior to that, one of two approaches was used to implement
+virtualization.
+-->
+
+<h3 id="securityimplications">Security implications</h3>
+
+<p>Unlike app confinement mechanisms such as jails, containers, or sandboxes,
+virtual machines enable isolation all the way through the operating system.
+A compromised application, even with escalated privileges, can wreak havoc
+only within the virtual machine. Even compromises to the operating system
+kernel are limited to that virtual machine. However, a compromised virtual
+machine is not much different form having a compromised physical machine
+sitting inside your organization: not desirable and capable of attacking
+other systems in your environment. </p>
+
+<p>Multiple virtual machines are usually deployed on one physical system. In cases
+such as cloud services (e.g., such as those provided by Amazon), a single
+physical system may host virtual machines from different organizations or
+running applications with different security requirements.
+If a malicious application on a highly secure system
+can detect that it is co-resident on a computer
+that is hosting another operating system and that operating system
+provides fewer restrictions, the malware may be able to create a <strong>covert channel</strong>
+to communicate between the highly secure system with classified data
+and the more open system. A <strong>covert channel</strong> is a general term to describe the the ability for processes to communicate via some hidden mechanism when they are forbidden by policy to do so. In this case, the channel can be created via a <strong>side channel</strong> attack. A <strong>side channel</strong> is the ability to get or transmit information using some aspects of a system&#8217;s behavior, such as changes in power consumption, radio emissions, acoustics, or performance. For example, processes on both systems, even though they
+are not allowed to send network messages, may create a means of communicating by
+altering and monitoring system load. The malware on the classified VM
+can create CPU-intensive task at specific times. Listener software
+on the unclassified VM can do CPU-intensive tasks at a
+constant rate and periodically measure their completion times.
+These completion times may vary based on whether the classified system
+is doing CPU-intensive work. The variation in completion times creates
+a means of sending 1s and 0s and hence transmitting a message.</p>
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>Note that Wikipedia and many other sites refer to this as &#8220;Version 7 Unix&#8221;. Unix has been under continuous evolution at Bell Labs from 1969 through approximately 1989. As such, it did not have <em>versions</em>. Instead, an updated <a href="https://en.wikipedia.org/wiki/Research_Unix">set of manuals</a> was published periodically. Installations of Unix have been referred to by the editions of their manuals.  <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:2">
+<p>Linux capabilities are not to be confused with the concept of <em>capability lists</em>, which are a form of access control that Linux does not use). <a href="#fnref:2" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+
+<h1 id="applicationsandboxing">Application Sandboxing</h1>
+
+<p>The goal of an application <strong>sandbox</strong> is to provide a controlled and restricted environment for code execution.
+This can be useful for applications that may come from untrustworthy sources, such as games from unknown developers or software downloaded from dubious sites. The program can run with minimal risk of causing widespread damage to the system.
+Sandboxes are also used by security researchers to observe how software behaves: what the program trying to do and whether it is attempting to access any resources in a manner that is suspicious for the application. This can help identify the presence of malware within a program.
+The sandbox defines and enforces what an individual application is allowed to do while executing in within its sandbox. </p>
+
+<p>We previously looked at isolation via jails and containers, which use mechanisms that include namespaces, control groups, and capabilities. These constitute a widely-used form of sandboxing. However, these techniques focus on isolating an application (or group of processes) from other processes, restricting access to parts of the file system, and/or providing a separate network stack with a new IP address. </p>
+
+<p>While this is great for running services without the overhead of deploying virtual machines, it does not sufficiently address the basic needs of running normal applications. We want to protect users from their applications: give users the ability to run apps but restrict what those apps can do on a per-app basis.</p>
+
+<p>For example, you may want to make sure that a program accesses only files under your home directory with a suffix of <code>“.txt”</code>, and only for reading, without restricting the entire file system namespace as <em>chroot</em> would do, which would require creating a separate directory structure for shared libraries and other standard components the application may need. As another example, you might want an application to have access only to TCP networking. With a mechanism such as namespaces, we cannot exercise control over the <em>names</em> of files that an application can open or their access modes. Namespaces also do not allow us to control how the application interacts with the network. Capabilities allow us to restrict what a process running with <em>root</em> privileges can do but offer no ability to restrict more fundamental operations, such as denying a process the ability to read a file even if that file has read access enabled. The missing ingredient is <strong>rule-based</strong> policies to define precisely what system calls an application can invoke &#8211; down to the parameters of the system calls of interest. </p>
+
+<p>Instead of building a jail (a container), we will add an extra layer of access control. An application will have the same view of the operating system as any other application but will be restricted in what it can do.</p>
+
+<p>Sandboxing is currently supported on a wide variety of platforms at
+either the kernel or application level.
+We will examine four types of application sandboxes:</p>
+
+<ol>
+<li>User-level validation</li>
+<li>OS support</li>
+<li>Browser-based application sandboxing</li>
+<li>The Java sandbox</li>
+</ol>
+
+<p>Note that there are many other sandbox implementations. This is just a representative sampling.</p>
+
+<h2 id="applicationsandboxingviasystemcallinterpositionuser-levelvalidation">Application sandboxing via system call interposition &amp; user-level validation</h2>
+
+<p>Applications interact with their environment via system calls to
+the operating system. Any interaction that an application needs to do
+aside from computation,
+whether legitimate or because it has been compromised, must be done through system
+calls: accessing files or devices, changing permissions, accessing
+the network, talking with other processes, etc.</p>
+
+<p>An application sandbox will allow us to create <strong>policies</strong> that define which system calls are permissible to the application and in what way they can be used.</p>
+
+<p>If the operating system does not provide us with the required support
+and we do not have the ability to recompile an application to force
+it to use alternate system call libraries, we can rely on system
+call interposition to construct a sandbox. <strong>System call interposition</strong>
+is the process of intercepting an app’s system calls and performing
+additional operations. The technique is also called <strong>hooking</strong>.
+In the case of a sandbox, it will intercept a system call, inspect
+its parameters, and decide whether to allow the system call to take
+place or return an error.</p>
+
+<h3 id="example:janus">Example: Janus</h3>
+
+<p>One example of doing validation at the <strong>user level</strong> is the <strong>Janus</strong>
+sandboxing system, developed at UC Berkeley, originally for SunOS
+but later ported to Linux.
+Janus uses a loadable, lightweight, kernel module called <em>mod_janus</em>.
+The module initializes itself by setting up hooks to redirect system call requests to
+to itself. A <strong>hook</strong> is simply a
+mechanism that redirects an API request somewhere else and
+allows it to return back for normal processing. For example,
+a function can be hooked to simply log the fact that it has been called.
+The Janus kernel module copies the system call table to redirect the vector of calls to the mod_janus. </p>
+
+<p>A user-configured <strong>policy file</strong> defines the allowable files and network operations for each sandboxed application. Users run applications through a Janus launcher/monitor program, which places the application in the sandbox. The monitor parses the policy file and spawns a child process for the user-specified program. The child process executes the actual application. The parent Janus process serves as the monitor, running a <strong>policy engine</strong> that receives system call notifications and decides whether to allow or disallow the system call.</p>
+
+<p>Whenever a sandboxed application makes a system call, the call is
+redirected by the hook in the kernel to the Janus kernel module.
+The module blocks the thread (it is still waiting for the return from
+the system call) and
+signals the user-level Janus process that a system call has been requested.
+The user-level Janus process&#8217; <em>policy engine</em> then requests all
+the necessary information about the call (calling process, type of system call, parameters).
+The policy engine makes a <strong>policy decision</strong> to determine whether, based on the policy,
+the process should be permitted to make the system call.
+If so, the system call is directed back to the operating system.
+If not, an error code is returned to the application.</p>
+
+<h3 id="challengesofuser-levelvalidation">Challenges of user-level validation</h3>
+
+<p>The biggest challenge with implementing Janus is that the user-level monitor must mirror the state of the operating system. If the child process forks a new process, the Janus monitor must also fork. It needs to keep track of not
+just network operations but the proper sequencing of the
+steps in the protocol to ensure that no improper actions are attempted on the network. This is a sequence of <em>socket, bind, connect, read/write</em>, and <em>shutdown</em> system calls. If one fails, chances are that the others should not be allowed to take place. However, the Janus monitor does not have the knowledge of whether a particular system call succeeded or not; approved calls are simply forwarded from the module to the kernel for processing. Failure to handle this correctly may enable attack vectors such as trying to send
+data on an unconnected socket.</p>
+
+<p>The same applies with file operations. If a file failed to open, <em>read</em> and <em>write</em> operations should not be allowed to take place. Keeping track of state also gets tricky if file descriptors are duplicated (e.g., via the <em>dup2</em> system call); it is not clear whether any requested file descriptor is a valid one or not. </p>
+
+<p>Pathname parsing of file names has to be handled entirely by the monitor. We earlier examined the complexities of processing <code>&quot;../&quot;</code> sequences in pathnames. Janus has to do this in order to validate any policies on permissible file names or directories. It also has to keep track of relative filenames since the application may change the current directory at any time via the <em>chdir</em> system call. This means Janus needs to intercept <em>chdir</em> requests and process new pathnames within the proper context. Moreover, the application may change its entire namespace if the process calls <em>chroot</em>.</p>
+
+<p>File descriptor can cause additional problems. A process can pass an open file descriptor to another process via UNIX domain sockets, which can then use that file descriptor (via a <em>sendfd</em> and <em>recv_fd</em> set of calls). Janus would be hard-pressed to know that this happened since that would require understanding the intent of the underlying <em>sendmsg</em> system calls and <em>cmsg</em> directives. </p>
+
+<p>In addition to these difficulties, user-level validation suffers from possible TOCTTOU (time-of-check-to-time-of-use) race conditions. The environment present when Janus validates a request may change by the time the request is processed.</p>
+
+<h2 id="applicationsandboxingwithintegratedossupport">Application sandboxing with integrated OS support</h2>
+
+<p>The better alternative to having a user-level process decide on whether to permit system calls is to incorporate policy validation in the kernel. Some operating systems provide kernel support for sandboxing.
+These include the Android Application Sandbox, the iOS App Sandbox,
+the macOS sandbox, and AppArmor on Linux. Microsoft introduced the Windows Sandbox in December 2018, but this functions far more like a container than a traditional application sandbox, giving the process an isolated execution environment.</p>
+
+<h3 id="seccomp-bpf">Seccomp-BPF</h3>
+
+<p><strong>Seccomp-BPF</strong>, which stands for <strong>SECure COMPuting with Berkeley Packet Filters</strong>, is a sandboxing framework that is available on Linux systems. It allows the user to attach a system call filter to a process and all of the descendants of that process. Users can enumerate allowable system calls and also allow or disallow access to specific files or network protocols. Seccomp has been a core part of the Android security since the release of Android O in August 2017.</p>
+
+<p>Seccomp uses the Berkeley Packet Filter (BPF) interpreter, which is a framework that was initially created for
+<a href="https://en.wikipedia.org/wiki/Berkeley_Packet_Filter">network socket filtering</a>. With socket filtering, a user can create a filter to allow or disallow certain types of data to come through the socket. Since BPF is a framework that was initially created for sockets, seccomp sends “packets” that represent system calls to the BPF (Berkeley Packet Filter) interpreter. The filter allows the user to define rules that are applied to these system calls. These rules enable the inspection of each system call and its arguments and take subsequent action. Actions include allowing the call to run or not. If the call is not permitted, rules can specify whether an error is returned to the process, a SIGSYS signal is sent, or whether the process gets killed.</p>
+
+<p>Seccomp is not designed to serve as a complete sandbox solution but is a tool for building sandboxes. For further process isolation, it can be used with other components, such as namespaces, capabilities, and control groups. The biggest downside of seccomp is the use of the BPF.
+BPF is a full interpreter &#8211; a processor virtual machine &#8211; that supports reading/writing registers, scratch memory operations, arithmetic, and conditional branches. Policies are compiled into BPF instructions before they are loaded into the kernel.
+It provides a low-level interface and the rules are not simple <em>condition-action</em> definitions. System calls are referenced by numbers, so it is important to check the system architecture in the filter as Linux system call numbers may vary across architectures. Once the user gets past this, the challenge is to apply the <em>principle of least privilege</em> effectively: restrict unnecessary operations but ensure that the program still functions correctly, which includes things like logging errors and other extraneous activities.</p>
+
+<h3 id="theapplesandbox">The Apple Sandbox</h3>
+
+<p>Conceptually, Apple’s sandbox is similar to <em>seccomp</em> in that it is a kernel-level sandbox, although it does not use the Berkeley Packet Filter. The sandbox comprises:</p>
+
+<ul>
+<li>User-level library functions for initializing and configuring the sandbox for a process</li>
+<li>A server process for handling logging from the kernel</li>
+<li>A kernel extension that uses the <strong>TrustedBSD API</strong> to enforce sandbox policies</li>
+<li>A kernel extension that provides support for <strong>regular expression pattern matching</strong> to enforce the defined policies</li>
+</ul>
+
+<p>An application initializes the sandbox by calling <em>sandbox_init</em>. This function reads a human-friendly <strong>policy definition file</strong> and converts it into a binary format that is then passed to the kernel. Now the sandbox is initialized. Any function calls that are hooked by the <em>TrustedBSD</em> layer will be passed to the sandbox kernel extension for enforcement. Note that, unlike Janus, all enforcement takes place in the kernel. Enforcement means consulting a list of sandbox rules for the process that made the system call (the policy that was sent to the kernel by <em>sandbox_init</em>). In some cases, the rules may involve regular expression pattern matching, such as those that define filename patterns).</p>
+
+<p>The Apple sandbox helps avoid <em>comprehension errors</em> by providing predefined sandbox profiles (entitlements). Certain resources are restricted by default and a sandboxed app must explicitly ask the user for permission. This includes accessing:</p>
+
+<ul>
+<li>the system hardware (camera, microphone, USB)</li>
+<li>network connections, data from other apps (calendar, contacts)</li>
+<li>location data, and user files (photos, movies, music, user-specified files)</li>
+<li>iCloud services</li>
+</ul>
+
+<p>For mobile devices, there are also entitlements for push notifications and Apple Pay/Wallet access.</p>
+
+<p>Once permission is granted, the sandbox policy can be modified for that application. Some basic categories of entitlements include:</p>
+
+<ul>
+<li>Restrict file system access: stay within an app container, a group container, any file in the system, or temporary/global places</li>
+<li>Deny file writing</li>
+<li>Deny networking</li>
+<li>Deny process execution</li>
+</ul>
+
+<h2 id="browser-basedsandboxing:chromiumnativeclientnacl">Browser-based Sandboxing: Chromium Native Client (NaCl)</h2>
+
+<p>Since the early days of the web, browsers have supported a plug-in architecture, where modules (containing native code) could be loaded into the browser to extend its capabilities. When a page specifies a specific plug-in via an &lt;object&gt; or &lt;embed&gt; element, the requested content is downloaded and the plug-in that is associated with that object type is invoked on that content. Examples of common plug-ins include Adobe Flash, Adobe Reader (for rendering pdf files), and Java, but there are hundreds of others. The challenge with this framework is how to keep the software in a plug-in from doing bad things.</p>
+
+<p>An example of sandboxing designed to address the problem of running code in a plugin
+is the <strong>Chromium Native Client</strong>,called <strong>NaCl</strong>.
+Chromium is the open source project behind the
+Google Chrome browser and Chrome OS.
+The NaCl Browser plug-in designed to allow
+safe execution of untrusted native code within a browser, unlike
+JavaScript, which is run through an interpreter. It is built
+with compute-intensive applications in mind or interactive applications that use the resources of a client, such as games. </p>
+
+<p>NaCl is a user-level sandbox and works by
+restricting the type of code it can sandbox.
+It is designed for the safe execution of
+platform-independent, untrusted native code inside a browser.
+The motivation was that some browser-based applications will be
+so compute-intensive that writing them in JavaScript will not be
+sufficient. These native applications may be interactive and may
+use various client resources but will need to do so in a controlled and
+monitored manner.</p>
+
+<p>NaCl supports two categories of code: <strong>trusted</strong> and <strong>untrusted</strong>.
+Trusted code can run without a sandbox.
+Untrusted code must run inside a sandbox. This code
+has to be compiled using the NaCl SDK or any compiler
+that adheres to NaCl&#8217;s data alignment rules and instruction restrictions
+(not all machine instructions can be used). Since applications cannot access resources directly, the code is also
+linked with special NaCl libraries that provide access to system services,
+including the file system and network. NaCl includes a GNU-based toolchain that
+contains custom versions of gcc, binutils, gdb, and common libraries. This toolchain supports 32-bit ARM, 32-bit Intel x86 (IA&#8211;32), x86&#8211;64, and 32-bit MIPS architectures. </p>
+
+<p>NaCl executes with two sandboxes in place: </p>
+
+<ol>
+<li><p>The <strong>inner sandbox</strong> uses Intel&#8217;s IA&#8211;32 architecture&#8217;s segmentation capabilities to isolate memory regions among apps so that even if multiple apps run in the same process space, their memory is still isolated. Before executing an application, the NaCl loader applies static analysis on thecode to ensure that there is no attempt to use privileged instructions or create self-modifying code. It also attempts to detect security defects in the code.</p></li>
+<li><p>The <strong>outer sandbox</strong> uses system call interposition to restrict
+the capabilities of apps at the system call level. Note that this is done completely at the user level via libraries rather than system call hooking.</p></li>
+</ol>
+
+<h3 id="processvirtualmachinesandboxes:java">Process virtual machine sandboxes: Java</h3>
+
+<p>A different type of sandbox is the <strong>Java Virtual Machine</strong>.
+The <strong>Java</strong> language was originally designed as a language for
+web applets, compiled Java programs that would get download and
+run dynamically upon fetching a web page.
+As such, confining how those applications run
+and what they can do was extremely important. Because
+the author of the application would not know what operating system
+or hardware architecture a client had, Java would compile to a
+hypothetical architecture called the Java Virtual Machine (<strong>JVM</strong>).
+An interpreter on the client would simulate the JVM and
+process the instructions in the application.
+The Java sandbox has three parts to it:</p>
+
+<p>The <strong>bytecode verifier</strong> verifies Java bytecodes before they
+are executed. It tries to
+ensure that the code looks like valid Java byte
+code with no attempts to circumvent access restrictions, convert
+data illegally, bypass array bounds, or forge pointers.</p>
+
+<p>The <strong>class loader</strong> enforces
+restrictions on whether a program is allowed to load additional
+classes and that key parts of the runtime environment are not overwritten (e.g., the standard class libraries). The class loader ensures that malicious code does not interfere with trusted code nad ensures that trusted class librares remain accessible and unmodified.
+It implements ASLR (Address Space Layout Randomization) by
+randomly laying out Runtime data areas (stacks, bytecodes, heap).</p>
+
+<p>The <strong>security manager</strong> enforces the <strong>protection domain</strong>.
+It defines what actions are safe and which are not; it creates the boundaries of the sandbox and is consulted before
+any access to a resource is permitted. It is called at the time an application
+makes a call to specific methods so it can provide
+run-time verification of whether a program has been given rights to invoke
+the method, such as file I/O or network access. Any actions not allowed by the security policy result in a <code>SecurityException</code> being thrown. The security manager is the component that allows the user to restrict an application from accessing files or accessing the network, for example.A user can create a security policy file that enumerates what an application can or cannot do.</p>
+
+<p>Java security is deceptively complex. After over twenty years of bugs one
+hopes that the truly dangerous ones have been fixed. Even though the Java
+language itself is pretty secure and provides dynamic memory management
+and array bounds checking, buffer overflows have been
+found in the underlying C support library, which has been buggy in general.
+Varying implementations of the JVM environment on different platforms
+make it unclear how secure any specific client will be. Moreover, Java
+supports the use of <strong>native methods</strong>, libraries that you can write in
+compiled languages such as C that interact with the operating system
+directly. These bypass the Java sandbox.</p>
+
+<h1 id="references">References</h1>
+
+<h2 id="injection">Injection</h2>
+
+<p><a href="https://www.owasp.org/index.php/SQL_Injection">SQL Injection</a>, The Open Web Application Security Project, April 10, 2016.</p>
+
+<p><a href="http://www.acunetix.com/websitesecurity/sql-injection/">SQL Injection</a>, Acunetix.</p>
+
+<p>Simson Garfinkel &amp; Gene Spafford, <a href="http://docstore.mik.ua/orelly/networking/puis/ch11_05.htm">Section 11.5, Protecting Yourself</a>, <a href="http://docstore.mik.ua/orelly/networking/puis/index.htm">Practical UNIX &amp; Internet Security</a>, Second Edition, April 1996. Discusses shell attacks.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Directory_traversal_attack">Directory traversal attack</a>, Wikipedia.</p>
+
+<p><a href="http://security.stackexchange.com/questions/48879/why-does-directory-traversal-attack-c0af-work">Why does Directory traversal attack %C0%AF work?</a>, <a href="http://security.stackexchange.com">Information Security Stack Exchange</a>, September 9, 2016</p>
+
+<p>Tom Rodriquez, <a href="https://www.sans.org/security-resources/idfaq/what-are-unicode-vulnerabilities-on-internet-information-server-iis/9/15">What are unicode vulnerabilities on Internet Information Server (IIS)?</a>, SANS.</p>
+
+<p><a href="http://www.unicode.org/faq/basic_q.html">The Unicode Consortium</a>.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/IDN_homograph_attack">IDN homograph attack</a>, Wikipedia.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Time_of_check_to_time_of_use">Time of check to time of use</a>, Wikipedia.</p>
+
+<p>Michael Cobb, <a href="http://searchsecurity.techtarget.com/answer/How-to-mitigate-the-risk-of-a-TOCTTOU-attack">How to mitigate the risk of a TOCTTOU attack</a>, TeachTarget, August 2011.</p>
+
+<p>Ernst &amp; Yount LLP Security &amp; Technology Solutions, <a href="https://www.microsoft.com/windowsserver2003/docs/AdvSec.pdf">Using Attack Surface Area And Relative Attack Surface Quotient To Identify Attackability</a>. Customer Information Paper. </p>
+
+<p>Michael Howard, <a href="https://blogs.microsoft.com/microsoftsecure/2011/02/14/back-to-the-future-attack-surface-analysis-and-reduction/">Back to the Future: Attack Surface Analysis and Reduction</a>, Microsoft Secure Blog, February 14, 2011.</p>
+
+<p>Olivier Sessink, <a href="https://olivier.sessink.nl/jailkit/">Jailkit</a>, November 18, 2015.</p>
+
+<h2 id="confinement">Confinement</h2>
+
+<p>Evan Sarmiento, <a href="https://www.freebsd.org/doc/en/books/arch-handbook/jail.html">Chapter 4. The Jail Subsystem</a>, <a href="https://www.freebsd.org/doc/en/books/arch-handbook/index.html">FreeBSD Architecture Handbook</a>, The FreeBSD Documentation Project. 2001, Last modified: 2016&#8211;10&#8211;29.</p>
+
+<p>Matteo Riondato, <a href="https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/jails.html">Chapter 14. System Administration: Jails</a>, <a href="https://www.freebsd.org/doc/en/books/arch-handbook/index.html">FreeBSD Architecture Handbook</a>, The FreeBSD Documentation Project. 2001, Last modified: 2016&#8211;10&#8211;29.</p>
+
+<p><a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Resource_Management_Guide/ch01.html">Chapter 1. Introduction to Control Groups</a>, Red Hat Enterprise Linux 6.8 Resource Management Guide.</p>
+
+<p>José Manuel Ortega, <a href="https://archive.fosdem.org/2018/schedule/event/containers_workload_security/attachments/slides/2563/export/events/attachments/containers_workload_security/slides/2563/Everything_you_need_to_know_about_containers_security.pdf">Everything you need to know about Containers Security</a>, OSDEM 2018 presentation.</p>
+
+<p>Johan De Gelas, <a href="https://www.anandtech.com/show/2480">Hardware Virtualization: the Nuts and Bolts</a>, AnandTech article, March 17 2008.</p>
+
+</div>
+
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: October  2, 2020
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 419 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/a89b56d4-d72e-4e3d-865e-f7acfbce9964"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 419 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+		<h2> Study guides </h2>
+	<ul>
+	<li> <a href="../exam/guide-1.html"> Study Guide 1 </a> </li>
+	<li> <a href="../exam/guide-2.html"> Study Guide 2 </a> </li>
+	<li> <a href="../exam/guide-3.html"> Study Guide 3 </a> </li>
+<!--
+	<li> <a href="../exam/guide-final.html"> Full Study Guide </a> </li>
+-->
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

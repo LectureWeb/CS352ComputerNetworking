@@ -1,0 +1,258 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Distributed lookup services</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Distributed lookup services</h1>
+								<h2>Amazon Dynamo</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>March 29, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Create a practical implementation of a key-value store that is highly scalable, decentralized, replicated, and efficient.</p>
+</blockquote>
+
+<p>Dynamo is a highly available key-value store created internally within Amazon.
+Many services within Amazon, such as best seller lists, shopping carts, user preferences,
+session management, etc., need only primary key access to data. A multi-table
+relational database system would be overkill and would limit scalability and availability.
+With Dynamo, an application can configure its instance of Dynamo for desired availability (# replicas)
+and consistency.</p>
+
+<p>Dynamo supports two operations: <em>get(key)</em> and <em>put(key, data, context)</em>. The data is
+an arbitrary bunch of bytes (typically less than 1 MB) and is always identified by a unique key.
+The <em>(key, data)</em> values are distributed over a large set of servers and replicated for availability.
+The context is a value that is returned with a <em>get</em> operation and then sent back with a future
+<em>put</em> operation. The context is meaningless to the user program and is used like a cookie. Internally,
+it contains versioning information.</p>
+
+<p>The system is decentralized: there is no need for a central
+coordinator to oversee operations. Every node has equivalent
+responsibilities and the system can grow dynamically by adding new nodes.</p>
+
+<h2 id="partitioning:scalability">Partitioning: scalability</h2>
+
+<p>Since massive scalability is a key design aspect of Dynamo, data storage is distributed
+among many nodes. Dynamo relies on <strong>consistent hashing</strong> to identify which
+node will be responsible for a specific key. With normal hashing,
+a change in the number of slots in the table (e.g., number of nodes since we are hashing
+to find a node) will result in having to remap all keys. With consistent hashing, this is
+not the case and only <em>K/n</em> keys need to be remapped, where <em>K</em> is the number
+of keys and <em>n</em> is the number of slots (nodes).</p>
+
+<p>Nodes are arranged in a logical ring.
+Each node is assigned a random &#8220;token&#8221; (a number) that represents its position in the logical ring.
+It is responsible for
+all keys that hash to any number between the node&#8217;s number and its predecessor&#8217;s number.
+When a key is hashed, a node will traverse a logical ring of node values to find
+the first node with a position greater than or equal to that hashed result. This tells it which
+node is responsible for handling that key. Since nodes are not added that frequently,
+every node can store a cached copy of this ring
+(the size is the list of <em>N</em> hash values and server addresses, where <em>N</em> is the number of nodes).
+Moreover, to avoid the extra hop resulting
+because a client sent a request to the wrong Dynamo node, a client may also get a copy of this table.
+The system has been described as a <strong>zero-hop distributed hash table</strong> (DHT).</p>
+
+<p>Adding or removing nodes affects only the node&#8217;s immediate neighbor in the ring. If a node is added,
+the successor node will give up some range of values to the new node. If a node is removed,
+the <em>key, value</em> data it manages will have to be moved over to the successor.
+In reality, a physical node is assigned to manage multiple points in the ring (multiple
+ranges of hash values).
+The nodes in the algorithm that we just discussed are really <strong>virtual nodes</strong>.
+A real machine, or physical node, will be responsible for managing multiple virtual nodes.
+The advantage of
+doing this is that we can attain <strong>balanced load distribution</strong>.
+If a machine becomes unavailable, the load is evenly distributed among the available nodes.
+If a new machine is added, each virtual node within it will take a set of values from other
+virtual nodes, effectively taking on a small amount of load from a set of other machines
+instead of from just the neighboring system (successor node).
+Moreover, if a more powerful machine is added, it can be assigned a larger number of virtual
+nodes so that it bears a greater percentage of the query workload.</p>
+
+<h2 id="replication:availability">Replication: availability</h2>
+
+<p>Dynamo is designed as an <strong>always writable</strong> data store.
+Data can be replicated on <em>N</em> hosts, where the value <em>N</em> is configurable
+per instance of Dynamo. The node that is responsible for storing the key-value is assigned
+the role of <strong>coordinator</strong> for that key and is in charge of replication for that key.
+The coordinator copies (<em>key</em>, <em>value</em>) data onto N-1 successor nodes clockwise in the ring.
+Copying is asynchronous (in the background) and Dynamo provides an <strong>eventually consistent</strong> model.
+This replication technique is called <strong>optimistic replication</strong>, which means that
+replicas are not guaranteed to be identical at all times.
+If a client cannot contact the coordinator, it sends the request to a node holding a replica,
+which will then periodically try to contact the coordinator.</p>
+
+<p>Because data is replicated and the system does not provide ACID guarantees, it is possible that
+replicas may end up holding different versions. Dynamo favors application-based
+<strong>conflict resolution</strong> since the application is aware of the meaning
+of the data associated with the key and can act upon it intelligently. For
+example, the application may choose to merge two versions of a shopping cart. If the application
+does not want to bother with this, the system falls back on a <em>last write wins</em>
+strategy. Dynamo uses <strong>vector clocks</strong> to identify versions of stored
+data and to distinguish between versions that have been modified concurrently from
+versions that are causally related (a later one is just an update of an earlier one).
+For example, one can identify whether there are two versions of a shopping cart that
+have been updated independently or whether one version is just a newer modification of
+an older shopping card.
+A vector clock value is a set of <em>(node, counter)</em> pairs. This set of values
+constitutes the version of the data. It is returned as the &#8220;context&#8221; with a <em>get</em>
+operation and updated and stored when that context is passed as a parameter to a <em>put</em>
+operation.</p>
+
+<p>Because Dynamo is completely decentralized and does not rely on coordinator (unlike GFS, for example),
+each node serves three functions:</p>
+
+<ol>
+<li><p>Managing <em>get</em> and <em>put</em> requests. A node may act as a coordinator responsible
+for a particular key or may forward the request to the node that has that responsibility.</p></li>
+<li><p>Keeping track of membership and detecting failures. A node will detect if other nodes
+are out of service and keep track of the list of nodes in the system and their associated
+hash ranges.</p></li>
+<li><p>Local persistent storage. Each node is responsible for being either the primary or
+replica store for keys that hash to a certain range of values. These <em>(key, value)</em>
+pairs are stored within that node using a variety of mechanisms depending on application
+needs. These include the Berkeley Database Transactional Data Store, MySQL (for large
+objects), or an in-memory buffer with persistent backing store (for highest performance).</p></li>
+</ol>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

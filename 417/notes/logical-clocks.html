@@ -1,0 +1,472 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Logical clocks</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css?v=1.1"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Logical clocks</h1>
+								<h2>Causality and concurrency</h2>
+
+								<p>Paul Kryzanowski</p>
+								<p>February 14, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Allow processes on different systems to identify and causal relationships and their ordering among events, particularly among messages between different systems.</p>
+</blockquote>
+
+<h1 id="introduction">Introduction</h1>
+
+<p><strong>Lamport clocks</strong> allow processes to assign sequence numbers (&#8220;timestamps&#8221;)
+to messages and other events so that all cooperating processes can
+agree on the order of related events. There is no assumption of a central
+time source and no concept of <em>when</em> events took
+place.
+Events are causally related if one event may potentially influence the outcome of another event.
+For instance, events in one process are causally related.
+If a process A sends a messag to process B, all events that occured on process A before the message was
+sent causally precede all the events that occur on B after B received the message.</p>
+
+<p>The central concept with logical clocks is the <strong>happened-before</strong>
+relation: <strong><em>a&rarr;b</em></strong> represents that event <em>a</em> occurred before event <em>b</em>. This
+order is imposed upon consecutive events at a process and also upon
+a message being sent before it is received at another process.
+Beyond that, we can use the transitive property of the relationship
+to determine causality: if <em>a&rarr;b</em> and <em>b&rarr;c</em> then <em>a&rarr;c</em>.</p>
+
+<p>If there is no <strong>causal</strong>
+relationship between two events (e.g., they occur on different
+processes that do not exchange messages or have not yet
+exchanged messages, even indirectly), then the events are <strong>concurrent</strong>.</p>
+
+<p>Lamport&#8217;s algorithm states that every event is timestamped (assigned
+a sequence number) and each message carries a timestamp of the
+sender&#8217;s clock (sequence number). A message comprises two events:
+(1) at the sender, we have the event of sending the message
+and (2) at the receiver, we have the event of receiving the
+message. The clock is a process-wide counter (e.g., a global variable)
+and is always incremented before each event. When a message arrives,
+if the receiver&#8217;s clock is less than or equal to the message&#8217;s
+timestamp, the clock is set to the <em>message timestamp + 1</em>. This
+ensures that the timestamp marking the event of a received message
+will always be greater than the timestamp of that sent message.</p>
+
+<h1 id="lamportclocks">Lamport Clocks</h1>
+
+<p>Each process maintains a single Lamport timestamp counter. Each event in the process is tagged with
+a value from this counter. The counter is incremented before the event timestamp is assigned.
+If a process has four events, <em>a, b, c, d</em>, the events would get Lamport timestamps of <em>1, 2, 3, 4</em>,
+respectively.
+Let&#8217;s look at an example. The figure below shows a bunch of events on three processes.
+Some of these events represent the sending of a messasge, others represent the
+receipt of a message, while others are just local events (e.g., writing some data to a file).
+With these per-process incrementing assignments, we get the clock values shown in the figure.</p>
+
+<figure>
+<img src="images/clocks.png" alt="Clock Assignment" />
+<figcaption>Clock Assignment</figcaption>
+</figure>
+
+<p>This simple incrementing counter does not give us results that are consistent with
+causal events. If event <em>a</em> happened before event <em>b</em> then we expect
+<em>clock(a)</em> &lt; <em>clock(b)</em>.</p>
+
+<p>To make this work, Lamport timestamp generation has an extra step.
+If an event is the sending of a message then the timestamp of that event is sent along with the message.
+If an event is the receipt of a message then the the algorithm instructs you to compare the current
+value of the process' timestamp counter (which was just incremented before this event) with the timestamp
+in the received message. If the timestamp of the received message is greater than or equal to that of the event,
+the event and the process' timestamp counter are both updated with the value of the timestamp in
+the received message plus one. This ensures that
+the timestamp of the received event and all further timestamps on that process will be greater than that of the
+timestamp of the event of sending the message as well as all previous messages on that process.</p>
+
+<p>In the figure below, event <em>i</em> in process P<sub>1</sub> is the receipt of the message
+sent by event <em>b</em> in P<sub>0</sub>. If event <em>i</em> was just a normal local event, the
+P<sub>1</sub> would assign it a timestamp of 2. However, since the received timestamp is 2, which
+is greater than or equal to 2, the timestamp counter is set to 2+1, or 3. Event <em>i</em> gets the timestamp of 3.
+This preserves the relationship <em>b</em>&rarr;<em>i</em>, that is, b happened before i.
+A local event after <em>i</em> would get a timestamp of 4 because the process P<sub>1</sub>&#8217;s counter was
+set to 3 when the timestamp for <em>i</em> was adjusted.</p>
+
+<p>Event <em>c</em> in process P<sub>0</sub> is the receipt of the message sent at event <em>h</em>.
+Here, the timestamp of <em>c</em> does not need to be adjusted. The timestamp in the message is 1, which
+is less than the event timestamp of 3 that P<sub>0</sub> is ready to assign to <em>c</em>.</p>
+
+<p>If event <em>j</em> was a local event, it would get the next higher timestamp on P<sub>1</sub>: 4. However,
+it is the receipt of a message that contains a timestamp of 6, which is greater than or equal to 4, so
+the event gets tagged with a timestamp of 6+1 = 7.</p>
+
+<figure>
+<img src="images/clocks-lamport.png" alt="Lamport Clock Assignment" />
+<figcaption>Lamport Clock Assignment</figcaption>
+</figure>
+
+<p>With Lamport timestamps, we are assured that two causally-related events will
+have timestamps that reflect the order of events. For example,
+event <em>h</em> happened before event <em>m</em> in the Lamport causal sense. The
+chain of causal events is
+<em>h</em>&rarr;<em>c</em>,
+<em>c</em>&rarr;<em>d</em>, and
+<em>d</em>&rarr;<em>m</em>.
+Since the <em>happened-before</em> relationship is transitive, we know that
+<em>h</em>&rarr;<em>m</em> (<em>h</em> happened before <em>m</em>).
+Lamport timestamps reflect this. The timestamp
+for <em>h</em> (1) is less than the timestamp for <em>m</em> (7). However, just
+by looking at timestamps we cannot conclude that there is a causal happened-before
+relation.
+For instance, because the timestamp for <em>k</em> (1) is less than
+the timestamp for <em>i</em> (3) does not mean that <em>k</em> happened before
+<em>i</em>. Those events happen to be concurrent but we cannot discern that
+by looking at Lamport timestamps.
+We need need to employ a different technique to be able to make that determination.
+That technique is the use of <em>vector timestamps</em>.</p>
+
+<p>One result of Lamport timestamps is that multiple events on
+different processes may all be tagged with the same timestamp. We
+can force each timestamp to be unique by suffixing it with a globally
+unique process number. While these new timestamps will not relate
+to real time ordering, each will be a unique number that can be used
+for consistent comparisons of timestamps among multiple processes
+(e.g., if we need to make a decision on who gets to access a resource based on comparing two timestamps).</p>
+
+<p>A second deficiency with Lamport timestamps is that, by looking at
+timestamps, one cannot determine whether there is a causal relationship
+between two events. For example, just because event <em>a</em> has a timestamp
+of 5 and event <em>b</em> has a timestamp of 6, it does not imply that event
+<em>a</em> happened before event <em>b</em>.</p>
+
+<h1 id="vectorclocks">Vector Clocks</h1>
+
+<p>A way to create timestamps that allow
+us to discern causal relationships is to use a vector clock. A
+<strong>vector clock</strong> is no longer a single value but rather a vector of
+numbers, with each element corresponding to a process.</p>
+
+<p>With vector clocks, we assume that we know the number of processes in the group
+(we will later remove this restriction). Instead of a single number,
+our timestamp is now
+a vector of numbers, with each element corresponding to a process. Each process knows its position
+in the vector. For example, in the example below, the vector elements correspond to the processes
+(P<sub>0</sub>, P<sub>1</sub>, P<sub>2</sub>).</p>
+
+<h3 id="vectorclockassignment">Vector clock assignment</h3>
+
+<p>The rules for updating vector clocks are as follows:</p>
+
+<ol>
+<li><p>Before affixing
+a vector timestamp to an event, a process increments the element
+of its local vector that corresponds to its position in the vector. For
+example, process 0 increments element 0 of its vector, process 1
+increments element 1 of its vector, and so on.</p></li>
+<li><p>When a process receives a message, it also first increments its element of the vector (i.e.,
+it applies the previous rule). It then sets the vector of
+the <em>received</em> event to a set of values that contains the
+higher of two values when doing and element-by-element comparison
+of the original event&#8217;s vector and the vector received in the
+message.</p></li>
+</ol>
+
+<p>This new vector timestamp becomes the new per-process clock vector from which future
+timestamps for events on that process will be generated. Think of a vector
+timestamp as a set of version numbers, each representing a different
+author.</p>
+
+<p>As with Lamport&#8217;s algorithm, the element corresponding to the processor in the vector timestamp
+is incremented prior to attaching a timestamp to an event.</p>
+
+<p>For example, in an
+environment of four processors, P<sub>0</sub>, &#8230; P<sub>3</sub>,
+P<sub>1</sub> will &#8220;own&#8221; the second element of the vector.</p>
+
+<p>If a process P<sub>0</sub> has four sequential events, <em>a, b, c, d</em>, they would get vector timestamps of <em>(1,0,0), (2, 0, 0), (3, 0, 0), (4, 0, 0)</em>.
+If a process P<sub>2</sub> has four sequential events, <em>a, b, c, d</em>, they would get vector timestamps of <em>(0,0,1), (0, 0, 2), (0, 0, 3), (0, 0, 4)</em>.
+If one event on P<sub>1</sub> is (2, 4, 0, 1) then the next event on P<sub>1</sub> will be (2, 5, 0, 1).</p>
+
+<p>If the event is the sending of a message,
+the entire vector associated with that event is sent along with the message.
+When the message is received by a process
+(which is an event that will get assigned a timestamp), the receiving process does the following:</p>
+
+<p>We can illustrate this
+with the following pseudocode where <code>system</code> is the system&#8217;s
+vector counter and <code>received</code> is the received vector timestamp:</p>
+
+<pre><code>    /* receive message with vector timestamp received */
+for (i=0; i &lt; num_elements; i++) 
+	if (received[i] &gt; system[i])
+		system[i] = received[i];
+</code></pre>
+
+<h3 id="comparingvectortimestamps">Comparing vector timestamps</h3>
+
+<p>We can determine if two events are concurrent or causally related by comparing their timestamps.
+Vectors are compared by comparing their values element by element. That is, we compare the values
+of P<sub>0</sub>, then P<sub>1</sub>, etc.</p>
+
+<p>Two vector timestamps are equal if each corresponding element of one vector is the same as the other.</p>
+
+<p>A vector timestamp <code>v</code> is less than a vector timestamp <code>w</code> if <code>v</code> and <code>w</code> are not equal and each element of <code>v</code>
+is less than or equal to the corresponding element of <code>w</code>:</p>
+
+<pre><code>is_smaller(int v[], w[]) {  // is v smaller than w, assuming v != w
+	result = true;
+	for (i=0; i &lt; num_elements; i++)
+		if (v[i] &gt; w[i])
+			smaller = false;
+	return result;
+</code></pre>
+
+<p>Two events are concurrent if one vector timestamp is neither greater
+than nor less than the other element when doing
+an element-by-element comparison.</p>
+
+<p>For example, events (2, 4, 6, 8)
+and (3, 4, 7, 9) are <em>not</em> concurrent (that is, they are causally related)
+because every element of the first vector is less than or equal to
+the corresponding element of the second vector.</p>
+
+<p>The vectors (2, 4, 6, 8) and (1, 5, 4, 9) represent concurrent events. Neither vector
+is less than or greater than the other. For instance, 2 &gt; 1 (first
+element of the first vector is greater than the first element of
+the second vector) but 4 &lt; 5 (second element of the first vector
+is less than the second element of the second vector).</p>
+
+<h3 id="vectorclockexample">Vector clock example</h3>
+
+<p>The figure below shows the same set of events that we saw earlier but with vector clock assignments.
+Event <em>b</em> is the sending of a message to P<sub>1</sub>. That message contains event <em>b</em>&#8217;s
+timestamp: (2, 0, 0). Event <em>i</em> is the receipt of that message. If <em>i</em> was a local event,
+it would get the timestamp (0, 2, 0). Since it is the receipt of a message, we do an element-by-element
+comparison of values in the received timestamp and the local timestamp, picking the highest of each
+pair of numbers:</p>
+
+<p>Compare (2, 0, 0) with the received timestamp of (0, 2, 0).</p>
+
+<ul>
+<li>First element: 2 vs. 0: 2 is greater and wins.</li>
+<li>Second element: 0 vs. 2: 2 is greater and wins.</li>
+<li>Third element: 0 vs. 0: tie, so 0 wins.</li>
+</ul>
+
+<p>The resulting vector is hence (2, 2, 0) and is assigned to event <em>i</em> as well as to
+the system clock. The next local event on P<sub>1</sub> would be tagged with (2, 2+1, 0), or (2, 3, 0).</p>
+
+<figure>
+<img src="images/clocks-vector.png" alt="Vector Clock Assignment" />
+<figcaption>Vector Clock Assignment</figcaption>
+</figure>
+
+<p>To determine if two events, V and W, are <strong>concurrent</strong>, do an element-by-element comparison of the corresponding
+timestamps.
+If each element of timestamp V is less than or equal to the corresponding element of
+timestamp W then V causally precedes W and the events are not concurrent.
+If each element of timestamp V is greater than or equal to the corresponding element of
+timestamp W then W causally precedes V and the events are not concurrent.
+If, on the other hand, neither of those conditions apply and some elements in V are greater
+than while others are less than the corresponding element in W then the events are concurrent.
+We can summarize it with the pseudocode:</p>
+
+<pre><code>isconcurrent(int v[], int w[])
+{
+	bool greater=false, less=false;
+
+	for (i=0; i &lt; num_elements; i++) 
+		if (v[i] &gt; w[i])
+			greater = true;
+		else (v[i] &lt; w[i])
+			less = true;
+	if (greater &amp;&amp; less)
+		return true;	/* the vectors are concurrent */
+	else
+		return false;	/* the vectors are not concurrent */
+}
+</code></pre>
+
+<p>In the figure above, the timestamp for <em>e</em> is less than the
+timestamp for <em>j</em> because each element in <em>e</em> is less than or equal
+to the corresponding element in <em>j</em>. That is,
+5 &le; 6, 1 &le; 3, and 2 &le; 2. The events are causally related and
+<em>e</em>&rarr;<em>j</em></p>
+
+<p>Events <em>f</em> and <em>m</em>, on the other hand, are
+concurrent.
+When we compare the first element of <em>f</em> versus <em>m</em>, we see that
+<em>f</em> &gt; <em>m</em> (6 &gt; 4).
+When we compare the second element, we see that
+<em>f</em> = <em>m</em> (1 = 1).
+Finally, when
+we compare the third element, we see that
+<em>f</em> &lt; <em>m</em> (2 &lt; 3). Because of this,
+we cannot say that the vector for <em>f</em> is either less than
+or greater than the vector for <em>m</em>.</p>
+
+<h3 id="generalizingthetimestamp">Generalizing the timestamp</h3>
+
+<p>Recall that we had to assume that we knew the number of processes in the group so
+that we could create a vector of the proper size.
+This is not always the case in real implementations. Moreover, all processes may
+not be involved in communication, resulting in an unnecessarily large vector.</p>
+
+<p>We can replace the vector with a set of tuples, each of which represents a process ID
+and its counter:</p>
+
+<p>( { P<sub>0</sub>, 6 }, { P<sub>1</sub>, 3 }, { P<sub>2</sub>, 2 } )</p>
+
+<p>When a process sends a vector, it sends the entire set of tuples that it has.
+When it receives a vector and performs a comparison, it compares each related pair.
+For instance, the value of P<sub>0</sub> will be compared against a tuple containing P<sub>0</sub>
+in the received vector. If any process IDs are missing in one of the sets, they are implicitly
+given a value of 0 for comparison. The resulting vector contains the superset of all tuples.</p>
+
+<p>For example, if a process has a system vector clock of:</p>
+
+<p>( { P<sub>0</sub>, 6 }, { P<sub>1</sub>, 3 }, { P<sub>2</sub>, 2 } )</p>
+
+<p>and receives a value of</p>
+
+<p>( { P<sub>1</sub>, 1 }, { P<sub>2</sub>, 5 }, { P<sub>3</sub>, 8 } )</p>
+
+<p>The resulting vector will be the set of all process IDs and their largest values:</p>
+
+<p>( { P<sub>0</sub>, 6 }, { P<sub>1</sub>, 3 }, { P<sub>2</sub>, 5 }, { P<sub>3</sub>, 8 } )</p>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

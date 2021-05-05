@@ -1,0 +1,382 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Firewalls </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 417 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/28-firewalls.html"> Firewalls </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Firewalls </h1>
+<h2> Defending the Network </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> November 24, 2015 </p>
+</div>
+<h1 id="introduction">Introduction</h1>
+
+<p>While we’d like to communicate with all machines: those on our network and other systems, we do not want systems trying to penetrate our network. Certain network services, such as database access or perhaps even a network login, may need to be present on some of our machines but should not be accessible by others outside of our local network. We basically have two domains of machines: a trusted domain (our machines on our network or networks) and an untrusted domain – all the external machines.</p>
+
+<p>The next step is to isolate this trusted group of machines from the rest of the untrusted world. In some cases, this may be easy: move all the machines onto a private network and do not allow untrusted people onto the machines or the network. Unfortunately we are often not content to remain disconnected from the rest of the world (there’s a lot of cool stuff out there). A solution is to protect the junction between a trusted internal network of computers from the external network with a firewall. </p>
+
+<p>The two major approaches to building a firewall are packet filtering and application proxies.</p>
+
+<h1 id="packetfiltering">Packet filtering</h1>
+
+<p>Packet filtering is the selective routing of packets between internal and external hosts. This firewall serves as a form of a gateway that forwards packets from one network to another, allowing only certain packets to flow into the internal network. Packets can be accepted or blocked from transmission in a way that reflects the security policy of a site. A router that can perform packet filtering is known as a screening router (Figure 2).</p>
+
+<p>Ordinary routers simply look at the destination address of each packet and pick the best interface on which to send the packet to its destination. A screening router, on the other hand, determines the route (destination) and also decides whether the packet should be routed or dropped. Most routers and firewall products support packet filtering.
+Various fields of each packet header are examined:</p>
+
+<p>ip source address
+ip destination address
+Protocol (tcp, udp, icmp)
+tcp/udp source port
+tcp/udp destination port
+icmp message type</p>
+
+<p>Any or all of these may be used to accept or deny a packet. In addition, since the router knows the interface on which the packet arrives and the interface on which the packet goes out. Packet filtering allows the decision of allowing or blocking a packet to be based on any or all of these eight components. To set up packet filtering rules effectively, one needs to have an intimate knowledge of tcp or udp port utilization.</p>
+
+<p>Filtering rules are generally processed a line at a time, which each line representing a set of ip header parameters that need to be matched. A match on line indicates whether the packet should be allowed to be routed, dropped, or whether additional rules should be processed.</p>
+
+<p>For example, to block all incoming connections from systems outside the internal network except those for the smtp (mail) server, we may choose to do the following:</p>
+
+<pre><code>allow   dest_port=25
+deny    interface=external
+</code></pre>
+
+<p>The first rule matches any packets whose destination port is 25 (the port on which the smtp server listens) and allows them to be routed. The second rule matches all other packets that arrive from the external interface and drops them.</p>
+
+<p>We may also choose to allow connections from specific machines or networks. For instance, let us suppose we want to do the following:
+Allow any machine to connect to the web server (tcp port 80 for http; port 443 for https) that we have running on the system with address 12.34.5.6 and allow any machine to connect to the mail server (port 25) that is running on the machine with address 12.34.5.7. We also want only machines in the subnet 19.8.<em>.</em> to be able to connect to the telnet port (23) on any machine within 12.34.5.*. All other packets should be dropped.</p>
+
+<p>We can set up the following rules:</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">#</th>
+	<th style="text-align:left;">Type</th>
+	<th style="text-align:left;">source address</th>
+	<th style="text-align:left;">source port</th>
+	<th style="text-align:left;">destination address</th>
+	<th style="text-align:left;">destination port</th>
+	<th style="text-align:left;">Interface</th>
+	<th style="text-align:left;">action</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">0</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">123.34.5.0/24</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">1</td>
+	<td style="text-align:left;">deny</td>
+</tr>
+<tr>
+	<td style="text-align:left;">1</td>
+	<td style="text-align:left;">tcp</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">&gt;1023</td>
+	<td style="text-align:left;">12.34.5.6</td>
+	<td style="text-align:left;">80</td>
+	<td style="text-align:left;">1</td>
+	<td style="text-align:left;">allow</td>
+</tr>
+<tr>
+	<td style="text-align:left;">2</td>
+	<td style="text-align:left;">tcp</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">&gt;1023</td>
+	<td style="text-align:left;">12.34.5.6</td>
+	<td style="text-align:left;">443</td>
+	<td style="text-align:left;">1</td>
+	<td style="text-align:left;">allow</td>
+</tr>
+<tr>
+	<td style="text-align:left;">3</td>
+	<td style="text-align:left;">tcp</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">&gt;1023</td>
+	<td style="text-align:left;">12.34.5.7</td>
+	<td style="text-align:left;">25</td>
+	<td style="text-align:left;">1</td>
+	<td style="text-align:left;">allow</td>
+</tr>
+<tr>
+	<td style="text-align:left;">4</td>
+	<td style="text-align:left;">tcp</td>
+	<td style="text-align:left;">19.8.0.0/16</td>
+	<td style="text-align:left;">&gt;1023</td>
+	<td style="text-align:left;">12.34.5.0/24</td>
+	<td style="text-align:left;">23</td>
+	<td style="text-align:left;">1</td>
+	<td style="text-align:left;">allow</td>
+</tr>
+<tr>
+	<td style="text-align:left;">5</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">0</td>
+	<td style="text-align:left;">allow</td>
+</tr>
+<tr>
+	<td style="text-align:left;">6</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;">*</td>
+	<td style="text-align:left;"></td>
+	<td style="text-align:left;">deny</td>
+</tr>
+</tbody>
+</table>
+<p>The above table identifies two interfaces: “1” refers to the external interface (connection to the Internet) and “0” refers to the internal interface (connection to our local area network). Note the addition of rules 0 and 5. Rule 0 instructs the packet filter to drop any packets coming from the Internet whose source address is that of the local network. This prevents IP masquerading, where an external packet is disguised to look like an internal one. Rule 5 allows any packet from the internal network to be routed to the external network.</p>
+
+<p>We may set filters to block any connections from certain systems or block access to all “dangerous services” such as tftp, X windows, rpc, r-commands (rlogin, rsh, rcp).</p>
+
+<p>One problem with the blind filtering provided by screening routers is that it is done with no context – each packet is examined on its own with no regard to previous packets. Without maintaining state, a router cannot tell, for example, whether a return packet is in response to an established connection. For instance, if you establish a connection to a mail server, it should be able to talk back to you over the address and port that matches the original port. A simple packet filter would simply have to keep all ports open in the outbound direction. In other cases, we might want to block tcp data packets until a valid tcp connection has been established. Again, the packet filter would need to maintain state to know that a connection has been established between two endpoints. Finally, as a more complex example, ftp has a client connect to the server (on port 21) but any data transfers require that the server establish another connection back to the client. If we had a “smart” packet filter, it could expect and allow the secondary connection only if the first one has been accepted. Packet filters that can keep track of connection state and make decisions based upon it are called stateful packet filters. </p>
+
+<p>A screening router will generally sit between the internal and external network. It has an enormous responsibility. It needs to do routing as well as make filtering decisions. It is the only protection for the internal network: if its security fails or is compromised, the internal network is exposed. For this reason, the software that comprises the firewall should be simple (less code yields less bugs) and offer as few services as possible. It will not run network services, compilers, or have a lot of accounts. It will know the addresses of its routers on both the inside and outside and not issue queries for them. It will not allow packets to enter that appear as if they are from the internal network (masquerading; see rule 0 in the table on the previous page). For detailed information on firewalls and advice on installing them, take a look at Bill Cheswick and Steven Bellovin’s book Firewalls and Internet Security.</p>
+
+<h1 id="proxyservers">Proxy servers</h1>
+
+<p>A screening router (packet filter) can allow or deny access to a service, but it cannot protect operations within a service. These are known as protocol attacks. An example is trying to enter debug mode in sendmail or sending large amounts of bogus data trying to create a buffer overflow.</p>
+
+<p>Proxies are a set of specialized applications or server programs that run on a firewall host. This host is typically a dual-homed host. This means that the host has two network adapters: one interface on the internal network and another on the external network. This allows the host to know explicitly which packets are coming from the outside and not worry about forged source addresses. The dual-homed host on which the proxy service runs on is also a bastion host. This is a term for a machine where extra effort has been taken to make it highly secure because it is exposed to the Internet and is vulnerable to attack. Securing every machine on the system is difficult but certain machines, such as proxies, deserve the extra effort. A bastion host will not have many user accounts and will have only the minimal system installation needed to run services (no compilers). The less tools that intruders have to work with, the less damage they can do.</p>
+
+<p>Proxy programs take requests for Internet services (e.g. FTP) and forward them to the actual services. Proxies provide replacement connections and act as gateways for these services. Another term for a proxy is an appliaction-level gateway.</p>
+
+<p>Proxies sit between a user on the inside (internal network) and a service on the outside (Internet); see Figure 3. Ideally, proxies should be transparent and present the illusion that the user is dealing with a real server. Proxies are effective only in environments where direct communication is restricted between internal and external hosts. Dual-homed machines or packet filters can accomplish this. A proxy makes sure that the final server never gets packets that came from the Internet – those packets are picked up by the proxy; the final server only talks with the proxy. </p>
+
+<p>Proxies can provide stateful inspection of data. They can examine a session and have the ability to look at the data (content) on the session. In addition, a proxy can provide authentication facilities for applications that have weak or no authentication.</p>
+
+<p>As an example of content-specific filtering, consider SMTP mail filtering on Checkpoint Software Technologies’ Firewall&#8211;1™ product. It provides the following capabilities:</p>
+
+<ul>
+<li>mail address translation. The original From address of outgoing mail is rewritten to a generic address (to conceal internal network structure).</li>
+<li>redirect To addresses.</li>
+<li>drop mail originating from a given set of addresses.</li>
+<li>strip mime attachments of specific types.</li>
+<li>strip the Received information from outgoing mail (also to hide the internal structure).</li>
+<li>drop mail messages above a given size.</li>
+<li>perform anti-virus checks on incoming messages/attachments</li>
+<li>do not allow the application to connect to the ever-buggy sendmail inside the network. Instead, enqueue the messages locally into a cache on the firewall, and dequeue them onto sendmail.</li>
+</ul>
+
+<p>This particular product also has knowledge of other applications, such as telnet, ftp, rlogin, rsh, and http. It also allows support for a number of authentication schemes.</p>
+
+<h1 id="firewallarchitectures">Firewall architectures</h1>
+
+<h2 id="dual-homedhostarchitecture">Dual-homed host architecture</h2>
+
+<p>A dual-homed host architecture is built around a dual-homed host computer with at least two network interfaces. The ability to route between the two networks is disabled so that IP packets from one network (e.g., Internet) are not routed to the other (e.g., internal). See Figure 3.</p>
+
+<p>Services are provided by proxies or by having users log into the dual-homed host directly. Two problems with this architecture are that user accounts on the dual-homed host present significant security problems and that proxies may not be available for all services.</p>
+
+<h2 id="screenedhostarchitecture">Screened host architecture</h2>
+
+<p>A screened host architecture (Figure 4) provides services from a host attached to the internal network. Primary security is provided by packet filtering. Only certain connections are permitted (e.g., deliver email). Connections may also be disallowed from the outside to any internal hosts except for a bastion host running proxy services. The bastion host will be connected on the same internal network as other internal machines.</p>
+
+<h2 id="screenedsubnetarchitecture">Screened subnet architecture</h2>
+
+<p>We can add an extra layer of security to the screened host architecture by adding a perimeter network that further isolates the internal network. This perimeter network is known as a DMZ, or Demilitarized Zone (Figure 5).</p>
+
+<p>The reason for doing this is that bastion hosts are the most vulnerable machines on your network. They are most likely to be attacked because they can be attacked (they’re the only ones accepting any packets from the outside network). With a screened host architecture, there is no defense between the bastion host and other internal machines: should the bastion host be penetrated, the entire internal network is instantly vulnerable. By isolating the bastion host(s) on a perimeter network, you can reduce the impact of a break-in.</p>
+
+<p>The design of a screened subnet architecture consists of two screening routers:</p>
+
+<ul>
+<li>one sits between the perimeter network and the internal network</li>
+<li>the other sits between the perimeter network and the Internet</li>
+</ul>
+
+<p>An attacker would have to get through both routers to penetrate the internal network. There is no single vulnerable point that will compromise the internal network.</p>
+
+<p>It is also possible to create a layered series of perimeter networks between the outside world and the interior network. Less trusted (more vulnerable) services are placed onto perimeter networks, removed from the interior network.</p>
+
+<p>The two screening routers serve the following functions:</p>
+
+<p>Interior router (choke router)
+- protects the internal network from the Internet and DMZ. It performs most of the packet filtering for the firewall
+- allows selected services outbound from the internal network to the Internet (services that don’t go through proxies, such as telnet or ftp).
+- limits the services between a bastion host and the internal network. This reduces the number of machines that can be attacked from the bastion host if it is compromised.
+Exterior router (access router)
+- protects both the DMZ and the internal network from the Internet.
+- generally allows almost anything outbound from the DMZ (performing little packet filtering)
+- generally performs the same outbound rules as the interior router (allowing any internal packets to get out)
+- this router is often provided by the ISP and should have rules sufficient to protect the machines in the DMZ, disallow forged packets (which appear to come from the internal network), and allow access only to the services provided by the DMZ.</p>
+
+<p>To support proxies, the interior router should allow packets from the internal network if they are communicating with the bastion host. The exterior router should allow packets only from the bastion host to the outside.</p>
+
+<p>The basic principles of firewalling are:
+- It is easier to secure one or a few machines than a large number of machines on a LAN.
+- Focus effort on the bastion host(s) since only they are accessible from the external network.
+- All traffic between the outside and inside must pass through a firewall.
+- The internal (private) network should never see security attacks.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2017 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: October  2, 2017 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/9cbf3407-e64c-4dd9-b644-238d707b91b3"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

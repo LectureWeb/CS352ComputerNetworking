@@ -1,0 +1,536 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Distributed Transactions </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/small-logo.png" alt="pk.org" name="logo" width="97" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru416"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../index.html"> Rutgers CS 417 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/transactions.html"> Distributed Transactions </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Distributed Transactions </h1>
+<h2> Two-phase commit </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> October 2007 </p>
+</div>
+
+<h1> Introduction </h1>
+
+<p>
+We've looked at a number of low level techniques that can
+be used for managing synchronization in a distributed environment:
+algorithms for mutual exclusion and critical section management.
+In addition (and we'll look at these later), we can have algorithms
+for deadlock resolution and crash recovery. 
+Much as remote procedure calls allowed us to concentrate on the
+functionality of a program and express it in a more natural way
+than sends and receives, we crave a higher level of abstraction
+in dealing with issues of synchronization. This brings us to the
+topic of <b>atomic transactions</b> (also known colloquially simply
+as <i>transactions</i>).
+</p>
+
+<p>
+In transacting business, all parties involved may have to go through
+a number of steps in negotiating a contract but the end result of
+the transaction won't be <i>committed</i> until both parties sign on
+the dotted line.  If even one of the parties reconsiders and <i>
+aborts</i>, the contract will be forgotten and life goes on as before.
+</p>
+
+<p>
+Consider, for example, the purchase of a house.
+You express your interest in purchasing a house by making an offer
+(and possibly putting some money down with a trusted party). At that
+point, you have not bought the house, but you have entered the
+transaction of purchasing a house. You may have things to do
+(such as getting a mortgage and inspection) and the seller may have
+things to do (such as fixing up certain flaws).  If something goes
+wrong (you can't get a mortgage, the seller won't fix the heating
+system, you find the house is sitting on a fault line, the seller
+won't remove the black velvet wallpaper, ...), then the transaction
+is cancelled (<i>aborted</i>) and both parties go back to life as
+before: you look for another house and the seller remains in the
+house, possibly still trying to sell it.  If, however, the 
+transaction is not aborted and both parties sign the contract on
+the closing day, it is made permanent. The deed is signed over and
+you own the house. If the seller changes her mind at this point,
+she'll have to try to buy back the house. If you change your mind,
+you'll have to sell the house.
+</p>
+
+<p>
+The concept of a transaction in the realm of computing is
+quite similar. One process announces that it's beginning a transaction
+with one or more processes. Certain actions take place. When <i>all</i>
+processes <b>commit</b>, the results are permanent. Until they
+do so, any process may <b>abort</b> (if something fails, for example).
+In that case, the state of computing reverts to the state before
+the transaction began: all side effects are gone. A transaction has
+an <i>all or nothing</i> property.
+</p>
+
+<p>
+The origins of transactions in computing date back to the days
+of batch jobs scheduled to processes tapes. A days worth of "transactions"
+would be logged on a tape. At the end of the day, a merge job would
+be run with the original database tape and the transactions tape
+as inputs, producing a new tape with all the transactions applied.
+If anything went wrong, the original database tape was unharmed.
+If the merge succeeded, then the original tapes could be reused.
+</p>
+
+<h1> Transaction model </h1>
+
+<p>
+A process that wishes to use transactions must be aware of certain
+<b>primitives</b> associated with them. These primitives are:
+</p>
+<ol>
+<li>	<i>begin transaction</i> - mark the start
+<li>	<i>end transaction</i> - mark the end; try to commit
+<li>	<i>abort transaction</i> - kill transaction, restore old values
+<li>	<i>read</i> data from object(file), <i>write</i> data to object(file).
+</ol>
+<p>
+In addition, ordinary statements, procedure calls, etc. are allowed in
+a transaction.
+</p>
+<p>
+To get a flavor for transactions, consider booking a flight from
+Newark, New Jersey to Ridgecrest, California. The destination requires
+us to land at Inyokern airport, and non-stop flights are not available:
+</p>
+<blockquote><pre>
+<u>transaction begin</u>
+1. reserve a seat for Newark to Denver (EWK&rarr;DEN)
+2. reserve a seat for Denver to Los Angeles (DEN&rarr;LAX)
+3. reserve a seat for Los Angeles to Inyokern (LAX&rarr;IYK)
+<u>transaction end</u>
+</pre></blockquote>
+<p>
+Suppose there are no seats available on the LAX&rarr;IYK leg
+of the journey. In this case, the transaction is aborted, reservations
+for (1) and (2) are undone, and the system reverts to the state before
+the reservation was made.
+</p>
+
+<h1> Properties of transactions </h1>
+
+<p>
+The properties of transactions are summarized with the acronym <b>ACID</b>,
+which stands for <b>A</b>tomic, <b>C</b>onsistent, <b>I</b>solated, and
+<b>D</b>urable.
+</p>
+<dl>
+<dt>	<u><b>Atomic</b></u>
+	<dd> either an entire transaction happens completely or not at all. If
+	the transaction does happen, it happens as a single <i>indivisible</i>
+	action. Other processes cannot see intermediate results.
+	For example, suppose we have a file that is 100 bytes long and a transaction
+	begins appending to it. If other processes read the file, they only see
+	the 100 bytes. At the end of the transaction, the file <i>instantly</i>
+	grows to its new size.
+<dt>	<u><b>Consistent</b></u>
+	<dd> If the system has certain invariants, they must hold after the
+	transaction (although they may be broken within the transaction).
+	For example, in some banking application, the invariant may be that
+	the amount of money before a transaction must equal the amount of money
+	after the transaction. Within the transaction, this invariant may be
+	violated but this is not visible outside the transaction.
+<dt>	<u><b>Isolated</b></u> (or <b>serializable</b>)
+	<dd> If two or more transactions are running at the same time, to each
+	of them and to others, the <i>final result</i> looks as though all transactions
+	ran sequentially in <i>some</i> order.
+	<p>
+	An order of running transactions is called a <b>schedule</b>. Orders may be
+	interleaved. If no interleaving is done and the transactions are run in
+	some sequential order, they are <b>serialized</b>.
+	<p>
+	Consider the following three (small) transactions:
+	<table border=0>
+	<td><pre>
+begin
+x=0
+x=x+1
+end</pre>
+	<td><pre>
+begin
+x=0
+x=x+2
+end</pre>
+	<td><pre>
+begin
+x=0
+x=x+3
+end</pre>
+	</table>
+	Some possible schedules are (with time flowing from left to right):
+	<table border=1>
+	<td> <i>schedule</i> <td colspan=6> <i>execution order</i>  <td> final x <td> legal?
+	<tr>
+	<td> schedule 1 <td> x=0 <td> x=x+1 <td> x=0 <td> x=x+2 <td> x=0 <td> x=x+3 <td> 3 <td> yes
+	<tr>
+	<td> schedule 1 <td> x=0 <td> x=0 <td> x=x+1 <td> x=x+2 <td> x=0 <td> x=x+3 <td> 3 <td> yes
+	<tr>
+	<td> schedule 1 <td> x=0 <td> x=0 <td> x=x+1 <td> x=0 <td> x=x+2 <td> x=x+3 <td> 5 <td> NO
+	</table>
+<dt>	<u><b>Durable</b></u>
+	<dd> Once a transaction <u>commits</u>, the results are made <u>permanent</u>.
+	No failure after a commit can undo results or cause them to get lost. [Conversely,
+	the results are <i>not</i> permanent until a transaction commits.]
+</dl>
+
+<h1> Nested transactions </h1>
+
+<p>
+Transactions may themselves contain subtransactions (nested transactions). A top-level transaction
+may fork off children that run in parallel with each other. Any or all of these may execute 
+subtransactions. 
+</p>
+
+<p>
+The problem with this is that the subtransactions may commit but, later in time, the parent may
+abort.  Now we find ourselves having to undo the committed transactions.  The level of nesting
+(and hence the level of undoing) may be arbitrarily deep.  For this to work, conceptually,
+each subtransaction must be given a <i>private copy of every object</i> it may manipulate.
+On commit, the private copy displaces its parent's universe (which may be a private copy of
+that parent's parent).
+</p>
+
+<h1> Implementation </h1>
+
+<p>
+We cannot just allow a transaction to update the objects (files, DB records, et cetera)
+that it uses. The transactions won't be atomic in that case.  One way of supporting this
+is by providing a <b>private workspace</b>. When a process starts a transaction, it's
+given a private workspace containing all the objects to which it has access.
+On a commit, the private workspace becomes the real workspace.
+Clearly this is an expensive proposition. It requires us to copy everything that
+the transaction may modify (every file, for example).  However, it's not as bleak
+as it looks. A number of optimizations can make this a feasible solution.
+</p>
+
+<p>
+Suppose that a process (transaction) reads a file but doesn't modify it. In
+that case it doesn't need a copy.  The private workspace can be empty except that
+it contains a pointer back to the parent's workspace.  How about writing a
+file?  On an open, don't copy the file to the private workspace but just copy
+the index (information of where the file's data is stored; a UNIX inode, for example).
+The file is then read in the usual way. When a block is modified, a local copy
+is made and the address for the copied block is inserted into the index. New
+blocks (appends) work this way too.  Privately allocated blocks are called
+<b>shadow blocks</b>.
+</p>
+
+<p>
+If this transaction was to abort, the private blocks  go back on the free list
+and the private space is cleaned up. Should the transaction commit, the private
+indices are moved into the parent's workspace (atomically). Any parent blocks
+that would be overwritten are freed.
+</p>
+
+<p>
+Another mechanism for ensuring that transactions can be undone (and possibly redone)
+is the use of a <b>write-ahead log</b>, also known as an <b>intentions list</b>.
+With this system, objects are modified in place (proper locking should be observed
+if other processes are to access these objects). Before any data (e.g. block, memory
+page) is changed, a record is written to the write-ahead log in <u>stable storage</u>.
+The record identifies the transaction (with an ID number), the block or page modified,
+and the old and new values.
+</p>
+
+<p>
+If the transaction succeeds (i.e., commits), a commit record is written to the log.
+If the transaction aborts, the log is used to back up to the original state (this
+is called a <b>rollback</b>. The write-ahead log can also be played forward for
+crash recovery (this becomes useful in the two-phase commit protocol, which is
+discussed next).  A term associated with the write-ahead log was <b>stable storage</b>.
+This is intended to be a data repository that can survive system crashes. After
+a datum is written to stable storage, it is retrievable even if the system crashes
+immediately after the write.  A disk is suitable for stable storage, but it is
+important that any writes are immediately flushed to the disk and not linger in
+the memory (unstable) buffer cache.
+</p>
+
+<h1>The two-phase commit protocol </h1> (Gray, 1978)
+
+<p>
+In a distributed system, a transaction may involve multiple
+processes on multiple machines.  Even in this environment, we
+still need to preserve the properties of transactions and
+achieve an atomic commit (either all processes involved in
+the transaction commit or else all of them will abort the
+transaction - it will be unacceptable to have some commit and
+some abort).  A protocol that achieves this atomic commit
+is the <b>two-phase commit protocol</b>.
+</p>
+
+<p>
+In implementing this protocol, we assume that one process will function
+as the coordinator and the rest as cohorts (the coordinator may be the
+one that initiated the transaction, but that's not necessary). We further
+assume that there is stable storage and a write-ahead log at each site.
+Furthermore, we assume that no machine involved crashes forever.
+</p>
+
+<p>
+The protocol works as follows (the coordinator is ready to
+commit and needs to ensure that everyone else will do so as well):
+</p>
+<blockquote>
+    <table frame=box border=2 frame=border>
+	<td> <i> phase </i> <td> <i>coordinator</i> </td> <td> <i>cohort</i> </td> 
+	<tr>
+	<td align=center valign=center rowspan=4> 1 <br> <i>request</i> </td>
+	    <td> write <i>prepare to commit</i> message to the log </td>
+		<td> work on transaction; when done, wait for message </td>
+	<tr>
+	    <td> send <i>prepare to commit</i> message </td>
+		<td> </td>
+	<tr>
+	    <td rowspan=2> wait for reply </td>
+		<td> receive message. When transaction is ready to commit,
+		     write <i>agree to commit</i> (or <i>abort</i>) to log. </td>
+	<tr>
+	    
+		<td> send "agree" or "abort" reply </td>
+	<tr>
+	<td align=center valign=center rowspan=5> 2 <br> <i>commit</i> </td>
+	    <td> write <i>commit</i> message to the log. </td>
+		<td> <i>wait for commit message </i> </td>
+	<tr>
+	    <td> send <i>commit</i> (or <i>abort</i>) message </td>
+		<td> receive <i>commit</i> (or <i>abort</i>) message</td>
+	<tr>
+	    <td rowspan=2> wait for <i><b>all</b></i> cohorts to respond </td>
+		<td> if a <i>commit</i> was received, write "commit"
+		     to the log, release all locks & resources, update
+		     databases. <br>
+		     if an <i>abort</i> was received, undo all changes. </td>
+	<tr>
+		<td> send <i>done</i> message. </td>
+	<tr>
+	    <td> clean up all state. Done. </td>
+		<td> </td>
+	</tr>
+    </table>
+</blockquote>
+
+<p>
+What the two phase commit protocol does is this. In phase 1, the coordinator
+sends a request to commit to all the cohorts and waits for a reply from <i>all</i>
+of them.  The reply is either an agreement or an abort. Note that nobody
+has committed at this point. After the coordinator receives a reply from
+all cohorts, it knows that all transaction-relevant computation is finished
+so nothing more will happen to abort the transaction.  The transaction
+can now be committed or, in the case that at lease one of the parties
+could not complete its transaction, aborted.  The second phase is to wait
+for all cohorts to commit (or abort).  If aborting, an abort message is
+sent to everyone. The coordinator waits until <i>every</i> cohort responds
+with an acknowledgement.  If committing, a cohort receives a <i>commit</i>
+message, commits locally, and sends an acknowledgment back. All message deliveries
+are reliable (retransmits after time-out).
+</p>
+
+<p>
+No formal proof will be given here of the correctness of the two-phase protocol.
+Inspecting for correctness, it is readily apparent that if one cohort completes
+the transaction, <i>all</i> cohorts will complete if eventually. If a cohort
+is completing a transaction, it is because it received a <i>commit</i> message,
+which means that we're in the commit phase and <u>all</u> cohorts have
+agreed. This information is in permanent memory in case of a crash (that's
+why information is written to the log before a message is sent.  If any system
+crashes, it can replay its log to find its latest state (so it will know if it
+was ready to commit, for example). When the coordinator is completing, it is
+ensured that <i>every</i> cohort completes before the coordinator's data
+is erased(update).
+</p>
+
+<h1> some vocabulary </h1>
+
+<dl compact>
+<dt> <b>abort</b>
+<dd>	transaction will not complete (commit). All changes are undone
+	to the state before the transaction started.
+<dt> <b>commit</b>
+<dd>	action which indicates that the transaction has successfully
+	completed. All changes to the database, files, and objects
+	are made permanent.
+<dt> <b>commit protocol</b>
+<dd>	a fault-tolerant algorithm which ensures that all sides
+	in a distributed system either commit or abort a transaction
+	unanimously.
+<dt> <b>log</b>
+<dd>	a record of system activity recorded in sufficient detail so
+	that a previous state of a process can be restored.
+<dt> <b>redo</b>
+<dd>	given a log record, redo the action specified in the log.
+<dt> <b>stable storage</b>
+<dd>	permanent storage to which we can do atomic writes.
+<dt> <b>transaction</b>
+<dd>	an atomic action which is some computation that read and/or
+	changes the state of one or more data objects and appears
+	to take place indivisibly.
+<dt> <b>write-ahead log protocol</b>
+<dd>	a method in which operations done on objects may be undone	
+	after restarting a system.
+</dl>
+<p>
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2010 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.
+</p>
+<p> Last updated: August 23, 2010
+</p>
+<img class="stamp" src="../../../css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../../416/index.html"> Main course page </a> </li>
+	<li> <a href="../../../416/news.html"> News </a> </li>
+	<li> <a href="../../../416/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../../416/hw/index.html"> Homework </a> </li>
+	<li> <a href="../../../416/notes/index.html"> Documents </a> </li>
+	<li> <a href="../../../416/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../../416/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../../../416/about.html"> About the course </a> </li>
+	<li> <a href="../../../416/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../../416/things.html"> Things you need </a> </li>
+	<li> <a href="../../../416/policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../../../416/../417/index.html"> Main course page </a> </li>
+	<li> <a href="../../../416/../417/news.html"> News </a> </li>
+	<li> <a href="../../../416/../417/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../../416/../417/hw/index.html"> Homework </a> </li>
+	<li> <a href="../../../416/../417/notes/index.html"> Documents </a> </li>
+	<li> <a href="../../../416/../417/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../../416/../417/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../../416/../417/about.html"> About the course </a> </li>
+	<li> <a href="../../../416/../417/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../../416/../417/things.html"> Things you need </a> </li>
+	<li> <a href="../../../416/../417/policy.html"> Policy  </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> Belkin F1B0280-V Slimswitch data switch. This is a manual (knob) switch that switches among four DB25 connectors. I can't imagine why anyone would need this; perhaps for switching old printers. I never used it and can't remember how it ended up in my pile of junk.
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 Documents </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_cs">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../index.html"> Computing </a> 
+ 	<li> <a href="../rpc/index.html"> RPC Tutorial </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Introduction to programming with Sun/ONC RPC: step 5 </h1>
+</div>
+
+<table>
+<tr> <td> <a href="index.html">Step 1</a></td>
+<td> <a href="step2.html">Step 2</a></td>
+<td> <a href="step3.html">Step 3</a></td>
+<td> <a href="step4.html">Step 4</a></td>
+<td class="inverse"> <a href="step5.html">Step 5</a></td>
+<td> <a href="step6.html">Step 6</a></td></tr>
+</table>
+
+<h2>Step 5. Making the client functional </h2>
+
+<p>
+All we need now to get our program to work is to get the two
+numbers from the command line instead of using hard-coded
+values. In <tt>add_client.c</tt> we'll change the <i>main</i>
+function to accept three parameters: the server name, the
+first number, and the second number.  The numbers will be
+parsed into integers and passed to <i>add_prog_1</i>.
+</p>
+<p>
+Our main function used to look like:
+</p>
+
+<div class="codeblock-box">
+main(int argc, char *argv[])
+{
+        char *host;
+
+        if (argc &lt; 2) {
+                printf("usage:  %s server_host\n", argv[0]);
+                exit(1);                                    
+        }                                                   
+        host = argv[1]; 
+        add_prog_1(host);
+}                 
+</div>
+
+<p>
+It now looks like:
+</p>
+
+<div class="codeblock-box">
+int
+main(int argc, char *argv[])
+{
+        char *host;
+        int a, b;
+
+        if (argc != 4) {
+                printf ("usage: %s server_host num1 num2\n", argv[0]);
+                exit(1);
+        }
+        host = argv[1];
+        if ((a = atoi(argv[2])) == 0 && *argv[2] != '0') {
+                fprintf(stderr, "invalid value: %s\n", argv[2]);
+                exit(1);
+        }
+        if ((b = atoi(argv[3])) == 0 && *argv[3] != '0') {
+                fprintf(stderr, "invalid value: %s\n", argv[3]);
+                exit(1);
+        }
+        add_prog_1(host, a, b);
+}
+</div>
+
+<p>
+We change <i>add_prog_1</i> to accept two additional parameters:
+</p>
+
+<div class="codeblock-box">
+void
+add_prog_1(char *host, int a, int b)
+</div>
+
+<p>
+and set the parameters for the call to the remote procedure with:
+</p>
+
+<div class="codeblock-box">
+add_1_arg.a = a;
+add_1_arg.b = b;
+<font color="gray">result_1 = add_1(&add_1_arg, clnt);</font>
+</div>
+
+<p>
+Before compiling, add a <tt>#include &lt;stdio.h&gt;</tt> at the start
+of the file to define <i>stderr</i>, the file descriptor for the
+standard error output used by <i>stdio</i> functions (such as
+<i>printf</i>).
+</p>
+<p>
+The complete client looks like:
+</p>
+
+<div class="codeblock-box">
+#include "add.h"
+#include &lt;stdio.h&gt;
+
+void
+add_prog_1( char* host, int a, int b )
+{
+        CLIENT *clnt;
+        int  *result_1;
+        intpair  add_1_arg;
+        clnt = clnt_create(host, ADD_PROG, ADD_VERS, "udp");
+        if (clnt == NULL) {
+                clnt_pcreateerror(host);
+                exit(1);
+        }
+        add_1_arg.a = a;
+        add_1_arg.b = b;
+        result_1 = add_1(&amp;add_1_arg, clnt);
+        if (result_1 == NULL) {
+                clnt_perror(clnt, "call failed:");
+        }
+        else
+                print("return is %d\n", *result_1);
+        clnt_destroy( clnt );
+}
+
+int
+main(int argc, char *argv[])
+{
+        char *host;
+        int a, b;
+
+        if (argc != 4) {
+                printf ("usage: %s server_host num1 num2\n", argv[0]);
+                exit(1);
+        }
+        host = argv[1];
+        if ((a = atoi(argv[2])) == 0 && *argv[2] != '0') {
+                fprintf(stderr, "invalid value: %s\n", argv[2]);
+                exit(1);
+        }
+        if ((b = atoi(argv[3])) == 0 && *argv[3] != '0') {
+                fprintf(stderr, "invalid value: %s\n", argv[3]);
+                exit(1);
+        }
+        add_prog_1(host, a, b);
+}
+</div>
+
+<p>
+Compile (<i>make</i>) again, run the server, and run the client. For example:
+</p>
+
+<div class="codeblock">
+./add_client localhost 5 7 
+</div>
+
+<p>
+should yield:
+</p>
+<div class="codeblock">
+result = 12
+</div>
+<p>
+The program now fully works!
+</p>
+
+<h3> <a href=step6.html>Continue to step 6</a></h3>
+<h3> <a href=step4.html>Back to step 4</a></h3>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2011 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.
+</p>
+<p> Last updated: January 21, 2011
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> <a href="#distributed_computing">Distributed Computing</a> </h2>
+	<h2> <a href="#computer_security">Computer Security</a> </h2>
+	<h2> <a href="#tutorials">Tutorials</a> </h2>
+	<ul>
+	<li> <a href="../rutgers/notes/make/index.html"> Makefiles </a> </li>
+	<li> <a href="../rutgers/notes/sockets/index.html"> Sockets </a> </li>
+	<li> <a href="../rpc/index.html"> RPC </a> </li>
+	</ul>
+	<h2> <a href="#miscellany">Miscellany</a> </h2>
+	<ul>
+	<li> <a href="../misc/Cstyle.pdf"> C programming style </a> </li>
+	<li> <a href="../misc/osx-space.html"> Freeing space on OS X </a> </li>
+	<li> <a href="../misc/osx-setup.html"> Configuring OS X  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<h1 class="first"> ***** </h1>
+<p> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh </p>
+<h2> Duis ultrices dolor sed erat. </h2>
+<p>Praesent ultrices, turpis vel feugiat tristique, mauris ligula pellentesque urna, quis interdum est enim mollis sem. </p>
+<p> Ellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent orci leo, suscipit vel, pretium eu, viverra at, eros. Morbi cursus. </p>
+</div>
+
+</div>
+</div>
+</body>
+</html>

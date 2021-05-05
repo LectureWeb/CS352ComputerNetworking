@@ -1,0 +1,394 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Raft distributed consensus</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Raft distributed consensus</h1>
+								<h2>State machine replication</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>February 2020/March 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Create a fault-tolerant distributed algorithm that enables a set of processes to agree on a sequence of events.</p>
+</blockquote>
+
+<h1 id="whydoweneedconsensus">Why do we need consensus?</h1>
+
+<p>Consensus, or distributed agreement, is a recurring problem in distributed systems design. It is useful for things such as mutual exclusion, where all processes agree on who has exclusive access to a resource, and leader election, where a group of processes has to decide which of them is in charge. Perhaps most importantly, consensus plays a pivotal role in building replicated state machines.</p>
+
+<h2 id="replicatedstatemachines">Replicated state machines</h2>
+
+<p>Systems fail and the main way that we address fault tolerance is by replication: having backup systems. If one computer fails, another can take over if it runs the same services and has access to the same data.</p>
+
+<p>Replicated state machines are a way to keep multiple systems in an identical state so that the system can withstand the failure of some of its members and continue to provide its service.</p>
+
+<p>A common use for replicated state machines is when distributed systems need a central coordinator. For instance, <a href="https://static.googleusercontent.com/media/research.google.com/en//archive/chubby-osdi06.pdf">Google Chubby</a> provides a centralized namespace and lock management service for the <a href="https://static.googleusercontent.com/media/research.google.com/en//archive/gfs-sosp2003.pdf">Google File System</a> as well as various other services. <a href="https://zookeeper.apache.org">Apache ZooKeeper</a> serves a similar purpose in coordinating various Apache services, including the <a href="https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-hdfs/HdfsDesign.html">Hadoop Distributed File System</a> (HDFS). Big data processing frameworks, such as MapReduce, Apache Spark, and Kafka also all rely on central coordinators.</p>
+
+<p>We refer to these systems as <em>state machines</em> because they are programs that store &#8220;state&#8221; &#8211; data that changes based on inputs received by the programs. Key-value pairs, database updates, and file updates are all common examples of this. Programs are deterministic, meaning that multiple identical copies of the program will all modify their data (&#8220;state&#8221;) in the same way when presented with the same input</p>
+
+<h2 id="replicatedlogs">Replicated logs</h2>
+
+<p>A replicated state machine is simply a program (state machine) that is replicated across multiple systems for fault tolerance. These systems are commonly implemented using a <strong>replicated log</strong>. A log is a list of commands that are received and stored by each system. This list of commands is read sequentially from the log and used as input by the program (state machine).</p>
+
+<p>For the state machines to remain synchronized, the commands in the log must be identical and in the same order across all replicas.</p>
+
+<figure>
+<img src="images/consensus-modules.png" alt="Consensus modules" />
+<figcaption>Consensus modules</figcaption>
+</figure>
+
+<p>The goal of the consensus algorithm is to keep these logs consistent. To do this, a <em>consensus module</em> runs on each system, receiving commands, adding them to its log, and talking with consensus modules on other servers to forward commands and get agreement on the order of requests. Once a consensus module is convinced that the log is properly replicated, the state machine on each system can process the log data.</p>
+
+<h2 id="consensusproblem">Consensus problem</h2>
+
+<p>The problem of consensus is getting a group of processes to <em>unanimously</em> agree on a <em>single</em> result. There are four requirements to such an algorithm:</p>
+
+<ol>
+<li><strong>Validity</strong>. The result must be a value that was submitted by at least one of the processes. The consensus algorithm cannot just make up a value.</li>
+<li><strong>Uniform agreement</strong>. All nodes must select the same value.</li>
+<li><strong>Integrity</strong>. A node can select only a single value. That is, a node cannot announce one outcome and later change its mind.</li>
+<li><strong>Termination</strong>. Also known as <strong>progress</strong>, every node must eventually reach a decision.</li>
+</ol>
+
+<p>The algorithm needs to work as long as a majority of processes are properly working and assumes:</p>
+
+<ul>
+<li>Some processors may fail. Processes operate in a fail-stop or fail-restart manner.</li>
+<li>The network is asynchronous and not reliable. Messages may be lost, duplicated, or received out of order.</li>
+<li>There is no Byzantine failure. If a message is delivered, it is not corrupted or malicious.</li>
+</ul>
+
+<h3 id="quorum">Quorum</h3>
+
+<p>The requirement that a <strong>majority</strong> of processes are operating and accessible over the network is an important part of consensus. This requirement makes it easier to handle network partitions. A <em>partition</em> is when a network gets segmented into two or more sub-networks that cannot communicate with each other. For instance, a cable connecting ethernet switches across two racks may get disconnected or connectivity to a remote data center may be lost.</p>
+
+<p>Should a partition occur, every group of processes may continue working on their own, not propagating data to the systems that they cannot reach and not getting inputs from systems that cannot reach them. As time goes on, these systems are no longer replicas and contain distinctly different data.</p>
+
+<p>In distributed systems, <strong>quorum</strong> refers to the minimum number of processes that need to be functioning for the entire system to continue operating. By requiring a majority, we can avoid the problem of trying to merge updates from multiple systems coherently by simply having any non-majority groups cease to function.</p>
+
+<p>The other benefit of a majority quorum is preserving the continuity of knowledge. Suppose we don&#8217;t have majority quorum and have an environment that comprises five processes. Three of these die and the system keeps processing requests. Later on, two of those dead systems came up again but the two that were working died. We kept working all this time but there systems that came up have no knowledge of what transpired during the time they were down and no ability to get that information. By insisting on a working majority, we can be sure that <em>there will be one member in common</em> with the old group that still holds the information that is needed to bring the restarted systems up to date.</p>
+
+<h1 id="introducingraft">Introducing Raft</h1>
+
+<p><a href="https://web.stanford.edu/~ouster/cgi-bin/papers/raft-atc14"><strong>Raft</strong></a> is a consensus algorithm designed for managing a replicated log. It was created at Stanford University in 2014 by Diego Ongaro and John Ousterhout. It was created as an alternative to <a href="https://lamport.azurewebsites.net/pubs/lamport-paxos.pdf">Paxos</a>. Paxos, created by Leslie Lamport, achieved fame and widespread use as a distributed consensus algorithm. It also achieved infamy for being difficult to grasp, tricky to implement, and requiring additional work to actually make it useful for applications such as replicated logs (this lead to something called multi-Paxos). Raft was designed with the goal of being equivalent and as efficient as Paxos for log replication but also easier to understand, implement, and validate.</p>
+
+<p>Raft separates the functions of leader election and log replication. Safety, keeping the logs consistent, is
+integrated into both of these functions.</p>
+
+<h2 id="theraftenvironment">The Raft environment</h2>
+
+<p>Raft is implemented on a group of servers, each of which hosts:</p>
+
+<ul>
+<li>The state machine (the service that the server provides).</li>
+<li>A log that contains inputs fed into the state machine.</li>
+<li>The Raft protocol.</li>
+</ul>
+
+<p>Typically, this will be a small number of systems, such as 3, 5, or 7.</p>
+
+<figure>
+<img src="images/raft-leader-followers.png#right" alt="" />
+<figcaption></figcaption>
+</figure>
+
+<p>One of the servers is <em>elected</em> to be the <strong>leader</strong>. Other servers function as <strong>followers</strong>. Clients send requests only to the leader. The leader forwards them to followers. Each of the servers stores receiver requests in a <strong>log</strong>.</p>
+
+<h2 id="serverstates">Server states</h2>
+
+<p>A server operates in one of three states:</p>
+
+<ol>
+<li><strong>Leader</strong>. The leader handles all client requests and responses. There is only one leader at a time.</li>
+<li><strong>Candidate</strong>. A server may become a candidate during the election phase. One leader will be chosen from one or more candidates. Those not selected will become followers.</li>
+<li><strong>Follower</strong>. The follower does not talk to clients. It responds to requests from leaders and candidates.</li>
+</ol>
+
+<h2 id="messages">Messages</h2>
+
+<p>The Raft protocol comprises two remote procedure calls (RPCs):</p>
+
+<dl>
+<dt><strong>RequestVotes</strong></dt>
+<dd> Used by a candidate during elections to try to get a majority vote.</dd>
+
+<dt><strong>AppendEntries</strong></dt>
+<dd> Used by leaders to communicate with followers to:
+
+<ul>
+<li>Send log entries (data from clients) to replicas.</li>
+<li>Send commit messages to replicas. That is, inform a follower that a majority of followers received the message.</li>
+<li>Send heartbeat messages. This is simply an empty message to indicate that the leader is still alive.</li>
+</ul></dd>
+</dl>
+
+<h2 id="terms">Terms</h2>
+
+<p>The timeline of operations in Raft is broken up into <em>terms</em>. Each <strong>term</strong> has a unique number and begins with a leader election phase. After a leader is elected, it propagates log entries to followers. If, at some point in time, a follower ceases to receive RPCs from the leader or a candidate, another election takes place and another term begins with an incremented term number.</p>
+
+<figure>
+<img src="images/raft-terms.png" alt="Terms" />
+<figcaption>Terms</figcaption>
+</figure>
+
+<p>If a server discovers that its current term number is smaller than that in a received message, it updates its term number to that in the received message. If a leader or candidate receives a message with a higher term number then it changes its state back to a <em>follower</em> state.</p>
+
+<h1 id="leaderelection">Leader election</h1>
+
+<p>All servers start up as <em>followers</em> and wait for a message from the leader. This is an <em>AppendEntries</em> RPC that serves as a heartbeat since the leader sends this message periodically even if there are no client entries to append.</p>
+
+<p>If a follower does not receive a message from a leader within a specific time interval, it becomes a <em>candidate</em> and starts an election to choose a new leader. To do this, it sends <em>RequestVotes</em> messages to all the other servers asking them for a vote. If it gets votes from a majority of servers then it becomes a <em>leader</em>.</p>
+
+<h2 id="leaderelection:timeouts">Leader election: timeouts</h2>
+
+<p>Each follower sets an <strong>election timeout</strong>. This is the maximum amount of time that a follower is willing to wait without receiving a message from a leader before it starts an election. Raft uses <strong>randomized election timouts</strong>. The election timeout is a random interval, typically in the range of 150&#8211;300ms and reduces the chance that multiple servers will start elections at the same time.</p>
+
+<p>When a follower reaches the election timeout without hearing from the leader, it starts an election to choose a new leader. The follower:</p>
+
+<ol>
+<li>Increments its current term</li>
+<li>Set itself to the <em>candidate</em> state.</li>
+<li>Sets a timer</li>
+<li>Sends <em>RequestVote</em> RPCs to all the other servers</li>
+</ol>
+
+<p>If a server receives a <em>RequestVote</em> message and hasn&#8217;t yet voted, it votes for that candidate and resets its election timeout timer.</p>
+
+<p>Once a follower receives votes from the majority of the group, including itself, it becomes the <em>leader</em> and starts sending out <em>AppendEntries</em> messages to the other servers at a <strong>heartbeat</strong> interval. Receiving votes from a majority of group members ensures that only one leader will be elected.</p>
+
+<p>The system continues operating like this until some follower stops receiving heartbeats, reaches an election timeout, and starts another election.</p>
+
+<p>It is possible that a candidate receives an <em>AppendEntries</em> message while it is waiting for its votes. This means that another server is already acting as the leader since only leaders can send <em>AppendEntries</em> messages. The candidate looks at the received message and makes the following decision:</p>
+
+<p>A. If the term number in the message is the same or greater than the candidate&#8217;s term then the candidate will recognize the sender as the legitimate leader and become a follower.</p>
+
+<p>B. If the term number in the message is smaller than the candidate&#8217;s term
+then the candidate rejects the request and continues with its election.</p>
+
+<h2 id="elections:splitvotes">Elections: Split votes</h2>
+
+<p>It&#8217;s possible that two or more nodes reached their election timeout at the approximately the same time and both became candidates and started elections with neither receiving a majority vote. If this situation arises, both of the nodes will time out waiting for a majority (election timeout) and each will start a new election.</p>
+
+<p>The same mechanism of randomized timeouts that was put in place to reduce the chance of concurrent elections ensures that this split vote process does not happen indefinitely. Having multiple nodes repeatedly pick the same election timeout after a split vote is extremely unlikely (and a sign of a horribly bad random number generator).</p>
+
+<h1 id="logreplication">Log Replication</h1>
+
+<p>Once a leader has been chosen, clients only communicate with that leader. Other servers will reject client requests and may respond with the identity of the current leader. Clients send requests to leaders. If the request is a query &#8211; something that will not change the state of the system &#8211; the server can simply respond to the client.</p>
+
+<p>If the request will result in a change to the system, the leader will add the request to its log and send an <em>AppendEntries</em> message to each of the followers (re-sending as needed to ensure reliable delivery).</p>
+
+<p>Each server maintains a log of requests. This is an ordered list where each entry contains:</p>
+
+<ol>
+<li>The client request (the command to be run by the server).</li>
+<li>The term number when the command was received by the leader (to detect inconsistencies)</li>
+<li>An integer that identifies the command&#8217;s position in the log.</li>
+</ol>
+
+<p>A log entry is considered <strong>committed</strong> when the message has been replicated to the followers. The leader can then execute the request and return any result to the client. Followers are also notified of committed log entries so that they can execute the same requests and keep their state machines in sync with the leader and each other. A leader notifies followers of committed messages in future <em>AppendEntries</em> messages.</p>
+
+<h2 id="logreplication:consistencychecks">Log replication: consistency checks</h2>
+
+<p>For replicated state machines to have the same state, they must read the same sequence of commands from the log. Raft enforces a <strong>log matching property</strong> that states if two entries in two logs have the same index number and term then the log entries will contain the same command and all previous entries will be identical among the two logs.</p>
+
+<p>When a server sends an <em>AppendEntries</em> message to a follower, the message contains:</p>
+
+<ul>
+<li>The client request (the command to be run by the server)</li>
+<li>The index number that identifies the command&#8217;s position in the log.</li>
+<li>The current term number.</li>
+<li>The index number and term number of the preceding entry in the log.</li>
+</ul>
+
+<p>When a follower receives an <em>AppendEntries</em> message, it does a consistency check:</p>
+
+<ol>
+<li><p>If the leader&#8217;s term (in the message) is less than the follower&#8217;s term then reject the message &#8211; some old leader missed an election cycle.</p></li>
+<li><p>If a follower does not see the preceding index and term number in its log then it rejects the message</p></li>
+<li><p>If the log contains a conflicting entry at that index &#8211; a different term number, delete the entry and all following entries from the log.</p></li>
+</ol>
+
+<p>If all these consistency checks pass then the follower will add the entry to its log and acknowledge the message. This tells the leader that the follower received the message and also validated that its log is identical.</p>
+
+<p>When a log entry has been accepted by a majority of servers, it is considered <strong>committed</strong>. The leader can execute the log entry and inform followers to do the same.</p>
+
+<h2 id="logreplication:makinglogsconsistent">Log replication: making logs consistent</h2>
+
+<p>Normally, we expect that the logs will remain consistently replicated across all servers. Sometimes, however, logs may be in an inconsistent state because a leader died before it was able to replicate its entries to all followers or because followers crashed and restarted.</p>
+
+<p>The leader is responsible for bringing a follower&#8217;s log up to date if inconsistencies are detected. It does this by finding out the latest log entry in common between the leader&#8217;s and follower&#8217;s log (the <strong>log matching property</strong> discussed earlier).</p>
+
+<p>A leader tracks the index of the next log entry that will be sent to each follower (Raft calls this <code>nextIndex</code>). Initially, and in normal operation, this will be the very latest index in the log. If a follower rejects an <em>AppendEntries</em> message, the leader decrements the value of <code>nextIndex</code> for that follower and sends an <em>AppendEntries</em> RPC for the previous entry. If that is rejected as well, the leader decrements <code>nextIndex</code> again and keeps doing so until it sends the follower a message with an index entry that matches the follower&#8217;s. At this point the logs match and the leader can send subsequent entries to synchronize the log and make it consistent.</p>
+
+<p>This technique of going back in the log to find a consistent point means that Raft does not require any special procedures to be taken to restore a log when a system restarts.</p>
+
+<h1 id="elections:ensuringsafety">Elections: ensuring safety</h1>
+
+<p>During the voting phase, a candidate cannot win an election if its log does not contain all committed entries. Because a candidate needs to contact a majority of servers to win the election, every committed entry in its log must be present in at least one of the servers (an entry doesn&#8217;t get committed until the majority of servers at that time accepted it).</p>
+
+<p>To enforce this condition, the election process has another decision point. The <em>RequestVotes</em> RPC sends information about the log length and the term of the latest log entry. It applies the following logic:</p>
+
+<style type="text/css">
+    ol { list-style-type: upper-alpha; }
+</style>
+
+<ol>
+<li><p>If a server receives a <em>RequestVotes</em> message and the candidate has an earlier term then the server will reject the vote.</p></li>
+<li><p>If the term numbers are the same but the log length of a candidate is shorter than that of the server that receives the message, the server will reject the vote.</p></li>
+</ol>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><p>Diego Ongaro and John Ousterhout, <a href="https://www.usenix.org/system/files/conference/atc14/atc14-paper-ongaro.pdf">In Search of an Understandable Consensus Algorithm</a>, 2014 USENIX Annual Technical Conference, June 2014, pp. 305&#8211;319</p></li>
+<li><p>Presentation video: Diego Ongaro and John Ousterhout, <a href="https://www.usenix.org/node/184041">In Search of an Understandable Consensus Algorithm</a>, 2014 USENIX Annual Technical Conference, June 2014.</p></li>
+<li><p>Video: <a href="https://www.youtube.com/watch?v=vYp4LYbnnW8">Designing for Understandability: The Raft Consensus Algorithm</a>, John Ousterhout, August 29, 2016.</p></li>
+<li><p>Brian Curran, <a href="https://blockonomi.com/paxos-raft-consensus-protocols/">What are the Paxos &amp; Raft Consensus Protocols? Complete Beginner’s Guide</a>, Blockonomi, November 14, 2018.</p></li>
+<li><p>Leslie Lamport, <a href="https://lamport.azurewebsites.net/pubs/lamport-paxos.pdf">The Part-Time Parliament</a>, August 2000. <em>This is the original Paxos Paper</em>.</p></li>
+<li><p>Leslie Lamport, <a href="https://lamport.azurewebsites.net/pubs/paxos-simple.pdf">Paxos Made Simple</a>, November 2001.</p></li>
+<li><p>David Mazi&egrave;res, <a href="https://www.scs.stanford.edu/~dm/home/papers/paxos.pdf">Paxos Made Practical</a>, Stanford University, 2007</p></li>
+<li><p><a href="https://raft.github.io">The Raft Consensus Algorithm</a>, Project page @ github: RaftScope visualization and lots of links to papers, videos, and implementations.</p></li>
+<li><p>Parikshit Hooda, <a href="https://www.geeksforgeeks.org/raft-consensus-algorithm/">Raft Consensus Algorithm</a>, GeeksforGeeks, 2018</p></li>
+</ul>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

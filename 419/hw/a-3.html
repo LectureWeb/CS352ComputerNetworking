@@ -1,0 +1,476 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Assignment 3 (Project 1)</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css?v=1.1"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Assignment 3 (Project 1)</h1>
+								<h2></h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>September 16, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<div class="boldbox"> Deadline: Wednesday September 30, 2020 11:59pm </div>
+
+								<p>See the <a href="a-3-faq.html">FAQ</a></p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>Access control mechanisms in operating systems have evolved over the years to include access control lists as well as a variety of mandatory access control (MAC) mechanisms, including multi-level security, integrity levels, type enforcement, and limited forms of role-based access control.</p>
+
+<p>An operating system, however, can only deal with the users and resources it knows about. It manages access between subjects (users) and objects (resources provided by the system, such as files and devices). There&#8217;s an underlying assumption that these subjects (users) have accounts on the system and the objects are known to the system.</p>
+
+<p>For many applications, however, this is not the case. Applications may run as services that are launched by a specific user. These services, in turn, interact with users who may very well not have accounts on the system. For instance, you can log onto eBay and interact with it but you don&#8217;t have an account on any of the systems that provide the eBay&#8217;s service. Similarly, objects may be entities that are also unknown to the operating system, such as fields or tables in a database or media streams.</p>
+
+<p>This is a problem that affects many environments. Services often have to put together their own solutions to manage their user accounts and access permissions (authorizations). To address this, Google recently built <a href="https://www.usenix.org/system/files/atc19-pang.pdf">Zanzibar: Google’s Consistent, Global Authorization System</a>. This provides a consistent, large-scale service for managing access control policies that any application can use. Google uses this for services that include Calendar, Cloud, Drive, Maps, Photos, and YouTube.</p>
+
+<h1 id="yourassignment">Your Assignment</h1>
+
+<p>Your assignment is to design and implement an authentication and access control (authorization) library that can be used by services that need to rely on their own set of users rather than those who have accounts on the computer.</p>
+
+<p>The access control system that you design will support:</p>
+<dl>
+<dt>Users</dt>
+<dd>A collection of users and passwords that is used for authenticating users and for tracking members of domains (user groups). For example</dd>
+
+<dd>{ &#8220;anika&#8221;, &#8220;password&#8221; }, { &#8220;fang&#8221;, &#8220;123456&#8221;}, { &#8220;liam&#8221;, &#8220;abc123&#8221; }, &#8230;</dd>
+
+<dt>Domains</dt>
+<dd>A named collection of zero or more users. For example,</dd>
+
+<dd><code>admins = { &quot;anika&quot;, &quot;arun&quot;, &quot;wei&quot;, &quot;yash&quot; }</code></dd>
+
+<dd><code>premium_subscribers = { &quot;fang&quot;, &quot;noah&quot;, &quot;riya&quot; }</code></dd>
+
+<dd><code>normal_subscribers = { &quot;liam&quot;, &quot;ravi&quot;, &quot;olivia&quot; }</code></dd>
+
+<dt>Types</dt>
+<dd>A named collection of zero or more objects. Objects are any strings that will have meaning to the application. For example, they might be file names, directory names, subscribed features, media streams, etc. For example,</dd>
+
+<dd><code>premium_content = { &quot;hbo&quot;, &quot;showtime&quot;, &quot;disney&quot; }</code></dd>
+
+<dd><code>normal_content = { &quot;cbs&quot;, &quot;nbc&quot;, &quot;fox&quot;, &quot;abc&quot;, &quot;wor&quot;, &quot;pix&quot;, &quot;pbs&quot; }</code></dd>
+
+<dt>Access permissions</dt>
+<dd>A set of access rights that defines operations that <strong>domains</strong> can perform on <strong>types</strong>. For example,</dd>
+
+<dd><code>&quot;view&quot;: (premium_user, premium_content)</code></dd>
+
+<dd><code>&quot;delete&quot;: (&quot;admins&quot;, normal_content)</code></dd>
+
+<dd><code>&quot;delete&quot;: (&quot;admins&quot;, premium_content)</code></dd>
+
+<dd>The access rights are meaningful only for the application that is making use of this service. That is, <em>view</em> and <em>delete</em> in these examples are arbitrary strings. Note that the <em>delete</em> operation does not specify any objects but rather just an operation that those in the user group <em>domains</em> may perform.</dd>
+</dl>
+
+
+<p>This system is similar to SELinux&#8217;s (Security Enhanced Linux) type enforcement system.</p>
+
+<p>The above examples are conceptual. It is up to you to decide what storage structures are the most convenient to implement.</p>
+
+<h1 id="groups">Groups</h1>
+
+<p>This is an individual assignment. You may not collaborate in your development of this project.</p>
+
+<h1 id="languages">Languages</h1>
+
+<p>You may write this assignment in C, C++, Go, Java, or Python.</p>
+
+<h1 id="environment">Environment</h1>
+
+<p>Your submissions will be tested on Rutgers iLab Linux systems. You can develop this on any
+other system but you are responsible for making sure that it will work on the iLab systems.</p>
+
+<h1 id="specifications">Specifications</h1>
+
+<p>Your implementation will be one that runs locally rather than as a network service and can be incorporated within any application. For this assignment, you do not need to handle any concurrent operations, so you need not implement locking. </p>
+
+<p>Applications that use this service can be assumed to be trusted and trustworthy: they will not try to use the interfaces incorrectly or subvert the system in any way.</p>
+
+<p>User accounts and access permissions will be stored persistently in one or more files so that they can be accessed again when the application (or another program using the same authorization service) is run again.</p>
+
+<p>You will write a single driver program named <strong>portal</strong>.</p>
+
+<p>This program will take commands as parameters, each of which demonstrates a specific function of the interface. The program should be suitable for use and testing by shell scripts. This means should follow the defined interface, not prompt for user input, and not generate extraneous output.</p>
+
+<p>Note that the program should not prompt the user for any information or read data from the standard input.</p>
+
+<p>If the number of arguments is incorrect or if the command parameter is invalid, you should print a descriptive error message and exit.</p>
+
+<h2 id="api">API</h2>
+
+<p>This section describes the operations that you need to implement. It is up to you to define the appropriate return values, exceptions, and other details that you feel are needed for your design.</p>
+
+<p>Each of these functions and their parameters will be invoked from the main program and each of the parameters will be a single argument on the command line. For example,</p>
+
+<pre><code>portal AddUser paul &quot;monkey brains&quot;
+</code></pre>
+
+<p>Responses are either:</p>
+
+<ul>
+<li>A single string of <code>Success</code> to indicate a successful operation if there is no other output (i.e., a list of items) that needs to be presented</li>
+<li>A string of <code>Error:</code> with an optional message separated from the <code>Error:</code> string with a space to indicate what went wrong</li>
+<li>A list of items, one per line.</li>
+</ul>
+
+<h3 id="adduseruserpassword">AddUser(&#8220;user&#8221;, &#8220;password&#8221;)</h3>
+
+<p>Define a new user for the system along with the user&#8217;s password, both strings.</p>
+
+<p>The username cannot be an empty string. The password may be an empty string.</p>
+
+<p><strong>Test program</strong>:</p>
+
+<pre><code>portal AddUser myname mypassword
+</code></pre>
+
+<p>The program should return one of:</p>
+
+<ul>
+<li><code>Success</code></li>
+<li><code>Error: user exists</code> - if the user already exists.</li>
+<li><code>Error: username missing</code> - if the username is an empty string.</li>
+</ul>
+
+<h3 id="authenticateuserpassword">Authenticate(&#8220;user&#8221;, &#8220;password&#8221;)</h3>
+
+<p>Validate a user&#8217;s password by passing the username and password, both strings.</p>
+
+<p><strong>Test program</strong>:</p>
+
+<pre><code>portal Authenticate myname mypassword
+</code></pre>
+
+<p>The program should clearly report</p>
+
+<ul>
+<li><code>Success</code></li>
+<li><code>Error: no such user</code></li>
+<li><code>Error: bad password</code></li>
+</ul>
+
+<h3 id="setdomainuserdomain">SetDomain(&#8220;user&#8221;, &#8220;domain&#8221;)</h3>
+
+<p>Assign a user to a domain. Think of it as adding a user to a group. </p>
+
+<p>If the domain name does not exist, it is created. If a user does not exist, the function should return an error.</p>
+
+<p>A user may belong to multiple domains.</p>
+
+<p>The domain name must be a non-empty string.</p>
+
+<p><strong>Test program</strong>:</p>
+
+<pre><code>portal SetDomain user domain_name
+</code></pre>
+
+<p>The program should report</p>
+
+<ul>
+<li><code>Success</code></li>
+<li><code>Error: no such user</code> - if the user does not exist</li>
+<li><code>Error: missing domain</code> - if the domain name is an empty string</li>
+</ul>
+
+<h3 id="domaininfodomain">DomainInfo(&#8220;domain&#8221;)</h3>
+
+<p>List all the users in a domain.</p>
+
+<p>The group name must be a non-empty string.</p>
+
+<p><strong>Test program</strong>:</p>
+
+<pre><code>portal DomainInfo domain_name
+</code></pre>
+
+<p>The program should report</p>
+
+<ul>
+<li>List all the users in that domain, one per line</li>
+<li>Nothing if the domain does not exist or there are no users in a domain.</li>
+<li><code>Error: missing domain</code> - if the domain name is an empty string.</li>
+</ul>
+
+<p>Sample output:</p>
+
+<pre><code>alice
+bob
+charles
+david
+ellen
+</code></pre>
+
+<p>with no leading tabs or spaces. This output format fits into the Unix tools philosophy, which makes the output suitable for input in a pipeline of commands.</p>
+
+<h3 id="settypeobjectnametype">SetType(&#8220;objectname&#8221;, &#8220;type&#8221;)</h3>
+
+<p>Assign a type to an object. You can think of this as adding an object to a group of objects of the same type. </p>
+
+<p>If the type name does not exist, it is created.</p>
+
+<p>The object can be any non-null string. </p>
+
+<p><strong>Test program</strong>:</p>
+
+<pre><code>portal SetType object type_name
+</code></pre>
+
+<p>The program should report</p>
+
+<ul>
+<li>Success</li>
+<li>Failure if the object or the type names are empty strings.</li>
+</ul>
+
+<h3 id="typeinfotype">TypeInfo(&#8220;type&#8221;)</h3>
+
+<p>List all the objects that have a specific type, one per line</p>
+
+<p>The type name must be a non-empty string.</p>
+
+<p><strong>Test program</strong>:</p>
+
+<pre><code>portal TypeInfo type_name
+</code></pre>
+
+<p>The program should report</p>
+
+<ul>
+<li>List all the objects that have been assigned type_name with SetType.</li>
+<li>Nothing if the type does not exist or there are no objects associated with that type.</li>
+<li>Error if the type name is an empty string.</li>
+</ul>
+
+<p>Sample output:</p>
+
+<pre><code>alice_file
+bob_file
+charles_file
+david_file
+ellen_file
+</code></pre>
+
+<p>with no leading tabs or spaces. This output format fits into the Unix tools philosophy, which makes the output suitable for input in a pipeline of commands.</p>
+
+<h3 id="addaccessoperationdomain_nametype_name">AddAccess(&#8220;operation&#8221;, &#8220;domain_name&#8221;, &#8220;type_name&#8221;)</h3>
+
+<p>Define an access right: a string that defines an access permission of a domain to an object. The access permission can be an arbitrary string that makes sense to the service.</p>
+
+<p>The domain name and type name must be non-empty strings.</p>
+
+<p>If the domain name or type names do not exist then they will be created.</p>
+
+<p>This is the key function that builds the access control matrix of domains and types.</p>
+
+<p><strong>Test program</strong>:</p>
+
+<pre><code>portal AddAccess operation domain_name type_name
+</code></pre>
+
+<p>The program will accept three strings and report</p>
+
+<ul>
+<li><code>Success</code> - if the operation was added to the access control matrix</li>
+<li><code>Error: missing operation</code> - if the operation is null</li>
+<li><code>Error: missing domain</code> - if the domain is null</li>
+<li><code>Error: missing type</code> - if the type is null</li>
+</ul>
+
+<h3 id="canaccessoperationuserobject">CanAccess(&#8220;operation&#8221;, &#8220;user&#8221;, &#8220;object&#8221;)</h3>
+
+<p>Test whether a user can perform a specified operation on an object.</p>
+
+<p>The logic in this function in pseudocode is:</p>
+
+<pre><code>for d in domains(user)
+    for t in types(object)
+        if access[d][t] contains operation
+            return true
+return false
+</code></pre>
+
+<p><strong>Test program</strong>: </p>
+
+<pre><code>portal CanAccess operation user object
+</code></pre>
+
+<p>The program will check whether the user is allowed to perform the specified <em>operation</em> on the object. That means that there exists a valid <em>access</em> right for an <em>operation</em> in some (<em>domain</em>, <em>type</em>) where the user is in <em>domain</em> and the object is in the corresponding <em>type</em>.</p>
+
+<p>As with <em>AddAccess</em>, the program will accept three strings.</p>
+
+<p>Note that the parameters here are user names and object names, <em>not</em> user domains and object types.</p>
+
+<p>The program will return:</p>
+
+<ul>
+<li><code>Success</code> - if the access is permitted</li>
+<li><code>Error: access denied</code> - for all other cases</li>
+</ul>
+
+<h2 id="notesandassumptions">Notes and assumptions</h2>
+
+<p>Note that this is not a complete interface. It is, for example, notably missing operations to delete or change users, user groups, object groups, and permissions. It also has no support for wildcards or regular expression patterns.</p>
+
+<p>Design your program so that a user may be a member of multiple domains and an object may have multiple types associated with it. This means that you will need to check all appropriate access rights to see if a user is allowed access to an object.</p>
+
+<p>Because this is implemented as a program that accepts a single command at a time, you will need to save your results in one or more files after running each command. <strong>Saving and reading your lists and tables may be the most time-consuming part of designing your program</strong>.</p>
+
+<h2 id="hard-codedpaths">Hard-coded paths</h2>
+
+<p>Because the program will be run from other accounts, it is imperative that you <strong>do not</strong> include hard-coded full pathnames in your program (e.g., do not use a rooted pathname like &#8220;<code>/ilab/users/pxk/src/access/tables</code>&#8221;). You may store all your files in the current directory or a subdirectory (e.g., &#8220;<code>./tables/</code>&#8221;) so that cleanup will be easy.</p>
+
+<h1 id="whattosubmit">What to submit</h1>
+
+<p>Your submission will generate one program, named portal, that takes the following commands:
+<strong>AddUser</strong>, <strong>Authenticate</strong>, <strong>SetDomain</strong>, <strong>DomainInfo</strong>, <strong>SetType</strong>, <strong>TypeInfo</strong>, <strong>AddAccess</strong>, and <strong>CanAccess</strong>.</p>
+
+<h2 id="documentationandcomponents">Documentation and components</h2>
+
+<p>Documentation is crucial so that we don&#8217;t waste time trying to figure out how to compile and run your program. At a minimum, specify clearly:</p>
+
+<ol>
+<li>How to compile your programs (a build script or <strong>Makefile</strong> would be useful). There should be <strong>NO</strong> reliance on any IDE (e.g., eclipse) or third-party libraries (with the exception listed in the next section). Instructions should specify command-line commands only.</li>
+<li>Any setup that is needed, such as creating a subdirectory to hold your access permission files.</li>
+<li>Example test scripts that you used to validate the program, testing error cases as well as success cases.</li>
+</ol>
+
+<h2 id="code">Code</h2>
+
+<p>Submit only your documentation and source files (and Makefile, if you have one). <strong>DO NOT</strong> submit any compiled files (e.g., object files, Java <code>.class</code> files or executables). </p>
+
+<p>If you feel a need to do so, you may include third-party support <strong>only</strong> for serializing or parsing stored data. If the packages are not installed on Rutgers systems, you will need to submit the source components and make sure they are integrated into your build script.</p>
+
+<p>Make sure the instructions you submit to compile and run the programs makes sense. Try to follow them based on a clean download of what you submitted. Better yet, have a friend try to follow them. </p>
+
+<p>Note that there are over 120 students in this class. With a smaller class, we would be able to devote a few minutes to figuring out how to compile and run your program. With a class this size, you will need to make sure it is trivial to build your program and that it conforms to the interface.</p>
+
+							</section>
+							<footer class="main">
+								Last modified September 19, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:pxk@cs@@rutgers@@edu" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>
+	</body>
+</html>

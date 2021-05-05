@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 Documents </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../index.html"> Rutgers CS 417 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/rpc/index.html"> RPC Tutorial </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Introduction to programming with Sun/ONC RPC: step 2 </h1>
+</div>
+
+<h2>Step 2. Generate sample client and server code</h2>
+<p>
+In addition to generating files to support remote procedure calls,
+<i>rpcgen</i> also has options to generate template code for both
+the client and server. This makes it easy to make sure that you
+create the RPC handle properly and call the procedures correctly.
+It even allows you to generate a makefile.
+</p>
+<p>
+If we want </i>rpcgen</i> to generate everything, we can just
+run:
+</p>
+<div class="codeblock">
+rpcgen -a -C add.x
+</div>
+<p>
+This will create the client (<tt>add_client.c</tt>),
+the server (<tt>add_server.c</tt>), and the makefile
+(<tt>makefile.add</tt> or <tt>Makefile.add</tt>, depending
+on whether you are using SunOS or Linux; OS X will not create
+a makefile).
+</p>
+<p>
+If you want to generate only the client template code, run:
+</p>
+<div class="codeblock">
+rpcgen -Sc -C add.x &gt;add_client.c
+</div>
+<p>
+If you want to generate only the server function template code, run:
+</p>
+<div class="codeblock">
+rpcgen -Ss -C add.x &gt;add_server.c
+</div>
+<p>
+If you want to generate only the makefile, run:
+</p>
+<div class="codeblock">
+rpcgen -Sm -C add.x &gt;makefile.add
+</div>
+<p>
+Note that the previous command will not work on OS X. The -Sm option is
+not supported. 
+</p>
+<p>
+Now we can compile our code by running:
+</p>
+<div class="codeblock">
+make -f makefile.add <i>(or Makefile.add)</i>
+</div>
+<p>
+To cut down on typing, let us rename <tt>makefile.add</tt> to <tt>makefile</tt>.
+This will allow us to simply type <i>make</i> with no parameters to recompile
+since by default <i>make</i> looks for a file named <tt>makefile</tt> or
+<tt>Makefile</tt>.
+</p>
+<div class="codeblock">
+mv makefile.add makefile
+</div>
+<p>
+If you need to change the name of the compiler to gcc because the default, cc, is not
+present on your system, you'll need to add a line to the makefile (for example,
+before the <tt>CFLAGS=</tt> line):
+</p><div class="codeblock">
+CC=gcc
+</div>
+<p>
+If you're using OS X, you'll have to compile the files individually (see step 3)
+until you write a makefile.
+</p>
+<h3> <a href=step3.html>Continue to step 3</a></h3>
+<h3> <a href=index.html>Back to step 1</a></h3>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2017 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 23, 2017
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+        <h2> Tutorials </h2>
+        <ul>
+        <li> <a href="../../notes/sockets/index.html"> TCP Sockets tutorial </a> </li>
+        <li> <a href="../../notes/sockets/udp.html"> UDP Sockets tutorial </a> </li>
+        <li> <a href="../../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+        <li> <a href="../../notes/make/index.html"> Makefile tutorial </a> </li>
+        <li> <a href="../../notes/clocks/index.html"> Clocks tutorial </a> </li>
+        </ul>
+
+</div>
+
+<div id="sidebar2">
+
+<!--
+<h1 class="first"> Free Ph.D.! </h1>
+<p>
+Save time and money!
+Print your free PhD <a href="http://www.cbs.com/shows/the-late-show-with-stephen-colbert/news/1004741/stephen-colbert-s-totally-legitimate-online-phd-program/">here</a>.
+</p>
+<hr/>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

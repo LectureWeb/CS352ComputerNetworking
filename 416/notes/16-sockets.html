@@ -1,0 +1,983 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Sockets </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 416 </a> 
+ 	<li> <a href="../notes/index.html"> Documents </a> 
+ 	<li> <a href="../notes/16-sockets.html"> Sockets </a> 
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Sockets </h1>
+
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> Last update: April 20, 2012 </p>
+</div>
+
+<h1> Introduction </h1>
+<p>
+We have seen that data can sent and received between machines via IP. 
+We also saw that TCP and UDP were developed as connection-oriented
+and connectionless transport-layer protocols, respectively, over IP.
+Transport layer protocols allow applications to communicate with
+other applications.
+How then do we associate these TCP or UDP data streams with our applications?
+</p>
+<p>
+When we examined transport-layer communication, we saw that
+a server must define
+a transport address for a service and associate that address with
+the service. The client must be able to use this address in addition
+to the machine address to
+access the service.
+
+The most popular implementation of this concept is <strong>sockets</strong>. 
+They were developed by the University of California, Berkeley for
+providing inter-process communication for the 4.2 BSD variant of the UNIX
+operating system. Since then, the interface has become pervasive among practically
+ever operating system that supports networking,
+including the various versions of Linux, OS X, Windows,
+and a wide variety of embedded systems. 
+</p>
+<p>
+Sockets were designed as a 
+generalized IPC model with the following set of goals:
+</p>
+<ul>
+<li> Communication between processes should not depend on whether they are on the same machine
+<li> Efficiency: this should be an efficient layer on top of network communication facilities
+<li> Compatibility: processes that just read from a standard input file and write to a standard output file should continue to work in distributed environments
+<li> Must support different protocols and naming conventions (different "communication domains" or "address families")
+</ul>
+
+<p>
+The <strong>socket</strong> is an abstract object from which messages are sent and
+received, much like a file is an abstract object on which file data is read and
+written. It is created in a communications domain roughly similar
+to that of a file in a file system. Sockets exist only as
+long as they are referenced. A socket allows an application to
+request a particular style of communication (virtual circuit,
+datagram, message-based, in-order delivery, ...). Unrelated processes
+should be able to locate communication endpoints, so sockets need to
+be named. The name of a socket is something that is meaningful within the specific
+communications domain. For example, within the IP domain, a "name"
+is an IP address and port number.
+</p>
+
+<p>
+They achieve the goal of compatibility, a socket presents itself as a file
+descriptor. Once the right set of system calls have been executed to
+identify it and establish a connection, standard file system <em>read</em>
+and <em>write</em> system calls can be used on the socket, just like 
+they can on a file. 
+</p>
+
+<h1> Programming with sockets </h1>
+<p>
+There are several steps involved in creating a socket, locating the remote
+endpoint, and communicating over the socket.
+This section cannot cover
+the entire topic fully. Several of the references listed provide
+more complete information. On-line manual pages will provide you
+with the latest information on acceptable parameters and functions.
+The interface described here is the system call interface provided
+by the Berkeley family of operating systems (including OS X) and
+is generally extremely similar amongst
+all Unix systems (and many other operating systems).
+</p>
+
+<h2> 1. Create a socket </h2>
+<p>
+A socket is created with the socket system call:
+</p>
+<div class="codeblock">
+int s = <strong>socket</strong>(int domain, int type, int protocol)
+</div>
+<p class="nospace">
+All the parameters as well as the return value are integers.
+</p>
+<ul>
+<li>
+<em>domain</em>, or <em>address family</em>: communication domain in which the
+socket should be created. Some of address families are AF_INET (IP
+family), AF_UNIX (local channel, similar to pipes), AF_NS (Xerox
+Network Systems protocols).
+</li>
+<li>
+<em>type</em>: type of service. This is selected according to the
+properties required by the application: SOCK_STREAM (virtual circuit
+service), SOCK_DGRAM (datagram service), SOCK_RAW (direct IP service).
+Check with your address family to see whether a particular service
+is available.
+</li>
+<li>
+<em>protocol</em>: indicates a specific protocol to use in supporting
+the sockets operation. This is useful in cases where some families
+may have more than one protocol to support a given type of service.
+</li>
+</ul>
+
+<p>
+The return value from the <em>socket</em> system call is a file descriptor (a small integer).  The analogy
+of creating a socket is that of requesting a telephone line from
+the phone company.
+</p>
+<p>
+Creating a socket is conceptually similar to performing an <em>open</em>
+operation on a file with the important distinction that <em>open</em>
+creates a new reference to a possibly existing object whereas a <em>socket</em>
+creates a new instance of an object.
+</p>
+
+<h2> 2. Name a socket </h2>
+<p>
+When we talk about <em>naming</em> a socket, we are talking about assigning a
+transport address to the socket. This operation is called <strong>binding
+an address</strong>. The analogy is that of assigning a phone number to the
+line that you requested from the phone company in step 1 or that
+of assigning an address to a mailbox.
+</p>
+<p>
+You can explicitly assign an address or allow the system to assign
+one. The address is defined in a socket address structure. Applications
+find addresses of well-known services by looking up their names in
+a database (e.g., the file /etc/services). The system call for
+binding is:
+</p>
+<div class="codeblock">
+int error = <strong>bind</strong>(int s, const struct sockaddr *addr, socklen_t addrlen)
+</div>
+<p>
+where <em>s</em> is the socket descriptor obtained in step 1, <em>addr</em> is the
+address structure (<code>struct sockaddr *</code>) and <em>addrlen</em> is an integer
+containing the address length. One may wonder why don't we name the
+socket when we create it. The reason is that in some domains it may
+be useful to have a socket without a name. Not forcing a name on a
+socket will make the operation more efficient in those cases and remove confusion.
+Also, some communication domains may require additional information before binding (such as
+selecting a grade of service).
+</p>
+<p>
+As users, we might want names to be user-friendly, such as <em>Bob's print server</em>.
+We don't get that here. Sockets is a low-level interface that is designed to operate
+comfortably with the layers of abstraction provided by the networking stack. If a network
+allows user-friendly textual names then <em>bind</em> would let us use them. For TCP
+and UDP, however, <em>bind</em> refers to assigning an IP address and port number.
+</p>
+
+<h2> 3a. Accept connections (server-side operation) </h2>
+<p>
+For connection-based communication, the server has to first state
+its willingness to accept connections. This is done with the <em>listen</em>
+system call:
+</p>
+<div class="codeblock">
+	int error = <strong>listen</strong>(int s, int backlog)
+</div>
+
+<p>
+The <em>backlog</em> is an integer specifying the upper bound on
+the number of pending connections that should be queued for acceptance.
+After a <em>listen</em>, the socket <em>s</em> is set to manage the queue of connection
+requests; it will not be used for data exchange.
+</p>
+
+<p>
+Connections can now be accepted with the <em>accept</em> system
+call, which extracts the first connection request on the queue of
+pending connections. It creates a new socket with the same properties
+as the listening socket and allocates a new file descriptor for it.
+By default, socket operations are synchronous, or blocking, and
+accept will block until a connection is present on the queue. The
+syntax of accept is:
+</p>
+<div class="codeblock">
+struct sockaddr *clientaddr;
+socklen_t clientaddrlen = sizeof(struct sockaddr);
+int snew = accept(int s, clientaddr, &clientaddrlen);
+</div>
+
+<p>
+The <code>clientaddr</code> structure allows a server to obtain the
+client address. <em>accept</em> returns a file descriptor that is
+associated with a new socket. The address length field initially
+contains the size of the address structure and, on return, contains
+the actual size of the address. Communication takes place on this
+new socket. The original socket is used only for managing a queue of
+connection requests (you can, and often will, still listen for other
+requests on the original socket).
+</p>
+
+<p>
+None of this is needed for connectionless sockets. For those,
+<em>recvmsg</em> and <em>recvfrom</em> system calls were created that
+allow one to specify the address and port for incoming messages.
+</p>
+
+<h2> 3b. Connect (client-side operation) </h2>
+<p>
+For connection-based communication (TCP/IP), the client initiates a connection with the connect system call:
+</p>
+<div class="codeblock">
+int error = connect(int s, const struct sockaddr *serveraddr, socklen_t serveraddrlen)
+</div>
+
+<p>
+where <em>s</em> is the socket (type int) and <em>serveraddr</em>
+is a pointer to a structure containing the address of the server
+(<code>struct sockaddr *</code>). Since the structure may vary with different
+transports, connect also requires a parameter containing the size
+of this structure (<code>serveraddrlen</code>).
+</p>
+<p>
+This call can also be used for connectionless service. In this case,
+no connection is established but 
+the operating system will send datagrams and maintain an association
+between the socket and the remote address so that you don't have to 
+specify the address each time you send or receive a message.
+</p>
+
+<h2> 4. Exchange data </h2>
+<p>
+Data can now be exchanged with the regular file system <em>read</em> and
+<em>write</em> system calls using the socket descriptors. This is the
+most significant part about the desire for compatibility with file
+descriptors. After a connection has been established, the code can be 
+completely unaware of networking and simply treat the socket as a file
+input/output stream, no different than a user's terminal or a disk-based file.
+</p>
+
+<p>
+Additional system calls were added to support datagram service and 
+additional networking features. The <em>send</em>/<em>recv</em>
+calls are similar to <em>read</em>/<em>write</em>
+but support an extra <em>flags</em> parameter that lets one peek at incoming
+data and to send out-of-band data.
+The <em>sendto</em>/<em>recvfrom</em> system calls
+are similar to <em>send</em>/<em>recv</em> but allow callers to specify or receive
+addresses of the peer with whom they are communicating (most useful
+for connectionless sockets). Finally, <em>sendmsg</em>/<em>recvmsg</em> support a
+full IPC interface and allow access rights to be sent and received.
+Could this have been designed cleaner and simpler? Most likely. The point
+to remember is that the  <em>read</em>/<em>write</em> or <em>send</em>/<em>recv</em>
+calls must be used for connection-oriented communication and <em>sendto</em>/<em>recvfrom</em> or
+<em>sendmsg</em>/<em>recvmsg</em> must be used for connectionless communication.
+Also note that when you send data, it's possible
+that the other side may have to perform
+multiple reads to get results from a single write (because of
+fragmentation of packets) or vice versa (a client may perform two
+writes and the server may read the data via a single read). 
+</p>
+
+<h2> 5. Close the connection </h2>
+<p>
+The <em>shutdown</em> system call may be used to stop all further
+read and write operations on a socket:
+</p>
+<div class="codeblock">
+int shutdown(int socket, int how)
+</div>
+<p>
+Alternatively, the file system <em>close</em> system call can also be used to terminate
+all communications on a socket.
+<em>shutdown</em> offers more options with the <em>how</em> parameter, which can be
+set to:
+</p>
+<ul>
+<li> 0 (SHUT_RD): you can send but not receive data on this socket </li>
+<li> 1 (SHUT_WR): you can receive but not send more data on this socket </li>
+<li> 2 (SHUT_RDWR): you can neither send nor receive more data on this socket </li>
+</ul>
+
+<h2> Synchronous or asynchronous </h2>
+<p>
+Network communication, and file system access in general, system
+calls may operate in two modes: <em>synchronous</em> or <em>asynchronous</em>. In the
+synchronous mode, socket routines return only when the operation
+is complete. For example, <em>accept</em> returns only when a connection
+arrives. In the asynchronous mode, socket routines return immediately:
+system calls become non-blocking calls (e.g., <em>read</em> does not block).
+You can change the mode with the <em>fcntl</em> system call. For example,
+</p>
+<div class="codeblock">
+fcntl(s, F_SETFF, FNDELAY);
+</div>
+<p>
+sets the socket <em>s</em> to operate in asynchronous mode.
+</p>
+
+<h1> Sockets internals  </h1>
+
+<figure>
+<img width="400" height="269" src="images/16-sockets-logical.png"/>
+<figcaption>Figure 1. Logical upward flow of data from a device to a socket.</figcaption>
+</figure>
+<p>
+Sockets are how an operating system exposes its networking subsystem to applications.
+Figure 1 shows a logical flow of data through this subsystem (the BSD implementation is used
+as a guide here). The logical layers include the following:
+</p>
+<dl>
+<dt> Network Interface Layer (Network Device Driver)</dt>
+<dd>
+The network interface layer (link layer) is responsible for interfacing with network devices.
+It implements the network device driver that interfaces with the network device;
+for example, an ethernet driver interfacing with an ethernet transceiver on the computer.
+This layer responsible for performing packet encapsulation (wrapping packets within an ethernet
+packet, for instance) or decapsulation (stripping off an ethernet header). This layer corresponds
+to the link layer of the OSI reference model.
+A key difference between network devices and other devices is that they do 
+not appear in the file system (e.g., under <code>/dev</code>). The device itself
+cannot be
+accessed via <em>read</em>/<em>write</em> operations. The I/O interface
+to network devices is packet-based, not the arbitrary byte stream of character devices
+or the fixed-size blocks of block devices.
+</dd>
+
+<dt> Network Layer </dt>
+<dd>
+The network layer is responsible for the delivery of data between network devices and higher
+levels of the networking stack. It needs to be aware of packet routing and must be able to select
+the appropriate outbound interface. It corresponds to the network layer of the OSI reference model.
+</dd>
+
+<dt> Transport Layer </dt>
+<dd>
+The transport layer maintains an association between a socket
+and transport layer addressing. For instance, it needs to identify the socket that corresponds
+to a particular &lt;address, port&gt; tuple for incoming data and generate TCP and UDP headers
+with appropriate addresses and port numbers for outbound packets.
+</dd>
+
+<p>
+Data flows are asynchronous. Incoming packets are received by the network device and passed onto
+per-protocol queues. The operating system schedules a kernel thread to process operations in these
+network queues. Processing a queue item may place it into another protocol's queue until the
+transport-layer interface is known. At that time, the data is sent to a receive queue for the
+associated socket.
+Figure 2 illustrates the flow of a packet between applications and network interfaces.
+</p>
+
+<figure>
+<img width="600" height="363" src="images/16-packet-flow.png"/>
+<figcaption>
+Figure 2. Packet data flow in the operating system
+</figcaption>
+</figure>
+
+<hr/>
+
+<h2> System call interface </h2>
+<figure> <img width="391" height="248" src="images/16-net-stack.png"/>
+<figcaption>Figure 3. Network stack</figcaption>
+</figure>
+
+<p>
+Within the operating system (Linux is the example here, but others are similar), the implementation
+of the networking subsystem comprises five layers (figure 3).
+</p>
+
+<p>
+System calls provide the interface between application programs and the operating system. 
+To an application, a socket looks like a file descriptor; that is, a small integer. That
+integer is an index into a per-process table in the kernel that keeps track of a process' open files.
+There are two ways to access the networking interface via the system call interface.
+</p>
+<p>
+One method is via the several <strong>socket-specific system calls</strong> (<em>socket</em>, <em>bind</em>, <em>shutdown</em>, etc.).
+These calls are actually implemented as a single system call that take a parameter identifying the requested command
+(<em>sys_socketcall</em> defined in <code>socket.c</code>). The code in <em>sys_socketcall</em> directs the request
+to the appropriate function in the kernel. 
+</p>
+<p>
+The other method is via a <strong>file descriptor operation</strong>. That is, by a system calls that accept
+file descriptors as parameters (e.g., <em>read</em>, <em>write</em>, <em>close</em>, etc.). Since sockets
+were designed to be compatible with file descriptors, they reside along with file descriptors in the
+file descriptor table. Sockets are
+<em>not</em> implemented as a file system, however, and hence are not implemented under the Virtual File System (VFS).
+The distinction between a file and socket descriptor takes place just above the VFS layer.
+However, there is a direct parallel
+to the VFS structure in that a socket structure's <code>f_ops</code> field points to a set of functions that can be made
+on the socket. A socket acts as a queuing point for data that is being transmitted and received and has both
+send and receive queues associated with it. The queues contain high watermarks to avoid resource exhaustion.
+Only so much data can be queued before operations will block.
+</p>
+
+<h2> Generic network interface: sockets layer </h2>
+<p>
+All network communication takes place via a <strong>socket</strong>. 
+Each socket that a process creates refers to a unique 
+<strong>socket structure</strong> that
+keeps all the state
+of a socket, including the protocol and the operations that can be performed upon it.
+Similar to VFS for file systems, this layer provides common functions to support a variety of lower-level protocols (such
+as TCP, UDP, IP, raw ethernet, and other networks). 
+In Linux systems, this structure is defined in <code>include/net/sock.h</code> in the Linux kernel source.
+Protocol-specific information (e.g., data specific to TCP/IP and UDP/IP rather than generic operations
+to send or receive data) are kept in a separate structure called <strong>struct sock</strong> that
+is associated with the socket.
+</p>
+<p>
+A socket structure acts as a queueing point for data being sent from and received by the 
+process that interacts with the socket. Each socket has send and receive queues associated 
+with it which contain messages that the process wrote to the socket and messages that the
+process can read from the socket. Each of these messages point to a socket buffer that contains the data.
+</p>
+
+<h2> The socket buffer: <code>sk_buff</code> </h2>
+<p>
+The core component for managing the flow of a packet between the application and the device is a
+structure called <code>sk_buff</code>, or the <strong>socket buffer</strong>, which is
+defined in <code>include/linux/skbuff.h</code> in the Linux kernel.
+The socket buffer is a fixed place to store all the data related to a message (including various
+protocol headers) so that the kernel will not have to waste time copying parameters and packet
+data at each layer of the network stack. 
+
+<figure> <img width="400" height="129" src="images/16-sk_buff.png"/>
+<figcaption>Figure 4. Socket buffer (sk_buff)</figcaption>
+</figure>
+
+This is a kernel data structure 
+that contains the data packet, state, and control data encompassing multiple layers of the protocol
+stack. It contains fields that point to specific layers in the networking stack.
+For example, the <code>transport_header</code> contains transport-layer (layer 4; typically TCP or UDP)
+information; <code>network_header</code> contains network layer (layer 3; typically IP) information; and
+<code>mac_header</code> contains link layer (layer 2; typically ethernet) information.
+
+Packet data is never copied between the layers of the protocol stack; that would be too inefficient.
+Instead, a pointer to the socket buffer is moved among the various queues of the layers of the stack.
+In fact, packet data is copied only twice: once to move it from the user application into
+the socket buffer and a second time to move it from the socket buffer out to the network device
+(or vice versa). Where possible, the kernel would use DMA to move data between the
+socket buffer's memory and the network device.
+</p>
+<p>
+The socket buffer is created when network data arrives: either from a network device driver
+or from a user socket-based operation (<em>write</em>, <em>sendto</em>, <em>sendmsg</em> system calls).
+
+Each packet that is sent or received is associated with an <code>sk_buff</code> structure.
+The packet data is kept track of by the sk_buff and is identified by the pointer elements
+<code>data</code> and <code>tail</code> (start and end of data, respectively). The total allocated
+packet buffer is pointed to by the <code>head</code> and <code>end</code> elements. The reason for
+the two sets of pointers is to avoid reallocating and copying data to handle encapsulation.
+For instance, when we receive a TCP/IP packet from the ethernet interface, it is enveloped
+by an ethernet MAC header. Within it, we have the the IP packet. Within that, we have the
+TCP/IP packet. Within that, we have the data. Each layer of processing can adjust the
+<code>data</code> and <code>tail</code> elements to point to the reduced or increased packet that
+would be of interest to the next layer.
+</p>
+<p>
+Sk_buffs are organized as a doubly linked list, so it is easy to move an element from one
+list to another list. Each sk_buff also identifies the ultimate network device in
+a structure <code>net_device</code>. The <code>rx_dev</code> element points to the network device
+that received the packet. The <code>dev</code> element identifies the network device on which the
+buffer operates. This is often the same as <code>rx_dev</code> but, if a routing decision
+has been made to a different interface, this contains that outbound interface.
+</p>
+
+<h2> Network protocols </h2>
+<p>
+Network protocols comprise implementations of all the specific protocols available to the system
+(e.g., TCP, UDP). Each protocol or family of protocols is a module.
+As with device drivers and file systems, the module may be a part of the bootable kernel or
+may be loaded dynamically. Also like other modules, each module is initialized and registered with the
+system at start-up. For example, the <em>proto_register</em> function for the built-in
+IP family of protocols calls the the <em>inet_init</em> function to registers them with the kernel.
+The <em>proto_register</em> function adds the protocol to the active protocol list and optionally
+allocates caches and buffers (e.g., TCP needs buffers to store connection state).
+Additional protocols can be added by calling the kernel function <em>inet_register_proto_sw</em>.
+</p>
+<p>
+Each networking protocol has a structure
+called <strong>proto</strong> associated with it.
+The protocol structure is associated with an address family. An address family is a set of protocols.
+For example, the set of Internet Protocols is known as the Internet address family and specified 
+as <code>AF_INET</code> by the programmer when creating the socket.
+The <code>proto</code> structure contains pointers to protocol-specific implementations of operations that can
+be made by the sockets layer.
+These include basic operations such as
+<em>create a socket</em>, <em>establish a connection with a socket</em>, <em>close a socket</em>,
+<em>send a message</em>, <em>receive a message</em>, etc.
+</p>
+
+<h2> Abstract device interface </h2>
+<p>
+The abstract device interface is an abstract layer that provides higher-level
+software with a uniform interface to network devices.
+It also contains a common set of functions for low-level device drivers to use
+to interact with the higher-level protocol stack. 
+This layer is defined by a <code>net_device</code> structure.
+The actual network device driver is implemented underneath this layer.
+</p>
+
+<h3> Initialization </h3>
+<p> 
+The abstract interface contains registration and unregistration functions for
+the network device (<em>register_netdevice</em>, <em>unregister_netdevice</em>)
+and an initialization function .  The caller creates and populates a <code>net_device</code>
+structure and passes it for registration. During registration, the kernel calls
+the structure's <em>init</em> function to perform device-level initialization.
+</p>
+
+<h3> Sending </h3>
+<p>
+The sending capabilities of the abstract interface handle the sending of data
+in the <code>sk_buff</code> to the physical device. The layer's <em>dev_queue_xmit</em>
+function enqueues an <code>sk_buff</code> for transmission to the underlying driver. The device
+to which the data will be sent is defined in the <code>sk_buff</code>. The device structure
+contains a method called <em>hard_start_xmit</em>, which is the device driver's function
+for transmitting the data in the <code>sk_buff</code> to the network.
+</p>
+
+<h3> Receiving </h3>
+<p>
+When a network device receives a packet, it raises an interrupt. This interrupt is picket
+up by the kernel's interrupt handler and passed to 
+the device driver for that network device. The driver allocates a socket buffer
+(<code>sk_buff</code>) as well as memory for the packet data (to which
+the socket buffer will point), which includes the headers and data.
+<p>
+If the contents are an IP packet,
+the <code>sk_buff</code> is passed to the network layer with a call to 
+<em>netif_rx</em>, which causes the <code>sk_buff</code> to be placed
+on a queue for processing by the network layer (IP layer). It will
+be dequeued when the kernel thread calls <em>netif_rx_schedule</em>.
+</p>
+
+<h2> Network device drivers (data link layer) </h2>
+<p class="nospace">
+The lowest layer of the networking stack is the set of network device drivers that
+interact with the physical network. Examples are drivers for ethernet, 802.11b/g/n 
+wireless networks, and SLIP (serial line IP). Upon initialization, the driver
+allocates a <code>net_device</code> structure and initializes it with its
+device-specific functions:
+</p>
+<ul>
+<li>
+<strong>dev-&gt;hard_start_xmit</strong> defines how the upper layer should
+enqueue an <code>sk_buff</code> for transmission to the network. Typically,
+the packet is moved to a hardware queue and then transmitted.
+</li>
+<li>
+<strong>net_rx</strong> defines the function used to receive a packet
+from the hardware interface. 
+</ul>
+<p>
+The device driver module calls the kernel <em>register_netdevice</em> function
+to make the device available to the networking stack. Unlike block and
+character devices, network devices do not present themselves as named devices
+within the file system.
+</p>
+
+<h1> The path of a packet </h1>
+<p>
+To put this discussion back into perspective, let's follow the path of a packet in
+two directions: from an application to the network and from the network to the
+application.
+</p>
+
+<h2> Sending a message </h2>
+<dl>
+<dt> Write to a socket </dt>
+<dd> The application writes data to a socket. For a TCP/IP socket, this will be
+via the <em>write</em> system call.
+</dd>
+
+<dt> Socket calls the <em>send</em> function </dt>
+<dd> The socket calls the <em>send</em> function that is specific for the protocol 
+that was defined by the socket when it was created. Typically, this is AF_INET,
+for the Internet address family. The generic <em>send</em> function verifies the
+status of the socket and the protocol type. If valid, it then sends the request to the
+transport layer send function (e.g., TCP or UDP). 
+</dd>
+
+<dt> Transport layer: create an sk_buff</dt>
+<dd> 
+The transport layer send function creates a socket buffer (<code>struct sk_buff</code>) 
+and allocates memory for the data with enough extra space for all foreseeable headers that
+all layers of the protocol stack may need.  It then
+copies data from the user's memory to this kernel-level structure and populates
+the transport layer header (port number, options, data checksum).
+A pointer to this socket buffer is then passed to the network layer (typically IP).
+</dd>
+
+<dt> Network layer </dt>
+<dd>
+<p>
+The network layer fills in its own header (including IP source and destination
+addresses, time-to-live field, header checksum). It then looks up the destination
+route for the packet to determine where this packet should be sent once it
+leaves the machine. This may not be the final destination since the packet may
+be sent to a router. Depending on the maximum transmission size of the destination
+device, the network layer may need to fragment this packet into multiple packets.
+Finally, the network layer uses the abstract device
+interface to call the link layer routines in the device driver.
+</p>
+<p>
+To route packets, the network layer maintains a <strong>Forwarding Information Base</strong>,
+which is list of every known route and is generated from routing tables or dynamic
+routing algorithms. For efficiency, it also maintains a hash table that serves as a cache of frequntly-used
+routes.
+</p>
+
+<dt> Link layer </dt>
+<dd>
+Now we're in the device driver, which is typically an ethernet or Wi-Fi driver.
+The link layer protocol adds the appropriate ethernet MAC headers to form the complete 
+packet and places it in the transmit queue for the device. Our work is done and we
+have to wait for the kernel to schedule its worker thread to service queued requests
+for transmission.
+</dd>
+
+<dt> Transmission </dt>
+<dd>
+When the scheduler schedules the kernel worker thread to check the queue of outbound
+network requests, the thread sends the link header to the device and then transmits the 
+packet. Typically DMA is used to move the data from the kernel's memory to the network
+card so the processor does not have to spend its cycles copying the data.
+</dd>
+</dl>
+
+<h2> Receiving a packet </h2>
+<dt> Network Device Driver: Top half</dt>
+<dd>
+<p>
+A message arrives at the network transceiver, which was typically picked up by the card because the destination
+ethernet address matched the one that belongs to the NIC.
+The NIC generates an interrupt, causing the kernel's interrupt handler to be invoked, which
+then calls the top half of the network device driver. Recall that the top half function of a device
+driver runs in interrupt context and cannot be preempted. The code tries to do as little as needed and 
+delegate the real work to the bottom half of the driver, which will be processed by a kernel worker thread.
+</p>
+<p>
+The top half allocates a new socket buffer and copies the incoming packet from the hardware buffer into 
+the memory associated with the socket buffer. It then cals a function called <em>netif_rx</em> (on Linux
+systems), which moves the socket buffer onto a common input queue for processing. The top half then repeats
+this process until there are no more queued packets in the hardware.
+</p>
+</dd>
+
+<dt> Network Device Driver: Bottom half </dt>
+<dd>
+The bottom half function is scheduled by the kernel and goes through the list of queued packets.
+For each packet, it calls a function called <code>net_rx_action</code>, which 
+dequeues a socket buffer. 
+Note that an ethernet header contains a protocol identifier so this link layer processing can
+tell what protocol is encapsulated within the data. Each protocol handler is responsible
+for registering itself and identifying the type of protocol that it handles. The <em>net_rx_action</em>
+function first calls a generic protocol handler and then the <em>receive</em> function
+that is registered with the protocol for that specific packet. 
+</dd>
+
+<dt> Network layer </dt>
+<dd>
+IP is registered as a protocol handler for all ethernet packets whose payload is IP data 
+(identified by <code>ETH_P_IP</code>, which happens to be 0x0800). The bottom half of the
+device driver passed the socket buffer to the appropriate protocol, which for this example
+is IP. The IP protocol will either route the packet for transmission to another destination
+(something routers do all the time), deliver it locally, or discard it. If routing, the
+packet will go to an outbound queue for transmission; we never need to look at the TCP
+or UDP data. In the case of this example, let's assume that it indeed is a packet for this
+system. The IP driver looks at the protocol field inside the IP header and calls
+the appropriate transport-level handler to process this incoming packet
+(e.g., <em>tcp_v4_rcv</em>, <em>udp_rcv</em>, <em>icmp_rcv</em>, etc.).
+This layer also has hooks for <em>netfilter</em> to allow for additional processing to
+implement a firewall (packet filter) that will make a further decision on whether to 
+drop the packet or not.
+</dd>
+
+<dt> Transport layer </dt>
+<dd>
+Depending on the protocol value in the IP header, the packet will be passed to the
+appropriate transport layer protocol. Typically, this will be a call to either
+<em>tcp_v4_rcv</em> or <em>udp_rcv</em>. The transport layer checks for packet
+errors and looks for a socket that should receive this packet (based on the source
+and destination IP addresses and port numbers). For TCP packets, it will then
+call <em>tcp_v4_do_rcv</em>, passing it the socket buffer and the socket (<code>struct sock</code>).
+The TCP receive function adds the socket buffer to that socket's receive queue.
+The process can now read the data. If the process was blocked on that socket (i.e., 
+it was already trying to read data), then the process is moved to the <em>ready</em> state
+so that can be scheduled. 
+</dd>
+<dt> Socket </dt>
+<dd>
+Finally, when the system call that reads the socket data (e.g., <em>read</em>) is
+ready to get the data and the process is context-switched in, the incoming data is
+copied from the socket buffer into the process' address
+space. If no data is left in the buffer, the socket buffer is freed.
+</dd>
+
+<h1> Dealing with interrupts and NAPI </h1>
+<p>
+As networks got faster, machines could receive packets at a faster rate. Since each 
+received packet would generate an interrupt, that meant a lot more interrupts.
+The median size of an ethernet packet is 413 bytes. If we assume a steady stream of
+network traffic, a 1 Gbps ethernet link will yield 300,000 interrupts per second.
+Even a 10 Mbps link will yield a whopping 3,000 interrupts per second. 
+This can bring a processor to a state of livelock, where it spends the bulk of its
+time just servicing interrupts and making no progress in any other area.
+</p>
+<p>
+To mitigate this, a combination of interrupts and polling may be used. Linux's
+"New API" (not that new, since it was created in 2009) disables network device interrupts
+during periods of high traffic and resorts to polling.  When traffic subsides, it
+re-enables interrupts and abandons polling. When an incoming packet arrives and
+causes an interrupt, interrupts are disabled and polling of the device is enabled.
+If a polling period results in no packet, the system decides that packets are not
+coming in fast enough to warrant disabling interrupts and re-enables them.
+</p>
+
+
+<h1> References </h1>
+<ul>
+
+<li>
+<a href="http://ngn.ee.tsinghua.edu.cn/~lujx/linux_networking/index.html?page=0131777203_ch04lev1sec1.html">The Linux Networking Architecture, Socket Buffers</a>, 
+<em>The Linux&reg; Networking Architecture: Design and Implementation of Network Protocols in the Linux Kernel</em>,
+Klaus Wehrle, Frank P&auml;hlke, Hartmut Ritter, Daniel M&uuml;ller, and Marc Bechler.
+Prentice Hall (ISBN 0-13-177720-3), 
+August 01, 2004
+(<a href="http://flylib.com/books/en/3.475.1.1/1/">alternate link</a>)
+</li>
+
+<li>
+<a href="http://www.amazon.com/dp/0596002556/pkorg">Understanding Linux Network Internals</a>,
+Christian Benvenuti. ISBN 0596002556,
+&copy; O'Reilly 2006
+</li>
+
+<li>
+<a href="http://docs.blackfin.uclinux.org/kernel/generated/networking/index.html">Linux Networking and Network Devices APIs</a>,
+Linux Kernel HTML Documentation, Kernel Version: 2.6.32.8.
+</li>
+
+<li>
+<a href="http://www.ibm.com/developerworks/linux/library/l-linux-networking-stack/">
+Anatomy of the Linux networking stack: from sockets to device drivers
+</a>, M. Tim Jones, IBM developerWorks, June 2007.
+[also
+<a href="http://ldn.linuxfoundation.org/article/anatomy-linux-networking-stack">
+here</a>]
+</li>
+
+<li>
+<a href="http://download.intel.com/design/intarch/PAPERS/323704.pdf">
+Common Functionality in the 2.6 Linux Network Stack</a>,
+Richard Kelly &amp; Joseph Gasparakis.
+Intel Embedded, April 2010.
+<li>
+<a href="http://www.xml.com/ldd/chapter/book/ch14.html">
+Linux Device Drivers</a>, 
+By Alessandro Rubini & Jonathan Corbet
+2nd Edition, O'Reilly, June 2001, 
+0-59600-008-1.
+</li>
+
+<li>
+<a href="http://www.scribd.com/doc/3471003/Linux-Networking-Internals">
+Linux Networking Internals</a>, Michael Opdenacker, Oron Peled, Codefidence Ltd., 2004-2008.
+</li>
+
+<li>
+<a href="http://serghei.net/docs/kernel/net.pdf">
+Linux Networking Subsystem; Desktop Companion to the Linux Source Code</a>,
+by Ankit Jain, Linux-2.4.18, Version 0.1, May 31, 2002.
+</li>
+
+<li>
+<a href="http://gicl.cs.drexel.edu/people/sevy/network/Linux_network_stack_walkthrough.html">
+Linux Network Stack Walkthrough (2.4.20)
+</a>,
+Jonathan Sevy, Drexel University
+</li>
+
+<li>
+<a href="http://www.xml.com/ldd/chapter/book/ch14.html#t2">Chapter 14 Network Drivers</a>
+Linux Device Drivers, 2nd Edition,
+by Alessandro Rubini & Jonathan Corbet,
+2nd Edition June 2001.
+</li>
+
+<li>
+<a href="http://datatag.web.cern.ch/datatag/howto/tcp.html">How to achieve Gigabit speeds with Linux</a>
+</li>
+
+<li>
+<a href="http://www.ittc.ku.edu/Projects/Wireless_ATM/linux/linux-skbuff.html">
+Linux Socket Buffers Introduction</a>
+</li>
+
+<li>
+<a href="http://www.linuxfoundation.org/collaborate/workgroups/networking/skbuff">
+sk_buff</a>, The Linux Foundation, November 19, 2009.
+</li>
+
+<li>
+<a href="http://www.ecsl.cs.sunysb.edu/elibrary/linux/network/LinuxKernel.pdf">
+Linux Networking Kernel</a>, Version 0.1, February 12, 2003.
+</li>
+
+<li>
+<a href="http://ftp.gnumonks.org/pub/doc/packet-journey-2.4.html">
+The journey of a packet through the linux 2.4 network stack</a>,
+Harald Welte, October 2000.
+</li>
+
+<li>
+<a href="http://www.haifux.org/lectures/217/netLec5.pdf">Kernel sockets</a>
+</li>
+</ul>
+
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: April  9, 2020
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

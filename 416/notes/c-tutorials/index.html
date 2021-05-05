@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 416 Documents </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> CS 416 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/c-tutorials/index.html"> Tutorials </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> C Programming Tutorials</h1>
+<h2> Quick guides for C &amp; UNIX </h2>
+</div>
+
+<h1> Introduction </h1>
+<p>
+This is a growing list of very brief tutorials on various aspects of C and Unix programming.
+By Unix, I refer to the various flavors of Linux, Solaris (SunOS), System V, FreeBSD, NetBSD, OpenBSD, Meego, and OS X.
+I test the examples on a Mac running OS X. While I will try to point out any modifications needed for Linux and/or SunOS,
+you may have to tweak some of the <tt>#include</tt> headers. If things aren't compiling, be sure to check
+the manual pages on your system for proper usage (e.g., <tt>man fork</tt>). The usage syntax will tell you what
+headers need to be included.
+</p>
+<p>
+My goal is to make the tutorials and sample code as short as possible &mdash; something you
+can use and build on if you want to. Many of the funcitons or system calls presented have
+extra layers of complexity and options that I will not cover. Be sure to consult the man page
+or more detailed sources if you want to understand the details.
+</p>
+
+<h2> Playing with processes </h2>
+<ul>
+<li> <a href="getpid.html">Use <em>getpid</em> to get your process' ID<a> </li>
+<li> <a href="getppid.html">Use <em>getppid</em> to get a parent process' ID<a> </li>
+<li> <a href="fork.html">Use <em>fork</em> to create processes<a> </li>
+<li> <a href="exec.html">Use <em>exec</em> to run another program<a> </li>
+<li> <a href="forkexec.html">Use <em>fork</em> and <em>exec</em> to create a new process and run a program<a> </li>
+<li> <a href="wait.html">Use <em>wait</em> to wait for a child to exit</a> </li>
+<li> <a href="signal.html">Use <em>signal</em> to be alerted that a child process terminated </a> </li>
+</ul>
+
+<h2> I/O redirection and IPC </h2>
+<ul>
+<li> <a href="dup2.html">How to redirect output with <em>dup2</em> </a> </li>
+<li> <a href="pipe.html">How to <em>pipe</em> output from one process to another </a> </li>
+<li> <a href="isatty.html">Determine if a file is a terminal device with <em>isatty</em> </a> </li>
+</ul>
+
+<h2> Timing </h2>
+<ul>
+<li> <a href="times.html">Get a process' CPU usage with <em>times</em> </li>
+<li> <a href="gettime.html">Get high-precision timestamps with <em>clock_gettime</em> </li>
+</ul>
+
+<h2> C Essentials </h2>
+<ul>
+<li>  <a href="getopt.html"> Parsing command-line options with <em>getopt</em>. </a> </li>
+<li>  <a href="strtok.html"> Using <em>strtok</em> to parse words (tokens) in a string. </a> </li>
+<!-- 
+<li>  <a href="fpointer.html"> Understainding pointers to functions.</a> </li> 
+-->
+</ul>
+
+<h2> Basic algorithms </h2>
+
+<ul>
+<li> <a href="list.html"> How to create and use a simple linked list </a> </li>
+<li> <a href="nomalloc.html"> How to avoid malloc and memory copies </a> </li>
+<!--
+<li> <a href="hash.html"> How to create and use a simple hash table </a> </li>
+-->
+</ul>
+</p>
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: March 28, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+        <h2> Tutorials </h2>
+        <ul>
+        <li> <a href="../../notes/c-tutorials/index.html"> C/Unix tutorials </a> </li>
+        <li> <a href="../../notes/make/index.html"> Makefile tutorial </a> </li>
+        <li> <a href="../../notes/sockets/index.html"> TCP/IP Sockets </a> </li>
+        <li> <a href="../../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+<!--
+        <li> <a href="../../notes/clocks/index.html"> Clocks demo </a> </li>
+-->
+        </ul>
+
+	
+        <h2> <a href="index.html">C Tutorials</a> </h2>
+	<h3> Processes </h3>
+        <ul>
+        <li> <a href="../../notes/c-tutorials/getpid.html"> getpid </a> </li>
+        <li> <a href="../../notes/c-tutorials/getppid.html"> getppid </a> </li>
+        <li> <a href="../../notes/c-tutorials/fork.html"> fork </a> </li>
+        <li> <a href="../../notes/c-tutorials/exec.html"> exec </a> </li>
+        <li> <a href="../../notes/c-tutorials/forkexec.html"> fork&amp;exec </a> </li>
+        <li> <a href="../../notes/c-tutorials/wait.html"> wait </a> </li>
+        <li> <a href="../../notes/c-tutorials/signal.html"> signal </a> </li>
+	</ul>
+	<h3> I/O and IPC </h3>
+	<ul>
+        <li> <a href="../../notes/c-tutorials/dup2.html"> dup2 </a> </li>
+        <li> <a href="../../notes/c-tutorials/pipe.html"> pipe and dup2 </a> </li>
+        <li> <a href="../../notes/c-tutorials/isatty.html"> isatty </a> </li>
+	<ul>
+	</ul>
+	<h3> Timing </h3>
+        <li> <a href="../../notes/c-tutorials/times.html"> times </a> </li>
+        <li> <a href="../../notes/c-tutorials/gettime.html"> clock_gettime </a> </li>
+	<ul>
+	<h3> Basics </h3>
+	<ul>
+        <li> <a href="../../notes/c-tutorials/getopt.html"> Command options </a> </li>
+        <li> <a href="../../notes/c-tutorials/strtok.html"> Parsing tokens </a> </li>
+<!--
+        <li> <a href="../../notes/c-tutorials/fpointer.html"> Pointers to functions </a> </li>
+-->
+        <li> <a href="../../notes/c-tutorials/list.html"> Linked list </a> </li>
+<!--
+        <li> <a href="../../notes/c-tutorials/hash.html"> Hash tables </a> </li>
+-->
+        </ul>
+
+</div>
+
+<div id="sidebar2">
+<h1 class="first"> Recommended </h1>
+<p>
+</p>
+<p>
+<a href="http://www.amazon.com/exec/obidos/ASIN/020161586X/pkorg/">
+<img align="left" width="100" height="138" src="images/practice-of-programming.jpg"
+alt="The Practice of Programming"/>
+</a>
+</p>
+<p>
+&nbsp;
+</p>
+
+<p>
+<a href="http://www.amazon.com/exec/obidos/ASIN/0131103628/pkorg/">
+<img align="left" width="100" height="132" src="images/c-programming-language.jpg"
+alt="The C Programming Language"/>
+</a>
+</p>
+<p>
+&nbsp;
+</p>
+
+<p>
+<a href="http://www.amazon.com/dp/013937681X/pkorg/">
+<img align="left" width="100" height="132" src="images/unix-programming-environment.jpg"
+alt="The UNIX Programming Environment"/>
+</a>
+</p>
+</div>
+
+</div>
+</div>
+</body>
+</html>

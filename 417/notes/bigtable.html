@@ -1,0 +1,357 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Bigtable</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css?v=1.1"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Bigtable</h1>
+								<h2>A large-scale distributed table</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>April 24, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: How can we build an ultra-high performance, low-latency storage service for large-scale structured and semi-structured data?</p>
+</blockquote>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>Traditional relational databases present a view of multiple tables, each containing rows and named columns. Queries, mostly performed in SQL (Structured Query Language) allow one to extract specific columns from a row where certain conditions are met (e.g., a column has a specific value). Moreover, one can perform queries across multiple tables (this is the &#8220;relational&#8221; part of a relational database). For example, a table of students may include a student&#8217;s name, ID number, and contact information. A table of grades may include a student&#8217;s ID number, course number, and grade. We can construct a query that extracts a grades by name by searching for the ID number in the student table and then matching that ID number in the grade table.</p>
+
+<p>With traditional databases, we expect ACID guarantees: that transactions will be atomic, consistent, isolated, and durable. As we saw when we studied distributed transactions, it is not possible to guarantee consistency while providing high availability and network partition tolerance.
+We often choose to give up consistency in order to ensure high availability and partition tolerance.
+This makes ACID databases unattractive for highly distributed environments and led to the emergence of alternate data stores that are targeted to high availability and high performance.</p>
+
+<p>Finally, most databases often do not do well with tables containing huge amounts of columns or fields that contain huge amounts of data. Adding additional fields to a column (changing the schema of the database) can be a time-consuming task.</p>
+
+<p>Here, we will look at the structure and capabilities of Bigtable. It is not a relational database; it is just a table but it is designed to work on a huge scale.</p>
+
+<h1 id="bigtable">Bigtable</h1>
+
+<p><strong>Bigtable</strong> is a distributed storage system that is structured as a large table: one that may be petabytes in size and distributed among tens of thousands of machines. It is designed for storing items such as billions of URLs, with many versions per page; over 100 TB of satellite image data; hundreds of millions of users; and performing thousands of queries a second.</p>
+
+<p>Bigtable was developed at Google in has been in use since 2005 in dozens of Google services. An open source version, HBase, was created by the Apache project on top of the Hadoop core. Apache Cassandra, first developed at Facebook to power their search engine, is similar to Bigtable with a tunable consistency model and no master (central server).</p>
+
+<p>Bigtable is designed with semi-structured data storage in mind. It is a large map that is indexed by a row key, column key, and a timestamp. Each value within the map is an array of bytes that is interpreted by the application. Every read or write of data to a row is atomic, regardless of how many diferent columns are read or written within that row.</p>
+
+<p>It is easy enough to picture a simple table. Let us look at a few characteristics of Bigtable:</p>
+
+<dl>
+<dt>map</dt>
+<dd> A <strong>map</strong> is an associative array; a data structure that allows one to look up a value to a corresponding key quickly. Bigtable is a collection of (key, value) pairs where the key identifies a row and the value is the set of columns.</dd>
+
+<dt>persistant</dt>
+<dd> The data is stored persistently on disk.</dd>
+
+<dt>distributed</dt>
+<dd> Bigtable&#8217;s data is distributed among many independent machines. At Google, Bigtable is built on top of GFS (Google File System). The Apache open source version of Bigtable, HBase, is built on top of HDFS (Hadoop Distributed File System) or Amazon S3.
+The table is broken up among rows, with groups of adjacent rows managed by a server. A row itself is never distributed.</dd>
+
+<dt>sparse</dt>
+<dd> The table is sparse, meaning that different rows in a table may use vastly different columns (there could be millions), with many &#8211; or even most &#8211; of the columns empty for a particular row.</dd>
+
+<dt>sorted</dt>
+<dd> Most associative arrays are not sorted. A key is hashed to a position in a table. Bigtable sorts its data by keys. This helps keep related data close together, usually on the same machine &#8212; assuming that one structures keys in such a way that sorting brings the data together. For example, if domain names are used as keys in a Bigtable, it makes sense to store them in reverse order to ensure that related domains are close together. For example:</dd>
+</dl>
+
+<pre><code>	edu.rutgers.cs
+	edu.rutgers.nb
+	edu.rutgers.www
+</code></pre>
+
+<dl>
+<dt>multidimensional</dt>
+<dd> A table is indexed by rows. Each row contains one or more named <strong>column families</strong>. Column families are defined when the table is first created. Within a column family, one may have one or more named columns. All data within a column family is usually of the same type. The implementation of Bigtable usually compresses all the columns within a column family together. Columns within a column family can be created on the fly. Rows, column families and columns provide a three-level naming hierarchy to identify data. For example:</dd>
+</dl>
+
+<pre><code>	&quot;edu.rutgers.cs&quot; : {    // row
+		&quot;users&quot; : {    // column family
+			&quot;bjs&quot; : &quot;Bart&quot;,       // column
+			&quot;lsimpson&quot; : &quot;Lisa&quot;,  // column
+			&quot;homer&quot; : &quot;Homer&quot;     // column
+		}
+		&quot;sysinfo&quot; : {   // another column family
+		    &quot;os&quot; : &quot;Linux 3.12&quot;,  // column
+		    &quot;cpu&quot; : &quot;Xeon E5-2698&quot;   // column
+		}
+	}
+</code></pre>
+
+<p>To get data from Bigtable, you need to provide a fully-qualified name in the form <em>column-family:column</em>. For example, <code>users:homer</code> or <code>sysinfo:cpu</code></p>
+
+<dl>
+<dt>time-based</dt>
+<dd> Time is another dimension in Bigtable data. Every column family may keep multiple versions of column family data. If an application does not specify a timestamp, it will retrieve the latest version of the column family. Alternatively, it
+can specify a timestamp and get the latest version that is earlier than or equal to that timestamp.</dd>
+</dl>
+
+<h1 id="columnsandcolumnfamilies">Columns and column families</h1>
+
+<p>Let&#8217;s look at a sample slice of a table that stores web pages (this example is from Google&#8217;s paper on Bigtable). The row key is the page URL. For example, <code>com.cnn.www</code>.</p>
+
+<figure>
+<img src="images/bt-columns-x.png" alt="Figure 1. Bigtable column families and columns" />
+<figcaption>Figure 1. Bigtable column families and columns</figcaption>
+</figure>
+
+<p>Various attributes of the page are stored in column families. A <code>contents</code> column family contains page contents (there are no columns within this column family).
+A <code>language</code> column family contains the language identifier for the page.
+Finally, an <code>anchor</code> column family contains the text of various anchors from other web pages. The column name is the URL of the page making the reference. These three column families underscore a few points.</p>
+
+<p>A column may be a single short value, as seen in the
+<code>language</code> column family. This is our classic database view of columns. In Bigtable, however, there is no type associated with the column. It is just a bunch of bytes.</p>
+
+<p>The data in a column family may also be large, as in the <code>contents</code> column
+family.</p>
+
+<p>The <code>anchor</code> column family illustrates the extra hierarchy created by having columns within a column family. It also illustrates the fact that columns can be created dynamically (one for each external anchor), unlike column families.</p>
+
+<p>Finally, it illustrates
+the sparse aspect of Bigtable. In this example, the list of columns within the
+<code>anchor</code> column family will likely vary tremendously for each URL.</p>
+
+<p>In all, we may have a huge number (e.g., hundreds of thousands or millions) of columns but the
+column family for each row will have only a tiny fraction of them populated. While the number
+of column families will typically be small in a table (at most hundreds), the number of columns
+is unlimited.</p>
+
+<h1 id="rowsandpartitioning">Rows and partitioning</h1>
+
+<p>A table is logically split among rows into multiple subtables called <strong>tablets</strong>.
+A tablet is a set of consecutive rows of a table and is the unit of distribution and load balancing within Bigtable. Because the table is always sorted by row, reads of short ranges of rows are efficient: one typically communicates with a small number of machines. Hence, a key to ensuring a high degree of locality is to select row keys properly (as in the earlier example of using domain names in reverse order).</p>
+
+<h1 id="timestamps">Timestamps</h1>
+
+<p>Each column family cell can contain multiple versions of content. For example,
+in the earlier example, we may have several timestamped versions of page contents associated with a URL. Each version is identified by a 64-bit timestamp that either represents real time or is a value assigned by the client. Reading column data
+retrieves the most recent version if no timestamp is specified or the latest version that is earlier than a specified timestamp.</p>
+
+<p>A table is configured with per-column-family settings for garbage collection of old versions. A column family can be defined to keep only the latest <em>n</em> versions or to keep only the versions written since some time <em>t</em>.</p>
+
+<h1 id="implementation">Implementation</h1>
+
+<p>Bigtable comprises a client library (linked with the user&#8217;s code), a master server that coordinates activity, and many tablet servers. Tablet servers can be added or removed dynamically.</p>
+
+<p>The master assigns tablets to tablet servers and balances tablet server load.
+It is also responsible for garbage collection of files in GFS and managing schema changes (table and column family creation).</p>
+
+<p>Each tablet server manages a set of tablets (typically 10&#8211;1,000 tablets per server).
+It handles read/write requests to the tablets it manages and splits tablets when a tablet gets too large. Client data does not move through the master; clients communicate directly with tablet servers for reads/writes.
+The internal file format for storing data is Google&#8217;s <strong>SSTable</strong>, which is a persistent, ordered, immutable map from keys to values.</p>
+
+<p>Bigtable uses the Google File System (GFS) for storing both data files and logs. A cluster management system contains software for scheduling jobs, monitoring health, and dealing with failures.</p>
+
+<h2 id="chubby">Chubby</h2>
+
+<p><strong>Chubby</strong> is a highly available and persistent distributed lock service that manages leases for resources and stores configuration information. The service runs with five active replicas, one of which is elected as the master to serve requests.
+A majority must be running for the service to work.
+It uses a Paxos distributed consensus algorithm to keep the replicas consistently synchronized.
+Chubby provides a namespace of files &amp; directories. Each file or directory can be used as a lock.</p>
+
+<p>In Bigtable, Chubby is used to:</p>
+
+<ul>
+<li>ensure there is only one active master</li>
+<li>store the bootstrap location of Bigtable data</li>
+<li>discover tablet servers</li>
+<li>store Bigtable schema information</li>
+<li>store access control lists</li>
+</ul>
+
+<h2 id="startupandgrowth">Startup and growth</h2>
+
+<figure>
+<img src="images/bt-hierarchy-x.png" alt="Figure 2. Bigtable indexing hierarchy" />
+<figcaption>Figure 2. Bigtable indexing hierarchy</figcaption>
+</figure>
+
+<p>A table starts off with just one tablet. As the table grows, it is split into multiple tablets. By
+default, a table is split at around 100 to 200 MB.</p>
+
+<p>Locating rows within a Bigtable is managed in a three-level hierarchy.
+The root (top-level) tablet stores the location of all <strong>Metadata tablets</strong>
+in a special <strong>Metadata tablet</strong>.
+Each Metadata table contains the location of user data tablets. This table
+is keyed by node IDs and each row identifies a tablet&#8217;s table ID and end row.
+For efficiency, the client library caches tablet locations.</p>
+
+<p>A tablet is assigned to one tablet server at a time.
+Chubby keeps track of tablet servers.
+When a tablet server starts, it creates and acquires an exclusive lock on a
+uniquely-named file in a Chubby <em>servers</em> directory.
+The master monitors this directory to discover new tablet servers.
+When the master starts, it:</p>
+
+<ul>
+<li>Grabs a unique master lock in Chubby (to prevent multiple masters from starting)</li>
+<li>Scans the servers directory in Chubby to find live tablet servers</li>
+<li>Communicates with each tablet server to discover what tablets are assigned to each server</li>
+<li>Scans the Metadata table to learn the full set of tablets</li>
+<li>Builds a set of unassigned tablet servers, which are eligible for tablet assignment. These will be assigned by choosing a tablet server and sending it a tablet load request.</li>
+</ul>
+
+<h2 id="faulttoleranceandreplication">Fault tolerance and replication</h2>
+
+<p>Some of the fault tolerance for Bigtable is provided by Google and Chubby. GFS, for example, provides configurable levels of replication of file data and Chubby&#8217;s cell of replicated servers minimizes its downtime.</p>
+
+<p>A master is responsible for detecting when a specific tablet server is not functioning. It does this by asking the tablet server for status of its lock (recall that Chubby grants locks). If the tablet server cannot be reached or has lost its lock, the master attempts to grab that server’s lock. If it succeeds, then it surmises the tablet server is dead or cannot contact Chubby. In this case, the master moves the tablets that were previously assigned to that server into an unassigned state.</p>
+
+<p>When a master&#8217;s Chubby lease expires, it kills itself. This does not change the assignment of tablets to servers, however. Google&#8217;s cluster management system periodically checks for the liveness of a master. If it detects a non-responding master, it starts one up, which grabs a lock from Chubby. The new master contacts Chubby to find all the live servers goes through the startup phase described earlier.</p>
+
+<p>A Bigtable can be configured for replication onto multiple Bigtable clusters in different data
+centers to ensure availability. Data propagation is asynchronous and results an eventually consistent model.</p>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><p>Fay Chang, Jeffrey Dean, Sanjay Ghemawat, Wilson C. Hsieh, Deborah A. Wallach Mike Burrows, Tushar Chandra, Andrew Fikes, Robert E. Gruber,
+<a href="https://research.google/pubs/pub27898.pdf">Bigtable: A Distributed Storage System for Structured Data</a>, Google, Inc. OSDI 2006: The definitive paper on Bigtable</p></li>
+<li><p>Ilya Grigorik, <a href="https://www.igvita.com/2012/02/06/sstable-and-log-structured-storage-leveldb/">SSTable and Log Structured Storage: LevelDB</a>, igvita.com, February 26, 2012: _a description of the SSTable (Sorted String Table) used in Bigtable.</p></li>
+<li><p><a href="https://cloud.google.com/bigtable/docs/api-overview">Cloud Bigtable</a>: A publicly-available version of Bigtable, part of the Google Cloud Platform</p></li>
+<li><p>Robin Harris, Google’s Bigtable Distributed Storage System](http://storagemojo.com/2006/09/07/googles-bigtable-distributed-storage-system-pt-i/),
+StorageMojo.com</p></li>
+<li><p><a href="https://hbase.apache.org">Apache HBase</a>: An open-source project based on the design of Bigtable.</p></li>
+<li><p><a href="http://jimbojw.com/wiki/index.php?title=Understanding_Hbase_and_Bigtable">Understanding HBase and Bigtable</a>, Jumoojw.com</p></li>
+</ul>
+
+<p><em>This is an updated version to one that was originally published in November 2011.</em></p>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

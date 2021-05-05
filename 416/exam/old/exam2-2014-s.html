@@ -1,0 +1,351 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 old exams: Exam 2 Spring 2014 </title>
+
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+#main ol h1 {
+	font-size: 140%;
+	margin-left: -1.3em;
+}
+#main ol li {
+	margin-bottom: 1em;
+}
+</style>
+</head>
+
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> 416 </a> 
+ 	<li> <a href="../../exam/index.html"> Exam info </a> 
+ 	<li> <a href="../../exam/old/index.html"> Old exams </a> 
+ 	<li> <a href="../../exam/old/exam2-2014-s.html"> Exam 2 Spring 2014 </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> CS 416 Exam 2 </h1>
+<h2>Spring 2014</h2>
+</div>
+
+<p>
+See the <a href="exam2-review-2014-s.pdf">solutions</a>
+(<a href="exam2-review-2014-s-6.pdf">6 per page</a>).
+</p>
+
+<h1>
+100 points &ndash; 4 points each </h1>
+<p>
+For each statement, select the most appropriate answer.
+I will give you credit for two incorrect answers.
+</p>
+
+<ol>
+<li> A memory management unit (MMU) is responsible for:
+<br/>(a) Translating a process’ memory addresses to physical addresses.
+<br/>(b) Allocating kernel memory.
+<br/>(c) Allocating system memory to processes.
+<br/>(d) All of the above.
+
+</li><li> A system uses 32-bit logical addresses, a 16K byte 
+(2<sup>14</sup>) page size, and 36-bit physical addresses (64 GB memory). What is the size of the page table?
+<br/>(a) 2<sup>18</sup> entries (2<sup>32-14</sup>).
+<br/>(b) 2<sup>22</sup> entries (2<sup>36-14</sup>).
+<br/>(c) 2<sup>4</sup> entries (2<sup>36-32</sup>).
+<br/>(d) 2<sup>14</sup> entries.
+
+</li><li> During a context switch, the operating system
+<br/>(a) Modifies some page table entries for the new process to reflect its memory map.
+<br/>(b) Switches a page table register to select a different page table 
+<br/>(c) Modifies the access permissions within the page table for the new process.
+<br/>(d) Leaves the page table untouched since it is a system-wide resource.
+
+</li><li> Your process exhibits a 75% TLB hit ratio and uses a 2-level page table. The average memory access time is:
+<br/>(a) Approximately 1.25 times slower.
+<br/>(b) Approximately 1.5 times slower.
+<br/>(c) Approximately 1.75 times slower.
+<br/>(d) Approximately 2 times slower.
+
+</li><li> An address space identifier (ASID):
+<br/>(a) Allows multiple processes to share the same page table.
+<br/>(b) Enables shared memory among processes.
+<br/>(c) Associates a process ID with TLB (translation lookaside buffer) contents.
+<br/>(d) Performs logical (virtual) to physical memory translation for a process.
+
+</li><li> Page replacement algorithms try to approximate this behavior:
+<br/>(a) First-in, first-out.
+<br/>(b) Not frequently used.
+<br/>(c) Least recently used.
+<br/>(d) Last in, first out.
+
+</li><li> Large page sizes increase:
+<br/>(a) Internal fragmentation.
+<br/>(b) External fragmentation.
+<br/>(c) The page table size.
+<br/>(d) The working set size.
+
+</li><li> Thrashing occurs when:
+<br/>(a) The sum of the working sets of all processes exceeds available memory.
+<br/>(b) The scheduler flip-flops between two processes, leading to the starvation of others.
+<br/>(c) Two or more processes compete for the same region of shared memory and wait on mutex locks.
+<br/>(d) Multiple processes execute in the same address space.
+
+</li><li> The slab allocator allocates kernel objects by:
+<br/>(a) Using a first-fit algorithm to find the first available hole in a region of memory that can hold the object.
+<br/>(b) Keeping multiple lists of same-size chunks of memory, each list for different object sizes.
+<br/>(c) Allocating large chunks of memory that are then divided into pages, one or more of which hold an object.
+<br/>(d) Using the buddy system to allocate memory in a way that makes recovering free memory easy.
+
+</li><li> You are using a Buddy System memory allocator to allocate memory. Your initial buffer is 1024 blocks. The following memory chunks are allocated and released: A=alloc(256), B=alloc(128), C=alloc(256), D=alloc(256), free(B), free(C). What is the largest chunk that can be allocated?
+<br/>(a) 128.
+<br/>(b) 256.
+<br/>(c) 384.
+<br/>(d) 512.
+
+</li><li> The advantage of a multilevel (hierarchical) page table over a single-level one is:
+<br/>(a) Page number lookups are faster.
+<br/>(b) The page table can consume much less space if there are large regions of unused memory.
+<br/>(c) Each segment (code, data, stack) can be managed separately.
+<br/>(d) Page permissions can be assigned at a finer granularity.
+
+</li><li> A USB mouse is a:
+<br/>(a) Block device.
+<br/>(b) Character device.
+<br/>(c) Network device.
+<br/>(d) Bus device.
+
+</li><li> On POSIX systems, devices are presented as files. When you send an I/O request to such a file, it goes to the:
+<br/>(a) Device driver whose name is stored in the device file’s data and read when it is opened.
+<br/>(b) Device driver, which is stored in the device file and loaded into the operating system when opened.
+<br/>(c) File system driver (module), which forwards it to the device driver based on the name of the device file 
+<br/>(d) Device driver based on the major and minor numbers contained in the file’s metadata.
+
+</li><li> The buffer cache
+<br/>(a) Is memory that is used to copy parameters between the process (user space) and the kernel 
+<br/>(b) Is a pool of memory used by the kernel memory allocator.
+<br/>(c) Is a pool of memory used to allocate memory to user processes.
+<br/>(d) Holds frequently used blocks for block devices.
+
+</li><li> Interrupt processing is divided into two halves to:
+<br/>(a) Provide a generic device-handling layer in the top half with device-specific functions in the bottom half 
+<br/>(b) Partition work among user processes and the kernel.
+<br/>(c) Provide separate paths for reading versus writing data from/to devices.
+<br/>(d) Minimize the time spent in the interrupt handler.
+
+</li><li> Which disk scheduling algorithm is most vulnerable to starvation?
+<br/>(a) SCAN.
+<br/>(b) Shortest Seek Time First (SSTF).
+<br/>(c) LOOK.
+<br/>(d) First Come, First Served (FCFS).
+
+</li><li> Which disk scheduling algorithm works best for flash memory storage?
+<br/>(a) SCAN.
+<br/>(b) Shortest Seek Time First (SSTF).
+<br/>(c) LOOK.
+<br/>(d) First Come, First Served (FCFS).
+
+</li><li> A superblock holds
+<br/>(a) The contents of the root directory of the volume.
+<br/>(b) A list of blocks used by a file.
+<br/>(c) Metadata for a file.
+<br/>(d) Key information about the structure of the file system.
+
+</li><li> In file systems, a cluster is:
+<br/>(a) The minimum allocation unit size: a multiple of disk blocks.
+<br/>(b) A collection of disks that holds a single file system.
+<br/>(c) A variable-size set of contiguous blocks used by a file, indicated by a starting block number and length.
+<br/>(d) A set of disks replicated for fault tolerance.
+
+</li><li> Creating a directory is different than creating a file because:
+<br/>(a) The contents of a directory need to be initialized.
+<br/>(b) Ordinary users are not allowed to create directories.
+<br/>(c) The parent directory’s link count needs to be incremented.
+<br/>(d) A directory does not use up an inode.
+
+</li><li> Which of the following is not part of the metadata for a directory:
+<br/>(a) A link to the parent directory.
+<br/>(b) Modification time.
+<br/>(c) Length of directory.
+<br/>(d) Owner ID.
+
+</li><li> The File Allocation Table in a FAT file system can be thought of as:
+<br/>(a) A table of all files with each entry in the table identifying the set of disk blocks used by that file.
+<br/>(b) A bitmap that identifies which blocks are allocated to files and which are not.
+<br/>(c) A set of linked lists identifying the set of disk blocks used by all files in the file system.
+<br/>(d) A table, one per file, listing the disk blocks used by that file.
+
+</li><li> An inode based file system uses 4 Kbyte blocks and 4-byte block numbers. What is the largest file size that the file system can handle if an inode has 12 direct blocks, 1 indirect block, and 1 double indirect block?
+<br/>(a) Approximately 64 MB.
+<br/>(b) Approximately 1 GB.
+<br/>(c) Approximately 4 GB.
+<br/>(d) Approximately 16 GB.
+
+</li><li> When using metadata (ordered) journaling in a journaling file system:
+<br/>(a) The file system is implemented as a series of transaction records.
+<br/>(b) The overhead of journaling is reduced by writing file data blocks only to the journal.
+<br/>(c) The overhead of journaling is reduced by writing file data blocks only to the file system.
+<br/>(d) All file system updates are written into the journal in the order that they occur.
+
+</li><li> An advantage of using extents in a file system is that:
+<br/>(a) They can allow a small amount of pointers in the inode to refer to a large amount of file data.
+<br/>(b) No additional work is necessary to implement journaling.
+<br/>(c) They make it easier to find the block that holds a particular byte offset in a file.
+<br/>(d) They ensure that a file’s data always remains contiguous on the disk.
+
+</li><li> Differing from its predecessor, ext3, the Linux ext4 file system
+<br/>(a) Uses block groups .
+<br/>(b) Uses extents instead of cluster pointers.
+<br/>(c) Allows journaling to be enabled.
+<br/>(d) No longer uses inodes.
+</li>
+
+</ol>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> Exam Info </h2>
+	<ul>
+	<li> <a href="../index.html#list">List of topics</a>
+	<li> <a href="../study-guide-1.html">Exam 1 Study Guide</a> </li>
+	<li> <a href="../study-guide-2.html">Exam 2 Study Guide</a> </li>
+	<li> <a href="../study-guide-3.html">Exam 3 Study Guide</a> </li>
+	</ul>
+		<h2> Old exams </h2>
+	<ul>
+	<li> <a href="exam1-2012-s.html"> Spring 2012 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2012-s.html"> Spring 2012 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2012-s.html"> Spring 2012 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2011-s.html"> Spring 2011 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2011-s.html"> Spring 2011 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2011-s.html"> Spring 2011 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2010-f.html"> Fall 2010 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2010-f.html"> Fall 2010 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2010-f.html"> Fall 2010 &ndash; Exam 3</a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

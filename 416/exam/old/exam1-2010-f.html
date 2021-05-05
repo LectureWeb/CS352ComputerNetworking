@@ -1,0 +1,397 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 old exams: Exam 1 Fall 2010 </title>
+
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+#main ol h1 {
+	font-size: 140%;
+	margin-left: -1.3em;
+}
+#main ol li {
+	margin-bottom: 1em;
+}
+</style>
+</head>
+
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> 416 </a> 
+ 	<li> <a href="../../exam/index.html"> Exam info </a> 
+ 	<li> <a href="../../exam/old/index.html"> Old exams </a> 
+ 	<li> <a href="../../exam/old/exam1-2010-f.html"> Exam 1 Fall 2010 </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> CS 416 Exam 1 </h1>
+<h2>Fall 2010</h2>
+</div>
+
+<ol>
+<h1>Part I &ndash; 31 Points</h1>
+
+<li> 3 points<br/>
+To a programmer, a system call looks just like a function call. Explain the difference in the underlying implementation.
+</li>
+
+<li> 4 points <br/>
+Explain what is meant by chain loading.
+</li>
+
+<li> 4 points <br/>
+Is it possible to construct a secure operating system on processors that do not provide a privileged mode of operation? Explain why or why not.
+</li>
+
+<li> 4 points <br/>
+How many times does the following program print hello?
+<div class="codeblock">
+
+#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+
+main()
+{
+	if (fork() == 0)
+			printf("hello\n");
+   	else if (fork() == 0)
+		 printf("hello\n");
+   	printf("hello\n");
+}
+</div>
+</li>
+
+<li> 4 points <br/>
+What are two advantages of threads over processes?
+</li>
+
+<li> 4 points <br/>
+What is the advantage of having different time slice lengths at different levels in a multilevel feedback queue?
+</li>
+
+<li> 4 points <br/>
+What is busy waiting? How can it lead to priority inversion?
+</li>
+
+<li> 4 points <br/>
+We looked at using test & set locks to lock access to a critical section by using a shared variable:
+<div class="codeblock">
+
+	while (locked) ; /* loop until locked==0 */
+	locked = 1; /* grab the lock */
+	/* do critical section */
+	locked = 0; /* release the lock */
+</div>
+Unfortunately, this was buggy because there was a race condition
+between getting out of the while loop and setting locked to 1. Will
+this code fix it? Explain why (or why not).
+<div class="codeblock">
+
+wait:	while (locked);
+	if (locked == 1) goto wait; /* fix wait condition */
+	locked = 1;
+	/* do critical section */
+	locked = 0; /* release the lock */
+</div>
+
+</li>
+
+<h1>
+PART II &ndash; 69 points &ndash; 3 points each </h1>
+<p>
+For each statement, select the most appropriate answer.
+You may omit one question. Please clearly indicate the question you choose to omit.
+</p>
+
+<li> Multiprogramming (vs. multitasking) allows the operating system to:
+<br/>(a) interrupt a process to run another process.
+<br/>(b) switch execution to another process when the first process blocks on I/O or makes a system call.
+<br/>(c) allow a single process to take advantage of multiple processors.
+<br/>(d) distribute multiple processes across multiple processors in a system.
+
+</li><li> A semaphore puts a thread to sleep:
+<br/>(a) if it tries to decrement the semaphore's value below 0.
+<br/>(b) if it increments the semaphore's value above 0.
+<br/>(c) until another thread issues a notify on the semaphore.
+<br/>(d) until the semaphore's value reaches a specific number.
+
+</li><li> You have three processes on a system with the following performance requirements:
+        process A runs every 90 milliseconds, using 30 milliseconds of CPU time.
+        process B runs every 60 milliseconds, using 20 milliseconds of CPU time
+        process C runs every 500 milliseconds, using 10 milliseconds of CPU time
+Use rate-monotonic analysis to assign priorities to the three processes. Assume that priorities range from 0 to 90, with 0 being the highest and that no other processes will be running on the system. Which of the following is a valid set of priority assignments?
+<br/>(a)  PB=20, PA=40, PC=60
+<br/>(b)  PA=5, PB=60, PC=90
+<br/>(c)  PC=20, PB=40, PA=60
+
+</li><li> A processor switches execution from user mode to privileged mode via (more than one answer may be correct):
+<br/>(a) a software interrupt.
+<br/>(b) a programmable I/O.
+<br/>(c) a hardware interrupt.
+<br/>(d) memory mapped I/O.
+
+</li><li> Implementing preemption in operating systems relies on:
+<br/>(a) a programmable interval timer.
+<br/>(b) being able to switch to kernel mode.
+<br/>(c) having a modular operating system design.
+<br/>(d) programmable I/O.
+
+</li><li> The following is not a character device:
+<br/>(a) Webcam.
+<br/>(b) Printer.
+<br/>(c) DVD.
+<br/>(d) Mouse.
+
+</li><li> The master boot record (MBR):
+<br/>(a) loads the operating system from a boot partition.
+<br/>(b) loads a boot loader from a boot partition.
+<br/>(c) identifies disk partitions so the BIOS can load a boot loader from the proper partition.
+<br/>(d) contains code that is run as soon as the system is powered on or reset.
+
+</li><li> Which of these is not a component of the operating system?
+<br/>(a) Boot loader.
+<br/>(b) Process scheduler.
+<br/>(c) System memory manager.
+<br/>(d) File system driver.
+
+</li><li> Which component of a process is not shared across threads?
+<br/>(a) Register values.
+<br/>(b) Heap memory.
+<br/>(c) Global variables. 
+<br/>(d) Program memory.
+
+</li><li> The alternative to programmed I/O is:
+<br/>(a) memory-mapped I/O.
+<br/>(b) interrupt-driven I/O.
+<br/>(c) independent I/O.
+<br/>(d) direct memory access (DMA).
+
+</li><li> Which is not a valid process state transition?
+<br/>(a) running ? blocked.
+<br/>(b) running ? ready.
+<br/>(c) ready ? running.
+<br/>(d) blocked ? running.
+
+</li><li> A process control block (PCB) exists only for processes in:
+<br/>(a) the ready state.
+<br/>(b) ready and running states.
+<br/>(c) ready and blocked states.
+<br/>(d) ready, running, and blocked states.
+
+</li><li> The memory map of a multithreaded process looks similar to that of a single-threaded process except that the multithreaded one has:
+<br/>(a) a copy of the data segment per thread.
+<br/>(b) a stack for each thread.
+<br/>(c) a heap for each thread.
+<br/>(d) a heap and stack for each thread.
+
+</li><li> In a thread-aware operating system, a process control block (PCB) no longer includes:
+<br/>(a) saved registers.
+<br/>(b) process owner.
+<br/>(c) open files.
+<br/>(d) memory map. 
+
+</li><li> Mailboxes:
+<br/>(a) make it easy to support multiple readers.
+<br/>(b) make it possible to support multiple writers.
+<br/>(c) improve efficiency since messages do not have to copied to an intermediate entity.
+<br/>(d) all of the above. 
+
+</li><li> A CPU burst is:
+<br/>(a) an example of priority inversion where a low priority process gets access to the CPU.
+<br/>(b) a temporary increase in the priority of a process to ensure that it gets the CPU.
+<br/>(c) an unexpected increase in a process' need for computation.
+<br/>(d) the period of time that a process uses the processor between I/O requests. 
+
+</li><li> Compared to a non-preemptive scheduler, a preemptive scheduler can move processes from the:
+<br/>(a) running to the blocked state.
+<br/>(b) ready to the running state.
+<br/>(c) blocked to the ready state. 
+<br/>(d) running to the ready state.
+
+</li><li> A round robin scheduler:
+<br/>(a) favors processes that are expected to have a short CPU burst.
+<br/>(b) favors high priority processes.
+<br/>(c) dynamically adjusts the priority of processes based on their past CPU usage. 
+<br/>(d) gives each process an equal share of the CPU.
+
+</li><li> A shortest remaining time first scheduler:
+<br/>(a) dynamically adjusts the quantum based on the process.
+<br/>(b) favors processes that use the CPU for long stretches of time.
+<br/>(c) gives each process an equal share of the CPU.
+<br/>(d) tries to optimize mean response time for processes. 
+
+</li><li> Computing the weighted exponential average of previous CPU cycles is used for:
+<br/>(a) determining the length of a quantum for the process.
+<br/>(b) allowing a priority scheduler to assign a priority to the process.
+<br/>(c) having a round-robin scheduler sort processes in its queue. 
+<br/>(d) estimating the length of the next cycle.
+
+</li><li> Process aging:
+<br/>(a) helps estimate the length of the next compute period.
+<br/>(b) increases the runtime of a process.
+<br/>(c) is a count of the total CPU time used by the process and is stored in the PCB. 
+<br/>(d) improves the chances of a process getting scheduled to run.
+
+</li><li> Which statement about multilevel feedback queues is false? Multilevel feedback queues:
+<br/>(a) assign processes dynamically into priority classes.
+<br/>(b) give low priority processes a longer quantum.
+<br/>(c) favor interactive processes.
+<br/>(d) prioritize processes into classes based on their estimated CPU burst.
+
+</li><li> A hard deadline is one:
+<br/>(a) that is difficult to estimate.
+<br/>(b) where the computation has diminishing value if it is missed.
+<br/>(c) with an unknown termination time.
+<br/>(d) that cannot be missed.
+
+</li>
+</ol>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> Exam Info </h2>
+	<ul>
+	<li> <a href="../index.html#list">List of topics</a>
+	<li> <a href="../study-guide-1.html">Exam 1 Study Guide</a> </li>
+	<li> <a href="../study-guide-2.html">Exam 2 Study Guide</a> </li>
+	<li> <a href="../study-guide-3.html">Exam 3 Study Guide</a> </li>
+	</ul>
+		<h2> Old exams </h2>
+	<ul>
+	<li> <a href="exam1-2012-s.html"> Spring 2012 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2012-s.html"> Spring 2012 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2012-s.html"> Spring 2012 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2011-s.html"> Spring 2011 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2011-s.html"> Spring 2011 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2011-s.html"> Spring 2011 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2010-f.html"> Fall 2010 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2010-f.html"> Fall 2010 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2010-f.html"> Fall 2010 &ndash; Exam 3</a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

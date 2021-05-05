@@ -1,0 +1,1138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 Exam 2 Study Guide </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+.rqbox {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+        position: relative;
+	width: 15em;
+        background-color: #FDF5B6;
+        border-style: double; border-width: 3px;
+        padding: 0.5em 0.5em 0.5em 0.5em;
+}
+</style>
+</head>
+
+<body id="s_ru">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/small-logo.png" alt="pk.org" name="logo" width="97" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru416"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<P>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a>  </li>
+ 	<li> <a href="../index.html"> Rutgers CS 417 </a>  </li>
+ 	<li> <a href="../exam/index.html"> Exam info </a>  </li>
+ 	<li> <a href="../exam/study-guide-2.html"> Exam 2 study guide </a>  </li>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Exam 2 study guide </h1>
+<h2> The one-hour study guide for exam 2 </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> March 29, 2009 </p>
+</div>
+
+<p class="first">
+
+Disclaimer: 
+This study guide attempts to touch upon the most
+important topics that may be covered on the exam but does not claim to
+necessarily cover everything that one needs to know for the exam. Finally,
+don't take the <i>one hour</i> time window in the title literally.</p>
+
+<h1>Distributed file systems (continued)</h1>
+
+<h2>AFS</h2>
+
+<p>AFS was designed as an improvement over NFS to support file sharing on a
+massive scale. NFS suffered because clients would never cache data for a long
+time (not knowing if it would become obsolete) and had to frequently contact
+the server. AFS introduced the use of a partition on a client's disk to cache
+large amounts of data for a long time: <strong>whole file caching</strong> and
+<strong>long-term
+caching</strong>. It supports a file download-upload model. The entire file is
+downloaded on first access (<em>whole file download</em>) and uploaded back to
+the server after a <em>close</em> only if it was modified. Because of this
+behavior, AFS provides <strong>session semantics</strong>: the last one to
+close a modified file wins and other changes (earlier closes) are lost.</p>
+
+<p>During file access, the client need never bother the
+server: it already has the file. When a client first downloads a file, the
+server makes a <strong>callback promise</strong>: it maintains a list of each client that
+has downloaded a copy of a certain file. Whenever it gets an update for that
+file, the server goes through the list and sends a <em>callback</em> to each client
+that may have a cached copy so that it can be invalidated on the client. The
+next time the client opens that file, it will download it from the server.
+Files under AFS are shared in units called <strong>volumes</strong>. A volume is just a
+directory (with its subdirectories and files) on a file server that is assigned
+a unique ID among the <em>cell</em> of machines (remember cells from DCE RPC?).
+If an administrator decides
+to move the volume to another server, the old server can issue a <em>referral</em>
+to the new server. This allows the client to remain unaware of resource
+movement.
+</p>
+
+<h2>CODA</h2>
+<p>
+Coda was built on top of AFS and focused on two things: supporting
+replicated servers and disconnected operation. To support replicated
+storage, AFS's concept of a volume was expanded into that of a
+<strong>Volume Storage Group</strong> (<strong>VSG</strong>).
+Before a client accesses a file, it
+first looks up the <strong>replicated volume ID</strong> of the file to get the list
+of servers containing replicated volumes and the respective local
+volume IDs. While it can read files from any available server, it
+first checks the versions from <i>all</i> of them to ensure that one or
+more servers don't have out-of-date files. If the client discovers
+that a server has an old version of a file, it initiates a <strong>resolution
+process</strong> by sending a message to that server. When 
+a client closes a file, if there were any modifications, the changes
+are written out to all available replicated volumes.
+</p>
+
+<p>
+If no servers are
+available for access, the client goes into <strong>disconnected operation
+mode</strong>. In this mode, no attempt is made to contact the server and
+any file updates are logged instead in a <strong>client modification log</strong>
+(<strong>CML</strong>). Upon connection, the client plays back the log to send updated
+files to the servers and receive invalidations. If conflicts arise
+(e.g., the file may have been modified on the server while the
+client was disconnected) user intervention may be required.
+</p>
+<p>
+Because there's a chance that users may need to access files that are
+note yet in the local cache, Coda supports <strong>hoarding</strong>,
+which is a term for user-directed caching. It provides a user interface
+that allows a user to look over what is already in the cache and
+bring additional files into the cache if needed. 
+</p>
+
+<h2>DFS (AFS version 3)</h2>
+<p>
+AFS evolved over the years. The most significant evolutionary version
+is version 3, which was adopted as the recommended distributed file
+system in the Distributed Computing Environment (DCE) where it is
+named DFS (Distributed File System).
+
+The primary design goal of
+this system was to avoid the unpredictable lost data problems of
+session semantics if multiple clients are modifying the same file.
+The concept of <em>tokens</em> was introduced. A <strong>token</strong> is permission given
+by the server to the client to perform certain operations on a file
+and cache a file's data.
+The system has four classes of
+tokens: <i>open</i>, <i>data</i>, <i>status</i>, and <i>lock</i>
+tokens. An <i>open</i> token must be obtained to have permission to open
+a file. A <i>read</i> data token must be obtained for a byte range of a
+file to have permission to access that part of the file. Similarly,
+a <i>write</i> data token is needed to write the file. <i>Status</i> tokens tell
+the client that it may be able to cache file attributes. These
+tokens give the server control over who is doing what to a file.
+Tokens are granted and revoked by the server. For example, if one
+client needs to write to a file then any outstanding <i>read</i> and <i>write
+data</i> tokens that were issued to any clients for that byte range get
+revoked: those clients are now denied access until they get new
+tokens.
+</p>
+
+<h2>
+SMB/CIFS
+</h2>
+<p>
+Microsoft's <b>Server Message Block</b> protocol was designed as a
+connection-oriented, stateful file system with a priority on file
+consistency and support of locking rather than client caching and
+performance. While it does not use remote procedure calls, its
+access principle is the same: requests (message blocks) are 
+functional messages, providing file access commands such as open, create,
+rename, read, write, and close.
+</p>
+<p>
+With the advent of Windows NT 4.0 and an increasing
+need to provide improved performance via caching, Microsoft introduced
+the concept of <strong>opportunistic locks</strong>
+(<strong>oplocks</strong>) into the operating
+system. This is a modified form of DFS's tokens. An oplock tells
+the client how it may cache data. At any time, a client's oplock
+may be revoked or changed by the server. A <strong>level 1 oplock</strong> tells the
+client that it has exclusive access to the file (nobody else is
+reading or writing it), so it can cache lock information, file
+attributes, and perform read-aheads and write-behinds. A <trong>level 2
+oplock</strong> is granted if one or more clients are reading the file and
+one process is writing it. For example, a process that had a level
+1 oplock will have it revoked and replaced with a level 2 oplock
+if another process opens the file for reading. In this case, read
+operations and file attributes may be cached but everything else
+is sent to the server. If two or more processes open a file for
+writing, then the level 2 oplock will be revoked and the client
+will have to perform all operations directly against the server.
+</p>
+
+<h2>xFS</h2>
+<p>
+Traditional distributed file systems are not truly distributed but
+rely on a central server to serve a set of directories. Some systems,
+such as CODA, support replicated servers. Berkeley's xFS is
+proof-of-concept serverless file system, where any machine can
+store, cache or control any block of data. Any machine can also
+assume the responsibilities of any failed component
+</p>
+
+<h2>Google File System (GFS)</h2>
+<p>
+The Google File System is an application-specific file system: it is
+designed to be optimal for the needs of the Google search application.
+The system is designed for an environment where there are many thousands
+of storage servers, some of which are expected to be down at any
+given point in time. THe data managed comprises of billions of objects
+and many terabytes (petabytes, likely). 
+</p>
+<p>
+Each GFS cluster contains one <strong>master</strong> file server. This
+is a faster and more reliable machine that contains file system metadata, 
+such as names and attributes of files and directories. None of the actual
+file data resides on this system. Instead, it contains a mapping of
+the file contents to the <strong>chunks</strong> that hold the data.
+Chunks are stored in <strong>chunkservers</strong>. The chunkservers
+are less reliable than the master and are replicated so that each chunk
+is stored on at lease three separate chunkservers.
+</p>
+<p>
+Clients contact the master to look up files. The master gives them
+a chunkserver name and chunk ID numbers for the files requested.
+</p>
+
+<h2>WebDAV</h2>
+<p>
+WebDAV is a file access protocol built as an extention to the standart HTTP
+commands. Additional HTTP commands were added to copy and move resources,
+manage directory structures, and lock/unlock resources.
+</p>
+<p>
+Many popular applications use WebDAV (Apple's iCal and iDisk, Microsoft
+Exchange and IIS) and it is supported as a network file system type by
+popular operating systems (Linux, OS X, Windows).
+</p>
+
+<h2>GmailFS</h2>
+<p>
+GmailFS is an example of writing a custom file system to take advantage of
+the free storage provided by Gmail (over 7 GB). Each message
+represents a file. Subject headers identify
+the file system name so the interface can find all relevant messages that
+constitute the "file system". They also contain file names and other
+metadata (symbolic link information, user ID, size, etc.). The actual
+file data resides in attachments to the message.
+</p>
+
+<!-- 
+<h1>Distributed transactions</h1>
+<p>
+A key facet of a transaction is that it has to be <b>atomic</b> &mdash;
+all results have to be made permanent (<b>commit</b>) and appear as an
+indivisible action. If a transaction cannot complete, it must <b>abort</b>,
+reverting the state of the system to that before it ran. If several
+transactions run concurrently, the end result must be the same as
+if they ran in some (any) serial order.
+</p>
+<p>
+A <b>write-ahead log</b> (or transaction log) is crucial for <b>rollback</b>
+(reverting to the previous state when aborting a transaction). It
+is also crucial for maintaining state in a stable place in case the
+system should die; it allows the system to recover from where it
+was in the transaction.
+</p>
+<p>
+The <b>two-phase commit protocol</b> uses a coordinator send a request
+(<i>"can you commit?"</i>) to every member of the group (reliably,
+retransmitting as often as needed until all replies are received).
+Phase 1 is complete when every member of the group responds. If the
+coordinator gets even a single abort response, it will have to tell
+all group members to abort the entire transaction. Otherwise, it
+can tell everybody to commit it. In phase 2, the coordinator sends
+the commit or abort order and waits for a response from everyone.
+The write-ahead log is crucial here (not for rollback!). For example,
+if a machine sent the coordinator a "commit" response for phase 1
+and then died, it must be able to reboot and reconstruct the
+transaction state from the log; it cannot change its mind.
+</p>
+-->
+
+<h1>
+Logical clocks
+</h1>
+<p>
+<strong>Lamport clocks</strong> allow one to assign sequence numbers ("timestamps")
+to messages and other events so that all cooperating processes can
+agree on the order of related events. There is no assumption of a central
+time source and no concept of total ordering (<i>when</i> events took
+place). The central concept with logical clocks is the <strong>happened-before</strong>
+relation: <strong><i>a&rarr;b</i></strong> represents that event <i>a</i> occurred before event <i>b</i>. This
+order is imposed upon consecutive events at a process and also upon
+a message being sent before it is received at another process.
+Beyond that, we can use the transitive property of the relationship
+to determine causality: if <i>a&rarr;b</i> and <i>b&rarr;c</i> then <i>a&rarr;c</i>.
+If there is no <strong>causal</strong>
+relationship between two events (e.g., they occur on different
+processes that do not exchange messages or have not yet
+exchanged messages), the events are <strong>concurrent</strong>.
+</p>
+<p>
+Lamport's algorithm states that every event is timestamped (assigned
+a sequence number) and each message carries a timestamp of the
+sender's clock (sequence number). A message comprises two events:
+(1) at the sender, we have the event of sending the message
+and (2) at the receiver, we have the event of receiving the
+message. The clock is a process-wide counter (e.g., a global variable)
+and is always incremented before each event. When a message arrives,
+if the receiver's clock is less than or equal to the message's
+timestamp, the clock is set to the <i>message timestamp + 1</i>. This
+ensures that the timestamp marking the event of a received message
+will always be greater than the timestamp of that sent message.
+</p>
+<p>
+One problem with Lamport timestamps is that multiple events on
+different processes may all be tagged with the same timestamp. We
+can force each timestamp to be unique by suffixing it with a globally
+unique process number. While these new timestamps will not relate
+to real time ordering, they will be unique numbers that can be used
+for consistent comparisons of timestamps (e.g., if we need to make
+a decision on who gets to access a resource based on comparing two timestamps).
+</p>
+<p>
+A second deficiency with Lamport timestamps is that, by looking at
+timestamps, one cannot determine whether there is a causal relationship
+between two events. For example, just because event <i>a</i> has a timestamp
+of 5 and event <i>b</i> has a timestamp of 6, it does not imply that event
+<i>a</i> happened before event <i>b</i>. A way to create timestamps that allow
+us to discern causal relationships is to use a vector clock. A
+<strong>vector clock</strong> is no longer a single value but rather a vector of
+numbers, each element corresponding to a process. Before affixing
+a vector timestamp to an event, a process increments the element
+of its local vector that corresponds to its position in the (for
+example, process 0 increments element 0 of its vector; process 1
+increments element 1 of its vector). When a process receives a
+message, it sets the vector of the event to one that contains the
+higher of two values when doing and element-by-element comparison
+of the original event's vector and the vector received in the
+message. This becomes the new per-process vector from which future
+events on that process will be timestamped. For example, in an
+environment of four processors, P<sub>1</sub> will "own" the second element
+of the vector. If one event on P<sub>1</sub> is (2, 4, 0, 1) then the next
+event will be (2, 5, 0, 1). If the event after that is the receipt
+of  a message with a timestamp of (3, 2, 9, 8) then the timestamp
+will be created by setting an element-by-element maximum of (2, 6,
+0, 1) and (3, 2, 9, 8), which is (3, 6, 9, 8). We can illustrate this
+with the following pseudocode where <code>e</code> is the system's
+vector counter and <code>r</code> is the received vector timestamp:
+</p>
+<div class="codeblock">
+/* receive message with vector timestamp r */
+e[myproc]++;	/* increment our process' index */
+for (i=0; i &lt; num_procs; i++) {
+	if (e[i] &lt; r[i])
+		e[i] = r[i];
+}
+</div>
+<p>
+Two events are concurrent if one vector timestamp is neither greater
+than or equal nor less than or equal to the other element when doing
+an element-by-element comparison. For example, events (2, 4, 6, 8)
+and (3, 4, 7, 9) are not concurrent (i.e., they are causally related)
+because every element of the first vector is less than or equal to
+the corresponding element of the second vector. The vectors (2, 4,
+6, 8) and (1, 5, 4, 9) represent concurrent events. Neither vector
+is less than or equal to the other. For instance, 2  &ge; 1 (first
+element of the first vector is greater than the first element of
+the second vector) but 4 &le; 5 (second element of the first vector
+is less than the second element of the second vector).
+</p>
+
+<h1>
+Clock synchronization
+</h1>
+<p>
+No two clocks tick in perfect synchrony with each other.  The
+difference between two clocks at any given instant is the clock
+<strong>skew</strong>. The <i>rate</i>
+at which the clocks are drifting is the clock <strong>drift</strong>. A
+<strong>linear compensating function</strong> adjusts the rate at which time
+is measured on a computer (e.g., number of ticks that make up a
+second).
+</p>
+<p>
+<strong>Cristian's algorithm</strong> sets the time on a client to the time
+returned by the server plus an offset that is one half of the transit
+time between the request and response messages: T<sub>client</sub>
+= T<sub>server</sub> + &frac12;(T<sub>received</sub> - T<sub>sent</sub>).
+It also allows one to compute the maximum error of the new time
+stamp. The error is &plusmn; &frac12;[(round-trip time) - (best-case round-trip
+time)]. Errors are additive. If you incur an error of &plusmn;50
+msec and the server's clock source has an error of &plusmn;80 msec,
+your clock's error is now &plusmn;130 msec.
+</p>
+<p>
+The <strong>Berkeley algorithm</strong> does not assume the presence of a
+server with an accurate time (i.e., one that keeps track of UTC
+time).  Instead, one system is chosen to act as a coordinator. It
+requests the time from all systems in the group (including itself)
+and computes a <strong>fault-tolerant average</strong> (an arithmetic average,
+dismissing systems whose time values differ by more than a certain
+amount). It then sends each machine an offset by which to adjust
+its clock.
+</p>
+<p>
+The <strong>Network Time Protocol</strong>, NTP, was created to allow a large
+set of machines to synchronize their clocks. A set of machines acts
+as time servers &ndash; this collection of machines is the
+<strong>synchronization subnet</strong>. The subnet is hierarchical, with the
+time server's <strong>stratum</strong> defined as the number of hops it is
+from a machine that synchronizes from a direct time source. Machines
+that are directly connected to a time source (e.g., a GPS receiver)
+are at stratum 0. Machines that synchronize from a system at stratum
+0 are at stratum one, and so on. The <strong>Simple Network Time
+Protocol</strong>, <strong>SNTP</strong>, is a restricted form of NTP that does
+not support peer-to-peer synchronization of time servers. The
+peer-to-peer mode maintains state on drift and synchronization
+time and is intended for time servers to synchronize with each other.
+SNTP is essentially the same as Cristian's algorithm.
+The formula for SNTP is
+<i>time_offset</i> = &frac12; (T<sub>2</sub> - T<sub>1</sub> + T<sub>3</sub> - T<sub>4</sub>)
+where
+T<sub>1</sub> is the time the message left the client,
+T<sub>2</sub> is the time it arrived at the server,
+T<sub>3</sub> is the time the response left the server,
+and T<sub>4</sub> is the time that it arrived at the client.
+If we let T<sub>S</sub> = &frac12;(T<sub>2</sub>+T<sub>3</sub>) then we arrive at Cristian's formula.
+</p>
+
+<h1>
+Distributed Lookup Services
+</h1>
+<p>
+The purpose of a distributed lookup service is to find the machine that has
+data that corresponds to a <strong>key</strong> that you have. For example,
+the key can be the name of the song and the machine is one that is hosting
+the MP3 file.
+</p>
+<p>
+The most straightforward approach is to use a <strong>central server</strong> to store all
+the keys and their mapping to machines. You ask the server to look up a
+key and it gives you the machine containing the content. This is the classic
+Napster implementation.
+</p>
+<p>
+Another approach is to "<strong>flood</strong>" the network with queries. 
+What happens here is that your machine knows of a few peer machines.
+Those machines, in turn, know of other peer machines. When a machine needs
+to look up a key, it forwards the request to all of its peer nodes.
+If one of the peers has the content, then it responds. Otherwise, it forwards
+the request to its peers (and they forward the request to their peers ...).
+This approach was used by the Gnutella file sharing system.
+</p>
+<p>
+Finally, the <strong>distributed hash table</strong> (<strong>DHT</strong>)
+approach is a set of solutions that is
+based on hashing the search key to a number that is then used to find the
+node responsible for items that hash to that number (or a range of numbers).
+A key difference between the DHT approach and the
+centralized or flooding approaches is that a specific node is responsible for
+holding information relating to the key: the one that is responsible
+for managing <i>hash(key)</i>.
+</p>
+
+<h1>
+Group communication
+</h1>
+<p>
+Point-to-point communication is known as <strong>unicast</strong>. This is
+what we generally use to communicate a single client and server.
+There are other modes of communication. <strong>Broadcast</strong> is the
+sending of data to every node on the network. <strong>Anycast</strong> is
+point-to-point communication (as in unicast) but the receiver is
+the nearest one of receivers with specific capabilities (for example,
+IPv6 uses this to allow a host to update the routing table of the
+nearest host). Finally, there's <strong>group</strong> communication, known
+as <strong>multicast</strong>. This is point-to-multipoint communication. A
+message gets sent to everyone in the group. One implementation of
+multicast is known as <strong>netcast</strong>. This simulates hardware
+multicast by invoking multiple unicasts, one to each recipient.
+There are two considerations in group communication (multicast):
+reliability and message ordering.
+</p>
+
+<h2>
+Reliability
+</h2>
+<p>
+An <strong>atomic multicast</strong> requires that a message must reach all
+group members (if one node cannot get the message, no others can
+process it). This multicast must survive machines going down &ndash; both the
+sender and/or receivers. Because
+of this, it requires the most overhead in implementation, often
+employing persistent logs.
+</p>
+
+<p>
+A <strong>reliable multicast</strong> is a best-effort multicast. The sender
+sends a message and waits for an acknowledgement. If it doesn't
+receive the acknowledgement in time, it will retransmit the message.
+Eventually, after a longer interval of time, it will give up and
+assume the receiver is dead.
+</p>
+
+<p>
+An <strong>unreliable multicast</strong> doesn't wait for acknowledgements
+and will generally use whatever underlying multicast mechanism is
+provided.
+</p>
+
+<h2>Message ordering</h2>
+
+<p>
+The issue in message ordering is that multiple nodes can be sending
+messages to the entire group at the same time. Will each node receive
+all the messages in the exact same order? Will each node receive
+all the messages in the order they were sent?
+</p>
+
+<p>
+<strong>Global time ordering</strong> requires that all messages arrive in
+the <i>exact</i> order they were sent: if node <i>A</i> sent a
+message 5 nanoseconds before node <i>B</i> did then all nodes should
+receive the message from node <i>A</i> first. This is impossible
+to implement (clocks can't be that perfectly synchronized and the
+chance of a tie always arises; also, networks will not be able to
+guarantee this kind of ordering if routing is involved). A more
+practical approach is <strong>total ordering</strong>. This requires that all
+messages arrive in the same order at all nodes. This can be easily
+achieved by providing a mechanism for obtaining a totally sequenced
+message ID: for example, from a sequence number server.
+</p>
+
+<p>
+<strong>Causal ordering</strong> is the ordering you would get by attaching
+Lamport time stamps to messages. The ordering of unrelated (concurrent)
+messages is insignificant, but causally related messages will be
+in the proper order. Sync ordering guarantees that all messages from 
+a specific sender will arrive in FIFO (first-in, first-out) order.
+</p>
+<p>
+<strong>Sync ordering</strong> requires a special type
+of message &mdash; a <i>sync message</i>. When this is issued, any
+messages that were already sent have to be processed (and acknowledged
+to the senders). The sync assures that any messages sent before the
+sync will be processed before any messages after the sync (globally
+&ndash; for all nodes).
+</p>
+
+<p>
+Finally, an <strong>unordered multicast</strong> doesn't impose any message
+ordering among messages from other nodes. It may choose to impose
+FIFO (first in, first out) ordering on messages from a particular
+source (e.g. as TCP does).
+</p>
+
+<h2>IP multicast</h2>
+
+<p>
+An IP multicast address (also known as a class D address) contains
+a 28-bit multicast address. A host may join this address and receive
+messages addressed to that multicast ID. Within a LAN, an IP class
+D address is mapped onto an Ethernet multicast address by copying
+the least-significant 23 bits of the address onto an Ethernet
+multicast address. Within a LAN, an ethernet chip is programmed to
+to perform an <strong>exact match</strong> on a small set
+of addresses or to accept addresses that
+<strong>hash</strong> to particular values. The ethernet driver will need to remove
+any unneeded addresses that pass through. The ethernet chip can also
+be set to <strong>multicast promiscuous mode</strong>, where it will 
+accept all multicast ethernet packets.
+</p>
+<p>
+The <strong>Internet Group Management Protocol</strong>
+(<strong>IGMP</strong>) manages membership beyond a LAN. A node broadcasts a
+<i>multicast join</i> message to join a specific group. A multicast-aware
+router will pick this message up and sent the join message to other
+connected networks (this way a spanning tree is built, ultimately
+forwarding the request to the source). Periodically, each router
+sends a <i>query</i> message for each multicast group. If any node
+(or router) is still interested in the group, it must send a
+<i>join</i> message. If no <i>join</i> messages are received, then
+the router will stop responding to <i>join</i> messages and the LAN
+will no longer receive packets for that group.
+</p>
+
+<h1> Distributed Authentication via OpenID </h1>
+
+<p>
+<strong>OpenID</strong>
+was created to solve the problem of how a user can manage multiple identities 
+(logins and passwords) at many different web sites. 
+ user logs in with a URI from which the name of the user's <strong>Identity 
+Provider</strong> can be fetched. OpenID Identity Providers are responsible for authenticating 
+users (typically with a login and password) and storing various user attributes.
+</p>
+<p>
+When a user enters a login URI, the
+web site, known as a <strong>relying party</strong> issues a redirect to the user's browser,
+taking it to the user's OpenID Identity Provider login page. The user authenticates with
+the Identity Provider, which then sends a redirect back to the originating web site.
+This redirect contains a digitally-signed user credentials. The web site validates these
+either using a cached secret key that it has previously established with the Identity
+Provider or else it connects to the Identity Provider via HTTPS and
+requests authentication information directly and compare that with what it received
+via the browser redirect (this guards against a malicious attacker).
+If the site is convinced that the credentials are genuine then the user is considered
+to be logged in.
+</p>
+<p>
+Through the Identity Provider, the user can control how many logins should be 
+allowed (e.g. one, one per day, etc.) before the user has to intervene. The user
+can also control what attributes get sent to each site requesting user credentials.
+</p>
+
+
+<h1>Mutual exclusion</h1>
+
+<p>
+The <strong>centralized algorithm</strong> is a server that accepts <i>REQUEST</i>
+messages for a resource (e.g., critical section). If nobody is using
+the resource, it responds with a <i>GRANT</i> message. If somebody
+is using the resource, it doesn't respond. When a client is done
+with a resource, it sends the server a <i>RELEASE</i> message. The
+server then sends a <i>GRANT</i> message to the next client in the
+queue (if there is one).
+</p>
+
+<p>
+The <strong>token ring</strong> algorithm creates a logical communication
+ring among the nodes in the group. A message, called a <i>token</i>,
+is created for each resource. This token is passed from node to
+node along the ring. If a node receives a token and does not need
+to access that resource, it simply passes the token to the next
+node. Otherwise, it will hold on to the token until it is done
+with the resource.
+</p>
+
+<p>
+The <strong>Ricart &amp; Agrawala</strong> algorithm was an early demonstration
+that a truly distributed algorithm is possible. A node that wants
+to enter a critical section sends a request to <i>all</i> other
+nodes in the group and waits for all of them to respond. If another
+node is currently using the critical section, that node delays its
+response until it is done. If node <i>A</i> and node <i>B</i> sent
+out requests concurrently (i.e., two systems want the same resource
+concurrently), each system compares the timestamp of that request
+with that of its own request. If node <i>A</i> received a request
+from node <i>B</i> that is older (a lower timestamp), then node
+<i>A</i> will give node <i>B</i> priority to access the resource
+by sending a response to node <i>B</i> . Otherwise, if node <i>A</i>
+has the earlier timestamp, it will queue the request from <i>B</i>
+and continue to wait for all acknowledgements, sending a response
+to <i>B</i> (and any other nodes who wanted the resource) only when
+it is done using the resource. The key point is that nodes <i>A</i>
+and <i>B</i> will make the same comparison and exactly one will
+hold back on sending the response.
+</p>
+
+<p>
+<strong>Lamport's </strong>algorithm, like the Ricart &amp; Agrawala algorithm,
+is also based on reliable multicast.  This algorithm has a node
+send a timestamped request to <i>all</i> nodes in the group, including
+itself. Every message is acknowledged immediately. A process decides
+whether it can access the resource by checking whether its own
+request is the earliest one in the queue of all requests that it
+has received. If so, it accesses the resource and, when done, sends
+a <i>release</i> to all members (including itself). The receipt of
+a <i>release</i> message causes each process to remove the process
+from the ordered queue. If a process now finds itself as the earliest
+process in the queue, it knows that it is now its turn to access
+the resource.
+</p>
+
+<h1>Election algorithms</h1>
+<p>
+The <strong>bully algorithm</strong> selects the largest process ID as the
+coordinator. If a process detects a dead coordinator, it sends an
+<i>ELECTION</i> message to all processes with a higher ID number
+and waits for any replies. If it gets none within a certain time,
+it announces itself as a coordinator. When a process receives an
+<i>ELECTION</i> message it immediately sends a response back to the
+requestor (so the requestor won't become the coordinator) and holds
+an election to see if there are any higher-numbered processes that
+will respond.
+</p>
+
+<p>
+The <strong>ring algorithm</strong> requires a logical communication ring
+among the nodes in the group. When a process detects a non-responding
+coordinator, it creates an <i>ELECTION</i> message with its own
+process ID and sends it to the next node on the ring. If the node
+is dead, it sends it to the following node (skipping dead nodes
+until it finds one that can receive the message). When a node
+receives an <i>ELECTION</i> message, it adds its own process ID to
+the body and sends that message out to the neighboring node. When
+the election message circulates back to the original sender, the
+sender gets the list of active nodes from the body and chooses a
+coordinator from among them (e.g., highest ID).
+</p>
+
+<p>
+One problem with election algorithms is when a network gets segmented:
+one set of nodes is separated from another. In this case, each
+segment may elect its own coordinator and problems can arise. This is known
+as a <strong>split brain</strong> situation. To
+combat this, a redundant network is needed (or some alternate
+communication mechanism to enquire about the state of nodes).
+</p>
+
+<h1>Distributed shared memory</h1>
+
+<p>
+Distributed shared memory (DSM) is a mechanism to allow processes
+on different machines to have the illusion of sharing memory (i.e.,
+being able read data from memory that another process wrote to
+memory).  Transparency is generally achieved through the system's
+memory management unit (MMU). When a page fault occurs, the page
+fault handler invokes the DSM algorithm, which can fetch the page
+from another server, map it into the process' address space and
+restart the instruction. A <strong>directory</strong> is the server, or set
+of servers that allows a node to find out where the needed page
+lives (and possibly where cached copies reside).
+</p>
+
+<p>
+A well-defined memory consistency models is key to DSM is the
+algorithms must enforce the model. <strong>Sequential consistency</strong>
+is what we generally expect from a memory system. A read always
+returns the result of the last write for a given instruction stream.
+For multiple streams (concurrent processes), any interleaving is
+acceptable as long as accesses within each stream are in sequential
+order. To achieve sequential consistency, each <i>write</i> operation
+must invalidate or update all cached copies before the <i>write</i>
+completes. Since writes have to be visible in the same order by all
+processes, a <i>read</i> cannot take place until the write is
+acknowledged.
+</p>
+
+<p>
+Presenting sequential consistency is an expensive proposition, since
+considerable network activity has to take place for <i>each</i>
+write operation. To enhance performance, weaker consistency models
+can be employed.
+</p>
+
+<p>
+A <strong>weak</strong> (or <strong>relaxed</strong>) consistency model requires that
+memory be consistent only at specific synchronization events. For
+example, a <strong>sync</strong> <strong>variable</strong> is an operation that will
+force all local operations to be propagated out and remote operations
+on memory to be brought in. This way, memory is made consistent
+explicitly on a <i>sync</i> rather than for each operation. <strong>Release
+consistency</strong> allows us to break up the operations of sending out
+changes and receiving updates into two parts: an <strong>acquire</strong>
+phase and a <strong>release</strong> phase. An <i>acquire</i> indicates that
+the processor is about to perform operations on the memory and needs
+to get any updates from other processors. A <i>release</i> indicates
+that the processor is done with its operations on the memory. Any
+of the processor's writes now have to be made visible to a processor
+doing a subsequent <i>acquire</i>. There are two variants of release
+consistency: <strong>eager</strong> and <strong>lazy</strong>. The eager protocol ensures
+that all copies of pages on other nodes are updated with the contents
+of the newly-modified pages when a processor performs a <i>release</i>
+operation. In fact, page invalidations may be sent during program
+execution and the <i>release</i> operation itself is a blocking on
+that ensures that all invalidations have been acknowledged. The
+lazy protocol does not bother to update or invalidate existing
+copies of the pages upon a <i>release</i> (on the assumption that
+those nodes with cached copies of the page might never even access
+the page again). Instead, page invalidations are propagated at
+<i>acquire</i> time.
+</p>
+
+<p>
+Finally, <strong>entry consistency</strong> allows the <i>acquire</i>
+and <i>release</i> operations to take place on regions of memory
+(such as individual variables or data structures) rather than all
+of shared memory.  To achieve entry consistency, one must employ
+smart compilers or control the consistency explicitly since the
+system's MMU cannot protect these boundaries.
+</p>
+
+<h1>Cryptography</h1>
+
+<p>
+Cryptography deals with encrypting <strong>plaintext</strong> using
+a <strong>cipher</strong> (also known as an <strong>encryption algorithm</strong>
+to create <strong>ciphertext</strong>, which is unintelligible to anyone
+unless they can <strong>decrypt</strong> the message.
+</p>
+<p>
+A <strong>restricted cipher</strong> is one where the workings of the cipher
+must be kept secret. There is no reliance on a key and the secrecy of the cipher
+is crucial to the value of the algorithm. This has obvious flaws (people in the
+know leaking the secret, coming up with a poor algorithm, reverse engineering).
+For any serious encryption, we use non-secret algorithms that rely on secret keys.
+</p>
+<p>
+A <strong>symmetric encryption algorithm</strong> uses the same secret key
+for encryption and decryption. A <strong>public key algorithm</strong> uses
+one key for encryption and another for decryption. One of these
+keys is kept private (known only to the creator) and is known as
+the <strong>private key</strong>. The corresponding key is generally made
+visible to others and is known as the <strong>public key</strong>.  Anything
+encrypted with the private key can only be decrypted with the public
+key. This is the basis for digital signatures.  Anything that is
+encrypted with a public key can be encrypted only with the corresponding
+private key. This is the basis for authentication and covert
+communication.
+</p>
+
+<p>
+A <strong>one-way function</strong> is one that can be computed relatively
+easily in one direction but there is no direct way of computing the
+inverse function. One-way functions are crucial in a number of
+cryptographic algorithms, including digital signatures, Diffie-Hellman
+key exchage, and RSA public key cryptography. For Diffie-Hellman
+and RSA keys, they ensure that someone cannot generate the corresponding
+private key when presented with a public key. A particularly useful
+form of a one-way function is the <strong>hash function</strong>. This is a
+one-way function whose output is always a fixed number of bits for
+any input. For good cryptographic hash functions, 
+it is highly unlikely that two messages will ever
+hash to the same value, it is extremely difficult to construct
+text that hashes to a specific value, and it is extremely difficult
+to modify the plaintext without changing its hash.
+The hash function is the basis for message authentication
+codes and digital signatures. Note that when we talk about 
+cryptography and mention phrases like "<i>extremely difficult</i>", 
+we mean "<i>impossible for all practical purposes</i>," not that
+you can do it if you spend an entire day working on the problem.
+</p>
+
+<h2>Monoalphabetic substitution ciphers</h2>
+<p>
+The earliest form of cryptography was the <strong>substitution
+cipher</strong>. In this cipher, each character of
+plaintext is substituted with a character of ciphertext based on a substitution
+alphabet (a lookup table). The simplest of these is the <strong>C&aelig;sar</strong>
+cipher, in which a plaintext character is replaced with
+a character that is <i>n</i> positions away in the alphabet. The key is
+the number <i>n</i>. Substitution ciphers are
+vulnerable to <strong>frequency analysis attacks</strong>, in which an analyst
+analyzes letter frequencies in ciphertext and substitutes characters with those
+that occur with the same frequency in natural language text (e.g., if "x"
+occurs 12% of the time, it's likely to really be an "e" since "e" occurs in
+English text approximately 12% of the time while "x" occurs only 0.1% of the time).
+</p>
+
+<h2>Polyalphabetic substitution ciphers</h2>
+<p>
+Polyalphabetic ciphers were designed to increase resiliency against
+frequency analysis attacks. Instead of using a single plaintext to
+ciphertext mapping for the entire message, the substitution alphabet
+may change periodically. In the Alberti cipher (essentially a secret
+decoder ring), the substitution alphabet changes every <i>n</i>
+characters as the ring is rotated one position every <i>n</i>
+characters. The Vigen&egrave;re cipher is a grid of C&aelig;sar
+ciphers that uses a key. The next character of
+the key determines which C&aelig;sar cipher (which row of the grid)
+will be used for the next character of plaintext. The position of
+the plaintext character identifies the column of the grid.
+</p>
+
+<h2>Rotor-Machines</h2>
+<p>
+A rotor machine is an electromechanical device that implements
+a polyalphabetic substitution cipher. It uses a set of disks (rotors), 
+each of which implements a substitution cipher.
+The rotors rotate with each character in the style of an odometer (after a
+complete rotation of one rotor, the next rotor advances one position).
+This allows for a huge number of substitution alphabets to be
+employed before they start repeating (the rotors all reach their
+starting position). The number of alphabets is <i>c<sup>r</sup></i>, where
+<i>c</i> is the number of characters in the alphabet and <i>r</i> is
+the number of rotors.
+</p>
+<p>
+An input character creates
+a circuit that goes through the set of disks. Each disk has a set of
+input and output contacts and wiring within that permutes an input
+to an output (implementing a substitution alphabet). 
+</p>
+
+
+<h2>Transposition ciphers</h2>
+
+<p>Instead of substituting one character of plaintext for a
+character of ciphertext, a transposition cipher scrambles the position of the
+plaintext characters. Decryption is the knowledge of how to unscramble them.
+</p>
+
+<h2>One-time Pads</h2>
+
+<p>
+The <strong>one-time pad</strong> is the only provably secure cipher. It
+requires a completely random key that is as long as the plaintext.
+Each character of plaintext is permuted by a character of ciphertext
+(e.g., add the characters modulo the size of the alphabet or
+exclusive-or binary data). The reason this cryptosystem is not
+particularly useful is because the key has to be as long as the
+message, so transporting the key securely becomes a problem. The
+challenge of sending a message securely is now replaced with the
+challenge of sending the key securely. Moreover, the recipient needs
+to have a key that is as long as all the messages that a sender
+might send and the sender's and recipient's position in the key
+(pad) must be synchronized at all times. Error recovery from
+unsynchronized keys is not possible. Finally, for the cipher
+to be secure, a key must be composed of truly random characters, not
+ones drived by an algorithmic pseudorandom number generator.
+Because the key is as long as
+a message, any ciphertext can be converted to any plaintext, depending
+on the key that is used.
+</p>
+
+<h2>DES</h2>
+<p>
+The Data Encryption Standard, DES, was standardized in 1976 and is a
+block cipher that encrypts 64-bit chunks of data at a time. It uses
+a 56 bit key and employs 16 iterations of substitutions followed by
+permutations.
+</p>
+<p>
+The only serious weakness of DES is its key 56-bit key. By the 1990s
+it was possible to build machines that can iterate through all of the
+2<sup>56</sup> permutations of keys within a few hours. Networked efforts
+can also test hundreds of billions of keys per second.
+</p>
+<p>
+To prevent against such a <strong>brute force attack</strong>, DES would
+need a longer key. <strong>Triple-DES</strong> solves this
+problem by using the standard
+56-bit DES algorithm three times:
+</p>
+<blockquote>
+	C = E<sub>K3</sub>(D<sub>K2</sub>(E<sub>K1</sub>(P)))
+</blockquote>
+<p>
+If K<sub>1</sub> = K<sub>3</sub>, then we have a "classic" Triple-DES
+mode that uses a 2*56 (112-bit) key. 
+If K<sub>1</sub> = K<sub>2</sub> = K<sub>3</sub>, then the middle 
+decryption undoes the first encryption and we have a standard 56-bit
+DES algorithm. Finally, if all three keys are different, then we have
+a 168 bit (3*56) key 
+
+<!-- 
+<h2>Secure communication</h2>
+
+<p>
+To communicate securely using a symmetric cipher, both parties need
+to have a shared secret key. Alice will encode a message to Bob
+using the key and Bob will use the key to decode the message. If
+Alice wants to communicate with Charles, she and Charles will also
+need a secret key. The fact that every pair of entities will need
+a secret key leads to a phenomenon known as key explosion. The
+biggest problem with symmetric cryptography is dealing with key
+distribution: how can Alice and Bob establish a key so they can
+communicate securely? The <strong>Diffie-Hellman exponential key
+exchange</strong> algorithm allows one to do this. Each party will
+generate a private key and a public key (these are <i>not</i>
+encryption keys; they're just numbers &ndash; Diffie-Hellman does
+not implement public key cryptography). Alice can compute a common
+key using her private key and Bob's public key. Bob can compute the
+same common key by using his private key and Alice's public key.
+</p>
+
+<p>
+Using public key cryptography, such as RSA, if Alice encrypts a
+message with Bob's public key, Bob will be the only one who can
+decrypt it since doing so will require Bob's private key. Likewise,
+Bob can encrypt messages with Alice's public key, knowing that only
+Alice will be able to decrypt them with her private key.
+</p>
+
+<h2>Session keys</h2>
+
+<p>
+A <strong>session key</strong> is a random key that is generated for encryption
+during one communication session.  It is useful because if the key
+is ever compromised, no lasting information is obtained: future
+communication sessions will use different keys. A <strong>hybrid
+cryptosystem</strong> uses public key cryptography to send a session key
+securely. The originator generates a random session key and encrypts
+it with the recipient's public key. The recipient decrypts the
+message with the corresponding private key to extract the session
+key. After that, symmetric cryptography is used for communication,
+with messages encrypted with the session key. This has the advantages
+of higher performance (public key cryptography is a lot slower than
+symmetric cryptography), ease of communicating with multiple parties
+(just encrypt the session key with the public keys of each of the
+recipients), and allows the bulk of data to be encrypted with
+ever-changing session keys instead of the hardly-ever-changing
+public keys.
+</p>
+
+<h2> Digital signatures </h2>
+<p>
+<strong>Digital signatures</strong> employing symmetric cryptography must
+turn to a </span><strong>trusted third party</strong>. Messages are encrypted
+with the owner's key and sent to the third party who decrypts the
+contents and re-encrypts them for the recipient. The trusted third
+party avoids the problem of key explosion where every pair of
+communicating parties must have a secret key.
+</p>
+
+<p>
+With public key cryptography, a digital signature is simply the act
+of encrypting a hash of a message with the creator's private key.
+Anyone who has the public key can decrypt the hash and thus validate
+it against the message. Other parties cannot recreate the signature
+since they do not have the private key even though they can create
+the hash.
+</p>
+-->
+
+</div>
+
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2010 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.
+</p>
+<p> Last updated: August 23, 2010
+</p>
+<img class="stamp" src="../../css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../416/index.html"> Main course page </a> </li>
+	<li> <a href="../../416/news.html"> News </a> </li>
+	<li> <a href="../../416/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../416/hw/index.html"> Homework </a> </li>
+	<li> <a href="../../416/notes/index.html"> Documents </a> </li>
+	<li> <a href="../../416/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../416/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../../416/about.html"> About the course </a> </li>
+	<li> <a href="../../416/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../416/things.html"> Things you need </a> </li>
+	<li> <a href="../../416/policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../../416/../417/index.html"> Main course page </a> </li>
+	<li> <a href="../../416/../417/news.html"> News </a> </li>
+	<li> <a href="../../416/../417/syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../416/../417/hw/index.html"> Homework </a> </li>
+	<li> <a href="../../416/../417/notes/index.html"> Documents </a> </li>
+	<li> <a href="../../416/../417/exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../416/../417/grades/index.html"> Check your grades </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../416/../417/about.html"> About the course </a> </li>
+	<li> <a href="../../416/../417/prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../416/../417/things.html"> Things you need </a> </li>
+	<li> <a href="../../416/../417/policy.html"> Policy  </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> Belkin F1B0280-V Slimswitch data switch. This is a manual (knob) switch that switches among four DB25 connectors. I can't imagine why anyone would need this; perhaps for switching old printers. I never used it and can't remember how it ended up in my pile of junk.
+</ul>
+-->
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

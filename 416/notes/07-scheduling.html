@@ -1,0 +1,1280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Process Scheduling </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 416 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/07-scheduling.html"> Process Scheduling </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Process Scheduling </h1>
+<h2> Who gets to run next? </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> February 18, 2015 </p>
+</div>
+<div class="blockquote">
+<em>The finest eloquence is that which gets things done; the worst is that which delays them.</em>
+<br/>
+        <em> &mdash; David Lloyd George (speech, Jan. 1919)</em>
+</div>
+
+<h1 id="introduction">Introduction</h1>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>If you look at any process, you&#8217;ll notice that it spends some time executing instructions
+(computing) and then makes some I/O request, for example, to read or write data to a file or to
+get input from a user. After that, it executes more instructions and then, again,
+waits on I/O. The period of computation between I/O requests is called the <strong>CPU burst</strong>.</p>
+
+<figure>
+<img src="images/07-cpu_burst.png" alt="CPU bursts" id="cpu_burst" title="CPU Burst" style="width:400px;" />
+<figcaption>CPU bursts</figcaption></figure>
+
+
+
+<p>Interactive processes spend more time waiting for I/O and
+generally experience
+short CPU bursts. A text editor is an
+example of an interactive process with short CPU bursts.</p>
+
+<figure>
+<img src="images/07-interactive_burst.png" alt="Interactive bursts" id="interactive_burst" title="Interactive Burst" style="width:400;" />
+<figcaption>Interactive bursts</figcaption></figure>
+
+
+
+<p>Compute-intensive processes, conversely, spend more time running instructions and
+less time on I/O. They exhibit long CPU bursts. A video transcoder is
+an example of a process with long CPU bursts. Even though it reads
+and writes data, it spends most of its time processing that data.</p>
+
+<figure>
+<img src="images/07-compute_burst.png" alt="Compute bursts" id="compute_burst" title="Compute Burst" style="width:400px;" />
+<figcaption>Compute bursts</figcaption></figure>
+
+
+
+<p>Most interactive processes, in fact, spend the vast bulk of their existence
+doing nothing but waiting on data. As I write this on my Mac, I have 44 processes running
+just under my user account. This includes a few browser windows, a word processor,
+spreadsheet, several shell windows, Photoshop, iTunes, and various
+monitors and utilities. Most of
+the time, all these processes collectively are using less than 3% of the CPU. This is not surprising
+since most of these programs are waiting for user input, a network message, or sleeping and
+waking up periodically to check some state.</p>
+
+<p>Consider a 2.4 GHz processor. It executes approximately 2,400 million
+instructions per second (and this does not even count multi-core
+or hyperthreaded processors).
+It can run 24 billion instructions in the ten seconds it might
+take you to skim a web page before you click on a link &mdash; or 1.2 billion instructions
+in the half second it might take you to hit the next key as you&#8217;re typing. The big idea
+in increasing overall system throughput was the realization that
+we could keep several programs in memory and switch the processor
+to run another process when a process has to wait on an I/O operation.
+This is <strong>multiprogramming</strong>.
+The next big idea was
+realizing that you could <strong>preempt</strong> a process and let
+another process run and do this
+quickly enough to give the illusion that many processes are running at the same time.
+This is <strong>multitasking</strong>.</p>
+
+<h1 id="scheduler">Scheduler</h1>
+
+<p>Most systems have a large number of processes with short CPU bursts interspersed
+between I/O requests and a small number of processes with long CPU bursts.
+To provide good time-sharing performance, we may preempt a running process
+to let another one run. The <strong>ready list</strong>, also known as a
+<strong>run queue</strong>, in the
+operating system keeps a list of all processes
+that are ready to run and not blocked on input/output or another
+blocking system request, such as a semaphore. The entries in this list are
+pointers to a process control block, which stores all information and state about a process.</p>
+
+<p>When an I/O request for a process
+is complete, the process moves from the <em>waiting</em> state to the
+<em>ready</em> state and gets placed on the run queue.</p>
+
+<p>The <strong>process scheduler</strong> is the component of the
+operating system that is responsible for deciding
+whether the currently running process should continue running and, if not,
+which process should run next.
+There are four events that may occur where the scheduler needs to
+step in and make this decision:</p>
+
+<ol>
+<li><p>The current process goes from the <em>running</em> to the <em>waiting</em> state because it issues an I/O request or some operating system request that cannot be satisfied immediately.</p></li>
+<li><p>The current process terminates.</p></li>
+<li><p>A timer interrupt causes the scheduler to run and decide that a process has run for its allotted interval of time and it is time to move it from the <em>running</em> to the <em>ready</em> state.</p></li>
+<li><p>An I/O operation is complete for a process that requested it and the process now moves from the <em>waiting</em> to the <em>ready</em> state. The scheduler may then decide to preempt the currently-running process and move this newly-<em>ready</em> process into the <em>running</em> state.</p></li>
+</ol>
+
+<p>A scheduler is a <strong>preemptive</strong> scheduler if it has
+the ability to get invoked by an interrupt and move a process out
+of a <em>running</em> state to let another process run.
+The last two events in the above list may cause
+this to happen. If a scheduler cannot take the CPU away from a process
+then it is a <strong>cooperative</strong>, or <strong>non-preemptive</strong>
+scheduler. Old operating systems such as
+Microsoft Windows 3.1 or Apple MacOS prior to OS&nbsp;X
+are examples of cooperative schedulers.
+Older batch processing systems had
+<strong>run-to-completion</strong> schedulers where a process ran to
+termination before any other process would be allowed to run.</p>
+
+<p>The decisions that the scheduler makes concerning the sequence and length of time
+that processes may run is called the <strong>scheduling algorithm</strong>
+(or <strong>scheduling policy</strong>). These decisions
+are not easy ones, as the scheduler has only a limited amount of
+information about the processes that are ready to run. A good
+scheduling algorithm should:</p>
+
+<ul>
+<li>Be fair &ndash; give each process a fair share of the CPU, allow each process to run in a reasonable amount of time.</li>
+<li>Be efficient &ndash; keep the CPU busy all the time.</li>
+<li>Maximize throughput &ndash; service the largest possible number of jobs in a given amount of time; minimize the amount of time users must wait for their results.</li>
+<li>Minimize response time &ndash; interactive users should see good performance.</li>
+<li>Be predictable &ndash; a given job should take about the same amount of time to run when run multiple times. This keeps users sane.</li>
+<li>Minimize overhead &ndash; don&#8217;t waste too many resources. Keep scheduling time and context switch time at a minimum.</li>
+<li>Maximize resource use &ndash; favor processes that will use underutilized resources. There are two motives for this. Most devices are slow compared to CPU operations. We&#8217;ll achieve better system throughput by keeping devices busy as often as possible. The second reason is that a process may be holding a key resource and other, possibly more important, processes cannot use it until it is released. Giving the process more CPU time may free up the resource quicker.</li>
+<li>Avoid indefinite postponement &ndash; every process should get a chance to run eventually.</li>
+<li>Enforce priorities &ndash; if the scheduler allows a process to be assigned a priority, it should be meaningful and enforced.</li>
+<li>Degrade gracefully &ndash; as the system becomes more heavily loaded, performance should deteriorate gradually, not abruptly.</li>
+</ul>
+
+<p>It is clear that some of these goals are contradictory. For example,
+minimizing overhead means that jobs should run longer, thus hurting
+interactive performance. Enforcing priorities means that high-priority
+processes will always be favored over low-priority ones, causing
+indefinite postponement. These factors make scheduling a
+task for which there can be no perfect algorithm.</p>
+
+<p>To make matters even more complex, the scheduler does not know much
+about the behavior of each process and certainly has no idea of
+what the process will do in the future.
+As we saw earlier, some processes perform a lot
+of input/output operations but use little CPU time (examples are
+web browsers, shells and editors).
+They spend much of their time in the blocked
+state in between little bursts of computation. The overall
+performance of these <strong>I/O bound processes</strong> is constrained
+by the speed of the I/O devices.
+<strong>CPU-bound processes</strong> and spend most of their
+time computing (examples are ray-tracing programs and circuit
+simulators). Their execution time
+is largely determined by the speed of the CPU and the amount of CPU time they can
+get. </p>
+
+<p>To help the scheduler monitor processes and the amount of CPU time
+that they use, a programmable interval timer interrupts the processor
+periodically (typically 100 times per second). This timer
+is programmed when the operating system initializes itself.
+At each interrupt, the
+operating system&#8217;s scheduler gets to run and decide whether the
+currently running process should be allowed to continue running
+or whether it should be suspended and another ready process
+allowed to run. This is the mechanism that enables preemptive.</p>
+
+<p>Preemptive scheduling allows the scheduler to control response times
+by taking the CPU away from a process that it decided has been running
+too long in order to let another process run.
+It incurs more overhead than nonpreemptive scheduling since it has
+to deal with the overhead of context switching processes instead of allowing
+a process to run to completion or run until the next I/O operation or other
+system call. However,
+it allows for higher degrees of concurrency and better interactive performance.</p>
+
+<p>The scheduling algorithm has the task of figuring out whether a process should
+be switched out for another process and which process should get to
+run next. The <strong>dispatcher</strong> is the component of the scheduler
+that handles the mechanism of actually getting that process to run on the processor.
+This requires loading the saved context of the selected process, which is stored
+in the process control block and comprises the set of registers, stack pointer,
+flags (status word), and a pointer to the memory mapping (typically
+a pointer to the page table). Once this context is loaded, the dispatcher switches
+to user mode via a <em>return from interrupt</em> operation that causes the process
+to execute from the location that was saved on the stack at the time that the
+program stopped running &mdash; either via an interrupt or a system call.</p>
+
+<p>In the following sections, we will explore a few scheduling
+algorithms.</p>
+
+<p>Let&#8217;s first introduce some terms.</p>
+<dl>
+<dt>Turnaround time</dt>
+<dd>Turnaround time is the elapsed time between the time the
+ job arrives (e.g., you type a command) and the time that
+ it terminates. This includes the delay of waiting for the
+ scheduler to start the job because some other process is
+ still running and others may be queued ahead.</dd>
+
+<dt>Start time</dt>
+<dd>
+<p>Also known as <strong>release time</strong>, the start time
+ is the time when the task is scheduled to run
+ and actually gets to start running on the CPU.</p>
+
+<p>If we look a process as a series of CPU bursts the start
+time applies to each CPU burst. It is the time when
+each CPU burst starts to run.</p></dd>
+
+<dt>Response time</dt>
+<dd>This is the delay between submitting a process
+ and it being scheduled to run (its start time).
+ Again, if we look a process as a series of CPU bursts the
+ response time applies to each CPU burst.
+ It is the delay between a
+ task being <em>ready to run</em> and actually running.</dd>
+
+<dt>Completion time</dt>
+<dd>This is the time when the process terminates.</dd>
+
+<dt>Throughput</dt>
+<dd>Throughput refers to the number of processes that complete
+ over some unit of time. By comparing throughput on several
+ schedulers, we can get a feel of whether one scheduler
+ is able to get more processes to complete than
+ another over some period of time. This can be due
+ to several factors: keeping the CPU busy, scheduling
+ I/O as early as possible to keep disks an other slow devices
+ busy, and the amount of overhead spent doing all of this.</dd>
+</dl>
+
+
+<h1 id="first-comefirst-servedscheduling">First-Come, First-Served Scheduling</h1>
+
+<p>Possibly the most straightforward approach to scheduling processes
+is to maintain a FIFO (first-in, first-out) run queue. New processes
+go to the end of the queue. When the scheduler needs to run
+a process, it picks the process that is at the head of the queue.
+This scheduler is non-preemptive. If the process has to block on I/O,
+it enters the <em>waiting</em> state and the scheduler picks
+the process from the head of the queue. When I/O is complete and
+that waiting (blocked) process is ready to run again,
+it gets put at the end of the queue.</p>
+
+<figure>
+<img src="images/07-fcfs.png" alt="First Come - First Served" id="fcfs" title="First Come - First Served" style="width:400px;" />
+<figcaption>First Come - First Served</figcaption></figure>
+
+
+
+<p>With first-come, first-served scheduling, a process with a long
+CPU burst will hold up other processes, increasing their turnaround
+time. Moreover, it can hurt overall throughput since I/O on processes
+in the <em>waiting</em> state may complete while the CPU bound process is
+still running. Now devices are not being used effectively.
+To increase
+throughput, it would have been great if the scheduler
+instead could have briefly run some I/O bound process so that could
+run briefly, request some I/O and then wait for that I/O to
+complete. Because CPU bound processes don&#8217;t get
+preempted, they hurt interactive performance because the interactive
+process won&#8217;t get scheduled until the CPU bound one has completed.</p>
+
+<p><strong>Advantage</strong>: FIFO scheduling is simple to implement. It is also
+intuitively fair (the first one in line gets to run first).</p>
+
+<p><strong>Disadvantage</strong>: The greatest drawback of first-come, first-served
+scheduling is that it is not preemptive. Because of this, it is not
+suitable for interactive jobs. Another drawback is that a long-running
+process will delay all jobs behind it.</p>
+
+<h1 id="roundrobinscheduling">Round robin scheduling</h1>
+
+<p>Round robin scheduling is a preemptive version of first-come, first-served scheduling.
+Processes are dispatched in a first-in-first-out sequence but each
+process is allowed to run for only a limited amount of time.
+This time interval is known as a <strong>time-slice</strong> or <strong>quantum</strong>.
+If a process does not complete or get blocked because of an I/O operation
+within the time slice, the time slice expires and the process is preempted.
+This preempted process is placed at the back of the run queue
+where it must wait for all the processes that were already in the
+queue to cycle through the CPU.</p>
+
+<p>If a process gets blocked due to an I/O operation before its
+time slice expires, it is, of course, enters a blocked because
+of that I/O operation. Once that operation completes, it is
+placed on the end of the run queue and waits its turn.</p>
+
+<figure>
+<img src="images/07-round_robin.png" alt="Round Robin Scheduling" id="round_robin" title="Round Robin" style="width:400px;" />
+<figcaption>Round Robin Scheduling</figcaption></figure>
+
+
+
+<p>A big advantage of round robin scheduling over non-preemptive
+schedulers is that it dramatically improves average
+response times. By limiting each task to a certain amount
+of time, the operating system can ensure that it can cycle
+through all ready tasks, giving each one a chance to run.</p>
+
+<p>With round robin scheduling, interactive performance depends on
+the length of the quantum and the number of processes in the run queue.
+A very long quantum makes the algorithm
+behave very much like first come, first served scheduling since it&#8217;s very
+likely that a process with block or complete before the time slice
+is up. A small quantum lets the system cycle through processes quickly.
+This is wonderful for interactive processes. Unfortunately, there is
+an overhead to context switching and having to do so frequently
+increases the percentage of system time that is used on context switching
+rather than real work.</p>
+
+<p>Advantage: Round robin scheduling is fair in that every process
+gets an equal share of the CPU. It is easy to implement and, if we know
+the number of processes on the run queue, we can know the worst-case
+response time for a process.</p>
+
+<p>Disadvantage: Giving every process an equal share of the CPU is not
+always a good idea. For instance, highly interactive processes will
+get scheduled no more frequently than CPU-bound processes.</p>
+
+<h2 id="settingthequantumsize">Setting the quantum size</h2>
+
+<p><em>What should the length of a quantum be to get &#8220;good&#8221; performance?</em>
+A short quantum is good because it allows many processes to circulate
+through the processor quickly, each getting a brief chance to run.
+This way, highly interactive jobs
+that usually do not use up their quantum will not have to wait as
+long before they get the CPU again, hence improving interactive
+performance. On the other hand, a short quantum is bad because the
+operating system must perform a context switch whenever a process
+gets preempted. This is overhead: anything that the CPU does other
+than executing user code is essentially overhead.
+A short quantum implies
+many such context switches per unit time, taking the CPU away from
+performing useful work (i.e., work on behalf of a process).</p>
+
+<p>The overhead associated with a context switch can be expressed as:</p>
+
+<p class="center">
+<em>context switch overhead = C / (Q+C)</em>
+</p>
+
+<p>where <em>Q</em> is the length of the time-slice and <em>C</em> is the context switch
+time. An increase in <em>Q</em> increases efficiency but reduces average
+response time. As an example, suppose that there are ten processes
+ready to run, <em>Q</em> = 100 ms, and <em>C</em> = 5 ms. Process 0 (at the head
+of the run queue, the list of processes that are in the <em>ready</em> state)
+gets to run immediately. Process 1 can run only
+after Process 0&#8217;s quantum expires (100 ms) and the context switch
+takes place (5 ms), so it starts to run at 105 ms. Likewise,
+process 2 can run only after another 105 ms. We can compute the
+amount of time that each process will be delayed and compare the
+delays between a small quantum (10 ms) and a long quantum (100
+ms.):</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:right;"/>
+<col style="text-align:right;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;"></th>
+	<th style="text-align:right;"><em>Q</em> = 100ms</th>
+	<th style="text-align:right;"><em>Q</em> = 10ms</th>
+</tr>
+<tr>
+	<th style="text-align:left;">Proc #</th>
+	<th style="text-align:right;">delay (ms)</th>
+	<th style="text-align:right;">delay (ms)</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">0</td>
+	<td style="text-align:right;">0</td>
+	<td style="text-align:right;">0</td>
+</tr>
+<tr>
+	<td style="text-align:left;">1</td>
+	<td style="text-align:right;">105</td>
+	<td style="text-align:right;">15</td>
+</tr>
+<tr>
+	<td style="text-align:left;">2</td>
+	<td style="text-align:right;">210</td>
+	<td style="text-align:right;">30</td>
+</tr>
+<tr>
+	<td style="text-align:left;">3</td>
+	<td style="text-align:right;">315</td>
+	<td style="text-align:right;">45</td>
+</tr>
+<tr>
+	<td style="text-align:left;">4</td>
+	<td style="text-align:right;">420</td>
+	<td style="text-align:right;">60</td>
+</tr>
+<tr>
+	<td style="text-align:left;">5</td>
+	<td style="text-align:right;">525</td>
+	<td style="text-align:right;">75</td>
+</tr>
+<tr>
+	<td style="text-align:left;">6</td>
+	<td style="text-align:right;">630</td>
+	<td style="text-align:right;">90</td>
+</tr>
+<tr>
+	<td style="text-align:left;">7</td>
+	<td style="text-align:right;">735</td>
+	<td style="text-align:right;">105</td>
+</tr>
+<tr>
+	<td style="text-align:left;">8</td>
+	<td style="text-align:right;">840</td>
+	<td style="text-align:right;">120</td>
+</tr>
+<tr>
+	<td style="text-align:left;">9</td>
+	<td style="text-align:right;">945</td>
+	<td style="text-align:right;">135</td>
+</tr>
+</tbody>
+</table>
+<p>We can see that with a quantum of 100 ms and ten processes, a
+process at the end of the queue will have to wait almost a second
+before it gets a chance to run. This is much too slow for interactive
+tasks. When the quantum is reduced to 10 ms, the last process has
+to wait less than 1/7 second before it gets the CPU. The downside
+of this is that with a quantum that small, the context switch
+overhead (5/(10+5)) is 33<sup>1</sup>&frasl;<sub>3</sub>%. This
+means that we are wasting over a third of the CPU just switching
+processes! With a quantum of 100 ms, the context switch overhead
+is just 4%.</p>
+
+<h1 id="shortestremainingtimefirstscheduling">Shortest remaining time first scheduling</h1>
+
+<p>The <strong>shortest remaining time first</strong> (<strong>SRTF</strong>) scheduling algorithm is a preemptive
+version of an older non-preemptive algorithm known as
+<strong>shortest job first</strong> (<strong>SJF</strong>) scheduling. Shortest job first
+scheduling runs a process to completion before running the next one.
+The queue of jobs is sorted by estimated job length so that short
+programs get to run first and not be held up by long ones. This minimizes
+average response time.</p>
+
+<p>Here&#8217;s an extreme example. It&#8217;s the 1950s and three users
+submit jobs (a deck
+of punched cards) to an operator. Two of
+the jobs are estimated to run for 3 minutes each while the third job
+while the third user estimates that it will take about 48 hours to run
+the program. With a shortest job first approach, the operator will run
+the three-minute jobs first and then let the computer spend time on
+the 48-hour job.</p>
+
+<p>With the shortest remaining time first algorithm, we take into
+account the fact that a process runs as a series of CPU bursts:
+processes may leave the <em>running</em> state because they need
+to wait on I/O or because their quantum expired. The algorithm
+sorts the run queue by the the process&#8217; anticipated CPU burst time,
+picking the shortest burst time. Doing so will optimize the average
+response time of processes.</p>
+
+<p>Let&#8217;s consider an example of five processes in the run queue. If we process
+them in a FIFO manner, we see that all the CPU bursts add up to 25
+(pick your favorite time unit; this is just an example). The mean
+run time for a process, however, is the mean of all the run times,
+where the run time is <em>the time spent waiting to run</em> +
+<em>the CPU burst time of the process</em>. In this example, our
+mean run time is (8 + 11 + 21 + 23 + 25)/5, or 17.6.</p>
+
+<figure>
+<img src="images/07-srt-1.png" alt="Shortest Remaining Time First" id="srt" title="Shortest Remaining Time First" style="width:350px;" />
+<figcaption>Shortest Remaining Time First</figcaption></figure>
+
+
+
+<p>If we reorder the processes in the queue by the estimated
+CPU burst time, we still have the same overall total (the
+processes take the same amount of time to run) but
+the mean run time changes. It is now (2 + 4 + 7 + 15 + 25), or 10.6.
+We reduced the average run time for our processes by 40%!</p>
+
+<figure>
+<img src="images/07-srt-2.png" alt="Shortest Remaining Time First (sorted)" id="srt" title="Shortest Remaining Time First" style="width:350px;" />
+<figcaption>Shortest Remaining Time First (sorted)</figcaption></figure>
+
+
+
+<h2 id="estimatingfuturecpubursttime">Estimating future CPU burst time</h2>
+
+<p>The biggest problem with sorting processes this way is that
+we&#8217;re trying to optimize our schedule using data that we don&#8217;t
+even have! We don&#8217;t know what the CPU burst time will be for
+a process when it&#8217;s next run. It might immediately request I/O
+or it might continue running for minutes (or until the expiration
+of its time slice).</p>
+
+<p>The best that we can do is guess and try to predict the next
+CPU burst time by assuming that it will be related to past CPU bursts for that process.
+All interactive processes follow the following sequence of
+operations:</p>
+
+<p class="center">
+compute &mdash; I/O &mdash; compute &mdash; I/O &mdash; compute &mdash; I/O
+</p>
+
+<p>Suppose that a CPU burst (compute) period is measured as T<sub>0</sub>. The next compute period is
+measured as T<sub>1</sub>, and so on.
+The common approach to estimate the length of the next CPU burst is by using a time-decayed
+<strong>exponential average</strong> of previous CPU bursts for the process. We will
+examine one such function, although there are variations on the theme.
+Let <em>T<sub>n</sub></em> be the measured time of the <em>n<sup>th</sup></em> burst;
+<em>s<sub>n</sub></em> be the predicted size of the <em>n<sup>th</sup></em> CPU burst; and
+<em>a</em> be a weighing factor, 0 &le; <em>a</em> &le; 1.
+Define <em>s<sub>0</sub></em> as some default system average burst time.
+The estimate of the next CPU burst period is:</p>
+
+<p class="center">
+<em>s<sub>n+1</sub> = aT<sub>n</sup> + (1 - a)s<sub>n</sub></em>
+</p>
+
+<p>The weighing factor, <em>a</em>, can be adjusted how much to weigh past history versus
+considering the last observation. If <em>a = 1</em>, then only the last observation of
+the CPU burst period counts. If <em>a = &frac12;</em>, then the last observation has as
+much weight as the historical weight. As <em>a</em> gets smaller than &frac12;, the
+historical weight counts more than the recent weight.</p>
+
+<p>Here is an example with <em>a = 0.5</em>. The blue bars represent the actual
+CPU burst over time. The red bars represent the estimated value. With a weighting
+value of &frac12;, we can see how the red bars are strongly influenced by the previous
+actual value but factor in the older values.</p>
+
+<figure>
+<img src="images/07-e_average-05.png" alt="Exponential Average (a=0.5)" id="e-average-05" title="Exponential Average (a=0.5)" style="width:400px;" />
+<figcaption>Exponential Average (a=0.5)</figcaption></figure>
+
+
+
+<p>Now let&#8217;s see what happens when we set <em>a = 1</em>. This ignores history and only
+looks at the previous CPU burst.
+We can see that each red bar (current estimate) has exactly the same value as the
+previous blue bar (latest actual CPU burst).</p>
+
+<figure>
+<img src="images/07-e_average-10.png" alt="Exponential Average (a=1)" id="e-average-10" title="Exponential Average (a=1.0)" style="width:400px;" />
+<figcaption>Exponential Average (a=1)</figcaption></figure>
+
+
+
+<p>For a final example, let&#8217;s set <em>a= 0.25</em>. Here, the last measured value only
+counts for 25% of the estimated CPU burst, with 75% being dictated by history. We can
+see how immediate changes in CPU burst have less impact on the estimate when compared
+with the above graph of <em>a = 0.5</em>. Note how the estimates at 2, 3, 13, and 14 still remain
+relatively high despite the rapid plunge of actual CPU burst values. </p>
+
+<figure>
+<img src="images/07-e_average-25.png" alt="Exponential Average (a=0.25)" id="e-average-25" title="Exponential Average (a=0.25)" style="width:400px;" />
+<figcaption>Exponential Average (a=0.25)</figcaption></figure>
+
+
+
+<p><strong>Advantage of shortest remaining time first scheduling</strong>:
+This scheduling is optimal in that it
+always produces the lowest mean response time.
+Processes with short CPU bursts are given priority
+and hence run quickly (are scheduled frequently).</p>
+
+<p><strong>Disadvantages</strong>: Long-burst (CPU-intensive) processes are hurt
+with a long mean waiting time. In fact, if short-burst processes
+are always available to run, the long-burst ones may never get
+scheduled.
+The situation where a process never gets scheduled to run is called
+<strong>starvation</strong>.
+Another problem with the algorithm is that the effectiveness
+of meeting the scheduling criteria relies on our ability to estimate
+the length of the next CPU burst.</p>
+
+<h1 id="priorityscheduling">Priority scheduling</h1>
+
+<p>Round robin scheduling assumes that all processes are equally
+important. This generally is not the case. We would sometimes like
+to see long CPU-intensive (non-interactive) processes get a lower
+priority than interactive processes. These processes, in turn,
+should get a lower priority than jobs that are critical to the
+operating system.</p>
+
+<p>In addition, different users may have different status. A system
+administrator&#8217;s processes may rank above those of a student&#8217;s.</p>
+
+<p>These goals led to the introduction of <strong>priority scheduling</strong>. The idea
+here is that each process is assigned a priority (just a number).
+Of all processes ready to run, the one with the highest priority
+gets to run next (there is no general agreement across operating systems
+whether a high number represents a high or low priority; UNIX-derived
+systems tend to use smaller numbers for high priorities while Microsoft
+systems tend to use higher numbers for high priorities).</p>
+
+<p>With a priority scheduler, the scheduler simply picks the highest
+priority process to run. If the system uses preemptive scheduling,
+a process is preempted
+whenever a higher priority process is available in the run queue.</p>
+
+<p>Priorities may be <strong>internal</strong> or <strong>external</strong>.
+<strong>Internal priorities</strong> are determined by the system using factors such
+as time limits, a process&#8217; memory requirements, its anticipated I/O to CPU
+ratio, and any other system-related factors. <strong>External priorities</strong>
+are assigned by administrators.</p>
+
+<p>Priorities may also be <strong>static</strong> or <strong>dynamic</strong>.
+A process with a <strong>static priority</strong> keeps that priority for
+the entire life of the process.</p>
+
+<p>A process with a <strong>dynamic priority</strong> will have that priority
+changed by the scheduler during its course of execution. The scheduler
+would do this to achieve its scheduling goals. For example, the scheduler
+may decide to decrease a process&#8217; priority to give a chance for lower-priority
+job to run. If a process is I/O bound (spending most if its time
+waiting on I/O), the scheduler may give it a higher priority so that
+it can get off the run queue quickly and schedule another I/O
+operation.</p>
+
+<p>Static and dynamic priorities can coexist. A scheduler would know that
+a process with a static priority cannot have its priority adjusted throughout
+the course of its execution. </p>
+
+<p>Ignoring dynamic priorities, the priority scheduling algorithm is straightforward:
+each process has a priority number assigned to it and the scheduler simply
+picks the process with the highest priority.</p>
+
+<p><strong>Advantage</strong>: priority scheduling provides a good mechanism where the
+relative importance of each process may be precisely defined.</p>
+
+<p><strong>Disadvantage</strong>: If high priority processes use up a lot of CPU time,
+lower priority processes may starve and be postponed indefinitely,
+leading to <strong>starvation</strong>.
+Another problem with priority scheduling
+is deciding which process gets which priority level
+assigned to it.</p>
+
+<h2 id="dealingwithstarvation">Dealing with starvation</h2>
+
+<p>One approach to the problem of indefinite postponement is to use dynamic
+priorities. At the expiration of each quantum,
+the scheduler can decrease the priority of the current running
+process (thereby penalizing it for taking that much CPU time).
+Eventually its priority will fall below that of the next highest
+process and that process will be allowed to run.</p>
+
+<p>Another approach is to have the scheduler keep track of low priority
+processes that do not get a chance to run and increase their
+priority so that eventually the priority will be high enough so that
+the processes will get scheduled to run. Once it runs for its quantum,
+the priority can be brought back to the previous low level.</p>
+
+<p>This periodic boosting of a process&#8217; priority
+to ensure it gets a chance to run is called <strong>process aging</strong>.
+A simple way to implement aging is to simply increase
+<em>every</em> process&#8217; priority and then have them get readjusted
+as they execute.</p>
+
+<h1 id="multilevelqueues">Multilevel queues</h1>
+
+<p>What happens if several processes get assigned the same priority?
+This is a realistic possibility since picking a unique priority level
+for each of possibly hundreds or thousands of
+processes on a system may not be feasible.</p>
+
+<p>We can group processes into <strong>priority classes</strong> and assign
+a separate run queue for each class. This allows us to categorize and
+separate system processes, interactive processes, low-priority interactive
+processes, and background non-interactive processes.
+The scheduler picks the highest-priority queue (class) that has
+at least one process in it. In this sense, it behaves like a priority
+scheduler. </p>
+
+<p>Each queue may
+use a different scheduling algorithm, if desired.
+Round-robin scheduling per priority level is the most common.
+As long as processes are ready in a high priority queue, the
+scheduler will let each of run for their time slice. Only
+when no processes are available to run at that priority level
+will the scheduler look at lower levels. Alternatively,
+some very high priority levels might implement the non-preemptive
+first-come, first-served scheduling approach to ensure that
+a critical real-time task gets all the processing it needs.</p>
+
+<p>The scheduler may also choose a different quantum for each priority
+level.
+For example, it is common to give low-priority
+non-interactive processes a longer quantum. They
+won&#8217;t get to run as often since they are in a low priority queue but,
+when they do, the scheduler will let them run longer. Linux, on the
+other hand, does the opposite. It gives a longer quantum to high-priority
+processes on the assumption that they are important and that they
+are likely to be interactive so they will usually block long before
+using up their time slice.</p>
+
+<figure>
+<img src="images/07-mqueue.png" alt="Multilevel Queue" id="mqueue" title="Multilevel queue" style="width:400px;" />
+<figcaption>Multilevel Queue</figcaption></figure>
+
+
+
+<p>One problem with multilevel queues is that the process needs to be
+assigned to the most suitable priority queue <em>a priori</em>.
+If a CPU-bound process is assigned to a short-quantum, high-priority
+queue, that&#8217;s not optimal for either the process nor for overall
+throughput.</p>
+
+<p>Multi-level queues are generally used as a top-level scheduling discipline
+to separate broad classes of processes, such as real-time,
+kernel threads, interactive, and background processes. Specific
+schedulers within each class determine which process gets to run
+within that class. Most operating systems, including Windows, Linux,
+and OS X support a form of multilevel queues and scheduling classes.</p>
+
+<h1 id="multilevelfeedbackqueues">Multilevel feedback queues</h1>
+
+<p>A variation on multilevel queues is to allow the scheduler to
+adjust the priority (that is, use <em>dynamic priorities</em>)
+of a process during execution in order
+to move it from one queue
+to another based on the recent behavior of the process.</p>
+
+<p>The goal of <strong>multilevel feedback queues</strong>
+is to automatically place processes into priority levels based on their
+CPU burst behavior. I/O-intensive processes will end up on higher priority
+queues and CPU-intensive processes will end up on low priority queues.</p>
+
+<p>A multilevel feedback queue uses two basic rules:</p>
+
+<ol>
+<li><p>A new process gets placed in the highest priority queue.</p></li>
+<li><p>If a process does not finish its quantum (that is, it blocks
+on I/O) then it will stay at the same priority level (round robin)
+otherwise it moves to the next lower priority level</p></li>
+</ol>
+
+<p>With this approach, a process with long CPU bursts will
+use its entire time slice, get preempted and get placed
+in a lower-priority queue. A highly interactive process
+will not use up its quantum and will remain at a high
+priority level.</p>
+
+<p>Although not strictly necessary for the algorithm,
+each successive lower-priority queue may be given a longer
+quantum. This allows a process to remain in the queue
+that corresponds to its longest CPU burst.</p>
+
+<h2 id="processaging">Process aging</h2>
+
+<p>One problem with multilevel feedback queues is
+<strong>starvation</strong>. If there are a lot of interactive processes
+or if new processes are frequently created, there is always
+a task available in a high-priority queue and the CPU-bound
+processes in a low-priority queue will never get scheduled.</p>
+
+<p>A related problem is that an interactive process may
+end up at a low priority level. If a process ever has
+a period where it becomes CPU-intensive, it trickles
+down to a low priority level and is forever
+doomed to remain there. An example is a game that needs
+to spend considerable CPU time initializing itself but
+then becomes interactive, spending most of its time waiting
+for user input.</p>
+
+<p>Both these problems can be solved with <strong>process aging</strong>.
+As we saw earlier, we periodically increase the priority of a process
+to ensure that it will be scheduled to run. A simple
+approach is to periodically bring all processes to the
+highest priority queue.</p>
+
+<p>An advantage of a multilevel feedback queue is that the
+algorithm is designed to adjust the priority of a process
+whenever it runs, so a CPU-bound process will quickly trickle
+back down to a low priority level while an interactive
+process will remain at a high level.</p>
+
+<h2 id="gamingthesystem">Gaming the system</h2>
+
+<p>If a programmer knows how the scheduler works and wants to
+write software that will ensure that the process remains
+at a high priority level, she can write code that will force
+the system to block on some low-latency I/O operation (e.g.,
+sleep for a few milliseconds) just before the quantum expires.
+That way, the process will be rewarded for not using up
+its quantum even if it repeatedly uses up a large chunk of it.</p>
+
+<p>A solution to this approach is to modify the way the scheduler
+decides to demote the priority of a process.
+Instead of simply checking whether a process uses up
+its time slice, it keeps track of the total time that the process
+spent running over a larger time interval (several time slices).
+Each priority queue will have a maximum CPU time allotment associated
+with it. If a process uses up that allotment over that
+multi-time-slice interval the process will be punished by
+being moved to a lower priority level.</p>
+
+<figure>
+<img src="images/07-mfqueue.png" alt="Multilevel Feedback Queue" id="mfqueue" title="Multilevel feedback queue" style="width:400px;" />
+<figcaption>Multilevel Feedback Queue</figcaption></figure>
+
+
+
+<p><strong>Advantages</strong>: Multi-level feedback queues are good for separating
+processes into categories based on their need for a CPU. They favor
+I/O bound processes by letting them run often. Versions of this
+scheduling policy that increase the quantum at lower priority levels
+also favor CPU bound processes by giving them a larger chunk of CPU
+time when they are allowed to run.</p>
+
+<p><strong>Disadvantages</strong>: The priority scheme here is one that is controlled
+by the system rather than by the administrator or users. A process
+is deemed important not because it necessarily is important,
+but because it happens to
+do a lot of I/O.</p>
+
+<p>This scheduler also has the drawback that I/O-bound
+processes that become CPU bound or CPU-bound processes that become
+I/O-bound will not get scheduled well. Moreover, CPU-bound
+processes have the danger of starving on a system with many
+interactive processes. Both these problems can be dealt with by
+applying process aging.</p>
+
+<p>Another drawback is the ability of a
+programmer to keep the priority of a process high by performing
+bogus I/O operations periodically. Again, we have a solution
+for this by measuring CPU use over a larger, multi-quantum
+time interval and punishing processes that use more of the CPU.</p>
+
+<h1 id="lotteryschedulingfairshare">Lottery scheduling (fair share)</h1>
+
+<p>With <strong>lottery scheduling</strong> (also known as <strong>fair share scheduling</strong>),
+the goal is to allow a process
+to be granted a proportional share of the CPU - a specific
+percentage. Conceptually, lottery scheduling works by
+allocating a specific number of &#8220;tickets&#8221; to each process.
+The more tickets a process has, the higher its chance of being
+scheduled.</p>
+
+<p>For example, suppose that we have 100 tickets in total and
+three processes to run: <em>A</em>, <em>B</em>, and <em>C</em>. We would like to schedule
+process <em>A</em> twice as frequently as processes <em>B</em> and <em>C</em>.
+To do this, we assign <em>A</em> twice as many tickets. With tickets
+numbered in the range 0&#8230;99, we might assign</p>
+
+<pre><code>Process A: 50 tickets (0...49)
+Process B: 25 tickets (50...74)
+Process C: 25 tickets (75...99)
+</code></pre>
+
+<p>The scheduler then picks a random number in the range 0&#8230;100.
+That number becomes the &#8220;winning ticket&#8221; and the process
+holding that ticket gets to run. When its time slice is up,
+or if it blocks, the sheduler picks another ticket and
+that process gets to run. Over time, processes will run
+with a random distribution but one that is weighted by the
+per-process ticket allocation.</p>
+
+<p>The benefit of the algorithm is that each process is
+given a proportional share of the CPU.
+The difficulty is determining ticket distribution, particularly
+in an environment where processes come and go and get blocked.
+This isn&#8217;t a useful algorithm for general-purpose scheduling
+but is more useful for environments with long-running processes
+that may need to be allocated shares of CPUs, such as running
+multiple virtual machines on a server.</p>
+
+<!--
+#  Guaranteed scheduling 
+
+**Guaranteed scheduling** is a scheduling algorithm
+that attempts to be fair to
+the users, _not_ the processes. In its simplest
+form, if _n_ users are logged in, it will try to give each user
+(_not process_) _1/n_ of the
+CPU time. What the scheduler does is keep track of how much CPU
+time a user has had for all processes since login and how long the
+user has been logged in. It then computes the user's share of
+the CPU as:
+
+<p class="center">
+_User's share of CPU = (time since login / n)_
+
+
+The actual share of the CPU is also known. The scheduler compares
+that (the actual) to the ideal (computed) share and picks
+the process with the lowest ratio. As it continues to be
+scheduled, its the actual:ideal ratio will increase and 
+eventually move ahead of its nearest competitor, causing
+the next process to get scheduling priority.
+
+
+Another form of guaranteed scheduling is to assign groups of users
+into a several classes and give each class a predefined share of
+the CPU. For example, suppose three departments jointly own
+a computer. They may set up the scheduler such that any processes
+from users in department A will get no more than 20% of the CPU,
+users in department B will get no more than 50% and users in
+department C will get no more than 30% of the CPU time. A similar
+mechanism was used under VM (IBM's virtual machine system)
+in which each operating system running under VM would be
+guaranteed a certain percentage of the CPU &mdash; no
+more and no less.
+
+
+Advantage: Guaranteed scheduling is fair to the user. It penalizes
+those users who wish to run many processes and favors those who run
+only a few. The shares of CPU time are allocated by the administrator
+and fit well with other bureaucratic processes, such as the purchase
+and upkeep of the computer.
+
+
+Disadvantage: Guaranteed scheduling requires quite a bit of
+bookkeeping. While it's fair to the user, it's not fair to processes
+or the CPU. A user that is getting a large share of the CPU may never
+need it, but will get it anyway. Meanwhile, other processes may be
+hungry to use the CPU.
+
+-->
+
+<h1 id="multiprocessors">Multiprocessors</h1>
+
+<p>Our discussions thus far assumed an environment where a single process
+gets to run at a time. Other ready processes wait until the scheduler
+switches their context in and gives them a chance to run.
+With multiple CPUs, multiple cores on one CPU, hyperthreaded processors,
+more than once thread of execution can be scheduled at a time.
+The same scheduling algorithms apply; the scheduler simply allows more
+than one process to be in the running state at one time.</p>
+
+<p>The environment we will consider here is the common symmetric multiprocessing (SMP)
+one, where each processor has access to the same memory and devices. Each processor
+is running its own process and may, at any time, invoke a system call, terminate,
+or be interrupted with a timer interrupt. The scheduler executes on that processor
+and decides which process should be context switched to run. It is common for
+the operating system to maintain one run queue per processor. This allows one
+processor to manipulate the queue (e.g., when context switching) without
+having to worry about the delay of having the queue locked by another processor.</p>
+
+<p>Processors are designed with cache memory that holds frequently-used
+regions of memory that processes accessed.
+This avoids the time delay of going out to the external
+memory bus to access memory and provides a huge boost to performance. As
+we will see in our forthcoming discussion on memory management, processors
+also contain a translation lookaside buffer, or TLB, that stores recent
+virtual to physical address translations. This also speeds up memory
+access dramatically.</p>
+
+<p>When a scheduler reschedules a process onto the same processor, there is
+a chance that some of the cached memory and TLB lines are still present.
+This allows the process to run faster since it will make less references
+to main memory. If a scheduler reschedules a process onto a different
+processor then no part of the process will be present in that processor&#8217;s
+cache and the program will start slowly as it populates its cache.</p>
+
+<p><strong>Processor affinity</strong> is the aspect of scheduling on
+a multiprocessor system where the scheduler keeps track of what processor
+the process ran on previously and attempts to reschedule the process onto
+that same processor. There are two forms of processor affinity.
+<strong>Hard affinity</strong> ensures that a process always gets scheduled
+onto the same processor.
+<strong>Soft affinity</strong> is a best-effort approach. A scheduler will
+attempt to schedule a process onto the same CPU but in some cases may
+move the process onto a different processor. The reason for doing this
+is that, even though there may be an initial performance penalty to start
+a process on another CPU, it&#8217;s probably better than having the CPU sit idle
+with no process to run. The scheduler tries to <strong>load balance</strong>
+the CPUs to make sure that they have a sufficient number of tasks in their run queue.
+There are two approaches to load balancing among processors:</p>
+
+<ol>
+<li><p><strong>Push migration</strong> is where the operating system checks the
+ load (number of processes in the run queue) on each processor periodically.
+ If there&#8217;s an imbalance, some processes will be moved from one processor
+ onto another.</p></li>
+<li><p><strong>Pull migration</strong> is where a scheduler finds that there
+ are no more processes in the run queue for the processor. In this case,
+ it raids another processor&#8217;s run queue and transfers a process onto
+ its own queue so it will have something to run.</p></li>
+</ol>
+
+<p>It is common to combine both push and pull migration (Linux does it, for example).</p>
+
+<h2 id="schedulingdomains">Scheduling domains</h2>
+
+<p>The real world is not as simple as deciding whether to run a task on the
+same processor or not. Many systems have multiple processors and some
+are preferable to others when rescheduling a ready task. The categories
+of process include:</p>
+<dl>
+<dt>Virtual CPUs in a hyperthreaded core</dt>
+<dd>Many intel CPUs support hyperthreading (HT technology). A single
+ processor core presents itself as two virtual CPUs to the
+ operating system. The processor core has a separate set of
+ registers for each virtual CPU and multitple instructions
+ can execute in parallel as long as they don&#8217;t compete for the
+ same section of the processor. Although one execution thread
+ may hold up the performance of another one, the threads share
+ acces to all processor caches.</dd>
+
+<dt>Multiple cores in a processor</dt>
+<dd>Many processors, particularly those on laptops, desktops, and servers,
+ contain several processor cores (often 2, 4, 6, or 8) within a single
+ chip. In this case, the TLB and fastest instruction and data caches
+ are not shared across cores. However, all the cores share access
+ to a common memory cache. This cache is slower than the high-speed
+ per-core cache but still much faster than accessing main memory.</dd>
+
+<dt>Multiple processors in an SMP architecture</dt>
+<dd>Multiple processors in one computer system share common
+ access to memory in the system. However, they do not share
+ any caches: one processor does not have access to cached data on
+ another processor.</dd>
+
+<dt>Multiple processors in an NUMA architecture</dt>
+<dd>NUMA, Non-Uniform Memory Architecture is a multiprocessor
+ computer architecture, designed for large numbers of processors
+ where each processor or group of processors has access to
+ a portion of memory via a high-speed memory interface (e.g., on the same
+ circuit board) while other regions of memory are slower to
+ access since they reside on other processors and are accessed
+ via a secondary, slower, interface.</dd>
+</dl>
+
+
+<p>What we have now is the realization that if a task
+is to be migrated to another processor, migrating it to some
+processors is preferable to others.
+For example, scheduling a task on a different core on the
+same chip is preferable to scheduling it onto a core on a different
+chip.</p>
+
+<p>Linux introduces the concept of <strong>scheduling domains</strong> to handle this.
+Scheduling domains allow the system to organize processors into a
+hierarchy, where processors are grouped from
+the most desirable migration groups at the lowest layer (e.g., hyperthreaded
+CPUs on the same core) through to the least desirable migration groups
+at the highest layers of the hierarchy (e.g., migrating across processors on
+different circuit boards in a NUMA system).</p>
+
+<p>A scheduling domain constains one or more CPU groups. Each CPU group is treated as
+one entity by the domain. A higher-level domain treats lower-level domains as a group.
+For example, two hyperthreaded CPUs sharing the same core will be placed in one
+group that has two subgroups, one for each CPU. All the per-core groups will
+make up a higher-level domain that represents the entire processor.</p>
+
+<p>Each CPU has a runqueue structure associated with it.
+In addition to the structures needed to keep track of ready processes
+(e.g., a balanced tree or a set of queues), this
+per-cpu structure keeps track of scheduling data, including statistics
+about CPU load.
+Each scheduling domain has a balancing policy associated with it that defines
+the balancing rules for that specific level of the hierarchy. This policy answers
+questions such as:</p>
+
+<p>– How often should attempts be made to balance load across groups in the domain?</p>
+
+<p>– How far can the loads in the domain get unbalanced before balancing across groups is needed?</p>
+
+<p>– How long can a group in the domain sit idle?</p>
+
+<p>Linux performs active load balancing periodically.
+The scheduler moves up the scheduling domain hierarchy and checks each groups
+along the way. If any group is deemed to be out of balance based on the
+policy rules, tasks will be moved from one CPU&#8217;s run queue to another&#8217;s to
+rebalance the domain.</p>
+
+<h1 id="schedulingclasses">Scheduling classes</h1>
+
+<p>Linux supports a modular scheduling system that can accommodate different
+schedulers. A <strong>scheduling class</strong> defines a common set of functions that
+define the behavior of that scheduler (e.g., add a task, remove a task,
+choose the next task tor run).
+Multiple schedulers can run concurrently.
+Each task in the system belongs to one scheduling class. A task will
+belong to one of two scheduling classes:</p>
+
+<ol>
+<li><p>sched_fair: implements the CFS (completely fair share) scheduler, a general
+purpose multilevel queue scheduler that dynamically adjusts priority levels based
+on how much &#8220;virtual runtime&#8221; each task used over a period of time.
+Tasks that spend more time running (using the CPU) are given a
+lower priority over those that spend spend less time running.</p></li>
+<li><p>sched_rt: implements a simple multilevel priority-based
+round-robin scheduler for real-time tasks.</p></li>
+</ol>
+
+<p>To pick a task to run, the scheduler
+iterates through the list of scheduling classes to find the class with the
+highest priority that has a runnable task.</p>
+
+<h1 id="references">References</h1>
+
+<p><ul>
+<li>
+Volker Seeker,
+<a href="http://criticalblue.com/news/wp-content/uploads/2013/12/linux_scheduler_notes_final.pdf">
+Process Scheduling in Linux</a>,
+University of Edinburgh, May 12, 2013.
+</li></p>
+
+<li>
+<a href="http://www.ibm.com/developerworks/linux/library/l-scheduler/">Inside the Linux scheduler</a>,
+M. Tim Jones, IBM developerWorks Technical Library, June 30, 2006
+</li>
+
+<li> <a href="http://oreilly.com/catalog/linuxkernel/chapter/ch10.html">Understanding the Linux Kernel</a>,
+Daniel P. Bovet &amp; Marco Cesati, October 2000, Chapter 10: Process Scheduling
+</li>
+
+<li> <a href="http://www.ibm.com/developerworks/linux/library/l-completely-fair-scheduler/">Inside the Linux 2.6 Completely Fair Scheduler: Providing fair access to CPUs since 2.6.23</a>, M. Tim Jones, IBM developerWorks, December 15, 2009
+</li>
+
+<li> <a href="http://en.wikipedia.org/wiki/Completely_Fair_Scheduler">Completely Fair Scheduler</a>, Wikipedia article
+</li>
+
+<p>This document is updated from its original version of September 27, 2010.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2015 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: February 20, 2015 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

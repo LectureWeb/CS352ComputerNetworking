@@ -1,0 +1,270 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Week 10: Distributed Transactions</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Week 10: Distributed Transactions</h1>
+								<h2>Terms you should know</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>April 6, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<h3 id="commitprotocols">Commit Protocols</h3>
+
+<ul>
+<li>ACID semantics</li>
+<li>Transaction Atomicity</li>
+<li>Transaction Consistency</li>
+<li>Transaction Isolation/Serializability</li>
+<li>Transaction Durability</li>
+<li>Write-ahead log</li>
+<li>Rollback</li>
+<li>Transaction manager</li>
+<li>Transaction coordinator</li>
+<li>Participants</li>
+<li>Commit</li>
+<li>Abort</li>
+<li>Two-phase commit protocol
+
+<ul>
+<li>Role of phase 1</li>
+<li>Role of phase 2</li>
+<li>Recovery coordinator</li>
+<li>Failure assumptions</li>
+</ul></li>
+<li>Three-phase commit protocol
+
+<ul>
+<li>Purpose</li>
+<li>Role of phases 1, 2, 3</li>
+<li>Recovery coordinator possibility</li>
+<li>Problems with the protocol</li>
+</ul></li>
+<li>Brewer&#8217;s CAP theorm - what does it show?</li>
+<li>Eventual consistency
+
+<ul>
+<li>Why would we want it?</li>
+</ul></li>
+</ul>
+
+<h3 id="concurrencycontrol">Concurrency Control</h3>
+
+<ul>
+<li>Purpose of concurrency control</li>
+<li>Schedule</li>
+<li>Pessimistic vs. optimistic concurrency control</li>
+<li>Two-phase locking protocol (2PL)
+
+<ul>
+<li>Role of phases</li>
+<li>What does the protocol accomplish?</li>
+</ul></li>
+<li>Strong strict two-phase locking (SS2PL)
+
+<ul>
+<li>How does it differ from two-phase locking?</li>
+<li>What is the advantage over two-phase locking?</li>
+<li>What is the disadvantage over two-phase locking?</li>
+</ul></li>
+<li>Exclusive vs. shared locks</li>
+<li>Two-version-based concurrency control
+
+<ul>
+<li>How does locking differ from SS2PL?</li>
+<li>What is a commit lock?</li>
+</ul></li>
+<li>Timestamp ordering
+
+<ul>
+<li>What does it require?</li>
+<li>How does it work?</li>
+</ul></li>
+<li>Multiversion concurrency control (MVCC)
+
+<ul>
+<li>Is it optimistic or pessimistic?</li>
+<li>How are timestamps used?</li>
+<li>How does it work?</li>
+</ul></li>
+</ul>
+
+<h3 id="deadlock">Deadlock</h3>
+
+<ul>
+<li>What is deadlock?</li>
+<li>Understand the four conditions for deadlock</li>
+<li>Wait-for graph (WFG)</li>
+<li>Centralized detection</li>
+<li>What causes phantom (false) deadlock?</li>
+<li>Chandy-Misra-Haas distributed deadlock detection
+
+<ul>
+<li>What is a probe?</li>
+<li>What is edge chasing?</li>
+<li>How do you know you have deadlock?</li>
+</ul></li>
+<li>Wait-die and wound-wait algorithms
+
+<ul>
+<li>What is the goal of each?</li>
+</ul></li>
+</ul>
+
+<h3 id="googlespanner">Google Spanner</h3>
+
+<ul>
+<li>Consistency model</li>
+<li>Commit protocol used</li>
+<li>Spanserver role</li>
+<li>Zonemaster role</li>
+<li>Concurrency control mechanisms used</li>
+<li>Snapshot reads</li>
+<li>External consistency</li>
+<li>TrueTime API</li>
+<li>What is TT.now().earliest?</li>
+<li>What is TT.now().latest?</li>
+<li>What is the purpose of a commit wait?</li>
+<li>How does the CAP theorem apply to Spanner?</li>
+</ul>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

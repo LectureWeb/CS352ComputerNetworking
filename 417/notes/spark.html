@@ -1,0 +1,512 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Spark</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Spark</h1>
+								<h2>A general-purpose big data framework</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>March 24, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Create a general-purpose, fault-tolerant distributed framework for analyzing large-scale data and data streams.</p>
+</blockquote>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>MapReduce turned out to be an incredibly useful and widely-deployed framework
+for processing large amounts of data. However, its design forces programs
+to comply with its computation model, which is:</p>
+
+<ol>
+<li><em>Map</em>: create a sequence of key, value data.</li>
+<li><em>Shuffle</em>: combine common keys together and partition them to reduce workers.</li>
+<li><em>Reduce</em>: process each unique key with all of its associated values.</li>
+</ol>
+
+<p>It turned out that many applications had to run MapReduce over multiple passes to
+process their data. All intermediate data had to be stored back in the file system
+(GFS at Google, HDFS elsewhere), which tended to be slow since stored data was not
+just written to disks but also replicated. Moreover, the next MapReduce phase could not
+start until the previous MapReduce job completed fully.</p>
+
+<p>MapReduce was also restricted in where it could read its data. It would generally be in GFS/HDFS
+files or some some storage structure built on top of them.
+In many cases, however, data resides within an SQL database or is streaming from other services
+(e.g, activity logs, remote monitoring).</p>
+
+<p><strong>Spark</strong> is a framework that provides a highly flexible and general-purpose way of dealing with big
+data processing needs, does not impose a rigid computation model, and supports
+a variety of input types. This enables Spark to deal with text files, graph data,
+database queries, and streaming sources and not be confined to a two-stage processing model.
+Programmers can develop arbitrarily-complex, multi-step data pipelines arranged
+in an arbitrary directed acyclic graph (DAG) pattern.</p>
+
+<p>Programming in Spark involves defining a sequence of <em>transformations</em> and <em>actions</em>.
+Spark has support for a <em>map</em> action and a <em>reduce</em> operation, so it can
+implement traditional MapReduce operations but it also supports SQL queries, graph processing,
+and machine learning. Unlike MapReduce, Spark stores its intermediate
+results in memory, providing for dramatically higher performance.</p>
+
+<h1 id="sparkarchitecture:tasks">Spark architecture: tasks</h1>
+
+<p>An application that uses Spark identifies data sources and the operations on that data.
+The main application, called the <strong>driver program</strong> is linked
+with the Spark API, which creates a <strong>SparkContext</strong>. This is the heart of
+the Spark system and coordinates all processing activity.
+This SparkContext in the driver program connects to a Spark <strong>cluster manager</strong>.
+The cluster manager responsible for allocating worker nodes, launching <strong>executors</strong> on them,
+and keeping track of their status.</p>
+
+<p>Each <strong>worker node</strong> runs one or more <strong>executors</strong>. An executor is a process
+that runs an instance of a Java Virtual Machine (JVM).
+When each executor is launched by the manager, it establishes a connection back to the
+driver program.
+The executor runs <strong>tasks</strong> on behalf
+of a specific SparkContext (application) and keeps related
+data in memory or disk storage. A task is a transformation or action.
+The executor remains running for the duration of the
+application. This provides a performance advantage over the MapReduce
+approach since new tasks can be started very quickly.</p>
+
+<p>The executor also maintains a cache, which stores recently-used and frequently-used data in memory
+instead of having to store it to a disk-based file as the MapReduce framework does.</p>
+
+<p>The driver goes through the user&#8217;s program, which consists of actions
+and transformations on data and converts that into a series of <strong>tasks</strong>.
+The driver then sends these tasks to the executors that registered with it.
+A <strong>task</strong> is application code that runs in the executor on a Java Virtual Machine
+(JVM) and can be written in languages such as Scala, Java, Python, Clojure, and R.
+It is transmitted as a jar file to an executor, which then runs it.</p>
+
+<h1 id="sparkarchitecture:resilientdistributeddatasetsrdd">Spark architecture: Resilient Distributed Datasets (RDD)</h1>
+
+<p>Data in Spark is a collection of <strong>Resilient Distributed Datasets</strong> (<strong>RDD</strong>s).
+This is often a huge collection of stuff. Think of an individual RDD as a giant table in a database
+or a structured file.</p>
+
+<p>Data is organized into RDDs. An RDD will be partitioned (sharded) across many
+computers so each task will work on only a part of the dataset (divide and conquer!).
+RDDs can be created in three ways:</p>
+
+<ol>
+<li><p>They can be present as any file stored in HDFS or any other storage system
+supported in Hadoop. This includes Amazon S3 (a key-value server, similar in design
+to Dynamo), HBase (Hadoop&#8217;s version of Bigtable), and Cassandra (a no-SQL eventually-consistent database).
+This data is created by other services, such as event streams, text logs, or a database. For
+instance, the results of a specific query can be treated as an RDD. A list of files in a specific
+directory can also be an RDD.</p></li>
+<li><p>RDDs can be streaming sources using the Spark Streaming extension. This could
+be a stream of events from remote sensors, for example. For fault tolerance, a
+<em>sliding window</em> is used, where the contents of the stream are buffered in memory
+for a predefined time interval.</p></li>
+<li><p>An RDD can be the output of a <em>transformation</em> function. This allows one task
+to create data that can be consumed by another task and is the way tasks pass data around.
+For example, one task can filter out unwanted data and generate a set of key-value pairs,
+writing them to an RDD. This RDD will be cached in memory (overflowing to disk if needed) and
+will be read by a task that reads the output of the task that created the key-value data.</p></li>
+</ol>
+
+<p>RDDs have specific properties:</p>
+
+<ul>
+<li><p>They are <strong>immutable</strong>. That means their contents cannot be changed. A task can read from
+an RDD and create a new RDD but it cannot modify an RDD. The framework magically garbage
+collects unneeded intermediate RDDs.</p></li>
+<li><p>They are typed. An RDD will have some kind of structure within in, such as a key-value pair
+or a set of fields. Tasks need to be able to parse RDD streams.</p></li>
+<li><p>They are partitioned. Spark breaks an RDD into smaller chunks (partitions) and spreads them across the available workers. Each partition is run as a separate concurrent task. A multi-processor or multi-core system shoudl get multiple partitions to make use of all cores. By default, Spark creates a partition for each block of an input file. The default size for HDFS is 128MB. Spark operations that generate RDDs may specify a partitioning function to shuffle the output data. THe default partitioning function is to send each generated row of data to the worker corresponding to <em>hash(key) mod workercount</em>.</p></li>
+</ul>
+
+<p>They also have an optional property:</p>
+
+<ul>
+<li>They may be ordered. An RDD will often be a set of elements that can be sorted. In the case
+of key-value lists, the elements will be sorted by a key. The sorting function can be defined
+by the programmer but sorting enables one to implement things like <em>Reduce</em> operations.</li>
+</ul>
+
+<h1 id="rddoperations">RDD operations</h1>
+
+<p>Spark allows two types of operations on RDDs: <strong>transformations</strong> and <strong>actions</strong>.
+<strong>Transformations</strong> read an RDD and return a new RDD. Example transformations
+are <em>map</em>, <em>filter</em>, <em>groupByKey</em>, and <em>reduceByKey</em>. Transformations are evaluated lazily,
+which means they are computed only when some task wants their data (the RDD that they
+generate). At that point, the driver schedules them for execution.</p>
+
+<p><strong>Actions</strong> are operations that evaluate and return a new value. When an action is
+requested on an RDD object, the necessary transformations are computed and the result
+is returned. Actions tend to be the things that generate the final output needed by
+a program. Example actions are <em>reduce</em>, <em>grab samples</em>, and <em>write to file</em>.</p>
+
+<h2 id="sampletransformations">Sample transformations</h2>
+
+<table>
+<colgroup>
+<col />
+<col />
+</colgroup>
+
+<thead>
+<tr>
+	<th> Transformation </th>
+	<th> Description </th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td> map(func) </td>
+	<td> Pass each element through a function func </td>
+</tr>
+<tr>
+	<td> filter(func) </td>
+	<td> Select elements of the source on which func returns true </td>
+</tr>
+<tr>
+	<td> flatmap(func) </td>
+	<td> Each input item can be mapped to 0 or more output items </td>
+</tr>
+<tr>
+	<td> sample(withReplacement, fraction, seed) </td>
+	<td> Sample a fraction fraction of the data, with or without replacement, using a given random number generator seed </td>
+</tr>
+<tr>
+	<td> union(otherdataset) </td>
+	<td> Union of the elements in the source data set and otherdataset </td>
+</tr>
+<tr>
+	<td> distinct([numtasks]) </td>
+	<td> The distinct elements of the source dataset </td>
+</tr>
+<tr>
+	<td> groupByKey([numtasks]) </td>
+	<td> When called on a dataset of (K, V) pairs, returns a dataset of (K, seq[V]) pairs </td>
+</tr>
+<tr>
+	<td> reduceByKey(func, [numtasks]) </td>
+	<td> Aggregate the values for each key using the given reduce function </td>
+</tr>
+<tr>
+	<td> sortByKey([ascending], [numtasks]) </td>
+	<td> Sort keys in ascending or descending order </td>
+</tr>
+<tr>
+	<td> join(otherDataset, [numtasks]) </td>
+	<td> Combines two datasets, (K, V) and (K, W) into (K, (V, W)) </td>
+</tr>
+<tr>
+	<td> cogroup(otherDataset, [numtasks]) </td>
+	<td> Given (K, V) and (K, W), returns (K, Seq[V], Seq[W]) </td>
+</tr>
+<tr>
+	<td> cartesian(otherDataset) </td>
+	<td> For two datasets of types T and U, returns a dataset of (T, U) pairs </td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="sampleactions">Sample actions</h2>
+
+<table>
+<colgroup>
+<col />
+<col />
+</colgroup>
+
+<thead>
+<tr>
+	<th> Action </th>
+	<th> Description </th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td> reduce(func) </td>
+	<td> Aggregate elements of the dataset using func. </td>
+</tr>
+<tr>
+	<td> collect(func, [numtasks]) </td>
+	<td> Return all elements of the dataset as an array </td>
+</tr>
+<tr>
+	<td> count() </td>
+	<td> Return the number of elements in the dataset </td>
+</tr>
+<tr>
+	<td> first() </td>
+	<td> Return the first element of the dataset </td>
+</tr>
+<tr>
+	<td> take(n) </td>
+	<td> Return an array with the first n elements of the dataset </td>
+</tr>
+<tr>
+	<td> takeSample(withReplacement, fraction, seed) </td>
+	<td> Return an array with a random sample of num elements of the dataset </td>
+</tr>
+</tbody>
+</table>
+
+<h1 id="datastorage">Data storage</h1>
+
+<p>Spark does not care how data is stored. The appropriate RDD connector determines how to read data. For
+example, RDDs can be the result of a query in a Cassandra database and new RDDs can be written to Cassandra tables.
+Alternatively, RDDs can be read from HDFS files or written to an HBASE table.</p>
+
+<h1 id="faulttolerance">Fault tolerance</h1>
+
+<p>For each RDD, the driver tracks the sequence of transformations used to create it. That means every RDD knows
+which task needed to create it. If any RDD is lost (e.g., a task that creates one died), the driver
+can ask the task that generated it to recreate it. The driver maintains the entire dependency graph, so this
+recreation may end up being a chain of transformation tasks going back to the original data.</p>
+
+<h1 id="sampleprogram">Sample program</h1>
+
+<p>Here is a sample of a trivially small program that uses Spark and processes log files.</p>
+
+<p>The input data comes from some file sitting in HDFS (let&#8217;s assume it&#8217;s a huge one).
+We specify the use of a &#8220;textFile&#8221; connector to read the data.</p>
+
+<pre><code>// base RDD
+val lines = sc.textFile(&quot;hdfs://some_file.log”)
+// transformed RDDs
+val errors = lines.filter(_.startsWith(&quot;ERROR&quot;))
+val messages = errors.map(_.split(&quot;\t&quot;)).map(r =&gt; r(1))
+messages.cache()
+
+// action 1
+messages.filter(_.contains(&quot;mysql&quot;)).count()
+// action 2
+messages.filter(_.contains(&quot;php&quot;)).count()
+</code></pre>
+
+<p>The first transformation is a <em>filter</em> that picks out lines that start with the text &#8220;ERROR&#8221;. It creates a new RDD that we will call <code>errors</code>. This contains only the lines with error messages.
+Anything that is not an error is ignored.
+The next transformation (<em>map</em>) takes those error messages and splits each string by tabs. The output of that RDD is fed into another <em>map</em> transformation that extracts element 1, the token that immediately follows the ERROR string.
+In this example, the token is a string that identifies the program that created the error.
+The <strong>cache</strong> directive that follows, instructs the framework to cache the <code>messages</code> RDD.
+We will have two transformations that read from the <code>messages</code> RDD, so the <em>cache</em> directive is a hint to the framework to hold onto that RDD in memory.</p>
+
+<p>We apply a <strong>filter</strong> transformation to extract only the lines from the <code>messages</code> RDD that contain the string <code>mysql</code>. Then we apply the <strong>count</strong> action to count the number of lines that are in the resulting dataset.
+This count tells us the number of errors that resulted from mysql.</p>
+
+<p>In the last line, we again apply a <strong>filter</strong> transformation but extract only the lines that contain <code>php</code>.
+Then we count the number of lines in the resulting dataset with the <strong>count</strong> action. This tells us the number of errors due to php.</p>
+
+<h1 id="beyondrdds">Beyond RDDs</h1>
+
+<p>The Resilient Distributed Dataset (RDD) is the core component of Spark. As Spark evolved, two additional datasets were added to the framework: <em>Datasets</em> and <em>DataFrames</em>. Both of these were added to support structured data (columns of data) and are particularly useuful for making SQL queries via Spark.</p>
+
+<p>An RDD is an arbitrary collection of data. The Spark framework is unaware of its structure and it is up to the program to parse its contents.</p>
+
+<p>A <strong>DataFrame</strong> is a distributed collection of data organized into named colums. It is a table: a two-dimensional structure of columns and rows. This is comparable to a table in a relational database.
+DataFrames introduce a schema that goes along with the data and describes the column-based structure.
+Along with DataFrames, the Spark framework gained a <em>catalyst optimizer</em>.
+This allows Spark to optimize certain operations on it since it knows the data types and does not have to rely on using Java object serialization.
+DataFrames are particulalry useful for building relational queries.
+For example, you can filter data: <code>df.filter(&quot;age &lt; 18&quot;);</code>.
+A programmer can convert a DataFrame to an RDD with an <code>rdd</code> method and convert an RDD to a DataFrame with a <code>toDF</code> method.</p>
+
+<p>A <strong>Dataset</strong> API builds on top of DataFrames and provides a type-safe, object-oriented programming interface.
+It introduces <em>encoders</em> that translate between JVM objects and Spark&#8217;s internal fomat.
+These allow access to indivudual attributes without the need to de-serialize an entire object.
+Datasets provide the best of DataFrames and RDDs. They provide the type-safe and functional-programming interface of RDDs along with the relational column-based model of DataFrames.</p>
+
+<h1 id="sparkecosystem">Spark ecosystem</h1>
+
+<p>Spark has rich and growing ecosystem of supporting services:</p>
+
+<ul>
+<li><p><strong>Spark Streaming</strong> is designed to enable Spark to process real-time streaming data. It uses a technique called <strong>micro-batch</strong> processing, where incoming data is accumulated into small chunks and those chunks are then processed.</p></li>
+<li><p><strong>Spark SQL</strong> provides access to Spark data over a JDBC interface and converts SQL-like queries into Spark jobs. It allows people to process data using database queries rather than writing Spark transformations and actions.</p></li>
+<li><p><strong>Spark Mlib</strong> is a machine learning library. It provides various utilities for classification, regression, clustering, and filtering of data. Programmers can use it to create machine learning pipelines, evaluate models, and tune hyper-parameters.</p></li>
+<li><p><strong>Spark GraphX</strong> is designed to support graph computation. It adds a Pregel API to Spark and extends RDDs by introducing a directed multi-graph with properties attached to each vertex &amp; edge. GraphX provides a set of graph-specific operations to create subgraphs, join vertices, aggregate messages, and so on.</p></li>
+</ul>
+
+<h3 id="sparkstreaming">Spark Streaming</h3>
+
+<p>Let&#8217;s take a closer look at how Spark Streaming supports continious data streams.</p>
+
+<p>Big data systems such as MapReduce, BSP/Hama, and Pregel/Giraph expect to work on static data. The files are complete and unchanging before any processing on them can begin. Spark does the same. Some data sources, however, don&#8217;t have a start or an end. These include data feeds that might be used for developing fraud models for bank transactions, generating statistics on the movement of people or cars, or collecting error data from machines in a factory.</p>
+
+<p>Spark Streaming is an extension that allows Spark to process live data streams.
+It uses the same programming interface and operations as Spark does for static data.
+The difference is the use of <strong>micro-batching</strong>. With micro-batching, incoming data is collected into
+chunks that represent a time interval. The programmer can define that time interval. This chunking of data creates what Spark calls a <strong>discretized stream</strong>, or <strong>DStream</strong>.</p>
+
+<p>A DStream is a continuous sequence of RDDs. Each of the RDDs represents a micro batch &#8211; data that was collected over an interval of time. DStreams are treated just like regular RDDs by the framework. You can apply transformations and actions on them as on any other RDDs. Every operation on a DStream is translated to an operation on a sequence of RDDs. The distinction is that we have a never-ending stream of RDDs and the programmer needs to be aware of that.</p>
+
+<h2 id="sparksummary">Spark summary</h2>
+
+<p>Spark is widely used and very well supported.
+The framework is fast. In many cases it can be 10x faster if using disk and 100x faster if caching results in memory than comparable MapReduce jobs.
+Storing intermediate results in memory and allowing multiple transformations or actions read from the same dataset are both keys to this high performance.</p>
+
+<p>Spark supports more operations than MapReduce and it does not require the programmer to adapt a problem into a series of map and reduce operations.
+You can define an arbitrary set of inputs, an arbitrary number of transformations, and an arbitrary number of actions to produce results. There is no need for useless stages that might do nothing like one has to do when applying MapReduce iteratively.</p>
+
+<p>Spark is fault tolerant. Dataset partitions can be regenerated if needed. The framework tracks what transformation was used to create the needed dataset and the input the transformation required. With that information, it can work backwards and recreate any missing RDD.</p>
+
+<p>Finally, Spark provides a rich ecosystem and can support continuous data streams through Spark Streaming.</p>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li>atei Zaharia, Mosharaf Chowdhury, Tathagata Das, Ankur Dave, Justin Ma, Murphy McCauley, Michael J. Franklin, Scott Shenker, and Ion Stoica. 2012., <a href="https://www.usenix.org/system/files/conference/nsdi12/nsdi12-final138.pdf">Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing</a>, In Proceedings of the 9th USENIX conference on Networked Systems Design and Implementation (NSDI&#8217;12). USENIX Association. &#8211; the original paper on Spark</li>
+<li><a href="http://spark.apache.org/docs/latest/job-scheduling.html">Job Scheduling</a>, Apache Spark Documentation.</li>
+<li><a href="https://spark.apache.org/docs/latest/rdd-programming-guide.html">RDD Programming Guide</a>, Apache Spark Documentation.</li>
+<li><a href="http://spark.apache.org/docs/latest/cluster-overview.html">Cluster Mode Overview</a>, Spark Documentation.</li>
+<li>Paco Nathan, <a href="http://stanford.edu/~rezab/sparkclass/slides/itas_workshop.pdf">Intro to Apache Spark</a>, ITAS Workshop, Databricks</li>
+<li><a href="http://hortonworks.com/hadoop-tutorial/hands-on-tour-of-apache-spark-in-5-minutes/">Hands-on Tour of Apache Spark in 5 Minutes</a>. Hortonworks</li>
+<li><a href="http://www.cloudera.com/content/www/en-us/documentation/enterprise/latest/topics/cdh_ig_running_spark_apps.html">Running Spark Applications</a>, Cloudera 5.5.x documentation</li>
+<li>Sandy Ryza, <a href="https://blog.cloudera.com/blog/2014/05/apache-spark-resource-management-and-yarn-app-models/">Apache Spark Resource Management and YARN App Models</a>,
+Cloudera Engineering Blog, May 30, 2014.</li>
+<li>Srini Penchikala, <a href="http://www.infoq.com/articles/apache-spark-introduction">Big Data Processing with Apache Spark – Part 1: Introduction</a>, InfoQ, Jan 30, 2015</li>
+<li><a href="https://www.analyticsvidhya.com/blog/2020/11/what-is-the-difference-between-rdds-dataframes-and-datasets/"> </a>, Lakshay Arora, November 5, 2020.</li>
+</ul>
+
+<p>This is an update to a document originally created on November 25, 2015 and revised on November 26, 2017.</p>
+
+							</section>
+							<footer class="main">
+								Last modified April  7, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

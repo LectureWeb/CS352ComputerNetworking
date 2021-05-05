@@ -1,0 +1,903 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Assignment 3 FAQ </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+
+.subhead {
+	background-color: #ddd;
+	text-align: center;
+	margin-left: 5em;
+	margin-right: 5em;
+	border: 1px solid #555;
+	border-radius: 5px;
+}
+.note {
+	font-style: italic;
+	color: #444;
+}
+#main .faqlist dd {
+        margin-left: 2em;
+        margin-bottom: 2em;
+}
+#main .faqlist dt {
+        background-color: #D1DBDB;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        padding-top: 0.25em;
+        padding-left: 0.5em;
+        color: black;
+	font-weight: normal;
+}
+#main .faqlist dt strong, #main .faqlist dt b {
+	color: red;
+}
+#main .faqlist dt {
+	margin-bottom: 1em;
+}
+#main .faqlist dt p + p {
+	padding-top: 1em;
+}
+#main .faqlist p + pre {
+	margin-top: -1em;
+}
+#main .faqlist dt ul {
+	margin-top: 1em;
+}
+#main .faqlist dt p {
+	margin-bottom: 0;
+}
+#main .newslist dt {
+        background-color: white;
+        color: #555;
+}
+#main .answer {
+	color: #a00000;
+}
+
+</style>
+</head>
+
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 416 </a> 
+ 	<li> <a href="../hw/index.html"> Homework </a> 
+ 	<li> <a href="../hw/a-7-faq.html"> Assignment 3 FAQ </a> 
+</ul>
+</div>
+  
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Assignment 7 FAQ, Errata, and Addenda</h1>
+</div>
+
+<div class="subhead">
+Due Wednesday, April 22, 2015 11:00 pm via sakai
+</div>
+
+<p>
+<em>
+Last update:
+Monday, March 23, 2015 13:57 EDT
+
+</em>
+</p>
+
+<dl class="faqlist">
+
+<dt>
+<p>
+I tried compiling hello.c on iLab machines with:
+</p>
+<pre><code>
+gcc -Wall -D_FILE_OFFSET_BITS=64 hello.c 'pkg-config fuse --cflags -libs' -o hello
+</code></pre>
+<p>
+and it says:
+</p>
+<pre><code>
+gcc: pkg-config fuse --cflags --libs: No such file or directory
+</code></pre>
+<p>
+This is with the line from the top of the hello.c file. 
+I just tried compiling with what the TA gave me and it works on thee iLab machines:
+</p>
+<pre><code>
+cc -o hello hello.c -D_FILE_OFFSET_BITS=64 –lfuse
+</code></pre>
+<p>
+However, I am having issues with it working on my Ubuntu virtual
+machine. I am compiling hello.c the same way as I got it to work
+on the ILabs. The error message it displays is:
+</p>
+<pre><code>
+hello.c:13:18: fatal error: fuse.h: No such file or directory
+ #include <fuse.h>
+                  ^
+compilation terminated.
+</code></pre>
+</dt>
+
+
+<dd>
+<p>
+On your ubuntu system, make sure you have the fuse package installed. I believe you’ll need to install two packages:
+</p>
+<pre><code>
+	apt-get install libfuse2
+	apt-get install fuse
+	apt-get install libfuse-dev
+</code></pre>
+<p>
+You’ll also need:
+</p>
+<pre><code>
+	apt-get install pkg-config
+</code></pre>
+
+<p>
+libfuse-dev is the development package. It installs, among other things, fuse.h.
+</p>
+</dd>
+
+
+<dt>
+I added <em>printf</em> statements to my code. However,
+none of the functions print anything. What's going on?
+</dt>
+<dd>
+<p>
+Printing only works if the fuse-based program runs in debug mode.
+Run the program in a separate window with the debug option on (which
+also makes the fuse process run in the foreground and hence easier to kill):
+</p>
+<pre><code>
+	./hello hellomnt -d
+</code></pre>
+<p>
+Then, in another window, try accessing things in hellomnt. You should
+see your debugging messages in the first window.
+</p>
+
+</dd>
+
+
+<dt>
+As I understand it, we have a fixed number of directories
+(e.g add, div, factor, etc) and in each of these directories we have doc file, right?
+Then I understand we should create directories for our calls:
+e.g., calling math/add/5/3 would create directories 5 and 3,
+and in directory 3 we will have some hidden text file with the result of the addition (8). Is it correct? 
+</dt>
+<dd>
+<p>
+You never create directories or files: it's all an illusion presented by your program.
+When presented with a pathname, you’ll need to just test if it is a
+valid syntax. For example, if you see "<code>/div</code>", you need to identify
+that as a directory. If you see "<code>/div/<em>number</em></code>", that will also be
+identified as a directory. "<code>/div/<em>number</em>/<em>number</em></code>"
+will be identified
+as a regular file since it is a valid leaf of the directory tree
+and will contain the result of the first number divided by the second
+number. Anything else under "<code>/div</code>" aside from
+"<code>/div/doc</code>" will not be valid and will be
+reported as not existing.
+</p>
+<p>
+This means that your getattr() function will set the appropriate mode for the incoming path:
+</p>
+
+<pre><code>
+stbuf-&rarr;st_mode = S_IFDIR | 0755;
+</code></pre>
+
+<p>
+or
+</p>
+
+<pre><code>
+stbuf-&rarr;st_mode = S_IFREG | 0444;
+</code></pre>
+<p>
+or
+</p>
+<pre><code>
+return -ENOENT;  // return a “no entry” error code
+</code></pre>
+
+<p>
+The big task in your getattr function is to parse the pathname and
+report the results. If you decide that you have a valid file name
+(e.g., "<code>/add/123.45/6.789</code>"), then you will also work out the results
+so you can return the slze of the results.
+</p>
+<p>
+Note that you will use similar logic in your open() function:
+return 0 if the name is valid as a file you can open, otherwise -EACCESS.
+</p>
+<p>
+You will also use the logic in your read() function: check that the
+path represents a valid syntax for a math result and return the
+requested substring of the results.
+</p>
+</dd>
+
+<dt>
+You say that we should create a tree structure where the root will
+be our mount point and "add", "div", "factor", etc. will be on a second
+level in a tree and so on up to the text files with math operation
+results? Is this right? 
+</dt>
+<dd>
+<p>
+You don’t need to create an actual tree structure in your code. You need
+to be able to answer queries about the directory structure, though.
+In my case, for example, I just used a table that contained patterns
+to identify numbers. For example: "/div" is found in the table
+and identified as a directory, "/div/#" matches "/div/" followed by
+a number and identifies that as a directory as well.
+The pattern "/div/#/#" matches "/div/" followed by
+a number, followed by a "/", and followed by another number.
+A successful match identifies the path as a file.
+There’s a little more to it than
+that since I also identify the function that gets called to evaluate
+the result but you should get the basic idea. You can also just
+have a bunch of if statements to parse the path. There are many
+ways you can implement this.
+</p>
+<p>
+Incidentally, you can use the <em>strtod</em> to convert a string to a double.
+</p>
+</dd>
+
+
+<dt>
+I read tutorial, wiki pages, and hello example program, but I am
+still confused how we create directories and files. I cannot
+understand how in the example hello.c we got the directory hello in the
+mount point's root. Do you actually create directories or we simply
+add them to our data-structure and then show to user (as I understand
+it is done with the <em>filler</em> function)?
+</dt>
+<dd>
+<p>
+You never actually create directories and files. Everything under
+the mount point is parsed by your program. In the case of the hello
+example, you present the user with a single file called "hello".
+It is defined in <code>hello_path</code> and its contents are defined in <code>hello_str</code>.
+There are no directories in this example except for the root of your file system.
+The entire file system contains only two valid names:
+</p>
+<ol>
+<li>
+	"/"  - root of the file system
+</li><li>
+	"/hello"  - the single file (defined in hello_path)
+</li>
+</ol>
+
+<p>
+Take a look at <em>hello_getattr()</em> to see how the incoming path is parsed to accept only these two files. 
+</p>
+<p>
+In <em>hello_readdir()</em>,
+we show the contents of the “directory” at the root level, which contains
+"." (itself), ".." (parent, which is the same as itself at the root)),
+and "hello" (the one file that we implement).
+</p>
+<p>
+In <em>hello_open()</em> and <em>hello_read()</em>,
+we reject any path other than the one file that we can open ("/hello").
+</p>
+<p>
+The user, these path names are the subset of the name under wherever the hello program is mounted. If you create a directory
+</p>
+<pre><code>
+	mkdir abc
+</code></pre>
+<p>
+and mount your file system under abc:
+</p>
+<pre><code>
+	./hello abc
+</code></pre>
+<p>
+then you would refer to the files under abc:
+</p>
+<pre><code>
+	cat abc/hello
+</code></pre>
+<p>
+while the program only gets the subset of the path that it cares about ("/hello").
+</p>
+</dd>
+
+
+<dt>
+<p>
+Why do we need:
+</p>
+<pre><code>
+	(void) offset;
+	(void) fi;
+</code></pre>
+<p>
+in readdir?
+I read about it but it is still confusing. The hello.c example does not use it, but the code from the tutorial has it.
+</p>
+
+</dt>
+<dd>
+<p>
+You can get away with not using it. The offset is used in cases
+where you don't return the entire directory contents at once. The
+offset contains the byte offset to read the next chunk of the directory
+contents. In your case, you should return the complete directory
+contents whenever requested. If you put a debug statement in, you will
+see that the value of offset is 0 and you never use fi.
+At the top level ("/"), you return
+</p>
+<pre><code>
+	.
+	..
+	add
+	sub
+	mul
+	div
+	<em>etc...</em>
+</code></pre>
+
+<p>
+At levels right under each function-named directory (e.g., under "/add"), you return
+</p>
+<pre><code>
+	.
+	..
+	doc
+</code></pre>
+<p>
+At other levels (e.g., under "/add/12345"), you return only
+</p>
+<pre><code>
+	.
+	..
+</code></pre>
+<p>
+If the pathname is not valid (e.g. "/foo" or "/add/123/456/678") then you return -ENOENT.
+</p>
+
+</dd>
+
+
+<dt>
+<strong>Important:</strong>: run in debugging mode!
+</dt>
+<dd>
+<p>
+To preserve your sanity, always run your file system in debug mode (at least until you get it working perfectly). That is, never run:
+</p>
+<pre><code>
+	./mathfs <em>mount_point</em>
+</code></pre>
+Instead, run:
+<pre><code>
+	./mathfs <em>mount_point</em> -d
+</code></pre>
+<p>
+<p>
+If you don't do this, you risk forgetting to kill the process. You also won't see any of your debugging messages.
+Run the file system in debug mode in one window and enter your commands in another window.
+</p>
+</dd>
+
+
+<dt>
+So I installed FUSE successfully, but when I try to run "make install" with FUSE it gives me an error, what do I do in this instance?
+</dt>
+<dd>
+<p>
+Try changing the makefile to compile with:
+</p>
+<pre><code>
+cc -D_FILE_OFFSET_BITS=64 -o mathfs mathfs.c -lfuse -lm
+</code></pre>
+</dd>
+
+
+<dt>
+<p>
+I'm having difficulty with setting the file/dir creation time. I
+checked the document stating that the <code>stat* st</code> structure has three
+timestamp-related fields, st_atime, st_mtime, st_ctime.
+I tried to call built-in function to generate a timestamp to
+assign to each of them but, unfortunately, that did not work. I observed
+the results from the demo that the creation time is always the
+current time, therefore I think there should be a field to hold the
+timestamp each time the getattr API is called.
+</p>
+<p>
+Is there any filed that I missed or my approach was wrong? Please guide me in the right direction.
+</p>
+</dt>
+<dd>
+<p>
+I just made a more or less random decision to set the timestamp to the
+current time. It seemed appropriate for dynamic files whose results are generated on the fly. 
+I set the timestamps in the getattr function via:
+</p>
+<pre><code>
+stbuf->st_mtime = stbuf->st_atime = stbuf->st_ctime = time(0);
+</code></pre>
+</dd>
+
+
+<dt>
+<p>
+Should we show the ".." directory in our mount point?
+I am not sure because it is treated as a root of our mounted filesystem, but we still should be able to do 
+</p>
+<pre><code>
+cd ..
+</code></pre>
+<p>
+So I guess it should be present, right?
+</p>
+
+</dt>
+<dd>
+<p>
+Yes, <code>..</code> should be present. If you take a look at a
+Linux system you’ll see there’s a <code>..</code> in the root
+directory. It's there just for consistency and refers to the same
+inode as the current directory. You should do:
+</p>
+<pre><code>
+	filler(buf, ".", NULL, 0);
+	filler(buf, “..", NULL, 0);
+</code></pre>
+</dd>
+
+
+<dt>
+<p>
+What should we do when user enters smth like
+</p>
+<pre><code>
+ls math/add/1
+</code></pre>
+<p>
+Is it treated as a regular file or a directory? Should it be treated as valid or not?
+I guess I should just return -ENOENT right?
+</p>
+</dt>
+<dd>
+<p>
+The getattr function will return -ENOENT only if the path is not valid. In the example of a path “/add/1”, you have a valid path and getattr should return a directory attribute:
+</p>
+<pre><code>
+	stbuf->st_mode = S_IFDIR | 0755;
+	stbuf->st_nlink = 3;
+	stbuf->st_size = 0;
+</code></pre>
+<p>
+If the path was was “/add/1/2” then you have a valid file name and should return a file attribute:
+</p>
+</p>
+<pre><code>
+	stbuf->st_mode = S_IFREG | 0444;
+	stbuf->st_nlink = 1;
+	stbuf->st_size = strlen(results);
+</code></pre>
+<p>
+In the open function, however, you should disallow the opening of
+a directory. If the path is "/add/1", a call to open() should return
+-EACCESS.
+</p>
+</dd>
+
+
+<dt>
+How do I run this on a Mac?
+</dt>
+<dd>
+<p>
+First, install the osfuse package from
+<a href="https://osxfuse.github.io/">
+https://osxfuse.github.io/</a>.
+</p>
+
+<p>
+You’ll need to set a few things in your compile line:
+</p>
+<ul>
+<li>
+Add the following symbol definitions:
+<code>-D_FILE_OFFSET_BITS=64 -D_DARWIN_USE_64_BIT_INODE</code>
+</li>
+
+<li>
+Define <code>/usr/local</code> as a prefix
+<code>--prefix=/usr/local</code>
+</li>
+
+<li>
+<p>
+Define the /usr/local/lib as the path to look for the dynamic library:
+</p>
+<pre><code>
+-L/usr/local/lib 
+</code></pre>
+</li>
+
+<li>
+<p>
+Specify the include path so you can use <code>#include <fuse.h></code>:
+</p>
+<pre><code>
+-I/usr/local/include/osxfuse
+</code></pre>
+</li>
+
+<li>
+<p>
+Link with 
+</p>
+<pre><code>
+	-losxfuse
+</code></pre>
+<p>
+instead of
+</p>
+<pre><code>
+	-lfuse
+</code></pre>
+</li>
+</ul>
+
+<p>
+Your C compilation line will look like this:
+</p>
+<pre><code>
+cc -D_FILE_OFFSET_BITS=64 -D_DARWIN_USE_64_BIT_INODE --prefix=/usr/local -L/usr/local/lib -I/usr/local/include/osxfuse -o hello hello.c -losxfuse
+</code></pre>
+
+<p>
+When you run your code, you’ll probably see attempts to look up
+paths such as "<code>/._.</code>" You can ignore these safely. Make sure your
+code runs on Linux too. I was able to run my code  on my mac without
+changing any of it from the version I had for Linux.
+</p>
+
+</dd>
+
+<dt>
+When I tried to unmount on my Mac using the command "<code>fusermount -u mount_point</code>", I got an error saying <em>command not found</em>.
+Is the command different on Macs versus linux? 
+</dt>
+<dd>
+Yes. You should be able to use the standard <em>umount</em> command.
+</dd>
+
+<dt>
+In the FAQ there is a question/answer about timestamps. Why do we need to set them? I do not see timestamp in hello.c example. I set all of them to time(0) as you said in the FAQ.
+</dt>
+<dd>
+Mostly to give users comfort when they run ls -l. Since users don’t create files in this file system, they won’t be doing meaningful time-based comparisons on the files. If you set the time stamp to 0, users will see a date sometime in 1969, which looks odd. 
+</dd>
+
+<dt>
+<p>
+How do I detect overflow if the user types something like:
+</p>
+<pre><code>
+cat math/exp/1000000/100000000000
+</code></pre>
+</dt>
+<dd>
+Check the man page for pow(). If an overflow occurs, you’ll get either HUGE_VALF. However, if you just pass it to printf(), it will print “inf” (infinity).
+
+For the fibonacci sequence, you can can use unsigned integers and detect overflow when you see the next number in the sequence is smaller than the previous one.
+</dd>
+
+<dt>
+If the user enters math/fib/1.2 would it be okay to say that file does not exists? Because my program flags it as invalid input and sends ENOENT. 
+</dt>
+<dd>
+Sure. That’s fine. I give the illusion that it’s a file that contains an error message but ENOENT is perfectly fine.
+</dd>
+
+<dt>
+When testing the outcomes from my Fibonacci Sequence function, I observed  that your demo version excludes the first Fibonacci Number, compared with my version. However, by the mathematical definition, Fibonacci Sequence starts with 0 as f0, then 1 as f1..., so which approach should I take to make the function correct? Please correct me if I was wrong.
+</dt>
+<dd>
+The fibonacci sequence, according to the wikipedia article, can start with either {1, 1, 2, ...} or with {0, 1, 1, 2 ...}. I started mine with {1, 1} but the wikipedia article points out that the modern usage is to start it with {0, 1, 1, ...}  so I updated my <a href="mathfs.tar">demo program</a> to start it with 0.
+</dd>
+
+<dt>
+<p>
+I found a minor bug in the Fibonacci function in the demo version. The following steps would make the bug occur:
+</p>
+<ol>
+<li> <code>cat math/fib/<em>n</em></code>  (n could be any positive integer)
+</li><li> <code>cat math/fib/0</code></li>
+</ol>
+<p>It seems that the cached data hasn't been flushed, so that calling fib function with parameter 0 gives the same outcomes.
+</p>
+</dt>
+
+<dd>
+You are correct about the bug. I neglected to check that the requested count was &lt; 0 rather than &le; 0. That’s also fixed in the updated <a href="mathfs.tar">demo program</a>.
+</dd>
+
+<dt>
+After completing this project, the structure of the codes gets a little bit messy, not graceful, as many function properties, definitions and an entry-holding struct are all  in one single .c file. The submission part of the project instruction doesn't mention any other files could be submitted. I don't want to run the risk of losing points for that. Do you think I could move them to a separated pair of .c and .h file, only remaining those four FUSE functions in the main file to keep the structure clean and beautiful?
+</dt>
+<dd>
+You’re welcome to break your file up into multiple files. Just provide a makefile to make it easy to compile.
+</dd>
+
+<dt>
+I get compile errors when I use the <em>pow</em> function.
+</dt>
+<dd>
+Use the <code>-lm</code> flag on the compile line to specify use of the math libary. See the man page for <em>pow</em>: <code>man 3 pow</code>.
+</dt>
+
+<dt>
+What does "Transport endpoint not connected" mean? How do I fix it?
+</dt>
+<dd>
+<p>
+It means that your program (that implements the file system) crashed and did not get to unmount the file system.
+If you were running the file system with debugging enabled (which you should have been), you’d see a
+<code>segmentation fault</code> or some similar error in that window.
+</p>
+<p>
+You need to manually unmount the file system. Run:
+</p>
+<pre><code>
+fusermount -u <em>mount_point</em>
+</code></pre>
+<p>
+replacing <code><em>mount_point</em></code> with whatever the directory name was that you used to mount the file system.
+</p>
+</dd>
+
+<dt>
+How come all my files show up as directories instead of regular files?
+</dt>
+<dd>
+<p>
+The file shows up as a directory if the mode in the inode states it is a directory. This is defined by the bit represented by the symbol S_IFDIR.
+The file shows up as a regular file if the mode in the inode states it is a regular file. This is defined by the bit represented by the symbol S_IFREG.
+The low-order bits of the mode value contain access permission bits. These are arranged in groups of 3 bits:
+</p>
+<pre><code>
+	ooogggwww
+</code></pre>
+<ul>
+<li> ooo: owner permissions: read, write, execute </li>
+<li> ggg: group permissions: read, write, execute </li>
+<li> www: world (everyone else) permissions: read, write, execute </li>
+</ul>
+<p>
+Because they’re in groups of three, it is common to use octal values to refer to them since three bits make up an octal digit.
+Setting
+</p>
+<pre><code>
+	stbuf->st_mode = S_IFREG | 0644;
+</code></pre>
+<p>
+means that you’re setting the mode of the file to a regular file and the mode bits to 110100100 (0644):
+</p>
+<ul>
+<li>	110 = read, write, execute access for the owner </li>
+<li>	100 = read access for the group </li>
+<li>	100 = read access for everyone else </li>
+</ul>
+<p>
+Setting 
+</p>
+<pre><code>
+	stbuf->st_mode = S_IFDIR | 0755;
+</code></pre>
+<p>
+means that you’re setting the mode of the file to a directory and the mode bits to 111101101 (0755).
+For directories, the mode bits refer to read access, create access, and search access, in that order:
+</p>
+<ul>
+<li>	111 = read, create, and search for the owner </li>
+<li>	101 = read and search for the group </li>
+<li>	101 = read and search for everyone else </li>
+</ul>
+</dd>
+
+<dt>
+Can I have an extension?
+</dt>
+<dd>
+Sorry, no. It would not be fair to give you an extension without giving one to everyone.
+</dd>
+
+</dl>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 417 Assignments </h2>
+	<ul>
+	<li> <a href="a-1.html"> Assignment 1 </a>
+	<li> <a href="a-2.html"> Assignment 2 </a>
+	<li> <a href="a-3.html"> Assignment 3 </a>
+	<li> <a href="a-4.html"> Assignment 4 </a>
+	<li> <a href="a-5.html"> Assignment 5 </a>
+	<li> <a href="a-6.html"> Assignment 6 </a>
+	<li> <a href="a-7.html"> Assignment 7 </a>
+	<li> <a href="a-8.html"> Assignment 8 </a>
+	</ul>
+	<h2> Tutorials </h2>
+	<ul>
+<!--
+	<li> <a href="../notes/sockets/index.html"> TCP Sockets tutorial </a> </li>
+	<li> <a href="../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+-->
+	<li> <a href="../notes/c-tutorials/index.html"> C/Unix tutorials </a> </li>
+	<li> <a href="../notes/make/index.html"> Makefile tutorial </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

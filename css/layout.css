@@ -1,0 +1,486 @@
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+/* fonts for layout.css */
+
+
+
+
+
+
+
+
+
+
+
+/* default font, navbar  */
+
+
+/* left sidebar (sidebar1) default font */
+
+
+/* sidebar1 heading 2 */
+
+
+/* sidebar1 content list (ul) */
+
+
+/* right sidebar (sidebar2) default font */
+
+
+
+
+
+
+
+/* ----------------------- basic ----------------------- */
+/* clear browser defaults */
+html, body, ul, ol, li, p, h1, h2, h3, h4, h5 , h6, form, fieldset, a {
+	margin:0;
+	padding: 0;
+	border: 0;
+}
+body {
+	font-size: 75%;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	margin: 0 25px 5px 25px;
+	text-align: center;	/* center the page */
+	background: url(images/cf.png) repeat left top;
+	background-attachment: fixed;
+}
+html, body { height: 100%; }
+
+h1, h2, h3, p, ul {
+	padding: 0;
+	margin: 0;
+}
+
+/* ----------------------- banner ----------------------- */
+#banner {
+	position: relative;
+	background: #fff;
+	background: url(images/texture.jpg) repeat;
+}
+#banner ul {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+}
+#banner li {
+	display: inline;
+	margin-left: 10px;
+}
+#banner li a {
+	color: #666666;
+	text-decoration: none;
+	text-transform: uppercase;
+	font: 80%  "Trebuchet MS", Helvetica, Arial;
+}
+.separator {
+	border-right: 1px solid #666;
+	padding-right:10px;
+}
+#banner #logo {
+	text-align: left;
+	position: relative;
+	left: 5px;
+	min-height: 45px;
+}
+#banner #title {
+	position: absolute;
+	left: 130px;
+	bottom: 5px;
+	font-size: 28px;
+	font-weight: bold;
+	font-family: "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+	color: #CC352F;
+	text-align: left;
+}
+#banner ul {
+	position: absolute;
+	right: 60px;
+	bottom: 5px;
+}
+#banner #search {
+	position:absolute;
+	right: 60px;
+	width: 200px;
+	bottom: 20px;
+}
+
+/* ----------------------- navBar ----------------------- */
+#navbar {
+	border-left: 1px solid #fff;
+	border-right: 1px solid #fff;
+}
+#navbar ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	background: url(images/green/bg_nav.png) repeat-x left top;
+	float: left;
+	border-bottom: 1px solid #000;
+	width: 100%;
+}
+
+#navbar li {
+	float: left;
+	padding: 0;
+	margin: 0;
+}
+
+#navbar li a, #navbar li a:link {
+	color: #FFFFFF;
+	/* background: url(images/button-off.png) no-repeat left center; */
+	text-decoration: none;
+	padding: .5em 1em;
+	border-right: 1px solid #000;
+	display: block;
+	font: bold 90% "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+}
+
+#s_home #navbar li.homelink a,
+#s_about #navbar li.aboutlink a, 
+#s_photo #navbar li.photolink a,
+#s_ru #navbar li.ru a,
+#s_ru352 #navbar li.ru352 a,
+#s_ru416 #navbar li.ru416 a,
+#s_ru417 #navbar li.ru417 a,
+#s_ru419 #navbar li.ru419 a,
+#s_cs #navbar li.cslink a,
+#s_fun #navbar li.funlink a
+{
+	background: url(images/green/bg_nav_h_selected.png); 
+}
+
+#navbar li a:hover, #navbar li.selected a:hover {
+	/* background: url(images/button-on.png) no-repeat left center; */
+	background: url(images/green/bg_nav_h.png); 
+}
+
+/* IE 6 hack to make entire button clickable */
+* html #navbar a { width: 1px; }
+
+/* ----------------------- "you are here" list under nav bar ----------------------- */
+#subnav p {
+	color: #000;
+	font: bold 0.9em "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	display: inline;
+	margin-left: 10px;
+}
+
+#subnav ul {
+	margin-left: 0;
+	padding-left: 0;
+	display: inline;
+	border: none;
+}
+
+#subnav ul li a:link, #subnav ul li a:visited {
+	color: #000;
+}
+#subnav ul li a:hover {
+	color: #f00;
+}
+#subnav ul li {
+	margin-left: 0;
+	padding-left: 2px;
+	border: none;
+	list-style: none;
+	display: inline;
+}
+
+#subnav ul li:before {
+	content: "\0020 \0020 \0020 \00BB \0020";
+	color #000;
+}
+#subnav ul li.first:before {
+	content: " ";
+}
+	
+
+/* ----------------------- wrapper ----------------------- */
+/* wraps entire contents of page */
+#wrapper {
+	min-height: 100%;
+	margin: 0 auto;		/* auto margins left & right */
+	text-align: left;	/* undoes centering of body */
+	background-color: #F2F2E6;
+	clear: both;
+	position: relative;
+	min-width: 700px;
+	max-width: 1560px;
+}
+/* ----------------------- post-header-wrapper ----------------------- */
+/* wraps content after the header  */
+#content-wrapper {
+	clear: both;
+	position: relative;
+	width: 100%;
+}
+
+/* ----------------------- sidebar1 ----------------------- */
+#sidebar1 {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 165px;
+	font: normal 0.9em ;
+	margin-left: 4px;
+}
+
+#sidebar1 h1.first { margin-top: 0; }
+#sidebar1 h2.first { margin-top: 0; }
+#sidebar1 h1 {
+	margin-top: 40px;
+	font-size: 1.5em;
+	margin-bottom: 2px;
+	margin-left: 4px;
+	margin-right: 1em;
+	border-bottom: 1px solid #CC352F;
+	font-weight: normal;
+	/* background: url(images/redsidebar.png) no-repeat left bottom; */
+}
+#sidebar1 h2 {
+	padding: 7px 8px 0 0px;
+	margin-left: 4px;
+	margin-bottom: 5px;
+	font: bold 1.2em "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	font-weight: normal;
+	color: #000080;
+}
+#sidebar1 h3 {
+	margin-right: 5px;
+	margin-left: 5px;
+	margin-bottom: 3px;
+	font-size: 1.0em;
+	color: #663900;
+}
+#sidebar1 h3 a:link, #sidebar1 h3 a:visited {
+	color: #663900;
+}
+#sidebar1 a:hover {
+	color: #f00000;
+}
+#sidebar1 p {
+	margin-right: 5px;
+	margin-bottom: 10px;
+	margin-left: 5px;
+	font-weight: normal;
+	color: #666666;
+}
+#sidebar1 a {
+	color: #000;
+	text-decoration: none;
+}
+
+#sidebar1 ul {
+	list-style-type: none;
+	font: normal 1.0em "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+	color: #777;
+}
+#sidebar1 li {
+	margin-left: 5px;
+	padding-bottom: 5px;
+}
+#sidebar1 li a:link, #sidebar1 li a:visited {
+	border-left: 1px solid #000; 
+	padding-left: 10px;
+	padding-bottom: 5px;
+	color: #000;
+	color: #777;
+}
+#sidebar1 a:after {
+	content: "\21D2";
+	color: #ccc;
+}
+#sidebar1 li a:hover {
+	padding-bottom: 5px;
+	border-left: 1px solid #f00000;
+	color: #f00000;
+}
+#sidebar1 a:hover:after {
+	content: "\21D2";
+	color: #f00000;
+}
+#sidebar1 a:hover {
+	color: #f00000;
+}
+#sidebar1 hr {
+	clear: both;
+	margin-top: 0.5em;
+	margin-bottom: 0.25em;
+	margin-left: 1.5em;
+	margin-right: 1.5em;
+	border-top: 1px solid #bbb;
+}
+
+/* ----------------------- sidebar2 ----------------------- */
+#sidebar2 {
+	position: absolute;
+	top: 0px;
+	right: 5px;
+	width: 20px;
+/*	width: 125px; */
+	font: normal 0.9em/130% "Lucida Grande",Geneva,Arial,Helvetica,Swiss,SunSans-Regular, sans-serif;
+}
+#sidebar2 h1.first { margin-top: 0; }
+#sidebar2 h2.first { margin-top: 0; }
+
+#sidebar2 h1 {
+	margin-top: 40px;
+	font-size: 1.5em;
+	margin-bottom: 5px;
+	padding-bottom: 2px;
+	margin-left: 4px;
+	border-bottom: 1px solid #888;
+	color: #777;;
+}
+#sidebar2 h2 {
+	font-size: 1.2em;
+	padding: 7px 8px 0 0px;
+	margin-left: 4px;
+	margin-bottom: 5px;
+	font-weight: bold;
+	color: #9F0000;
+}
+#sidebar2 h3 {
+	font-size: 1.0em;
+	margin-right: 5px;
+	margin-left: 5px;
+	color: #663900;
+	margin-bottom: 3px;
+}
+#sidebar2 p {
+	clear:both;
+	text-align: left;
+	margin-right: 5px;
+	margin-bottom: 10px;
+	margin-left: 5px;
+	color: #444444;
+}
+#sidebar2 a {
+	color: #000;
+}
+
+#sidebar2 a:hover {
+	color: #f00000;
+}
+
+#sidebar2 ul {
+	/* list-style-type: none;*/
+	margin-left: 1.2em;
+	font: normal 1.0em;
+}
+
+#sidebar2 li {
+	margin-left: 5px;
+	padding-bottom: 5px;
+}
+
+#sidebar2 li a:link {
+	border-left: 1px solid #000; 
+	padding-left: 10px;
+	padding-bottom: 5px;
+}
+#sidebar2 li a:hover {
+	padding-bottom: 5px;
+	color: #f00000;
+	border-left: 1px solid #f00000;
+	border-right: 1px solid #f00000;
+}
+
+/* ------------ footer -------------- */
+
+#footer {
+	clear: both;
+	position: relative;
+	margin-left: 170px;
+	margin-left: 170px;
+	margin-right: 20px;	/* squeeze right margin */
+	/* margin-right: 135px;	*/
+	padding: 5px 25px 5px 20px;
+	text-indent: 0;
+	/* border-top: 1px solid #000000; */
+	border-left: 1px solid #666666;
+	border-right: 1px solid #666666;
+	font: normal 0.8em/140% Helvetica, Arial, sans-serif;
+	color: #777;
+	min-height: 95px;
+	background-color: #FCFDFF;
+}
+#footer p {
+	font-size: 0.8em;
+	margin-bottom: 0.75em;
+	margin-left: 1.5em;
+	margin-right: 70px;
+	line-height: 1.1em;
+}
+#footer hr {
+	clear: both;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-left: 1.5em;
+	margin-right: 1.5em;
+	border-top: 1px solid #bbb;
+}
+
+#footer img.stamp {
+	position: absolute;
+	top: 25px;
+	right: 10px;
+}
+
+#tear {
+	position relative;
+	clear: both;
+	margin-left: 170px;
+	margin-right: 20px;	/* squeeze right margin */
+	/* margin-right: 135px; */
+	min-height: 29px;
+	background-image: url(images/torn-paper.png);
+	background-repeat: repeat-x;
+}
+
+/* ----------------------- main content ----------------------- */
+
+#main {
+	margin-top: 15px;
+	margin-left: 170px;
+	/* margin-right: 135px; */
+	margin-right: 20px;	/* squeeze right margin */
+	padding: 0 25px 15px 20px;
+	border: 1px solid #666666; 
+	border-bottom: none;
+}
+

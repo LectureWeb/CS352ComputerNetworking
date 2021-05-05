@@ -1,0 +1,425 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Naming and binding </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 417 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/naming.html"> Naming and binding </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Naming and binding </h1>
+<h2>  </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> October 30, 2015 </p>
+</div>
+<p><em>What&#8217;s in a name? That which we call a rose By any other word would smell as sweet.</em>
+— <em>Shakespeare, Romeo and Juliet 2.2.43&#8211;44</em></p>
+
+<h1 id="definitions">Definitions</h1>
+
+<p>One danger in any discussion of naming is that of getting carried
+away with both the metaphysical and semantic definitions of naming.
+We will attempt to avoid that here. John F. Shoch’s definitions in
+Inter-Network Naming, Addressing, Routing (RFC 1498) does a fine job in
+defining the basic terms:</p>
+<dl>
+<dt>Name</dt>
+<dd>A name identifies what you want.</dd>
+
+<dt>Address</dt>
+<dd>An address identifies where it is.</dd>
+
+<dt>Route</dt>
+<dd>A route identifies a way to get there.</dd>
+</dl>
+
+
+<p>A few useful additional definitions put forth by J.H. Saltzer in his 1978 paper include:</p>
+<dl>
+<dt>Binding</dt>
+<dd>Binding is the process of mapping a name to an address. J. H.
+Saltzer defines it as choosing <em>“a lower-level implementation for
+a particular higher-level semantic construct.”</em> We can avoid the
+semantic problems of differentiating names from addresses by thinking
+of binding as the process of mapping a name into some lower-level
+name.</dd>
+
+<dt>Context</dt>
+<dd>A context is a particular set of bindings. A name only has meaning relative to some context.</dd>
+
+<dt>Directory or Naming Network</dt>
+<dd>A set of catalogs (name→object binding tables) that may include other directories</dd>
+
+<dt>Naming hierarchy</dt>
+<dd>A naming network organized in a tree-structured form.</dd>
+
+<dt>Pathname</dt>
+<dd>A multi-component name traversing a path in a naming hierarchy.</dd>
+
+<dt>Root</dt>
+<dd>A starting catalog in a naming network.</dd>
+
+<dt>Indirect entry</dt>
+<dd>An entry in a catalog that binds to a name instead of the underlying object.</dd>
+
+<dt>Name service</dt>
+<dd>A service that provides a binding function.
+A computing environment will have many names, each relevant within a specific context. On a networked system,
+we may need names for:</dd>
+</dl>
+
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Name</th>
+	<th style="text-align:left;">Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">Services</td>
+	<td style="text-align:left;">for example, <em>time of day</em>, <em>file service</em>, <em>domain name service</em>, &#8230;</td>
+</tr>
+<tr>
+	<td style="text-align:left;">Nodes</td>
+	<td style="text-align:left;">identify a computer that can run services or programs</td>
+</tr>
+<tr>
+	<td style="text-align:left;">Network attachment points</td>
+	<td style="text-align:left;">ports on a network: places where a node is attached (not exactly applicable for an ethernet)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">Paths</td>
+	<td style="text-align:left;">the route between network attachment points</td>
+</tr>
+<tr>
+	<td style="text-align:left;">Objects within services</td>
+	<td style="text-align:left;">for example, file names on a file server</td>
+</tr>
+</tbody>
+</table>
+<p>A name can be anything that is convenient or makes sense in describing some object or service.
+For humans, it may be a human-readable character string. For machines, it may
+be a binary identifier (“address”). A service may run at one or
+more nodes. It may need to move from node to node without losing
+its identity. A node may be connected to one or more network
+attachment points and may need to move from one to another place on the network
+without losing its identity. Multiple paths may exist between network
+attachment points or the path might change. These conditions warn
+us that it is not a good idea for a name to contain an implicit
+binding, one that can be derived from the name alone (for example,
+having a node name be a textual representation of the machine’s Ethernet
+address).</p>
+
+<p>Names may be considered <strong>pure</strong> or <strong>impure</strong>. A <strong>pure name</strong> is one that contains no information
+about the object or where that object may be found. For example, a user ID is a pure name. An ethernet
+MAC address is a pure name (a low level one) since it does not tell you anything about the device or where
+it is located. Pure names contain no discernable context.
+An <strong>impure name</strong> contains information about the underlying object encoded within the
+name. For example, an email address is an impure name since it contains a domain name as a context &ndash;
+supplementary information about the name. An IP domain name, such as cs.rutgers.edu, is another example
+of an impure name since it contains embedded within it a hierarchy that identifies the context of that name:
+&#8220;cs&#8221; is a pure name but it&#8217;s within &#8220;rutgers,&#8221; which is within &#8220;edu.&#8221; A file pathname is impure since it
+contains identification about <em>where</em> the object is located. If the object is moved, the name is no
+longer relevant.</p>
+
+<p>Note that impure names are not inherently bad. They can make lookup of names easier in many cases. The
+basic problem with impure names is with moving objects around in the namespace; it may lead to their
+name changing. A problem with pure names is managing the namespace: how do you look up an object
+efficiently if you have billions of names? How do you know for certain that an object does not exist? </p>
+
+<p>Uniqueness for names can be a challenge, particularly when there is a huge amount of names involved and
+multiple users (or organziations) that choose them. A way of achieving uniqueness is to use a <strong>hierarchy</strong>.
+A hierarchy is a collection of pure names that creates a <strong>compound name</strong>.
+This leads to an impure name but each level of the hierarchy can manage the scope of names at that level.
+For example, the .edu administrators manage the uniqueness of the name &#8220;rutgers.edu.&#8221; The rutgers.edu
+administrators manage the uniqueness of the name &#8220;cs.rutgers.edu&#8221; and the CS department at Rutgers can
+pick whatever names they want as long as they are unique within that domain. Examples of
+compound names are domain names (www.cs.rutgers.edu), URLs (http://pk.org/417/notes/naming.html), and
+file pathnames (/usr/share/dict/words).</p>
+
+<h1 id="binding">Binding</h1>
+
+<p>Let us consider the basic mechanism of sending a data packet to a service and the bindings that are involved
+in doing this.</p>
+
+<ol>
+<li><p>Find a node on which the required service resides.
+This requires service name resolution. The binding is <em>service name</em> to <em>node name</em>.</p></li>
+<li><p>Find a network attachment point to which the node is connected.
+This requires locating the node name. The binding is <em>node name</em> to <em>attachment point</em> (or address).</p></li>
+<li><p>Find a path from this location to that point. This is the routing service. The binding is <em>address</em> to <em>route</em>.</p></li>
+</ol>
+
+<p>As an example of naming and binding, we can consider the machine
+names on the Internet. A name of <code>cs.rutgers.edu</code> may bind to the IP
+address of <code>128.6.4.2</code>. In turn, the IP address <code>128.6.4.2</code> may bind
+to the Ethernet address <code>08:00:20:1f:13:83</code>. Note that the term <em>address</em>
+becomes context-dependent. We tend to think of addresses as the
+“lower-level” representation of a name. In essence, addresses are
+just names. A human is comfortable dealing with cs.rutgers.edu. An
+IP driver finds it easier to work with the 32-bit name <code>128.6.4.2</code>,
+and an Ethernet driver prefers the 48-bit name <code>08:00:20:1f:13:83</code>.</p>
+
+<p>If we consider naming and binding in file systems, we have the user-friendly
+and programmer-friendly textual names that are bound to internal
+names that are a function of the file system implementation. For
+example, a pathname of <code>/bin/ls</code> may bind to {device
+major number=8, minor number=1, inode 1311206}.</p>
+
+<p>An important issue in binding is that of when the binding takes
+place.
+It&#8217;s desirable to delay it for as long as possible to ensure that
+we have the very latest binding in case names change or resources move but
+we need to balance that with performance implications.
+A machine’s address may change while its name remains the same, yet
+the services on that machine should be accessible. A service may
+run on a different port, yet a client should be able to locate it.
+The inode allocated to a file may change, yet that should not cause
+problems in accessing the file by name.</p>
+
+<p>The least flexible binding is <strong>static binding</strong>. This is essentially
+a hard-coded binding. For example, a program may assume that SMTP
+mail service is always available on port 25 and simply access port
+25 instead of attempting to resolve the binding through other means.
+Fortunately, well-followed conventions will often save that program.
+A more dangerous example is that of a program attempting to contact
+a machine by using a hard-coded IP or Ethernet address.</p>
+
+<p>An alternative to static binding is <strong>dynamic binding</strong>. With dynamic
+binding, we no longer rely on a hard-coded name address binding but
+have some mechanism for resolving the name on demand. One form of
+dynamic binding is <strong>early binding</strong>. In this case a binding operation
+is actually performed, but it is performed some time before the
+binding is needed. For example, if a program needs to contact a
+server multiple times during a long period of execution, it might
+perform a name to IP address binding once at the start for efficiency.
+The danger here is that the server’s address may change during the
+execution of this program and the program will be unable to contact
+the server at some point in time (or will contact the wrong server).
+At times, early binding is a crucial optimization. IP address to
+Ethernet address binding is an example of a case where it would be
+prohibitively expensive to resolve an IP address for every packet
+sent from a machine. It makes sense to maintain a cache (the ARP
+cache) of previously used bindings. Problems arise if the bindings
+change. With ethernet addresses, the problem is usually that of not
+being able to reach the destination machine and the system attempts
+to perform another binding. Early bindings hurt in a dynamically
+changing environment.</p>
+
+<p>Most flexible is <strong>late binding</strong>, a form of dynamic binding where
+the binding is performed on demand, just before use. Previous bindings
+are not cached. An example where this is useful is accessing a file system. Consider a user
+editing a file and frequently saving changes. Assume that the editor
+is implemented in such a way that it writes into a temporary file
+during the edit and renames the file to the permanent name upon
+save. In this case, a different inode (or FAT index) is allocated
+each time the file is saved, yet the name remains the same. The
+only way of assuring that the correct file is opened (say, by another
+process) is by performing the exernal to internal name binding at
+the time of open. The caveat with dynamic binding is that the name
+resolution process often takes quite a bit of time. If the same
+name has to be resolved over and over again, early binding may yield
+considerable performance gains.</p>
+
+<h1 id="nameservers">Name servers</h1>
+
+<p>It&#8217;s one thing to say that we have a name for an object and have a
+name-to-address binding for that object but where dooes this list of
+bindings reside?
+How do we look up names?
+A solution, of course, is to provide a naming system for a particular set of
+names. This system is often made available as a network service: a <strong>name server</strong>
+that is accessible on some well-known system on a known port.
+The domain name server, DNS, which resolves IP domain names to IP addresses, is an example of a name server.
+On a large scale, a single server can become a bottleneck
+so it may be implemented as a distributed collection of name servers.</p>
+
+<p><strong>Replication</strong> of name server contents is useful for both scalability and fault tolerance.
+It helps with scalability because several servers with replicated data can
+take on client load. It helps with fault tolerance because a client can contact another
+replicated server if one is not accessible.
+Caching is also a form of replication since a copy of frequently used name-to-address
+bindings resides in the cache.<br/>
+An ARP cache (a cache of recently used IP
+address to Ethernet address bindings) is an example of this.
+Any form of replication is at risk of consistency problems. If a master copy
+is modified, replicated copies will have stale bindings. Even
+if some form of synchronization is employed, the process may take
+time. The hope in cases where replication is used is that it often
+does not matter too much if the data is stale and the binding may
+be performed again.</p>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><p>John F. Shoch,
+<a href="http://tools.ietf.org/html/rfc1498">Inter-Network Naming, Addressing, Routing</a>,
+RFC 1498. 1978 [easy and quick reading]</p></li>
+<li><p>J. H. Saltzer,
+<em>On Naming and Binding</em>.
+1978, MIT. [dated terminology and overly-philosophical, yet this is a good paper to read]</p></li>
+<li><p>J. H. Saltzer,
+<a href="http://web.mit.edu/Saltzer/www/publications/nbo/nbo.html">Naming and Binding of Objects</a>,
+Chapter 3A. &copy; 1978 J. H. Saltzer.</p></li>
+<li><p>Sape Mullender, Ed.,
+<em>Distributed Systems</em>, Chapter 12: Names by Roger M. Needham,
+&copy; 1993 Addison-Wesley [good coverage, but make sure you read Saltzer’s paper first]</p></li>
+</ul>
+
+<p>This is a revision of an original version that was written on september 29, 2012. </p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2017 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: October  2, 2017 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/9cbf3407-e64c-4dd9-b644-238d707b91b3"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

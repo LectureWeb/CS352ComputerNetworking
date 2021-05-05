@@ -1,0 +1,609 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Integrity</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Integrity</h1>
+								<h2>Asymmetric cryptography, key distribution, hybrid cryptosystems, MACs, digital signatures, and certificates</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>October 23, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<h2 id="publickeycryptography">Public key cryptography</h2>
+
+<p><strong>Public key algorithms</strong>, also known as <strong>asymmetric ciphers</strong>, use
+one key for encryption and another key for decryption. One of these
+keys is kept private (known only to the creator) and is known as
+the <strong>private key</strong>. The corresponding key is generally made
+visible to others and is known as the <strong>public key</strong>.</p>
+
+<p>Content encrypted with the private key can only be decrypted with the corresponding public
+key. This will be the basis for digital signatures. Anything that is
+encrypted with a public key can be encrypted only with the corresponding
+private key. This is the basis for authentication and covert
+communication.</p>
+
+<p>Public and private keys are related but, given one
+of the keys, there is no feasible way of computing the other. Public key cryptography is
+based on <strong>trapdoor functions</strong>. These are one-way functions:
+there is no known way to compute the inverse unless you have extra data: the
+other key.</p>
+
+<p>One example of a trapdoor function is the diffuclty of factoring. Suppose
+you are given the number 10085134437017 and are told that it is the product of
+two prime numbers. How would you find them? We don&#8217;t know of algorithms that would
+yield an answer and you would have to perform an exhaustive search. However,
+if you are told that one of the factors is 3906467 then it becomes trivial
+to perform a division to find the other factor. For cryptographic security, these
+numbers would be hundreds of decimal digits long.</p>
+
+<h3 id="rsapublickeycryptography">RSA public key cryptography</h3>
+
+<p>The RSA algorithm is the most widely used algorithm for asymmetric
+cryptography. Its security is based on the difficulty of finding the
+factors of the product of two large prime numbers. Unlike
+symmetric ciphers, RSA encryption is a matter of performing
+arithmetic on large numbers. Like symmetric ciphers, it works on
+a block of data at a time and treats that block as a number.
+Plaintext is converted to ciphertext by the formula:</p>
+
+<p>c = m<sup>e</sup> mod <em>n</em></p>
+
+<p>Where <em>m</em> is a block of plaintext, <em>e</em> is the encryption key, and
+<em>n</em> is an agreed-upon modulus that is the product of two primes.
+To decrypt the ciphertext, you need the decryption key, <em>d</em>:</p>
+
+<p>m = c<sup>d</sup> mod <em>n</em></p>
+
+<p>Given the ciphertext <em>c</em>, <em>e</em>, and <em>n</em>, there is no efficient way
+to compute the inverse to obtain <em>m</em>. Should an attacker find a way
+to factor <em>n</em> into its two prime factors, however, the attacker would
+be able to reconstruct the encryption and decryption keys, <em>e</em> and <em>d</em>.</p>
+
+<h3 id="ellipticcurvecryptographyecc">Elliptic curve cryptography (ECC)</h3>
+
+<p><strong>Elliptic curve cryptography</strong> (<strong>ECC</strong>) is a more recent public key algorithm
+that is an alternative to RSA. It is based on finding points
+along a prescribed elliptic curve, which is an equation of the form:</p>
+
+<p>y^2 = x^3 + ax + b</p>
+
+<p>Contrary to its name, elliptic curves have nothing to do with ellipses or conic sections
+and look like bumpy lines.
+With elliptic curves, multiplying a point on a given elliptic curve
+by a number will produce another point on the curve. However, given that
+result, it is difficult to find what number was used.
+The security in ECC rests not our inability to factor numbers but our
+inability to perform discrete logarithms in a finite field.</p>
+
+<p>The RSA algorithm is still the most widely used public key algorithm,
+but ECC has some advantages:</p>
+
+<ul>
+<li><p>ECC can use far shorter keys for the same degree of security. Security comparable
+to 256 bit AES encryption requires a 512-bit ECC key but a 15,360-bit RSA key</p></li>
+<li><p>ECC requires less CPU consumption and uses less memory than RSA. It is faster for encryption (including signature generation) than RSA but slower for decryption.</p></li>
+<li><p>Generating ECC keys is faster than RSA (but much slower than AES, where a key is just a random number).</p></li>
+</ul>
+
+<p>On the downside, ECC is more complex to implement and decryption is slower than with RSA.
+As a standard, ECC was also tainted because the NSA inserted weaknesses into the ECC
+random number generator that effectively created a backdoor for decrypting content. This
+has been remedied and ECC is generally considered the preferred choice over RSA for most
+applications.</p>
+
+<p>If you are interested,
+see <a href="https://arstechnica.com/information-technology/2013/10/a-relatively-easy-to-understand-primer-on-elliptic-curve-cryptography/">here</a> for a somewhat easy-to-understand tutorial on ECC.</p>
+
+<h2 id="quantumcomputing">Quantum computing</h2>
+
+<p>Quantum computers are a markedly different form computer. Conventional computers store and process
+information that is represented in bits, with each bit having a distinct value of 0 or 1.
+Quantum computers use the principles of quantum mechanics, which include superposition and
+entanglement. Instead of working with bits, quantum computers operate on <em>qubits</em>, which
+can hold values of &#8220;0&#8221; and &#8220;1&#8221; simultaneously via superposiion. The superpositions of qubits
+can be entangled with other objects so that their final outcomes will be mathematically related.
+A single operation can be carried out on 2^n values simultaneously, where <em>n</em> is the number
+of qubits in the computer.</p>
+
+<p>Some problems can be solved exponentially faster with quantum computers than with conventional comptuers.
+<a href="https://en.wikipedia.org/wiki/Shor%27s_algorithm">Shor&#8217;s algorithm</a>,
+for instance, will be able to find the prime factors of large
+integers and compute discrete logarithms far more efficiently than is currently possible.
+Quantum computers are also exptected to solve discrete logarithm problems far more quickly.</p>
+
+<p>So far, quantum computers are very much in their infancy and it is not clear when &#8211; or if &#8211;
+large-scale quantum computers that are capable of solving useful problems will be built.
+IBM and Google are two companies that are racing to build one. It is unlikely that they
+will be built in the next several years but we do expect that they will be built eventually.
+Shor&#8217;s algorithm will be able to crack public-key based systems such as RSA, Elliptic Curve
+Cryptography, and Diffie-Hellman key exchange. In 2016, the NSA called for a migration to
+&#8220;post-quantum cryptographic algorithms&#8221; and has currently narrowed down the submissions to
+26 candidates. The goal is to find useful trapdoor functions that do not rely on
+multiplying large primes, computing exponents, any other mechanisms that can be attacked
+by quantum computation. If you are interested in these, you can read the
+<a href="https://nvlpubs.nist.gov/nistpubs/ir/2016/NIST.IR.8105.pdf">NSA&#8217;s report</a>.</p>
+
+<p>Symmetric cryptosystems, such as AES,
+are not particularly vulnerable to quantum computing since they rely on moving and flipping
+bits rather than applying mathematical functions on the data.
+The best potential attacks come via
+<a href="https://en.wikipedia.org/wiki/Grover%27s_algorithm">Grover&#8217;s algorithm</a>, which yields only
+a quadratic rather than an exponential speedup in key searches. This will reduce
+the effective strength of a key by a factor of two. For instance, a 128-bit key will have
+the strength of a 64-bit key on a conventional computer. It is easy enough to use a sufficiently
+long key (256-bit AES keys are currently recommended) so that quantum computing poses no
+threat to symmetric algorithms. </p>
+
+<h2 id="securecommunication">Secure communication</h2>
+
+<h3 id="symmetriccryptography">Symmetric cryptography</h3>
+
+<p>Communicating securely with symmetric cryptography is easy.
+All communicating parties must share the same secret key.
+Plaintext is encrypted with the secret key to create
+ciphertext and then transmitted or stored. It can be decrypted
+by anyone who has the secret key.</p>
+
+<h3 id="asymmetriccryptography">Asymmetric cryptography</h3>
+
+<p>Communicating securely with asymmetric cryptography is
+a bit different. Anything encrypted with one key can be
+decrypted only by the other related key. For Alice to
+encrypt a message for Bob, she encrypts it with
+Bob&#8217;s public key. Only Bob has the corresponding key that
+can decrypt the message: Bob&#8217;s private key.</p>
+
+<h3 id="hybridcryptography">Hybrid cryptography</h3>
+
+<p>Asymmetric cryptography alleviates the problem of
+transmitting a key over an unsecure channel. However, it
+is considerably slower than symmetric cryptography.
+AES, for example, is approximately 1,500 times
+faster for decryption than RSA and 40 times faster for encryption.
+AES is also much faster than ECC.
+Key generation is also far slower with RSA or ECC than it is with
+symmetric algorithms, where the key is just a random number
+rather than a set of carefully chosen numbers with specific properties.
+Because public key cryptography is based on arithmetic properties,
+arithmetic relationships between plaintext may also be present between
+the resulting ciphertext, which can give an adversary insight on the content
+of messages.</p>
+
+<p>Because of these factors, RSA and ECC are almost never used to encrypt
+messages.
+Instead, it is common to use <strong>hybrid cryptography</strong>, where
+a public key algorithm is used to encrypt a randomly-generated
+key that will encrypt the message with a symmetric algorithm.
+This randomly-generated key is called a <strong>session key</strong>, since
+it is generally used for one communication session and then discarded.</p>
+
+<h2 id="keydistribution">Key distribution</h2>
+
+<p>The biggest problem with symmetric cryptography is <strong>key distribution</strong>. For
+Alice and Bob to communicate, they must share a secret key that no
+adversaries can get. However, Alice cannot send the key to Bob since it
+would be visible to adversaries. She cannot encrypt it because Alice
+and Bob do not share a key yet.</p>
+
+<p>The <strong>Diffie-Hellman key exchange</strong> algorithm allows two parties
+to establish a <strong>common key</strong> without disclosing any information
+that would allow any other party to compute the same key. Each
+party generates a private key and a public key.
+Despite their name, these are <em>not</em>
+encryption keys; they are just numbers. Diffie-Hellman does not
+implement public key cryptography. Alice can compute a common key
+using her private key and Bob&#8217;s public key. Bob can compute the
+same common key by using his private key and Alice&#8217;s public key.</p>
+
+<p>Diffie-Hellman uses the one-way function <em>a<sup>b</sup>mod&nbsp;c</em>.
+Its one-wayness is due to our inability to compute the inverse:
+a discrete logarithm. Anyone may see Alice and Bob&#8217;s public keys
+but will be unable to compute their common key. Although Diffie-Hellman
+is not a public key encryption algorithm, it behaves like one in the
+sense that it allows us to exchange keys without having to use a
+trusted third party.</p>
+
+<h2 id="keydistributionusingpublickeycryptography">Key distribution using public key cryptography</h2>
+
+<p>With public key cryptography, there isn&#8217;t a need for distributing a key.
+As long as both sides can get each other&#8217;s public keys from a trusted source,
+they can encrypt messages using those keys.
+However, we rarely use public key cryptography for messages (see earlier discussion).
+It can, however, be used to transmit a session key. This use of
+public key cryptography to transmit a session key that will be used
+to apply symmetric cryptography to messages is called <strong>hybrid cryptography</strong>.
+For Alice to send a key to Bob:</p>
+
+<ol>
+<li>Alice generates a random session key.</li>
+<li>She encrypts it with Bob&#8217;s public key &amp; sends it to Bob.</li>
+<li>Bob decrypts the message using his private key and now has the session key.</li>
+</ol>
+
+<p>Bob is the only one who has Bob&#8217;s private key to be able to decrypt
+that message and extract the session key. A problem with this is that
+<em>anybody</em> can do this. Charles can generate a random session key,
+encrypt it with Bob&#8217;s public key, and send it to Bob. For Bob to be convinced
+that it came from Alice, she can encrypt it with her private key (this is
+<strong>signing</strong> the message).</p>
+
+<ol>
+<li>Alice generates a random session key.</li>
+<li>She signs it by encrypting the key with her private key.</li>
+<li>She encrypts the result with Bob&#8217;s public key &amp; sends it to Bob.</li>
+<li>Bob decrypts the message using his private key.</li>
+<li>Bob decrypts the resulting message with Alice&#8217;s public key and gets the session key.</li>
+</ol>
+
+<p>If anybody other than Alice created the message, the result that Bob gets by
+decrypting it with Alice&#8217;s public key will not result in a valid key for anyone.
+We can enhance the protocol by using a standalone signature (encrypted hash) so
+Bob can identify a valid key from a bogus one.</p>
+
+<h2 id="forwardsecrecy">Forward secrecy</h2>
+
+<p>If an attacker steals, for example, Bob&#8217;s private key, he will be able to go through
+old messages and decrypt old session keys (the start of every message to Bob contained
+a session key encrypted with his public key). <strong>Forward secrecy</strong>, also called
+<strong>perfect forward secrecy</strong>, is the use of keys and key exchange protocols where the
+compromise of a key does not compromise past session keys. There is no secret
+that one can steal that will allow the attacker to decrypt multiple past messages.
+Note that this is of value for communication sessions but not stored encrypted documents
+(such as email). You don&#8217;t want an attacker to gain any information from a communication
+session even if a user&#8217;s key is compromised. However, the user needs to be able to
+decrypt her own documents, so they need to rely on a long-term key.</p>
+
+<p>Diffie-Hellman enables <strong>forward secrecy</strong>.
+Alice and Bob can each generate a key pair and send their public key to each other.
+They can then compute a common key that nobody else will know and use that
+to communicate.
+Achieving forward secrecy requires <strong>single-use</strong> (<strong>ephemeral</strong>) public keys.
+Next time Alice and Bob want to communicate, they will generate a new set of keys
+and compute a new common key.
+At no time do we rely on <strong>long-term keys</strong>, such
+as Alice&#8217;s secret key or RSA private key. Encrypting a session key
+with a long-term key, such as Bob&#8217;s public key, will not achieve forward
+secrecy. If an attacker ever finds Bob&#8217;s private key, she will be able
+to extract the session key.</p>
+
+<p>Difie-Hellman is particularly good for for achieving forward secrecy because it is
+efficient to create new new key pairs on the fly.
+RSA or ECC keys can be used as well but key generation is far less efficient.
+Because of this, RSA and ECC keys tend to be used mainly as long-term keys (e.g., for authentication).</p>
+
+<h1 id="messageintegrity">Message Integrity</h1>
+
+<h2 id="one-wayfunctions">One-way functions</h2>
+
+<p>A <strong>one-way function</strong> is one that can be computed relatively
+easily in one direction but there is no known way of computing the
+inverse function. One-way functions are crucial in a number of
+cryptographic algorithms, including digital signatures, Diffie-Hellman
+key exchange, and both RSA and elliptic curve public key cryptography.
+For Diffie-Hellman and public key cryptography, they ensure that
+someone cannot generate the corresponding private key when presented
+with a public key. Key exchange and asymmetric cryptography algorithms
+rely on a spacial form of one-way function, called a <strong>trapdoor</strong> function.
+This is a function whose inverse is computable if you are provided with
+extra information, such as a private key that corresponds to the public
+key that was used to generate the data.</p>
+
+<h2 id="hashfunctions">Hash functions</h2>
+
+<p>A particularly useful form of a one-way function is the <strong>cryptographic hash function</strong>. This is a one-way function whose output is always a fixed number of bits for any input. Hash functions are commonly used in programming to construct hash tables, which provide O(1) lookups of keys.</p>
+
+<p><strong>Cryptographic hash functions</strong> produce far longer results than
+those used for hash tables. Common lengths are 224, 256, 384, or 512 bits.
+Good cryptographic hash functions (e.g., SHA&#8211;1, SHA&#8211;2, SHA&#8211;3) have several properties:</p>
+
+<ol>
+<li><p>Like all hash functions, take arbitrary-length input and produce <strong>fixed-length</strong> output</p></li>
+<li><p>Also like all hash functions, they are <strong>deterministic</strong>; they produce the same result each time when given identical input.</p></li>
+<li><p>They exhibit <strong>pre-image resistance</strong>, or <strong>hiding</strong>. Given a hash <em>H</em>, it should not be feasible to find a message <em>M</em> where <em>H=hash(M)</em>.</p></li>
+<li><p>The output of a hash function should not give any information
+about any of the input. For example, changing a byte in the message
+should not cause any predictable change in the hash value.</p></li>
+<li><p>They are <strong>collision resistant</strong>. While hash collisions can exist <!-- >(the number of possible hashes is smaller than than number of possible messages; see the [pigeonhole principle](https://en.wikipedia.org/wiki/Pigeonhole_principle))--> it is not feasible to find any two different messages that hash to the same value. Similarly, it is not feasible to modify the plaintext without changing its resultant hash.</p></li>
+<li><p>They should be relatively <strong>efficient</strong> to compute. We would like to use hash functions as message integrity checks and generate them for each message without incurring significant overhead.</p></li>
+</ol>
+
+<p>The cryptographic hash function is the basis for <strong>message authentication
+codes</strong> and <strong>digital signatures</strong>. </p>
+
+<p>Because of these properties, we have extremely high assurance that a message
+would no longer hash to the same value if it is modified in any
+way. The holy grail for an attacker is to be able to construct a
+message that hashes to the same value as another message. That would
+allow the attacker to substitute a new message for some original
+one (for example, redirecting a money transfer). Searching for a
+collision with a pre-image (known message) is much harder than
+searching for any two messages that produce the same hash. The
+<a href="https://en.wikipedia.org/wiki/Birthday_problem">birthday paradox</a>
+tells us that the search for a collision of any two messages is
+approximately the square root of the complexity of searching for a
+collision on a specific message. This means that the strength of
+a hash function for a brute-force collision attack is approximately
+half the number of bits of the hash. A 256-bit hash function has
+a strength of approximately 128 bits.</p>
+
+<p>Popular hash functions include SHA&#8211;1 (160 bits), SHA&#8211;2 (commonly 256 and 512 bits), and SHA&#8211;3 (256 and 512 bits). </p>
+
+<h2 id="messageauthenticationcodesmacs">Message Authentication Codes (MACs)</h2>
+
+<p>A cryptographic hash helps us ensure message <strong>integrity</strong>:
+it serves as a checksum that allows us to determine if a message has been modified.
+If the message is modified, it no longer hashes to the same value as before.
+However, if an attacker modifies a message, she may be able to
+modify the hash value as well. To prevent this, we need a hash
+that relies on a <strong>key</strong> for validation. This is a <strong>message
+authentication code</strong>, or <strong>MAC</strong>. Two forms of MACs are hash-based
+ones and block cipher-based ones:</p>
+<dl>
+<dt><strong>Hash-based MAC</strong> (<strong>HMAC</strong>):</dt>
+<dd>A hash-based MAC is a specific method for converting regular hash functions
+into MACs by using a cryptographic hash function, such as SHA&#8211;256, to hash the
+message <em>and</em> the key. Anyone who does not know the key will not
+be able to recreate the hash.</dd>
+
+<dt><strong>Block cipher-based MAC</strong> (<strong>CBC-MAC</strong>):</dt>
+<dd>Recall that cipher block chaining assures us that every encrypted
+block is a function of all previous blocks. CBC-MAC uses a zero
+initialization vector and runs through a cipher block chained encryption,
+discarding all output blocks except for the last one, which becomes the MAC.
+Any changes to the message will be propagated to that final block and the
+same encryption cannot be performed by someone without the key.
+Note that a CBC-MAC still produces a fixed-length result and has all
+The properties of a hash function.</dd>
+</dl>
+
+
+<h2 id="digitalsignatures">Digital signatures</h2>
+
+<p>Message authentication codes rely on a shared key. Anybody who possesses the key can modify and re-sign a message. There is no assurance that the action was done by the author of the message. <strong>Digital signatures</strong> have stronger properties than MACs:</p>
+
+<ol>
+<li>Only you can sign a message but anybody should be able to validate it.</li>
+<li>You cannot copy the signature from one message and have it be valid on another message.</li>
+<li>An adversary cannot forge a signature, even after inspecting an arbitrary number of signed messages.</li>
+</ol>
+
+<p>Digital signatures require three operations:</p>
+
+<ol>
+<li><strong>Key generation</strong>: {private_key, verification_key } := <strong>gen_keys</strong>(keysize)</li>
+<li><strong>Signing</strong>: signature := <strong>sign</strong>(message, private_key)</li>
+<li><strong>Validation</strong>: isvalid := <strong>verify</strong>(message, signature, verification_key)</li>
+</ol>
+
+<p>Since we trust hashes to be collision-free, it makes sense to apply the signature to the hash of a message instead of the message itself. This ensures that the signature will be a small, fixed size and makes it easy to embed in hash pointers and other structures and creates minimal transmission or storage overhead for verification.</p>
+
+<p>There are several commonly-used digital signature algorithms:</p>
+<dl>
+<dt>DSA, the Digital Signature Algorithm</dt>
+<dd>The current NIST standard that generates key pairs that are secure because of the difficulty of computing discrete logarithms.</dd>
+
+<dt>ECDSA, Elliptic Curve Digital Signature Algorithm</dt>
+<dd>A variant of DSA that uses elliptic curve cryptography</dd>
+
+<dt>Public key cryptographic algorithms</dt>
+<dd>RSA or Elliptic Curve Cryptography applied to message hashes.</dd>
+</dl>
+
+
+<p>All these algorithms generate public and private key pairs. The first two are not general-purpose encryption algorithms but are designed solely for digital signatures.</p>
+
+<p>We saw how public key cryptography can be used to encrypt messages: Alice encrypts a message using
+Bob&#8217;s public key to ensure that only Bob could decrypt it with his private key.
+We can use public key backwards: Alice can encrypt a message using her <em>private</em> key.
+Anyone can decrypt the message using her public key but, in doing so, would know that the message was encrypted by Alice.</p>
+
+<p>A <strong>digital signature</strong> can be constructed by simply encrypting the hash of a message with the creator&#8217;s (signer&#8217;s) private key. Alternatively, digital signature algorithms have been created that apply a similar principle: hashing combined with trapdoor functions so that you would use a dedicated set of public/private keys to create and verify the signature.
+Anyone who has the message signer&#8217;s public key can decrypt the hash and thus validate
+the hash against the message. Other parties cannot recreate the signature.</p>
+
+<p>Note that, with a MAC, the recipient or anyone in possession of the shared key can create the same MAC. With a digital signature, the signature can only be created by
+the owner of the private key. Unlike MACs,
+digital signatures provide <strong>non-repudiation</strong> &#8211; proof of identity. Alice cannot claim that she did not
+create a signature because nobody but Alice has her private key. Also unlike MACs,
+anyone can validate a signature since public keys are generally freely distributed. as with MACs, digital signatures also provide proof of <strong>integrity</strong>, assurance that the original message has not been modified.</p>
+
+<h2 id="covertandauthenticatedmessaging">Covert and authenticated messaging</h2>
+
+<p>We ignored the encryption of a message in the preceding discussion; our interest was assuring integrity. However, there are times when we may want to keep the message secret and validate that it has not been modified. Doing this involves sending a signature of the message along with the encrypted message.</p>
+
+<p>Alice can send a signed and encrypted message to Bob by using hybrid cryptography. She will:</p>
+
+<ol>
+<li><p>Create a signature of the message. This is a hash of the message encrypted with her private key.</p></li>
+<li><p>Create a session key for encrypting the message. This is a throw-away key that will not be needed beyond the communication session.</p></li>
+<li><p>Encrypt the message using the session key. She will use a fast symmetric algorithm to encrypt this message.</p></li>
+<li><p>Package up the session key for Bob: she encrypts it with Bob&#8217;s public key. Since only Bob has the corresponding private key, only Bob will be able to decrypt the session key.</p></li>
+<li><p>She sends Bob the encrypted message, encrypted session key, and signature.</p></li>
+</ol>
+
+<h2 id="anonymousidentities">Anonymous identities</h2>
+
+<p>A signature verification key (e.g., a public key) can be treated as an <strong>identity</strong>. You possess the corresponding private key and therefore only you can create valid signatures that can be verified with the public key. This identity is <strong>anonymous</strong>; it is just a bunch of bits. There is nothing that identifies you as the holder of the key. You can simply assert your identity by being the sole person who can generate valid signatures and decrypt content encrypted with the corresponding public key.</p>
+
+<p>Since you can generate an arbitrary number of key pairs, you can create a new identity at any time and create as many different identities as you want. When you no longer need an identity, you can discard your private key for that corresponding public key.</p>
+
+<h2 id="identitybinding:digitalcertificates">Identity binding: digital certificates</h2>
+
+<p>While public keys provide a mechanism for
+asserting integrity via digital signatures,
+they are themselves anonymous.
+We&#8217;ve discussed a scenario where Alice uses Bob&#8217;s public key but
+never explained how she can assert that the key really belongs to Bob
+and was not planted by an adversary.
+Some form of <strong>identity binding</strong> of the public key must be implemented
+for you to know that you really have <em>my</em> public key instead of
+someone else&#8217;s. How does Alice really know that she has Bob&#8217;s public key?</p>
+
+<p><strong>X.509 digital certificates</strong> provide a way to
+do this. A certificate is a data structure that contains user
+information (called a <strong>distinguished name</strong>) and the user’s public key.
+This data structure also
+contains a <strong>signature</strong> of the <strong>certification authority</strong>. The
+signature is created by taking a hash of the rest of the data in
+the structure and encrypting it with the private key of the
+certification authority. The certification authority (CA) is
+responsible for setting policies of how they validate the identity
+of the person who presents the public key for encapsulation in a
+certificate.</p>
+
+<p>To validate a certificate, you would hash all the certificate data except for
+the signature. Then you would decrypt the signature using the public
+key of the issuer. If the two values match, then you know that the certificate
+data has not been modified since it has been signed. The challenge
+is how to get the public key of the issuer. Public keys are stored in
+certificates, so the issuer would have a certificate containing its public key.
+This certificate can be signed by yet another issuer. This process
+is called <strong>certificate chaining</strong>. For example, Alice can have a certificate issued by the Rutgers CS Department. The Rutgers CS Department&#8217;s certificate may be issued by Rutgers University. Rutgers University&#8217;s certificate could be issued by the State of New Jersey Certification Authority, and so on. At the
+very top level, we will have a certificate that is not signed by any higher-level certification authority. A certification authority that is not underneath any other CA is called a <strong>root CA</strong>.
+In practice, this type of chaining is rarely used. More commonly, there are hundreds of autonomous certification authorities acting as <strong>root CAs</strong> that issue certificates to companies, users, and services.
+The certificates for many of the trusted root CAs are preloaded into
+operating systems or, in some cases, browsers.
+See
+<a href="https://gallery.technet.microsoft.com/Trusted-Root-Certificate-123665ca">here</a> for
+Microsoft&#8217;s trusted root certificate participants and <a href="https://support.apple.com/en-us/HT209143">here</a>
+for Apple&#8217;s trusted root certificates.</p>
+
+<p>Every certificate has an expiration time (often a year or more in the future).
+This provides some assurance that even if there is a concerted attack to find a corresponding
+private key to the public key in the certificate, such a key will not be found until long
+after the certificate expires. It is also a commitment from the CA that they will be responsible for tracking the validity of the certificate for that interval of time. There might be cases where a private key might be leaked
+or the owner may no longer be trustworthy (for example, an employee leaves a company).
+In this case, a certificate can be <strong>revoked</strong>. Each CA publishes a <strong>certificate revocation list</strong>,
+or <strong>CRL</strong>, containing lists of certificates that they have previously issued that should no longer be considered valid. To prevent spoofing the CRL, the list is, of course, signed by the CA. Each certificate contains information on where to obtain revocation information.</p>
+
+<p>The challenge with CRLs is the TOCTTOU problem: not everyone may check the certificate revocation list in a timely manner and some systems may accept a certificate not knowing that it was revoked. Some systems, particularly embedded systems, may not even be configured to handle CRLs.</p>
+
+							</section>
+							<footer class="main">
+								Last modified October 25, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

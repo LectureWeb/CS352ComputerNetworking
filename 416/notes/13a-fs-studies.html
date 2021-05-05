@@ -1,0 +1,431 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> File System Design Case Studies: File Systems for Flash Memory </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 416 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/13a-fs-studies.html"> File System Design Case Studies: File Systems for Flash Memory </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> File System Design Case Studies: File Systems for Flash Memory </h1>
+<h2>  </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> April 24, 2015 </p>
+</div>
+<h1 id="introduction">Introduction</h1>
+
+<p>In the previous sections, we covered conventional file system designs.
+Here, we consider special needs for flash memory.</p>
+
+<h1 id="filesystemsforflashmemory">File systems for flash memory</h1>
+
+<p>Flash memory is non-volatile memory, meaning that its contents are preserved even when the chip
+is not powered. Its contents can also be modified.
+There are two technologies for flash memory: NOR flash and NAND flash.</p>
+
+<p><strong>NOR flash</strong> is fully addressable: each byte can be accessed individually and it can
+interface to a system&#8217;s memory bus.
+It is generally used to hold system firmware such as a PC&#8217;s BIOS
+or EFI firmware or the entire software of an embedded system. It is considerably slower than
+regular dynamic memory (RAM) and computers often copy the contents of NOR flash into RAM when
+they boot to allow faster code execution. It also has extremely long write times and requires
+rwrites to be done on an entire block at a time.</p>
+
+<p>The second type of flash memory, <strong>NAND flash</strong>, is much cheaper and denser than NOR flash.
+Unlike NOR, which can be read randomly, NAND flash requires content to be read a chunk (called a <strong>page</strong>)
+at a time. Modifications are erase-write cycles and must also be done a page at a time. The size of a page
+depends on the vendor and are typically 512, 2K, or 4K bytes long. Because of this property, NAND flash
+is treated as a block device and mimics a magnetic disk. Data can only be read or written a page at a time
+(actually, a block at a time, where the controller defines a block as one or more pages). We will only focus
+on NAND flash in this discussion.</p>
+
+<p>Flash memory suffers from limited erase-write cycles. It eventually wears out. Typically, today&#8217;s NAND
+flash can handle from 100,000 to 1,000,000 erase-write cycles before a block wears out. At that point,
+software must map it as a damaged block and &#8220;retire&#8221; it from the pool of allocatable blocks.
+A key goal with flash memory is to employ <strong>wear leveling</strong>: use blocks in such a way
+that writes are distributed among all (or most) of the blocks in the flash memory.</p>
+
+<p>As an aside, there are two types of NAND flash memory available.
+A single-level cell (SLC) flash stores one bit of data in each cell (either programmer
+or erased; 1 or 0).
+Multi-level cell (MLC) flash is a design that stores more than one bit per cell.
+MLC&#8211;2 flash has four states per cell, MLC&#8211;3 flash has eight cells per state, and so on.
+The value it stores depends on the level of charge applied to it. This memory
+is less expensive than single-level cell (SLC) flash and is popular in most
+consumer-grade solid state storage devices.
+Since each cell can be in one of several states, MLC may have a higher bit error
+rate than SLC flash, which only holds two states. The more bits a cell stores,
+the fewer write cycles it will have. A 2-bit MLC cell is typically good for
+about 3,000 to 10,000 write operations. A 3-bit cell can sustain only 300 to 3,000
+write cycles. In contrast, SLC flash can support around 100,000 write cycles.
+However, a 2016 Google study showed that SLC-based solid state drives (SSDs)
+are not necessarily more reliable than the lower-cost MLC-based ones.</p>
+
+<p>There are two forms of wear leveling.
+<strong>Dynamic wear leveling</strong> monitors high-use and low-use areas of flash memory. At a
+certain threshold, it will swap high-use blocks with low-use blocks. In doing this kind of swapping,
+the controller needs to maintain a mapping of logical block addresses to actual flash memory block addresses.
+Whenever a block of data is written to flash memory, instead of overwriting the requested block (and wearing
+it out more), the data is written to a new block and the block map is updated. However, blocks that
+do not get modified will never get reused. Their content will remain as is. With <strong>static wear leveling</strong>,
+we do the same actions but also periodically move static data (blocks that have not been modified)
+to blocks that have been more heavily used to ensure that all blocks
+get a chance to be rewritten and hence wear out evenly.</p>
+
+<p>Conventional file systems are not well-suited to flash file systems for a couple of reasons:</p>
+
+<ul>
+<li><p>They tend to modify the same blocks over and over. Structures
+ like the superblock get updated constantly and blocks that are
+ freed from deleted files tend to get reallocated quickly. This
+ is at odds with the goal of wear leveling, which is to avoid
+ reusing blocks.</p></li>
+<li><p>File systems are optimized to reduce disk seeking. Starting with
+ FFS, we created block (cylinder) groups to hold file data close
+ to the inodes that define the files that contain that data. We
+ strive to allocate contiguous groups of blocks whenever possible.
+ None of this helps performance in a NAND file system. There is
+ no concept of seek time or a current disk head position. Reading
+ one block is as fast as reading any other block.</p></li>
+</ul>
+
+<p>Disk scheduling algorithms (elevator algorithms) are also pointless
+ as they try to resequence blocks to minimize
+ the overhead of seek delays. </p>
+
+<p>Some on-chip NAND controllers implement wear leveling and bad block mapping.
+Most external controllers, such as those on
+Secure Digital (SD, SDHC, SDXC) cards implement some form of wear leveling, usually both static
+and dynamic. These controllers create and manage a <strong>block lookup table</strong>, which maps requested block numbers
+(<em>logical block numbers</em>) to their actual on-chip blocks (<em>physical block numbers</em>). They also
+asynchronously erase unused blocks (e.g., those that were moved) to make writing to them quicker.
+With this controller logic, a conventional file system does not have to be concerned with the
+limited erase cycles of the memory.</p>
+
+<p>To save costs, many cell phones,
+tablet computers, and other embedded devices do not use controllers that perform wear leveling
+and need other solutions. One solution is to use a layer of software between the flash hardware
+and the block device called a <strong>flash translation layer</strong> (<strong>FTL</strong>). The FTL performs the wear
+leveling task in much the same way that controllers that support wear leveling do.
+This is the approach taken by iOS, for example.
+Another solution is to use a file system
+that works well with the characteristics of flash memory. This is the approach taken by Android.</p>
+
+<h2 id="log-structuredfilesystems">Log-structured file systems</h2>
+
+<p>Two common file systems that are designed with wear-leveling in mind are
+<a href="http://www.yaffs.net/" title="YAFFS page" class="external">YAFFS</a> (Yet Another Flash File System)
+and <a href="http://developer.axis.com/old/software/jffs/" title="JFFS page" class="external">JFFS</a>
+(Journaling Flash File System). Both of these belong to a category of
+file systems known as <strong>log-structured file systems</strong>, which were
+pioneered by Mendel Rosenblum and John Ousterhout at the University of California at Berkeley in
+the early 1990s. Don&#8217;t be confused by JFFS&#8217;s use of the word <em>journaling</em>
+in its name; it is not the same as the file system journaling we discussed earlier, which
+was used to ensure the integrity of the file system structure.</p>
+
+<p>YAFFS and JFFS are currently both in version 2 of their designs and are often
+referred to as YAFFS2 and JFFS2. We will dispense with the numeric suffix.
+YAFFS is typically favored for larger disks, those over 64 MB, and is the default
+file system for the Android operating system. JFFS is typically favored for
+smaller disks and is used in many embedded systems. Both of these file systems
+are roughly similar in principle. Both address only dynamic wear leveling.
+We will only take a look at YAFFS in this discussion.</p>
+
+<h2 id="yaffs">YAFFS</h2>
+
+<p>The basic unit of allocation under YAFFS is called a <strong>chunk</strong>.
+Several (anywhere from 32 to 128 or more) chunks make up one block. A
+block is the unit of erasure for YAFFS.</p>
+
+<p>YAFFS maintains a <strong>log structure</strong>. This means that all updates
+to the file system are written sequentially. Instead of overwriting different
+data structures (inodes, data blocks, etc.) at various locations, the file system
+is simply a linear list of logs &mdash; operations that take place on the file system.
+There is no underlying storage structure that resembles a hash of directory entries
+or an inode table. </p>
+
+<p>Each log entry is one chunk in size and is either a <strong>data chunk</strong>
+or an <strong>object header</strong>. A data chunk represents a file&#8217;s data.
+An object header describes a directory, a file, a link, or other object.
+Sequence numbers are used to organize this log chronologically.
+Each chunk (log entry) includes:</p>
+<dl>
+<dt>Object ID</dt>
+<dd>identifies the object to which the chunk belongs. Every file, for
+ example, will have a unique object ID and any chunk with a matching
+ object ID will belong to that file. AN object header for the file
+ will contain information about the file: permissions, file length,
+ and other attributes that would typically be found in an inode.</dd>
+
+<dt>Chunk ID</dt>
+<dd>identifies where the chunk belongs in the object. A file may be
+ made up of zero or more data chunks. The chunk ID identifies the
+ sequencing of these chunks so that the file could be reconstructed.
+ If multiple Chunk IDs are present, the newest one wins over any
+ older ones.</dd>
+
+<dt>Byte count</dt>
+<dd>Number of bytes of valid data in the file</dd>
+</dl>
+
+
+<p>When we first create a file, we might see something like this:</p>
+
+<table>
+<tr> <th> Block </th> <th> Chunk </th> <th>ObjectID</th> <th> ChunkID</th> <th>Status</th> <th> Content </th> </tr>
+<tr> <td> 0 </td><td> 0 </td><td> 500 </td><td> 0 </td><td> Live </td><td> Object header for file (length=0) </td> </tr>
+<tr> <td> 0 </td><td> 1 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+<tr> <td> 0 </td><td> 2 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+<tr> <td> 0 </td><td> 3 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+</table>
+
+<p>At this time, we have an empty file with no data. Now our process will write some data to it. All write operations
+will be written out to the log as chunks of data with object IDs that match that of the object header.</p>
+
+<table>
+<tr> <th> Block </th> <th> Chunk </th> <th>ObjectID</th> <th> ChunkID</th> <th>Status</th> <th> Content </th> </tr>
+<tr> <td> 0 </td><td> 0 </td><td> 500 </td><td> 0 </td><td> Live </td><td> Object header for file (length=0) </td> </tr>
+<tr> <td> 0 </td><td> 1 </td><td> 500 </td><td> 1 </td><td> Live </td><td> First chunk of data </td> </tr>
+<tr> <td> 0 </td><td> 2 </td><td> 500 </td><td> 2 </td><td> Live </td><td> Second chunk of data </td> </tr>
+<tr> <td> 0 </td><td> 3 </td><td> 500 </td><td> 3 </td><td> Live </td><td> Third chunk of data </td> </tr>
+</table>
+
+<p>Note that the object header still refers to a zero-length file. When our process closes the file, the YAFFS driver
+will write the new object header, obsoleting the old one. In this example, we&#8217;ve run out of chunks in our first block
+and continue writing chunks to the second block.</p>
+
+<table>
+<tr> <th> Block </th> <th> Chunk </th> <th>ObjectID</th> <th> ChunkID</th> <th>Status</th> <th> Content </th> </tr>
+<tr> <td> 0 </td><td> 0 </td><td> 500 </td><td> 0 </td><td> Deleted </td><td> Object header for file (length=0) </td> </tr>
+<tr> <td> 0 </td><td> 1 </td><td> 500 </td><td> 1 </td><td> Live </td><td> First chunk of data </td> </tr>
+<tr> <td> 0 </td><td> 2 </td><td> 500 </td><td> 2 </td><td> Live </td><td> Second chunk of data </td> </tr>
+<tr> <td> 0 </td><td> 3 </td><td> 500 </td><td> 3 </td><td> Live </td><td> Third chunk of data </td> </tr>
+<tr> <td> 1 </td><td> 0 </td><td> 500 </td><td> 0 </td><td> Live </td><td> Object header for file (length=<em>n</em>) </td> </tr>
+<tr> <td> 1 </td><td> 1 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+<tr> <td> 1 </td><td> 2 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+<tr> <td> 1 </td><td> 3 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+</table>
+
+<p>If we now reopen the file, modify the first chunk of data in the file, and close the file again, the new contents of
+the first chunk of data will be written to the log (obsoleting the previous data for object 500/chunk 1) followed by
+a new object header that will contain a new modification time and any other file attributes that may have changed. This
+obsoletes the previous two object headers for Object 500.</p>
+
+<table>
+<tr> <th> Block </th> <th> Chunk </th> <th>ObjectID</th> <th> ChunkID</th> <th>Status</th> <th> Content </th> </tr>
+<tr> <td> 0 </td><td> 0 </td><td> 500 </td><td> 0 </td><td> Deleted </td><td> Object header for file (length=0) </td> </tr>
+<tr> <td> 0 </td><td> 1 </td><td> 500 </td><td> 1 </td><td> Deleted </td><td> First chunk of data </td> </tr>
+<tr> <td> 0 </td><td> 2 </td><td> 500 </td><td> 2 </td><td> Live </td><td> Second chunk of data </td> </tr>
+<tr> <td> 0 </td><td> 3 </td><td> 500 </td><td> 3 </td><td> Live </td><td> Third chunk of data </td> </tr>
+<tr> <td> 1 </td><td> 0 </td><td> 500 </td><td> 0 </td><td> Deleted </td><td> Object header for file (length=<em>n</em>) </td> </tr>
+<tr> <td> 1 </td><td> 1 </td><td> 500 </td><td> 1 </td><td> Live </td><td> New first chunk of data </td> </tr>
+<tr> <td> 1 </td><td> 2 </td><td> 500 </td><td> 0 </td><td> Live </td><td> Object header for file (length=<em>n</em>) </td> </tr>
+<tr> <td> 1 </td><td> 3 </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td><td> &nbsp; </td> </tr>
+</table>
+
+<h3 id="garbagecollection">Garbage collection</h3>
+
+<p>As modifications to existing files take place, the affected data and header chunks become obsolete because updated entries
+are written to the log. These chunks are <strong>garbage</strong>; they&#8217;re useless. If all the chunks in a block are
+obsoleted (deleted), then that entire block can be erased and reused.
+Beyond that,
+<strong>garbage collection</strong> will be performed periodically to create free blocks by copying live chunks from
+blocks that have with just a few live chunks and mostly deleted ones. This is known in YAFFS as
+<strong>passive garbage collection</strong>. If the file system is desperate for free space, then
+<strong>aggressive garbage collection</strong> takes place, which will consolidate chunks even from blocks that have
+few deleted chunks.</p>
+
+<h3 id="in-memoryreconstruction">In-memory reconstruction</h3>
+
+<p>One thing that should be clear by now is that the log-based structure
+of YAFFS is not an efficient one for finding either files
+or their data. One has to search linearly through the logs, finding
+the items of interest, and discarding any chunks that have more
+recent updates.</p>
+
+<p>To avoid doing this over and over again, YAFFS scans the event log and
+constructs the file system state in memory (RAM). It creates an in-memory object
+state for each object and a file tree (directory) structure to locate
+files and directories. File data still resides in flash memory, but by
+having all file and directory information in RAM, we can quickly find out
+which blocks to read to get that data without having to scan the log.</p>
+
+<p>YAFFS saves these reconstructed data structures in flash memory when the
+file system is unmounted so that the scan need not take place when it is
+mounted the next time. This is known as <strong>checkpointing</strong>.
+With checkpointing, the logs will have to be scanned only if the file system
+has not been unmounted cleanly. In that case, activity since the last checkpoint
+will need to be added to the hierarchy that was recovered from the last
+checkpoint.</p>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><p><a href="http://tldp.org/LDP/tlk/fs/filesystem.html"> The File System </a>, Linux Documentation Project </p></li>
+<li><p><a href="http://www.h-online.com/open/features/Tuning-the-Linux-file-system-Ext3-746480.html">Tuning the Linux file system Ext3</a>,
+Oliver Diedrich, The H, Heise Media UK Ltd., October 27, 2008.</p></li>
+<li><p><a href="http://www.win.tue.nl/~aeb/linux/lk/lk-8.html"> The Linux Virtual File System </a>, The Linux Kernel, Andries Brouwer </p></li>
+<li><p><a href="http://technet.microsoft.com/en-us/library/cc781134(WS.10).aspx"> How NTFS Works </a>, Microsoft TechNet </p></li>
+<li><p><a href="http://technet.microsoft.com/en-us/library/cc976808.aspx"> The NTFS File System</a>, Microsoft TechNet </p></li>
+<li><p><a href="http://technet.microsoft.com/en-us/library/cc778410(v=WS.10).aspx"> What Is NTFS? </a>, Microsoft TechNet </p></li>
+<li><p><a href="http://www.stanford.edu/~ouster/cgi-bin/papers/lfs.pdf">The Design and Implementation of a Log-Structured File System</a>,
+Mendel Rosenblum and John K. Ousterhout, University of California at Berkeley, ACM Transactions on Computer Systems,
+Volume 10, No. 1, February 1992, Pages 26&#8211;52.</p></li>
+<li><p><a href="http://www.yaffs.net/">YAFFS</a>, Project page. </p></li>
+<li><p><a href="http://www.yaffs.net/files/yaffs.net/HowYaffsWorks.pdf">How YAFFS Works</a>, Charles Manning, 2007&#8211;2010. </p></li>
+<li><p><a href="http://developer.axis.com/old/software/jffs/">JFFS Home Page</a>, Axis Communications. </p></li>
+<li><p><a href="http://sourceware.org/jffs2/jffs2-html/">JFFS: The Journalling Flash File System</a>, David Woodhouse, Red Hat, Inc.</p></li>
+<li><p><a href="http://oss.sgi.com/projects/xfs/papers/hellwig.pdf">XFS: the big storage file system for Linux</a>, Christoph Hellwig, ;LOGIN: vOL. 34, NO. 5. October 2009</p></li>
+<li><p><a href="http://esec-lab.sogeti.com/post/Low-level-iOS-forensics">Low-level iOS forensics</a>, Soeti ESEC Lab, June 28, 2012.</p></li>
+<li><p><a href="http://searchsolidstatestorage.techtarget.com/definition/multi-level-cell-MLC">Multi-level cell</a>, TechTarget </a>.</p></li>
+</ul>
+
+<p>This document is updated from its original version of March 23, 2012.</p>
+
+<h2 id="footnotes">Footnotes</h2>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: March  1, 2016 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

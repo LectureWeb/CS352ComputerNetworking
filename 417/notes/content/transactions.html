@@ -1,0 +1,941 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Distributed Transactions </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../index.html"> Rutgers CS 417 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/transactions.html"> Distributed Transactions </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Distributed Transactions </h1>
+<h2> ACID, Commit protocols, and BASE</h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> November 2012 (major updates from October 2007) </p>
+</div>
+
+<h1> Introduction </h1>
+
+<p>
+We've looked at a number of low level techniques that can
+be used for managing synchronization in a distributed environment:
+algorithms for mutual exclusion and critical section management.
+In addition (and we'll look at these later), we can have algorithms
+for deadlock resolution and crash recovery. 
+Much as remote procedure calls allowed us to concentrate on the
+functionality of a program and express it in a more natural way
+than sends and receives, we crave a higher level of abstraction
+in dealing with issues of synchronization. This brings us to the
+topic of <strong>atomic transactions</strong> (also known colloquially simply
+as <strong>transactions</strong>).
+</p>
+
+<p>
+In transacting business, all parties involved may have to go through
+a number of steps in negotiating a contract but the end result of
+the transaction won't be <em>committed</em> until both parties sign on
+the dotted line.  If even one of the parties reconsiders and <em>
+aborts</em>, the contract will be forgotten and life goes on as before.
+</p>
+
+<p>
+Consider, for example, the purchase of a house.
+You express your interest in purchasing a house by making an offer
+(and possibly putting some money down with a trusted party). At that
+point, you have not bought the house, but you have entered the
+transaction of purchasing a house. You may have things to do
+(such as getting a mortgage and inspection) and the seller may have
+things to do (such as fixing up certain flaws).  If something goes
+wrong (you can't get a mortgage, the seller won't fix the heating
+system, you find the house is sitting on a fault line, the seller
+won't remove the black velvet wallpaper, ...), then the transaction
+is cancelled (<em>aborted</em>) and both parties go back to life as
+before: you look for another house and the seller remains in the
+house, possibly still trying to sell it.  If, however, the 
+transaction is not aborted and both parties sign the contract on
+the closing day, it is made permanent. The deed is signed over and
+you own the house. If the seller changes her mind at this point,
+she'll have to try to buy back the house. If you change your mind,
+you'll have to sell the house.
+</p>
+
+<p>
+The concept of a transaction in the realm of computing is
+quite similar. One process announces that it's beginning a transaction
+with one or more processes. Certain actions take place. When <em>all</em>
+processes <strong>commit</strong>, the results are permanent. Until they
+do so, any process may <strong>abort</strong> (if something fails, for example).
+In that case, the state of computing reverts to the state before
+the transaction began: all side effects are gone. A transaction has
+an <em>all or nothing</em> property.
+</p>
+
+<p>
+The origins of transactions in computing date back to the days
+of batch jobs scheduled to processes tapes. A days worth of "transactions"
+would be logged on a tape. At the end of the day, a merge job would
+be run with the original database tape and the transactions tape
+as inputs, producing a new tape with all the transactions applied.
+If anything went wrong, the original database tape was unharmed.
+If the merge succeeded, then the original tapes could be reused.
+</p>
+
+<h1> Transaction model </h1>
+
+<p>
+A process that wishes to use transactions must be aware of certain
+<strong>primitives</strong> associated with them. These primitives are:
+</p>
+<ol>
+<li>	<em>begin transaction</em> - mark the start
+<li>	<em>end transaction</em> - mark the end; try to commit
+<li>	<em>abort transaction</em> - kill transaction, restore old values
+<li>	<em>read</em> data from object(file), <em>write</em> data to object(file).
+</ol>
+<p>
+In addition, ordinary statements, procedure calls, etc. are allowed in
+a transaction.
+</p>
+<p>
+To get a flavor for transactions, consider booking a flight from
+Newark, New Jersey to Ridgecrest, California. The destination requires
+us to land at Inyokern airport, and non-stop flights are not available:
+</p>
+<blockquote><pre>
+<u>transaction begin</u>
+1. reserve a seat for Newark to Denver (EWK&rarr;DEN)
+2. reserve a seat for Denver to Los Angeles (DEN&rarr;LAX)
+3. reserve a seat for Los Angeles to Inyokern (LAX&rarr;IYK)
+<u>transaction end</u>
+</pre></blockquote>
+<p>
+Suppose there are no seats available on the LAX&rarr;IYK leg
+of the journey. In this case, the transaction is aborted, reservations
+for (1) and (2) are undone, and the system reverts to the state before
+the reservation was made.
+</p>
+
+<h1> Properties of transactions </h1>
+
+<p>
+The properties of transactions are summarized with the acronym
+<strong>ACID</strong>, which stands for <strong>A</strong>tomic,
+<strong>C</strong>onsistent, <strong>I</strong>solated, and
+<strong>D</strong>urable.
+</p>
+<dl>
+<dt>	<u><strong>Atomic</strong></u>
+	<dd> either an entire transaction happens completely or not at all. If
+	the transaction does happen, it happens as a single <em>indivisible</em>
+	action. Other processes cannot see intermediate results.
+	For example, suppose we have a file that is 100 bytes long and a transaction
+	begins appending to it. If other processes read the file, they only see
+	the 100 bytes. At the end of the transaction, the file <em>instantly</em>
+	grows to its new size.
+<dt>	<u><strong>Consistent</strong></u>
+	<dd> If the system has certain invariants, they must hold after the
+	transaction (although they may be broken within the transaction).
+	For example, in some banking application, the invariant may be that
+	the amount of money before a transaction must equal the amount of money
+	after the transaction. Within the transaction, this invariant may be
+	violated but this is not visible outside the transaction.
+<dt>	<u><strong>Isolated</strong></u> (or <strong>serializable</strong>)
+	<dd> If two or more transactions are running at the same time, to each
+	of them and to others, the <em>final result</em> looks as though all transactions
+	ran sequentially in <em>some</em> order.
+	<p>
+	An order of running transactions is called a <strong>schedule</strong>. Orders may be
+	interleaved. If no interleaving is done and the transactions are run in
+	some sequential order, they are <strong>serialized</strong>.
+	<p>
+	Consider the following three (small) transactions:
+	<table border=0>
+	<td><pre>
+begin
+x=0
+x=x+1
+end</pre>
+	<td><pre>
+begin
+x=0
+x=x+2
+end</pre>
+	<td><pre>
+begin
+x=0
+x=x+3
+end</pre>
+	</table>
+	Some possible schedules are (with time flowing from left to right):
+	<table border=1>
+	<td> <em>schedule</em> <td colspan=6> <em>execution order</em>  <td> final x <td> legal?
+	<tr>
+	<td> schedule 1 <td> x=0 <td> x=x+1 <td> x=0 <td> x=x+2 <td> x=0 <td> x=x+3 <td> 3 <td> yes
+	<tr>
+	<td> schedule 1 <td> x=0 <td> x=0 <td> x=x+1 <td> x=x+2 <td> x=0 <td> x=x+3 <td> 3 <td> yes
+	<tr>
+	<td> schedule 1 <td> x=0 <td> x=0 <td> x=x+1 <td> x=0 <td> x=x+2 <td> x=x+3 <td> 5 <td> NO
+	</table>
+<dt>	<u><strong>Durable</strong></u>
+	<dd> Once a transaction <strong>commits</strong>, the results are made <strong>permanent</strong>.
+	No failure after a commit can undo results or cause them to get lost. [Conversely,
+	the results are <em>not</em> permanent until a transaction commits.]
+</dl>
+
+<h1> Nested transactions </h1>
+
+<p>
+Transactions may themselves contain subtransactions (nested transactions). A top-level transaction
+may fork off children that run in parallel with each other. Any or all of these may execute 
+subtransactions. 
+</p>
+
+<p>
+The problem with this is that the subtransactions may commit but, later in time, the parent may
+abort.  Now we find ourselves having to undo the committed transactions.  The level of nesting
+(and hence the level of undoing) may be arbitrarily deep.  For this to work, conceptually,
+each subtransaction must be given a <em>private copy of every object</em> it may manipulate.
+On commit, the private copy displaces its parent's universe (which may be a private copy of
+that parent's parent).
+</p>
+
+<h1> Implementation </h1>
+
+<p>
+We cannot just allow a transaction to update the objects
+(files, DB records, et cetera)
+that it uses.
+The transactions won't be atomic (i.e., appear indivisible)
+or consistent in that case. If other transactions read and
+act on the data, we also violate the isolated property.
+Finally, we need to ensure that we can undo changes if the
+transaction aborts.
+One way of supporting object modification
+is by providing a <strong>private workspace</strong>. When a process starts
+a transaction, it's given a private workspace containing all the
+objects to which it has access.  On a commit, the private workspace
+becomes the real workspace.  Clearly this is an expensive proposition.
+It requires us to copy everything that the transaction may modify
+(every file, for example).  However, it is not as bleak
+as it looks. A number of optimizations can make this a feasible solution.
+</p>
+
+<p>
+Suppose that a process (transaction) reads a file but doesn't modify it. In
+that case it doesn't need a copy.  The private workspace can be empty except that
+it contains a pointer back to the parent's workspace.  How about writing a
+file?  On an open, don't copy the file to the private workspace but just copy
+the index (information of where the file's data is stored; a UNIX inode, for example).
+The file is then read in the usual way. When a block is modified, a local copy
+is made and the address for the copied block is inserted into the index. New
+blocks (appends) work this way too.  Privately allocated blocks are called
+<strong>shadow blocks</strong>.
+</p>
+
+<p>
+If this transaction was to abort, the private blocks  go back on the free list
+and the private space is cleaned up. Should the transaction commit, the private
+indices are moved into the parent's workspace (atomically). Any parent blocks
+that would be overwritten are freed.
+</p>
+
+<p>
+Another, and more popular,  mechanism for ensuring that transactions
+can be undone (and possibly redone) is the use of a <strong>write-ahead
+log</strong>, also known as an <strong>intentions list</strong>.  With this system,
+objects are modified in place (proper locking should be observed
+to control when other processes can access these objects). Before any data
+is changed, a record is written to the
+write-ahead log in <strong>stable storage</strong>.  The record identifies
+the transaction (with an ID number), the block or page modified,
+and the old and new values. This log allows us to undo the
+effects of a transaction should an <em>abort</em> be necessary.
+</p>
+
+<p>
+If the transaction succeeds (i.e., commits), a commit record is written to the log.
+If the transaction aborts, the log is used to back up to the original state (this
+is called a <strong>rollback</strong>. The write-ahead log can also be played forward for
+crash recovery (this becomes useful in the two-phase commit protocol, which is
+discussed next).  A term associated with the write-ahead log was <strong>stable storage</strong>.
+This is intended to be a data repository that can survive system crashes. After
+a datum is written to stable storage, it is retrievable even if the system crashes
+immediately after the write.  A disk is suitable for stable storage, but it is
+important that any writes are immediately flushed to the disk and not linger in
+the memory (unstable) buffer cache.
+</p>
+
+<h1>The two-phase commit protocol </h1> (Gray, 1978)
+
+<p>
+In a distributed system, a transaction may involve multiple
+processes on multiple machines.  Even in this environment, we
+still need to preserve the properties of transactions and
+achieve an atomic commit (either all processes involved in
+the transaction commit or else all of them will abort the
+transaction - it will be unacceptable to have some commit and
+some abort).  A protocol that achieves this atomic commit
+is the <strong>two-phase commit protocol</strong>.
+</p>
+
+<p>
+In implementing this protocol, we assume that one process will function
+as the coordinator and the rest as cohorts (the coordinator may be the
+one that initiated the transaction, but that's not necessary). We further
+assume that there is stable storage and a write-ahead log at each site.
+Furthermore, we assume that no machine involved crashes forever.
+</p>
+
+<p>
+The protocol works as follows (the coordinator is ready to
+commit and needs to ensure that everyone else will do so as well):
+</p>
+<blockquote>
+    <table frame=box border=2 frame=border>
+	<td> <em> phase </em> <td> <em>coordinator</em> </td> <td> <em>cohort</em> </td> 
+	<tr>
+	<td align=center valign=center rowspan=4> 1 <br> <em>request</em> </td>
+	    <td> write <em>prepare to commit</em> message to the log </td>
+		<td> work on transaction; when done, wait for a <em>prepare</em> message </td>
+	<tr>
+	    <td> send <em>prepare to commit</em> message </td>
+		<td> </td>
+	<tr>
+	    <td rowspan=2> wait for reply </td>
+		<td> receive message. When transaction is ready to commit,
+		     write <em>agree to commit</em> (or <em>abort</em>) to log. </td>
+	<tr>
+	    
+		<td> send "agree" or "abort" reply </td>
+	<tr>
+	<td align=center valign=center rowspan=5> 2 <br> <em>commit</em> </td>
+	    <td> write <em>commit</em> message to the log. </td>
+		<td> <em>wait for commit message </em> </td>
+	<tr>
+	    <td> send <em>commit</em> (or <em>abort</em>) message </td>
+		<td> receive <em>commit</em> (or <em>abort</em>) message</td>
+	<tr>
+	    <td rowspan=2> wait for <em>all</em> cohorts to respond </td>
+		<td> if a <em>commit</em> was received, write "commit"
+		     to the log, release all locks & resources, update
+		     databases. <br>
+		     if an <em>abort</em> was received, undo all changes. </td>
+	<tr>
+		<td> send <em>done</em> message. </td>
+	<tr>
+	    <td> clean up all state. Done. </td>
+		<td> </td>
+	</tr>
+    </table>
+</blockquote>
+
+<p>
+What the two phase commit protocol does is this:
+</p>
+<p>
+In phase 1, the coordinator
+sends a request to commit to all the cohorts and waits for a reply from <em>all</em>
+of them.  The reply is either an agreement or an abort. Note that nobody
+has committed at this point. After the coordinator receives a reply from
+all cohorts, it knows that all transaction-relevant computation is finished
+so nothing more will happen to abort the transaction.  The transaction
+can now be committed or, in the case that at lease one of the parties
+could not complete its transaction, aborted.  The second phase is to wait
+for all cohorts to commit (or abort).  If aborting, an abort message is
+sent to everyone. The coordinator waits until <em>every</em> cohort responds
+with an acknowledgement.  If committing, a cohort receives a <em>commit</em>
+message, commits locally, and sends an acknowledgment back. All message deliveries
+are reliable (retransmits after time-out).
+</p>
+
+<p>
+No formal proof will be given here of the correctness of the two-phase protocol.
+Inspecting for correctness, it is readily apparent that if one cohort completes
+the transaction, <em>all</em> cohorts will complete if eventually. If a cohort
+is completing a transaction, it is because it received a <em>commit</em> message,
+which means that we're in the commit phase and <em>all</em> cohorts have
+agreed. This information is in permanent memory in case of a crash (that's
+why information is written to the log before a message is sent.  If any system
+crashes, it can replay its log to find its latest state (so it will know if it
+was ready to commit, for example). When the coordinator is completing, it is
+ensured that <em>every</em> cohort completes before the coordinator's data
+is erased(update).
+</p>
+
+<!-- ---------------------------------------------------------------- -->
+<h1>Three-Phase Commit</h1>
+<p>
+A problem with the two-phase commit protocol is that there
+is no time limit for the protocol to complete. A sub-transaction may
+be delayed indefinitely or the process (or machine) may die and it might
+be a long time before it restarts.
+If the coordinator dies, there is no easy way for a standby coordinator
+to find out the state of the protocol and continue the commit.
+From a practical point of view, this
+is not good.
+</p>
+<p>
+The <em>three-phase commit protocol</em> is a variation of the two-phase commit
+protocol that places an upper bound on the time that a transaction
+may take to commit or abort. It also introduces an extra phase
+where cohorts are told what the consensus was so that any of them
+that received this information before a coordinator died
+could inform a standy coordinator whether there was a unanimous
+decision to commit or abort.
+</p>
+<p>
+The setup is the same as with the two-phase commit protocol.
+A coordinator process is in charge of soliciting votes from multiple
+cohorts that are responsible for the various sub-transactions of the
+top-level transaction. Here are the steps:
+</p>
+<blockquote>
+    <table frame=box border=2 frame=border>
+	<td> <em> phase </em> <td> <em>coordinator</em> </td> <td> <em>cohort</em> </td> 
+	<tr>
+	<td align=center valign=center rowspan=4> 1 <br> <em>request</em> </td>
+	    <td> write <em>prepare to commit</em> message to the log </td>
+		<td> work on transaction; when done, wait for a <em>prepare</em> message </td>
+	<tr>
+	    <td rowspan=2> send <em>prepare to commit</em> message </td>
+		<td> receive message. When transaction is ready to commit,
+		     write <em>agree to commit</em> (or <em>abort</em>) to log. </td>
+		</tr><tr>
+		<td> if timeout on waiting for a <em>prepare</em> message, then abort</td>
+	<tr>
+	    <td> wait for reply from all cohorts.
+	    </td>
+		<td> </td>
+	</tr> <tr>
+
+
+	<td align=center valign=center rowspan="4"> 2 <br> <em>commit authorized</em> </td>
+		<td>
+		if all replies have been received and all replies are "agree" messages, then
+		write <em>prepare-to-commit</em>  message to the log.
+		<br/>
+		else if all replies are not received before a timeout or at least a
+		single <em>abort</em> message is received then
+		write an <em>abort</em> message to the log.
+		</td>
+
+		<td> wait for a <em>prepare-to-commit</em> or <em>abort</em> message </td>
+	</tr><tr>
+
+		<td rowspan=2>
+		send a <em>prepare-to-commit</em> or <em>abort</em> message to all cohorts.
+		</td>
+
+		<td> If the cohort receives a <em>prepare-to-commit</em> message, it 
+		sends back an acknowledgement and waits. The commit does not yet
+		take place.
+		</tr><tr>
+		<td>
+		If the cohort receives an <em>abort</em> message or
+		times out waiting for a message from the coordinator, then
+		it aborts the transaction. This means that it
+		  releases all locks & resources, and reverts the state of the data it modified.
+		</td>
+	</tr><tr>
+	    <td> if a <em>prepare-to-commit</em> was sent, then wait for all cohorts to respond.
+		<br/> otherwise, we're done. </td>
+		<td> </td>
+	</tr><tr>
+
+	<td align=center valign=center rowspan="5"> 3 <br> <em>commit finalized</em> </td>
+	    <td> write <em>commit</em> message to the log. </td>
+		<td> <em>wait for a commit message </em> </td>
+	<tr>
+	    <td rowspan=2> send <em>commit</em>  message </td>
+		<td> receive a <em>commit</em>. 
+		     release all locks & resources, make database changes permanent.
+			<br/>
+			if a timeout on waiting for a <em>commit</em> message, then commit anyway.
+		</td>
+		</tr><tr>
+		<td> send a <em>commit completed</em> message.
+		</td>
+	</tr>
+	<tr>
+	    <td> Receive <em>commit completed</em> messages from all cohorts. Give up
+		waiting after a certain time.</td>
+		<td> </td>
+	</tr>
+	<tr>
+	    <td> clean up all state. Done. </td>
+		<td> </td>
+	</tr>
+    </table>
+</blockquote>
+
+If the coordinator crashes during this protocol, another
+one can step in and query the cohorts for the commit decision.
+If every cohort received the <em>prepare-to-commit</em>
+message then the coordinator can commit. If only some cohorts received
+the message, the coordinator now knows that the unanimous
+decision was to commit and can re-issue the request. If 
+no cohort received the message, the coordinator can
+restart to protocol or, if necessary, restart the transaction.
+
+
+<!-- ---------------------------------------------------------------- -->
+<h1>Paxos Commit</h1>
+<p>
+</em>What's wrong with the two-phase commit protocol?</em>
+</p>
+<p>
+The problem with the two-phase commit protocol is that it requires
+all systems to be available in order to complete.
+A single fault can make the two-phase commit protocol block. Two-phase
+commit is not fault tolerant because it uses a single coordinator
+whose failure can cause the protocol to block.
+</p>
+<p>
+<em>What about three-phase commit?</em>
+</p>
+<p>
+Three-phase commit tries to solve this with timeouts but no
+implementations have been put forth with a truly complete algorithm
+with a correctness proof. If the three-phase commit protocol
+implements voting for a coordinator, a key problem with the algorithm
+is that it is undefined what happens when a resource manager
+(the cohort, responsible for a sub-transaction) receives messages from two
+different processes; both claiming to be the current transaction
+manager (coordinator).
+</p>
+<p>
+<em>Can we get ACID guarantees that we want and still survive F faults?</em>
+</p>
+<p>
+Fault-tolerant consensus algorithms such as Paxos are designed to
+reach agreement and do not block whenever any majority of the
+processes are working.
+
+Let's use Paxos to create a fault-tolerant commit protocol that
+uses multiple coordinators. A majority of functioning coordinators
+will allow the commit to occur.
+</p>
+
+<p>
+The participants in the algorithm are:
+</p>
+<ul>
+<li>
+N resource managers (RMs). Each resource manager is associated with
+a single sub-transaction. For the transaction to be committed, each
+participating resource manager must be willing to commit it.
+</li><li>
+2F+1 acceptors, where F is the number of failures that we can
+tolerate. If F+1 acceptors see that all resource managers are
+prepared then then transaction can be committed. All instances of
+Paxos can share the same set of acceptors. 
+</li><li>
+a Leader. The leader coordinates the commit algorithm. All instances
+of Paxos share the same leader. Unlike the two-phase commit, it is
+not a single point of failure.
+</li><li>
+One instance of the Paxos consensus algorithm is executed for each
+resource manager. Each instance provides a fault-tolerant way to
+agree on the commit or abort proposed by each resource manager: each
+resource manager is responsible for a sub-transaction.
+</li>
+</ul>
+<p>
+Here's how we run the algorithm:
+</p>
+<ol>
+<li>
+A client requests a commit by sending a commit request to a transaction
+manager. The Paxos Commit algorithm uses a separate instance of the
+Paxos consensus algorithm to obtain agreement on the decision each
+RM makes of whether to prepare (commit) or abort. We can represent
+this decision by unique values that represent <em>Prepared</em> and <em>Aborted</em>,
+respectively. The transaction will be committed if and only if each
+resource manager's instance chooses <em>Prepared</em>. Otherwise, the
+transaction is aborted.
+</li>
+<li>
+The transaction manager sends a <em>PREPARE</em> message to each resource manager.
+</li>
+<li>
+Each resource manager then sends a proposal to its own consensus
+algorithm (running on multiple servers). Each resource manager is
+the first proposer in its own instance of Paxos.
+</li>
+<li>
+Each instance of the consensus algorithm sends the results back to the transaction manager.
+</li>
+<li>
+The transaction manager is stateless and just gets consensus outcomes.
+It will issue a <em>COMMIT</em> or <em>ABORT</em> message to each resource manager
+based on whether it received any <em>ABORT</em> messages.
+</li>
+</ol>
+<p>
+As long as the majority of acceptors are working, the transaction
+manager can always learn what was chosen. If it fails to hear from
+all the resource managers then it can make the decision to abort.
+Paxos maintains consistency, never allowing two different values
+to be chosen, even if multiple processes think they are the leader.
+</p>
+<p>
+Paxos provides a fault-tolerant commit algorithm based on replication.
+With two-phase commit, you rely on the coordinator to not fail or
+to recover after a failure. With Paxos Commit, the two-phase commit's
+transaction manager's stable storage is replaced by the acceptor's stable
+storage. The transaction manager itself is replaced with a set of
+possible leaders. With two-phase commit, the transaction manager
+is solely responsible for deciding whether to abort. With Paxos
+Commit, a leader will make an abort decision only for a resource
+manager that cannot decide for itself (e.g., it is not functioning).
+This will ensure that the protocol will not block due to a failed
+resource manager.
+</p>
+
+<!-- ---------------------------------------------------------------- -->
+<h1> Brewer's CAP Theorem </h1>
+<p>
+Eric Brewer proposed a conjecture that states that if
+you want consistency, availability, and partition tolerance, you
+have to settle for two out of three for any shared data system.
+This assertion as since been proven and Brewer's proposal
+is known as <em>Brewer's CAP theorem</em>, where <em>CAP</em>
+stands for Consistency, Availability, and Partitions.
+Partition tolerance means that all the systems will continue
+to work unless there is a total network failure. The inaccessibility
+of a few notes will not impact the system. Let's examine
+each of the aspects of CAP.
+</p>
+<dl>
+<dt> Consistency </dt>
+<dd>
+<p>
+Consistency in this discussion means that everyone sees the same
+view of the data if it is replicated in a distributed system.
+This can be enforced by forcing the algorithms to wait until 
+all participating nodes acknowledge their actions (e.g., two phase commit).
+Guaranteeing this impacts availability.
+Alternatively, if we want to offer availability, we need to ensure
+that all live nodes can get updated and we have to give up
+on partition tolerance.
+<p>
+</dd>
+
+<dt> Availability </dt>
+<dd>
+Availability refers to the system being highly available. Since
+commodity-built individual systems are not highly available,
+we achieve availability through redundancy, which means replication.
+If one system is down, a request can be fulfilled by another.
+In an environment with multiple systems connected on a network
+we have to be concerned about network partitioning. If we
+have partition tolerance, then we lose consistency: some systems
+are disconnected from the network segment where updates are
+being issued. Conversely, to keep consistency, we have to ensure
+that the network remains fully connected so that all live nodes
+can get updates. This means giving up on partition tolerance.
+</dd>
+
+<dt> Partition Tolerance</dt>
+<dd>
+<p>
+Partition tolerance means that the system performs 
+correctly even if the network gets segmented.
+This can be enforced by using a non-distributed system 
+(in which case partitioning is meaningless) or
+by forcing the algorithms to wait until network
+partitioning no longer exists (e.g., two phase commit).
+Guaranteeing this impacts availability.
+Alternatively, the system can continue running, but 
+partitioned nodes will not participate in the computation
+(e.g., commits, updates) and will hence have different values
+of data, impacting consistency.
+</p>
+</dd>
+
+<p>
+Giving up on consistency allows us to use optimistic
+concurrency control techniques as well as leases instead
+of locks. Examples of this are web caches and the Domain
+Name System (DNS).
+</p>
+
+<!-- ---------------------------------------------------------------- -->
+<h1> BASE: Giving up on ACID </h1>
+
+<p>
+Availability and partition tolerance are not part of the ACID
+guarantees of a transaction, so we may be willing to give those up to 
+preserve database integrity. However, that may not be the best
+choice in all environments since it limits a system's ability to scale
+and be highly available. In fact, in a lot of environments,
+availability and partition tolerance are <em>more</em> 
+important than consistency (so what if you get stale data?).
+</p>
+
+<p>
+In order to guarantee ACID behavior in transactions, objects (e.g.,
+parts of the database) have to be locked so that everyone will see
+consistent data, which involves other entities having to wait until
+that data is consistent and unlocked.
+
+Locking works well on a small scale but is difficult to do efficiently
+on a huge scale. Instead, it is attractive to consider using cached data.
+The risk is that we violate the "C" and "I" in ACID (Consistent &amp; Isolated):
+two separate
+transactions might see different views of the same data. An example
+might me that you just purchased the last copy of a book on Amazon.com
+but I still see one copy remaining.
+</p>
+
+<p>
+An alternative to the strict requirements of ACID is <em>BASE</em>,
+which stands for <strong>B</strong>asic <strong>A</strong>vailability,
+<strong>S</strong>oft-state, <strong>E</strong>ventual consistency.
+
+Instead of requiring consistency after every transaction, it is enough
+for a database to eventually be in a consistent state. In these 
+environments, accessing stale data is acceptable. This leniency makes
+it easy to cache copies of data throughout multiple nodes, never have
+to lock access to all those copies for any extensive time (e.g., a transaction
+operating on data will not lock all copies of that data), and update
+that data asynchronously (eventually). With a BASE model, extremely
+high scalability is obtainable through caching (replication), no
+central point of congestion, and no need for excessive messages to coordinate
+activity and access to data.
+
+<!-- ---------------------------------------------------------------- -->
+
+<h1> Some vocabulary </h1>
+
+<dl compact>
+<dt> <strong>abort</strong>
+<dd>	transaction will not complete (commit). All changes are undone
+	to the state before the transaction started.
+<dt> <strong>commit</strong>
+<dd>	action which indicates that the transaction has successfully
+	completed. All changes to the database, files, and objects
+	are made permanent.
+<dt> <strong>commit protocol</strong>
+<dd>	a fault-tolerant algorithm which ensures that all sides
+	in a distributed system either commit or abort a transaction
+	unanimously.
+<dt> <strong>log</strong>
+<dd>	a record of system activity recorded in sufficient detail so
+	that a previous state of a process can be restored.
+<dt> <strong>redo</strong>
+<dd>	given a log record, redo the action specified in the log.
+<dt> <strong>stable storage</strong>
+<dd>	permanent storage to which we can do atomic writes.
+<dt> <strong>transaction</strong>
+<dd>	an atomic action which is some computation that read and/or
+	changes the state of one or more data objects and appears
+	to take place indivisibly.
+<dt> <strong>write-ahead log protocol</strong>
+<dd>	a method in which operations done on objects may be undone	
+	after restarting a system.
+</dl>
+
+<h1> References </h1>
+
+<dl>
+<dt> Eric A. Brewer,
+<em><a href="http://www.cs.berkeley.edu/~brewer/cs262b-2004/PODC-keynote.pdf">
+Towards Robust Distributed Systems</a></em>, PODC Keynote, 2004.
+</dt>
+<dd>
+</dd>
+
+<dt>
+Seth Gilbert and Nancy Lynch,
+<em><a href="http://lpd.epfl.ch/sgilbert/pubs/BrewersConjecture-SigAct.pdf>
+Brewer’s Conjecture and the Feasibility of Consistent, Available, Partition-Tolerant Web Services</a></em>
+</dt>
+<dd>
+An analysis and proof of Eric Brewer's CAP conjecture
+</dd>
+
+<dt> John D. Cook,
+<em><a href="http://www.johndcook.com/blog/2009/07/06/brewer-cap-theorem-base/">
+ACID versus BASE for database transaction </a></em>,
+The Endeavour blog, July 6, 2009.
+</dt>
+<dd>
+</dd>
+
+<dt> Julian Browne,
+<em><a href="http://www.julianbrowne.com/article/viewer/brewers-cap-theorem">
+Brewer's CAP Theorem: The kool aid Amazon and Ebay have been drinking </a></em>,
+January 11, 2009.
+</dt>
+<dd>
+Great discussion on CAP and scalability.
+</dd>
+
+<dt>
+<em><a href="ftp://ftp.compaq.com/pub/products/storageworks/whitepapers/5983-2544EN.pdf">
+There is no free lunch with distributed data white paper</a></em>,
+Hewlett Packard, 2005.
+</dt>
+<dd>
+HP's explanation of the CAP Theorem and its impact on database systems: easy reading.
+</dd>
+
+<dt> <a href="http://en.wikipedia.org/wiki/Three-phase_commit_protocol">Three-phase commit protocol</a>.
+	Wikipedia article.
+<dd> </dd>
+</dl>
+
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/6f683a17-68f7-4cb4-ad35-6c245c3f4682"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

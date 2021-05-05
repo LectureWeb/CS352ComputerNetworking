@@ -1,0 +1,769 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Assignment 7 </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+
+.subhead {
+	background-color: #ddd;
+	text-align: center;
+	margin-left: 5em;
+	margin-right: 5em;
+	border: 1px solid #555;
+	border-radius: 5px;
+}
+.note {
+	font-style: italic;
+	color: #444;
+}
+#main .faqlist dd {
+        margin-left: 2em;
+        margin-bottom: 2em;
+}
+#main .faqlist dt {
+        background-color: #D1DBDB;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        padding-top: 0.25em;
+        padding-left: 0.5em;
+        color: black;
+	font-weight: normal;
+}
+#main .faqlist dt strong, #main .faqlist dt b {
+	color: red;
+}
+#main .faqlist dt {
+	margin-bottom: 1em;
+}
+#main .faqlist dt p + p {
+	padding-top: 1em;
+}
+#main .faqlist p + pre {
+	margin-top: -1em;
+}
+#main .faqlist dt ul {
+	margin-top: 1em;
+}
+#main .faqlist dt p {
+	margin-bottom: 0;
+}
+#main .newslist dt {
+        background-color: white;
+        color: #555;
+}
+#main .answer {
+	color: #a00000;
+}
+
+</style>
+</head>
+
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 416 </a> 
+ 	<li> <a href="../hw/index.html"> Homework </a> 
+ 	<li> <a href="../hw/a-7.html"> Assignment 7 </a> 
+</ul>
+</div>
+  
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Assignment 7 </h1>
+</div>
+
+<div class="subhead">
+Due
+Wednesday, April 22, 2015 11:00pm
+on-line via sakai
+</div>
+
+<h1> Files </h1>
+<ul>
+<li> 
+Get the <a href="mathfs.tar">base source code, demo, and Makefile</a> for this assignment.
+</li>
+<li>
+	<a href="../notes/content/10r-mathfs.pdf">April 1 recitation notes</a>
+	(<a href="../notes/content/10r-mathfs-6.pdf">6 per page</a>)
+</li>
+</ul>
+
+<h1> FAQ </h1>
+<p> Check the <a href="a-7-faq.html">FAQ</a>. </p>
+
+<h1> Overview </h1>
+<p>
+A file system is a collection of methods and data structures for
+storing and organizing data in secondary storage. Typically, file
+systems are used on block-based hardware, such as disks. 
+</p>
+<p>
+A particularly valuable aspect of file systems is their namespace.
+Users and programs know how to open and read files. By exposing a service
+as a file system, a service provider can avoid the need to create and
+document special-purpose APIs. The <em>process file system</em>, procfs,
+mounted under <code>/proc</code> on Linux systems is an example of 
+the use of a file system namespace to access information about 
+processes and other kernel structures.
+This assignment will allow you to get experience implementing a file system
+without the worries and trouble of kernel programming.
+</p>
+<p>
+The concept of a file system that does not actually
+store files may seem strange, but this is a natural extension of
+the UNIX "everything is a file" philosophy.
+For more information, see the brief
+<a href="http://en.wikipedia.org/wiki/Everything_is_a_file">Everything is a file</a>
+wikipedia article,
+<a href="http://plan9.bell-labs.com/sys/doc/names.html">The Use of Name Spaces in Plan 9</a>,
+and the
+<a href="../lectures/l-filesystems.html">file systems lecture notes</a>.
+</p>
+
+
+<h1> Background </h1>
+<p>
+We will be using FUSE (File system in USerspace) to implement a
+virtual file system. FUSE is an OS kernel module that is mounted
+under VFS and passes requests back up to a user process.
+This enables us
+to implement the functionality required to create a file system
+entirely in userspace, eliminating the necessity for kernel-level
+programming.
+</p>
+
+<h1>Group size</h1>
+<p>
+The assignment should not take a lot of effort. However, since the
+class is huge, you may work in a group of up to 
+<a href="http://weknowmemes.com/wp-content/uploads/2013/04/every-group-project-the-hangover.jpg">five students</a>.
+Be sure to identify the group members in your writeup and in a comments
+in your code.
+</p>
+<p>
+You will be held to higher standards if working in a larger group.
+Be sure to submit a beautifully-written report that summarizes your
+design and all the test cases you have performed.
+</p>
+
+<h1>Languages</h1>
+<p>
+<strong>The file system must be implemented in C using the FUSE library.</strong>
+</p>
+
+<h1> Assignment </h1>
+
+<p>
+The goal is to develop a specialized read-only file system module
+for FUSE. The file system that you will implement will not store
+actual files, but rather, will perform a various mathematical
+operations based on the names and numbers given to it. We call it <strong>mathfs</strong>.
+
+</p>
+<p>
+You are provided with a <a href="mathfs.tar">minimal source code base, demo, and Makefile</a>
+to get you started. Some of the key functions will be already
+defined.
+</p>
+<p>
+Additionally, you <strong>must</strong> write a report detailing your project implementation.
+</p>
+<p>
+Your file system must have the following characteristics:
+</p>
+
+<ol class="separated">
+<li>
+<p>
+The root of the mathfs file system must contain seven directories, each representing a mathematical function:
+</p>
+<ol class="alphalist together">
+<li> <strong>/factor</strong> - Computes the prime factors of a number. </li>
+<li> <strong>/fib</strong> - Computes the first n fibonacci numbers. </li>
+<li>  <strong>/add</strong> - Adds two numbers </li>
+<li> <strong>/sub</strong> - Subtracts two numbers. </li>
+<li> <strong>/mul</strong> - Multiplies two numbers. </li>
+<li> <strong>/div</strong> - Divides two numbers. </li>
+<li> <strong>/exp</strong> - Raises a number to a given exponent.</li>
+</ol>
+</li>
+
+<li> 
+An <em>ls</em> command executed on any of these directories should only show a single file: <strong>doc</strong>.
+The contents of this file should be the documentation of the particular function. This can be a brief
+textual description with a couple of examples.
+</li>
+
+<li>
+<p>
+A function can be invoked by opening a "file" under the mathfs mount point and reading its contents. For example:
+</p>
+
+<ol class="alphalist together">
+<li> <strong>/factor/138</strong> should act as a file containing the numbers 2, 3, 23, one per line and ending with a newline.</li>
+<li> <strong>/fib/3</strong> should act as a file containing the numbers 1, 1, 2, one per line and ending with a newline. </li>
+<li> <strong>/add/5/3</strong> should act as a file containing the number 8 and ending with a newline. </li>
+<li> <strong>/sub/5/3</strong> should act as a file containing the number 2 and ending with a newline. </li>
+<li> <strong>/mul/5/3</strong> should act as a file containing the number 15 and ending with a newline. </li>
+<li> <strong>/div/5/3</strong> should act as a file containing the number 1.6666 and ending with a newline. </li>
+<li> <strong>/exp/2/3</strong> should act as a file containing the number 8 and ending with a newline.</li>
+</ol>
+<p>
+Note that these "files" should not be listed by <em>ls</em>, as there are an infinite number of them.
+</p>
+</li>
+</ol>
+
+<h1> Demo </h1>
+<p>
+To get a feeling of what is expected of you, you can play with my compiled version of the code.
+Download the <a href="mathfs.tar">mathfs.tar</a> file that contains the source code base and makefile.
+It includes a file named <strong>mathfs-demo</strong>. This is a version of the file
+system compiled to run on the iLab Linux machines. To test it out:
+</p>
+<ul>
+<li> <p>Unpackage the archive:</p>
+<pre><code>
+tar xvf mathfs.tar
+</code></pre>
+</li>
+
+<li> <p>This will create a directory called <code>mathfs</code>. Go there: </p>
+<pre><code>
+cd mathfs
+</code></pre>
+</li> 
+
+<li> <p>Create a mount point for the file system. Let's call it <code>math</code>: </p>
+<pre><code>
+mkdir math
+</code></pre>
+</li>
+
+<li> <p>Run the file system on the mount point. It will run in the background so you won't see anything:
+<pre><code>
+./mathfs-demo math
+</code></pre>
+</li>
+
+<li> <p>Try some things. A top-level directory listing:
+<pre><code>
+$ ls -l math
+total 0
+drwxr-xr-x 3 root root 0 Apr 10 22:06 add
+drwxr-xr-x 3 root root 0 Apr 10 22:06 div
+drwxr-xr-x 3 root root 0 Apr 10 22:06 exp
+drwxr-xr-x 3 root root 0 Apr 10 22:06 factor
+drwxr-xr-x 3 root root 0 Apr 10 22:06 fib
+drwxr-xr-x 3 root root 0 Apr 10 22:06 mul
+drwxr-xr-x 3 root root 0 Apr 10 22:06 sub
+</code></pre>
+</li>
+
+<li> <p> Show the contents of the <code>div</code> directory:</p>
+<pre><code>
+$ ls -l math/div
+total 0
+-r--r--r-- 1 root root 64 Apr 10 22:07 doc
+</code></pre>
+</li>
+
+<li> <p> Add the numbers 1234 and 5.52. I use <em>sprintf</em>'s <code>%g</code> format, so decimals sometimes get rounded. You're welcome to change this to any reasonable behavior.</p>
+<pre><code>
+$ cat math/add/1234/5.52
+1239.52
+</code></pre>
+</li>
+
+<li> <p> Last 10 numbers in a 50-element fibonacci sequence: </p>
+<pre><code>
+$ cat math/fib/50|tail -10
+165580141
+267914296
+433494437
+701408733
+1134903170
+1836311903
+2971215073
+4807526976
+7778742049
+12586269025
+</code></pre>
+</li>
+
+<li> <p>You should handle basic errors, such as divide-by-zero: </p>
+<pre><code>
+$ cat math/div/500/0
+divide by zero error
+</code></pre>
+</li>
+
+<li> <p>Factoring works with integers: </p>
+<pre><code>
+$ cat math/factor/223092870
+2
+3
+5
+7
+11
+13
+17
+19
+23
+</code></pre>
+</li>
+
+<li> <p> But you should barf on factoring floating point numbers: </p>
+<pre><code>
+$ cat math/factor/5.5
+the number to factor must be an integer
+</code></pre>
+</li>
+
+<li><p> Each top-level subdirectory contains a <code>doc</code> file: </p>
+<pre><code>
+$ ls -l math/*/*
+-r--r--r-- 1 root root 56 Apr 10 22:16 math/add/doc
+-r--r--r-- 1 root root 64 Apr 10 22:16 math/div/doc
+-r--r--r-- 1 root root 85 Apr 10 22:16 math/exp/doc
+-r--r--r-- 1 root root 87 Apr 10 22:16 math/factor/doc
+-r--r--r-- 1 root root 85 Apr 10 22:16 math/fib/doc
+-r--r--r-- 1 root root 65 Apr 10 22:16 math/mul/doc
+-r--r--r-- 1 root root 68 Apr 10 22:16 math/sub/doc
+</code></pre>
+</li>
+
+<li><p> It documents what each directory does: </p>
+<pre><code>
+$ cat math/exp/doc
+Raise a number to an exponent.
+The file exp/a/b contains a raised to the power of b.
+</code></pre>
+</li>
+
+<li><p><strong>Important: when you're done, unmount the file system.</strong></p>
+<pre><code>
+$ fusermount -u math
+</code></pre>
+</li>
+
+</ul>
+
+
+<h1> Recommended Procedure and Hints</h1>
+<ol class="separated">
+
+<li>
+<p>
+Read the <a href="http://fuse.sourceforge.net">FUSE documentation</a> on the web.
+</p>
+<p>
+Try the example <a href="http://fuse.sourceforge.net/helloworld.html">hello, world</a>
+program. Following the instructions on the main documentation page and make
+sure that you can compile the program and run it under FUSE. The iLab machines
+have FUSE installed. If you're using your own Linux or Mac systems, you will have 
+to install FUSE. The instructions for compiling the program are in the comment header of the program.
+</p>
+<p>
+<strong> Do not do anything until you complete the step.</strong> You want to make sure that you
+have no problems in using FUSE. <strong>Run the program and your program with the debug
+option enabled</strong>. This is the only way you'll know what's going on. To run debugging,
+just suffix a <code>-d</code> flag at the end of the command:
+</p>
+<pre><code>
+./hello mnt -d
+</code></pre>
+<p>
+<strong>Note that with the <code>-d</code> flag, the program will not run in the background.</strong>
+You can kill it at any time by sending it a kill character (control-C, by default). You
+will need to use another terminal window that's running a shell to enter commands that
+access the file system. For example:
+</p>
+<pre><code>
+ls -l mnt
+</code></pre>
+</li>
+
+<li>
+You can start with the empty template but you might find it easier to start with
+the <em>hello, world</em> program and use that as a template. Change all references to <code>mathfs</code>
+or something that makes sense.
+</li>
+
+<li>
+<p>
+You will need to implement only the following FUSE API functions:
+</p>
+<ol class="alphalist together">
+<li> <tt>getattr()</tt> </li>
+<li> <tt>readdir()</tt> </li>
+<li> <tt>open()</tt> </li>
+<li> <tt>read()</tt> </li>
+</ol>
+<p>
+Start with skeletal implementations that do very little.
+Place a <code>printf</code> statement at the head of each one so you can understand
+when each function is called and with what paramters. For example:
+</p>
+<pre><code>
+printf("getattr(\"%s\"\n", path);
+</code></pre>
+<p>
+You'll notice that the first calls are always to <code>getattr</code> to test if
+a file exists, if it is a file or directory, and what its size is.
+You'll also see 
+how it is called with the pathname built up a component at a time.
+</li>
+
+<li>
+<p>
+Get <code>getattr</code> to recognize a different files and directories in your file system.
+For a start, you can hard-code a few pathnames and do <em>strcmp</em> against <code>path</code>.
+Set the mode to a regular file or a directory as necessary. Look at what the <em>hello, world</em>
+example does. 
+</p><p>
+With getattr working, you can now run the ls command on these names but not 
+yet do directory listings. For example:
+</p>
+<pre><code>
+	ls -ld math/sub
+	ls -ld math/add/555
+</code></pre>
+</li>
+
+<li>
+<p>
+The next step is to do support the larger set of files. There are several ways you
+can do this (e.g., initialize a tree structure in main). I took a brain-dead 
+approach and defined a single table that contains a pattern to match and identifies
+whether the pattern is a file or directory. This table of structs also has a field for each entry
+to define how the name is treated (e.g., it is an "add/doc" document file, it calls the 
+subtract function, it's a top-level directory, etc.). This way, all searches
+can be table-driven.
+Do what works for you.
+If you find yourself writing a whole lot of <code>if</code> statements or
+hundreds of lines of code then you're doing something wrong (and ugly!).
+</p>
+</li>
+
+<li>
+Now get <em>readdir</em> working so you can show directory listings.
+You'll be given a pathname and need to generate a directory listing.
+At the top level (<code>/</code>, you will present, the entire set of
+command sub-directories: add, sub, mul, .... 
+Under each function, there will be a <code>doc</code> file.
+For paths such as <code>add/5</code> or <code>mul/9.24</code>, you will show an empty directory.
+</li>
+
+<li>
+Implement the mathematical functions themselves.
+Use common sense in the breadth of your support. Normal C double-precision arithmetic with
+decimal input/output is acceptable. I used <em>strtod</em> for my parsing and
+<em>sprintf</em> for output.
+You need not support arbitrary precision numbers, fractions, or support complex numbers. Be
+sure to handle basic cases of overflow (e.g., fibonacci numbers wrapping around), divide-by-zero, and any other 
+errors that may arise. Your program should not die under any circumstances and file output
+should be generated under all circumstances.
+</li>
+
+<li>
+You need not bother with caching results for this assignment. However, you might find that you need to
+generate results twice because of that: once for <em>getattr</em> to query the size of
+the "file" and another time in the <em>read</em> request to get the ressults.
+Not very efficient but it doesn't matter here; just one or two extra lines of code to get
+the results in <em>getattr</em> and set the file size.
+</li>
+
+<li>
+Test the file system thoroughly. In particular, try misspellings, non-numbers, and numbers
+that generate overflow or divide-by-zero situations.
+</li>
+
+</ol>
+
+<h1> Additional Suggestions </h1>
+
+<ol class="separated">
+<li> Develop incrementally and test often. Problems in one part may propagate to others without being obvious.</li>
+<li> Implement things carefully. A little planning will go a long way.
+Spend some time thinking about how you wnat to embed information about the file system and
+handle the parsing of pathnames that are sent to you.
+</li>
+</ol>
+
+<h1> How to Submit </h1>
+<ol class="separated">
+<li>
+After testing your implementation and writing your report you must submit your solution on sakai under Assignment 7. 
+</li>
+<li>
+Rezip/retar the directory structure that I provide for you, including your modifications. Do
+not include any object (<code>.o</code>) files or executables. Do NOT
+include the demo code (<code>mathfs-demo</code>).
+</li>
+<li>
+You should attach your archive file and your report document to the sakai assignment submission.
+</li>
+</ol>
+
+<p>
+Be sure to indicate all members of your team in both your report and the opening comments in your code.
+If it takes us effort to figure out whose program this is, you will lose points.
+Only one team member needs to submit the assignment but be sure that the comments
+make it clear who the members are.
+</p>
+
+<p>
+Submit only what is required. Do not submit object files, executables, or temporary editor files. 
+</p>
+
+<p>
+Hand the assignment in via <a href="https://sakai.rutgers.edu/portal">sakai</a>.
+Only one group member should submit the assignment.
+</p>
+
+<h1> Technical Information </h1>
+<h2> iLab computers </h2>
+<p>
+I highly recommend that you use the <a href="http://www.cs.rutgers.edu/resources/systems/ilab/">iLab machines</a>
+to complete this project. These machines already have FUSE installed and configured properly. You are responsible for making sure that your assignment runs on
+this platform.
+</p>
+
+<h2>Windows Systems </h2>
+<p>
+Please do not attempt to do this project on a Windows system. FUSE
+is intended to be used for POSIX file systems. If you use Windows
+and MUST use your personal machine, you can either run a Linux VM
+or do the assignment on the iLab systems via SSH. The end result MUST
+compile on the iLab machines.
+</p>
+
+<h2>OS X Systems</h2>
+<p>
+If you're working on a Mac, you can install <a href="http://osxfuse.github.io">FUSE for OS X</a>.
+FUSE for OS X offers several APIs, one of which is a superset of the FUSE API.
+Be sure to test your code on Linux periodically to ensure that you're not 
+straying from a Linux-compatible API.
+</p>
+
+<h2> FUSE Documentation</h2>
+<dl>
+<dt> Recitation notes </dt>
+<dd>
+	<a href="../notes/content/10r-mathfs.pdf">April 1 recitation notes</a>
+	(<a href="../notes/content/10r-mathfs-6.pdf">6 per page</a>)
+</dd>
+
+<dt> Project website </dt>
+<dd>
+<p>
+<a href="http://fuse.sourceforge.net">http://fuse.sourceforge.net</a>
+</p>
+<p>
+Contains the API documentation, kernel source (in case you want to compile & install),
+and examples. 
+The "hello, world" file system is <a href="http://fuse.sourceforge.net/helloworld.html">here</a>.
+Other examples are <a href="http://fuse.sourceforge.net/doxygen/index.html">here</a>.
+That page contains a link to the
+<a href="http://fuse.sourceforge.net/doxygen/structfuse__operations.html">fuse_operations</a>
+struct, which contains the set of file operations that FUSE supports.
+</p>
+</dd>
+<dt> Additional tutorial </dt>
+<dd>
+<p>
+<a href="http://www.cs.nmsu.edu/~pfeiffer/fuse-tutorial/">
+Writing a FUSE Filesystem: a Tutorial</a>,
+by Joseph J. Pfeiffer, Jr., Ph.D.,
+Emeritus Professor,
+Department of Computer Science,
+New Mexico State University
+</p>
+<p>
+This provides a more detailed explanation of FUSE and contains a walkthrough of a different, but
+still small, file system.
+</p>
+</dd>
+</dl>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 417 Assignments </h2>
+	<ul>
+	<li> <a href="a-1.html"> Assignment 1 </a>
+	<li> <a href="a-2.html"> Assignment 2 </a>
+	<li> <a href="a-3.html"> Assignment 3 </a>
+	<li> <a href="a-4.html"> Assignment 4 </a>
+	<li> <a href="a-5.html"> Assignment 5 </a>
+	<li> <a href="a-6.html"> Assignment 6 </a>
+	<li> <a href="a-7.html"> Assignment 7 </a>
+	<li> <a href="a-8.html"> Assignment 8 </a>
+	</ul>
+	<h2> Tutorials </h2>
+	<ul>
+<!--
+	<li> <a href="../notes/sockets/index.html"> TCP Sockets tutorial </a> </li>
+	<li> <a href="../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+-->
+	<li> <a href="../notes/c-tutorials/index.html"> C/Unix tutorials </a> </li>
+	<li> <a href="../notes/make/index.html"> Makefile tutorial </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,630 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Remote Procedure Calls & Web Services</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Remote Procedure Calls & Web Services</h1>
+								<h2>Case studies</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>February 7, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<p>In this section, we will cover the highlights of a few RPC frameworks that have been developed.</p>
+
+<h2 id="sunoncrpc">Sun (ONC) RPC</h2>
+
+<p>Sun&#8217;s RPC, formally called ONC (Open Network Computing) RPC
+was one of the first RPC systems to achieve
+widespread use, thanks to the early popularity of Sun workstations,
+servers, and
+the Network File System (NFS).
+It is still in use on virtually all UNIX-derived systems
+(Linux, macOS, *BSD, SunOS). It uses an RPC compiler called <strong>rpcgen</strong> that
+takes input from an <strong>interface definition language</strong> (IDL) file.
+This is a file that defines the interfaces to the remote procedures. The interfaces
+are a set of functions that could be called by clients, including their
+parameters and return types. The programmer can also define
+multiple <strong>versions</strong> of an interface. This is useful since services may
+evolve over time but one cannot always count on all clients getting updated;
+some clients may still call functions on the old interfaces, which might
+take different parameters or have different names.
+From this IDL file,
+<strong>rpcgen</strong> creates client stub functions and a server stub program. These
+can be compiled and linked with the client and server functions, respectively.</p>
+
+<p>A programmer must assign a <strong>program number</strong> to each interface, that is,
+each set of server functions in the IDL file. This is a 32-bit number that must be a unique
+ID on that server.
+When the server starts up, it binds a socket to any
+available port and registers that port number and interface&#8217;s program number with a
+name server, known as the <strong>portmapper</strong>, running on the same machine. A
+client, before it can invoke any remote procedure calls, contacts the portmapper on
+the specified server with the program number
+to find the port to which it needs to send its requests.</p>
+
+<p>The choice of transport protocol, UDP or TCP, can be specified at run-time.
+All incoming and return parameters are marshaled into a standard format
+called <strong>XDR</strong>, or <strong>eXternal Data Representation</strong>.</p>
+
+<h2 id="dcerpc">DCE RPC</h2>
+
+<p>The Distributed Computing Environment, defined by the Open
+Group, created its own flavor of RPC which was similar to Sun RPC. They also had the
+programmer specify an interface in an IDL, which they called the <strong>Interface
+Definition Notation</strong> (IDN).</p>
+
+<p>To avoid the problem of picking a unique 32-bit
+identifier for the interface, DCE RPC provides the programmer with a program
+called <strong>uuidgen</strong>. This generates a **unique universal ID **(UUID) &#8211; a
+128-bit number that is a function of the current time and ethernet address.</p>
+
+<p>The Distributed Computing Environment also introduced the concept of a <strong>cell</strong>,
+which is an administrative grouping of machines. Each cell has a
+<strong>cell directory server</strong>
+that maintains information about the services available within the cell.</p>
+
+<p>Each computer in the cell knows how to contact its cell directory server. When a
+server program starts up under DCE RPC, it registers its port and the
+interface&#8217;s UUID with a local name server (the DCE host d&aelig;mon, <strong>dced</strong>,
+which is similar to the <em>portmapper</em> we find on Linux and BSD systems).
+It also registers the UUID-to-host mapping
+with the cell directory server. This allows for location transparency
+for services: a client does not need to know what machine a service lives on <em>a
+priori</em>. The client queries the cell server with the UUID of the interface
+to find the system on which the desired service is running. Then it contacts
+the local name server to get the port number and transport type on which to
+make requests.</p>
+
+<p>A standard way of encapsulating data (marshaling) is crucial since encodings
+may differ between different machines. Sun defined a standard format called
+<strong>XDR</strong> (eXternal Data Representation). Every participating system must
+convert (marshal) data into this format.
+DCE defined a format called
+<strong>NDR</strong> (Network Data Representation). However, instead of creating a single set of
+definitions, NDR defines a set of data representations that can be used.
+The hope is that the sender can find a format that will require minimal or
+no data conversion (hence, greater efficiency). If the client uses the same
+system architecture, it also will not need to convert data. In the worst case,
+only one side will need to convert data. This is known
+as a <strong>multi-canonical</strong> approach to data conversion.</p>
+
+<p>As object oriented languages gained popularity in the late
+1980s and 1990s, RPC systems like Sun&#8217;s and DCE&#8217;s proved incapable of handling
+some object oriented constructs, such object instantiation or polymorphism
+(different functions sharing the same name, with the function distinguished by
+the incoming parameters). Creating objects, in particular, requires a need
+for memory allocation on the server and cleanup when these remote objects are no longer
+needed. This is called <strong>distributed garbage collection</strong>.
+A new generation of RPC systems dealt with these
+issues.</p>
+
+<h2 id="microsoftcomdcomorpcms-rpc">Microsoft COM+/DCOM &amp; ORPC (MS-RPC)</h2>
+
+<p>Microsoft already had a mechanism in place for dynamically
+loading software modules, called <em>components</em>,
+into a process. This was known as COM, the Component Object
+Model and provided a well-defined mechanism for a process to identify and
+access interfaces within the component. The same model was extended to invoke
+remotely-located components and became the Distributed Component
+Object Model (<strong>DCOM</strong>), later fully merged with COM and called <strong>COM+</strong>.
+Because remote components cannot be loaded into the local process space,
+they have to be loaded by <strong>some</strong> process on the remote system.
+This process is known as a <strong>surrogate process</strong>. It runs on the server
+(under the name dllhost.exe),
+accepting remote requests for loading components and invoking operations on
+them.</p>
+
+<p>COM+ is implemented through remote procedure calls. The local COM object
+simply makes RPC requests to the remote implementation.
+Microsoft enhanced the DCE RPC protocol
+slightly to create what they called <strong>Object RPC</strong> (ORPC).
+For confusion, it is also called <strong>MSRPC</strong>, Microsoft RPC).
+This is essentially DCE RPC with the addition of support for an <strong>interface
+pointer identifier</strong> (IPID). The IPID provides the ability to identify
+a specific instance of a remote class. Interfaces are defined via the
+Microsoft Interface Definition Language (MIDL) and compiled into client and
+server side stubs. The client-side stub becomes the <strong>local</strong> COM object
+that is loaded on the client when the object is activated by the client program.
+Like DCE, ORPC supports multi-canonical data representation. The
+<strong>remote</strong>, server-side, COM object is loaded by the server&#8217;s surrogate process
+when first requested by the client.</p>
+
+<p>Since objects can be instantiated and deleted remotely, the
+surrogate process needs to ensure that there isn&#8217;t a build-up of objects that
+are no longer needed by any client. COM+ accomplishes this via <strong>remote
+reference counting</strong>. This is an explicit action on the part of the client
+where the client sends requests to increment or decrement a reference count on the server.
+When the
+reference count for an object drops to zero, the surrogate process deletes that object. To
+guard against programming errors or processes that terminated abnormally, a
+secondary mechanism exists, called <strong>pinging</strong>. The client must periodically
+send the server a <strong>ping set</strong> &#8211; a list of all the remote objects that are
+currently active. If the server does not receive this information within a
+certain period, it deletes the objects. This is a form of <strong>leasing</strong>,
+where the object expires if a lease is not renewed periodically. However,
+there is a subtle difference. With leasing, the lifetime of an object is generally
+renewed whenever an object is accessed, so there is no need for the client
+to ping the server to renew a lease unless it has not accessed the object for
+the duration of the lease.</p>
+
+<!-- 
+
+### CORBA
+
+The **Common Object Request Broker Architecture** (CORBA) was created to provide a
+software platform for distributing objects that is architecture, language, and
+operating system independent. The core concept is the **ORB** -- the **Object
+Request Broker**. This is the collection of stub functions and libraries that
+support the remote invocation of procedures and the management of objects.
+Like other RPC systems, CORBA also provides an Interface Definition Language (IDL)
+that is compiled with a
+pre-compiler to create client and server stubs.
+
+CORBA provides a rich set of capabilities for the management
+of objects. These include the ability to start the server if it is not running,
+discover interfaces, and persist objects to persistent media.
+
+One of the biggest problems with CORBA, aside from its
+learning curve, was the fact that, while the programming interfaces were defined,
+the underlying protocol was not. This meant that clients and servers would
+often not be able to communicate unless they used an implementation of CORBA
+from the same vendor.
+This was rectified in 1996 with the
+introduction of the **Internet Inter-ORB Protocol** (IIOP).
+By this time, however, much of the momentum of using CORBA over the 
+Internet was gone and much of the interest went to web services rather
+than RPC. CORBA still enjoys widespread use for its language and OS interoperability
+and comprehensive services.
+
+-->
+
+<h3 id="javarmi">Java RMI</h3>
+
+<p>When Java was created, it was designed to be a language
+for deploying downloadable applets. In 1995, Sun extended Java to support <strong>Remote
+Method Invocation</strong> (RMI). This allows a programmer to invoke methods on
+objects that are resident on other JVMs.</p>
+
+<p>Since RMI is designed for Java, there is no need for OS,
+language, or architecture interoperability. This allows RMI to have a simple
+and clean design.
+Classes that interact with RMI must simply play by a couple of rules.
+All parameters to remote methods must implement the
+<strong>serializable</strong> interface.
+This ensures that the data can be serialized into a byte stream (marshaled) for
+transport over the network.
+<strong>Serialization</strong> is a core aspect of marshaling: converting
+data into a stream of bytes so that it can be sent over a
+network or stored in a file or database.
+All <strong>remote</strong> classes
+must extend the <strong>remote</strong> interface. A remote interface
+is one whose methods may be invoked from a different Java virtual machine.
+Any class that is defined as <code>extends Remote</code>
+can be a remote object.
+Remote methods within that class must
+be capable of throwing a <code>java.rmi.RemoteException</code>.
+This is an exception that the client RMI library will throw
+if there is a communication error in calling the remote method.</p>
+
+<p>RMI provides a naming service called <strong>rmiregistry</strong> to
+allow clients to locate remote object references. These objects are given
+symbolic names and looked up via a URI naming scheme (e.g.,
+<tt>rmi://cs.rutgers.edu:2311/testinterface</tt>).</p>
+
+<p>Java&#8217;s distributed garbage collection is somewhat simpler
+than Microsoft&#8217;s COM+.
+Instead of reference counting, it uses a form
+of <strong>leased-based garbage collection</strong>.
+There are two operations that a client can send to the server:
+<strong>dirty</strong> and <strong>clean</strong>.
+When the first reference to a remote object is made, the client JVM sends
+a <strong>dirty</strong> message to the server for that object. As long
+as local references exist for the object, the client will periodically
+send <strong>dirty</strong> messages to the server to renew the lease on the object.
+When the client&#8217;s JVM&#8217;s garbage collector detects that there are no more references
+to the object, it sends a <strong>clean</strong> message for that object to the server.
+Should the client exit abnormally, it will not renew its lease by refreshing
+the <em>dirty</em> call, so the lease will expire on the server and the server
+will destroy the object.</p>
+
+<h1 id="webservices">Web Services</h1>
+
+<p>In the late 1990s, the web browser became the dominant model for user interaction
+on the Internet. It used HTTP, the Hypertext Transfer Protocol,
+over TCP for requests and responses
+and formatted web pages with HTML, the Hypertext Markup Language.
+While this created a decent user experience, dealing with fully-formatted
+pages was not good for programmatic access to that data
+The user interface content
+(tables, images, text formatting)
+was a major component of the content. Approaches such as <strong>site scraping</strong> were
+often employed, where a program would request and receive an HTML page and then parse
+through tons of formatting directives to access the data it needed.</p>
+
+<p>What we wanted was remotely-hosted services that programs, not users, can access.
+This enables <strong>machine-to-machine</strong> (<strong>m2m</strong>) communication.
+Remote procedure calls would
+seem to be a natural choice for this but they also had some problems when used on the
+Internet outside of an organizations' LAN:</p>
+
+<ol>
+<li><p><p>Because of the convenience of &#8220;you don&#8217;t
+need to pick a port&#8221;, RPC solutions typically ran services over an arbitrary
+range of ports where the operating system selected an unused port and
+the service registered
+it with an RPC name server. This led to an administrative nightmare where an
+administrator could not set a firewall rule to allow or block a specific port.</p></p></li>
+<li><p>Even though some RPC solutions were designed to support
+multiple languages and operating systems, most RPC systems were really deployed
+with a limited set of environments in mind. Sun RPC did not work on IBM&#8217;s flavor
+of UNIX and DCE RPC did not work on Sun or Linux systems. Microsoft&#8217;s services
+were difficult to use outside of the Microsoft ecosystem. Some cross-platform
+solutions, such as COBRA, were sold by multiple vendors and were not always
+interoperable.</p></li>
+<li><p>It turns out that we often
+need more than RPC&#8217;s request-response style of interaction. For example,
+we might want to implement a <strong>subscribe-publish</strong> interface where a client
+requests to be informed when a certain event takes place. The server will,
+at future times, send messages informing of these events. In many cases, we just want to send and receive general-purpose messages.</p></li>
+<li><p>RPC systems were designed with local area networks in mind. This meant that cleints expected low latency to server. The high latency to remote, loaded servers could lead to excessive retries (which generates even more server load) as well as clients giving up and returning a failure because a response was too slow to arrive.</p></li>
+<li><p>Finally, state management was somewhat of an issue. Although RPC does not require that servers store client state, a distributed object model makes this the norm. Large-scale deployments could get bogged down by the memory use of objects created to service requests that have not yet been garbage collected.</p></li>
+</ol>
+
+<p><strong>Web services</strong> are a set of protocols by which services can be published,
+discovered, and used over the Internet in a technology neutral form. This
+means that they are designed to be language and architecture independent.
+Applications will typically invoke multiple remote services across different
+systems, sometimes offered by different organizations.</p>
+
+<p>The general principles of web services are:</p>
+
+<ul>
+<li><p>Use text-based payloads, called <strong>documents</strong>,
+marshaling all data into formats such as XML or JSON. This ensures
+that the marshaling format does not favor a specific processor
+architecture or programming language. It also ensures that content-inspecting
+firewalls do not cause problems.</p></li>
+<li><p>Use HTTP over TCP/IP for transport.
+This allows us to use existing infrastructure: web servers, firewalls, and load balancers.</p></li>
+<li><p>Tolerate high latency. Servers are likely not to be on a local area network and may
+be slow to respond either due to their own load or due to network latency. This means
+that, where possible, programmers should strive for asynchronous interactions: dispatch
+a request and see if you can do something else useful before you get the response.</p></li>
+<li><p>Tolerate a large number of clients. Applications that interact with web services
+tend to be more loosely-coupled than those that use distributed objects (remote
+procedure calls). Services may be run by different organizations and servers cannot
+count on well-behaved clients or a small number of them. When possible, the ideal
+design is a <strong>stateless one</strong> where each client request contains all the necessary
+data and the server does not have to store any state between requests.
+Documents, the unit of message exchange in web services, tend to be self-describing.
+That is, they will identify and itemize all the parameters (explicit typing) and
+also describe any additional state needed for the interaction.</p></li>
+</ul>
+
+<p>The use of web services leads to a programming model called <strong>Service Oriented Architecture</strong> (<strong>SOA</strong>).
+Under SOA, an application is the integration of network-accessible services where each
+service has a well-defined interface. These services, or components, are
+<strong>unassociated</strong> and <strong>loosely coupled</strong>. By <em>unassociated</em> we mean that neither
+service depends on the other one; they are all mutually independent.
+By <em>loosely coupled</em> we mean that neither service needs to know about the internal
+structure of other services. To maintain this independence, web services generally forgo
+distributed garbage collection.</p>
+
+<p>Functionally, you can do anything with web services that you can with distributed
+objects (RPC). The differences are usually philosphical. Web services focus on document
+exchange and are designed with high latency in mind. <em>Document design</em> is central to
+web services. Distributed objects tend to look at the world in a way where
+<em>interfaces</em> are the key parts of the design. The data structures (&#8220;documents&#8221;) passed
+in these interfaces just package the data for use by them.</p>
+
+<h2 id="xmlrpc">XML RPC</h2>
+
+<p>XML-RPC was created in 1998 as a simple protocol that
+marshals all requests and responses into XML messages.
+It is essentially a marshaling protocol and the standard does not
+define an IDL or stub function generator.
+There are a lot of
+libraries to support XML RPC and some languages implement it more transparently
+than others.
+XML-RPC is just a messaging format. Nothing in the spec has support for
+remote objects, object references, or garbage collection.
+The protocol was designed when the dominant vision of web services was that
+of RPC-like interactions. This turned out not to always be the case.
+For example, one might want to implement the <strong>subscribe-publish</strong>
+model we mentioned earlier, where a client would <em>subscribe</em> to receive <em>published</em> notifications of specific events from a server.</p>
+
+<h2 id="soap">SOAP</h2>
+
+<p>XML RPC took an evolutionary fork and, with the
+support of companies such as Microsoft and IBM, evolved into something known as SOAP, the
+<strong>Simple Object Access Protocol</strong>. The acronym has since been deprecated since SOAP
+is neither simple nor confined to accessing objects.
+XML RPC is a subset of SOAP. In addition to
+remote procedure calls, SOAP added support for general purpose messaging (sending,
+receiving, and asynchronous notification of messages).
+SOAP invocations are <em>always</em> XML
+messages that are <em>usually</em> sent via an HTTP protocol. However, HTTP transport
+is not a requirement; you can send a SOAP message via email and SMTP (Simple Mail Transport Protocol).</p>
+
+<p>SOAP services can be described via
+a <strong>Web Services Description Language</strong> (<strong>WSDL</strong>) document.
+This is
+another XML document that essentially serves as an interface definition and
+defines all the names, operations, parameters, destination, and format of requests.
+WSDL is somewhat complex for human consumption.
+Typically, one creates an interface definition in a language such as Java and
+then uses a tool to translate that definition into a WSDL document. That WSDL
+document can then be fed to another tool (often by another programmer) to generate
+code that can be used to invoke remote functions or send remote messages.</p>
+
+<p>In addition to WSDL, SOAP was also augmented with a directory service for storing
+and serving information about web services. The service is called <strong>UDDI</strong>,
+for <strong>Universal Description, Discovery, and Integration</strong> and
+uses SOAP to communicate, providing WSDL documents as a result. UDDI never really
+achieved widespread popularity or deployment.</p>
+
+<h2 id="jax-ws:javawebservices">JAX-WS: Java Web Services</h2>
+
+<p>As web services became popular, quite a few services to support them were created for the Java platform.
+One of the more popular ones, and supported by the Oracle (the owner of Java),
+is <strong>JAX-WS</strong> (Java API for XML Web Services).
+The goal of JAX-WS is to invoke Java web services using Java RMI.
+Unlike traditional Java RMI, interoperability is important since the remote side
+(client or server) may not necessarily use Java. JAX-WS uses SOAP and WSDL to
+achieve platform independence.</p>
+
+<!--
+### Microsoft .NET Remoting
+
+A problem with Microsoft’s DCOM was that it was a somewhat low-level
+implementation. Clients had to provide reference counting of their
+objects explicitly and the convenience of using DCOM depended very
+much on the language (easy in VB, difficult in C++). Moreover, the
+use of operating system selected random ports and a binary data
+format made it difficult to use over the Internet where firewalls
+may block certain ports or requests need to in an XML format and
+be sent over HTTP.
+
+With .NET, Microsoft provided (among other things) a runtime
+environment, a set of libraries, and a web server that provides
+inbuilt support for web services. For supporting functional
+access to web services, .NET provides a **remoting** capability that
+allows a process to interact with objects that reside on other
+processes and other machines.
+
+**.NET Remoting** was created to be a successor to DCOM that would work
+more easily over the Internet (no random ports, for example, as
+well as the ability to use XML over HTTP). As with other RPC systems,
+client and server stub functions (proxies) are created. Microsoft’s
+Visual Studio application development environment hides the mechanics
+of this and integrates remote procedure calls directly into the
+language.
+
+These stubs rely on the .NET runtime system to marshal parameters
+into one of several types, which include SOAP or binary formats.
+The .NET runtime system then sends the message over a particular
+**channel** that that was set up for transport. This channel may be
+HTTP using TCP/IP to send SOAP messages, TCP/IP with no wrapping
+protocol to send binary messages on a local-area network, or named
+pipes to send messages between processes on the same machine.
+Microsoft’s web server, IIS, can be configured to directs certain
+URLs that contain the SOAP (encapsulated in HTTP) request to specific
+objects running under the .NET framework, which then sends a response
+back to the web server, which is then returned to the caller.
+
+.NET supports two forms of object activation:
+
+1.**server activated objects** are those where the client
+has no control in managing the lifespan of the object, and 
+
+2.**client activated objects** are those where the lifetime
+is controlled by the client and the distributed garbage collection
+must be handled. These behave like traditional remote objects. 
+
+
+Of server activated objects, two forms are supported:
+
+a. **Single call** objects 
+instantiate a new instance of the object for a call and immediately
+clean it up upon return. There is no ability to keep state.
+
+b. **Singleton objects** share the same instance 
+of the object among all callers. This is much like traditional
+function calls in non-object-oriented systems. Everyone shares the
+same state.
+
+
+Client activated objects are created when the client requests a new object.
+This is similar to the way objects are handled in DCOM.
+.NET manages object lifetime of client activated objects
+via a **Leasing Distributed Garbage Collector** (**LDGC**).
+The lease manager on the server manages object lifetime by checking the
+object's **lease timer**. When an object is created, it is given
+an initial lease time (five minutes by default). Each time a
+method is called on an object, the lease timer is renewed.
+The object will be cleaned up unless
+the client either references its objects or makes explicit calls to
+renew the lease time.
+This is a very similar concept to Java RMI with the exception that a
+client never sends a message stating that there are no more object
+references (Java sends a _clean_ message to the server).
+There is no more reference counting as under DCOM.
+-->
+
+<h2 id="rest">REST</h2>
+
+<p><strong>REST</strong> (REpresentational State Transfer) is a departure from
+the approach of SOAP. Instead of using HTTP simply as a conduit for sending
+and receiving XML messages where everything you need is contained in the body,
+REST incorporates itself into the HTTP protocol. In particular,
+the URI (Uniform Resource Identifier, usually a URL) incorporates the request and list of parameters. The protocol intself
+defines the core nature of the operation:</p>
+
+<ul>
+<li>HTTP PUT: <em>create something</em></li>
+<li>HTTP GET: <em>read something</em></li>
+<li>HTTP POST: <em>update something</em></li>
+<li>HTTP DELETE: <em>delete something</em></li>
+</ul>
+
+<p>The body of the message will contain the document, which will be formatted data
+and not, as in the case, a structure that also identifies the operations to be
+performed on the document.</p>
+
+<h1 id="marshalingformats">Marshaling formats</h1>
+
+<p>When web services were first developed, the obvious marshaling format
+to use was XML. This was, roughly, what HTML used for describing
+the content of web pages (HTML was not particularly strict about proper structure).
+Its use was adopted for XML-RPC and SOAP and
+it remains heavily in use. However, it turned out to be a rather text-heavy
+protocol that was complex to parse. A lightweight alternative that
+gained much popularity is <strong>JSON</strong> (<strong>JavaScript Object Notation</strong>).
+It&#8217;s the data representation format that is the most widely used for web services today.
+Despite the <em>JavaScript</em> in the name, it was designed to be language-independent
+and easy to parse. It was touted as the &#8220;fat-free alternative to XML.&#8221;
+Even more efficient is the use of <strong>Google Protocol Buffers</strong>. This is a
+binary marshaling protocol and is not always suited for web services
+over HTTP but is phenomenally efficient for local services and for
+storing serialized data (e.g., saving objects in a file system).</p>
+
+							</section>
+							<footer class="main">
+								Last modified February 10, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

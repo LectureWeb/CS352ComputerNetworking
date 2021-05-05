@@ -1,0 +1,441 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Spark </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 417 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/22-spark.html"> Spark </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="downloadmsg"> <a href="22-spark.pdf">Download PDF <img src="images/pdf.png" width="24" height="24"/></a> </div>
+<div id="headline">
+<h1> Spark </h1>
+<h2> A general-purpose big data framework </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> November 26, 2017 </p>
+</div>
+<h1 id="introduction">Introduction</h1>
+
+<p>MapReduce turned out to be an incredibly useful and widely-deployed framework
+for processing large amounts of data. However, its design forces programs
+to comply with its computation model, which is:</p>
+
+<ol>
+<li><em>Map</em>: create a key,value pairs</li>
+<li><em>Shuffle</em>: combine common keys together and partition them to reduce workers</li>
+<li><em>Reduce</em>: process each unique key and all of its associated values</li>
+</ol>
+
+<p>It turned out that many applications had to run MapReduce over multiple passes to
+process their data. All intermediate data had to be stored back in the file system
+(GFS at Google, HDFS elsewhere), which tended to be slow since stored data was not
+just written to disks but also replicated. Moreover, the next MapReduce phase could not
+start until the previous MapReduce job completed fully.</p>
+
+<p>MapReduce was also designed to read its data from a distributed file system (GFS/HDFS).
+In many cases, however, data resides within an SQL database or is streaming in
+(e.g, activity logs, remote monitoring).</p>
+
+<p><strong>Spark</strong> is a framework that provides a highly flexible and general-purpose way of dealing with big
+data processing needs, does not impose a rigid computation model, and supports
+a variety of input types. This enables Spark to deal with text files, graph data,
+database queries, and streaming sources and not be confined to a two-stage processing model.
+Programmers can develop arbitrarily-complex, multi-step data pipelines arranged
+in an arbitrary directed acyclic graph (DAG) pattern. </p>
+
+<p>Programming in Spark involves defining a sequence of <em>transformations</em> and <em>actions</em>.
+Spark has support for a <em>map</em> action and a <em>reduce</em> operation, so it can
+implement traditional MapReduce operations but it also supports SQL queries, graph processing,
+and machine learning. Unlike MapReduce, Spark stores its intermediate
+results in memory, providing for dramatically higher performance.</p>
+
+<h1 id="sparkarchitecture:tasks">Spark architecture: tasks</h1>
+
+<p>An application that uses Spark identifies data sources and the operations on that data.
+The main application, called the <strong>driver program</strong> is linked
+with the Spark API, which creates a <strong>SparkContext</strong>. This is the heart of
+the Spark system and coordinates all processing activity.
+This SparkContext in the driver program connects to a Spark <strong>cluster manager</strong>.
+The cluster manager responsible for allocating worker nodes, launching <strong>executors</strong> on them,
+and keeping track of their status.</p>
+
+<p>Each <strong>worker node</strong> runs one or more <strong>executors</strong>. An executor is a process
+that runs an instance of a Java Virtual Machine (JVM).
+When each executor is launched by the manager, it establishes a connection back to the
+driver program.
+The executor runs <strong>tasks</strong> on behalf
+of a specific SparkContext (application) and keeps related
+data in memory or disk storage. A task is a transformation or action.
+The executor remains running for the duration of the
+application. This provides a performance advantage over the MapReduce
+approach since new tasks can be started very quickly.</p>
+
+<p>The executor also maintains a cache, which stores frequently-used data in memory
+instead of having to store it to a disk-based file as the MapReduce framework does.</p>
+
+<p>The driver goes through the user&#8217;s program, which consists of actions
+and transformations on data and converts that into a series of <strong>tasks</strong>.
+The driver then sends <strong>tasks</strong> to the executors that registered with it.
+A <strong>task</strong> is application code that runs in the executor on a Java Virtual Machine
+(JVM) and can be written in languages such as Scala, Java, Python, Clojure, and R.
+It is transmitted as a jar file to an executor, which then runs it.</p>
+
+<h1 id="sparkarchitecture:resilientdistributeddatardd">Spark architecture: Resilient Distributed Data (RDD)</h1>
+
+<p>Data in Spark is a collection of <strong>Resilient Distributed Datasets</strong> (<strong>RDD</strong>s).
+This is often a huge collection of stuff. Think of an individual RDD as a table in a database
+or a structured file. </p>
+
+<p>Input data is organized into RDDs, which will often be partitioned across many
+computers. RDDs can be created in three ways:</p>
+
+<ol>
+<li><p>They can be present as any file stored in HDFS or any other storage system
+supported in Hadoop. This includes Amazon S3 (a key-value server, similar in design
+to Dynamo), HBase (Hadoop&#8217;s version of Bigtable), and Cassandra (a no-SQL eventually-consistent database).
+This data is created by other services, such as event streams, text logs, or a database. For
+instance, the results of a specific query can be treated as an RDD. A list of files in a specific
+directory can also be an RDD.</p></li>
+<li><p>RDDs can be streaming sources using the Spark Streaming extension. This could
+be a stream of events from remote sensors, for example. For fault tolerance, a
+<em>sliding window</em> is used, where the contents of the stream are buffered in memory
+for a predefined time interval.</p></li>
+<li><p>An RDD can be the output of a <em>transformation</em> function. This allows one task
+to create data that can be consumed by another task and is the way tasks pass data around.
+For example, one task can filter out unwanted data and generate a set of key-value pairs,
+writing them to an RDD. This RDD will be cached in memory (overflowing to disk if needed) and
+will be read by a task that reads the output of the task that created the key-value data.</p></li>
+</ol>
+
+<p>RDDs have specific properties:</p>
+
+<ul>
+<li><p>They are <strong>immutable</strong>. That means their contents cannot be changed. A task can read from
+an RDD and create a new RDD but it cannot modify an RDD. The framework magically garbage
+collects unneeded intermediate RDDs.</p></li>
+<li><p>They are typed. An RDD will have some kind of structure within in, such as a key-value pair
+or a set of fields. Tasks need to be able to parse RDD streams.</p></li>
+<li><p>They are ordered. An RDD contains a set of elements that can be sorted. In the case
+of key-value lists, the elements will be sorted by a key. The sorting function can be defined
+by the programmer but sorting enables one to implement things like <em>Reduce</em> operations.</p></li>
+<li><p>They are partitioned. Parts of an RDD may be sent to different servers. The default partitioning
+function is to send a row of data to the server corresponding to <em>hash(key) mod servercount</em>.</p></li>
+</ul>
+
+<h1 id="rddoperations">RDD operations</h1>
+
+<p>Spark allows two types of operations on RDDs: <strong>transformations</strong> and <strong>actions</strong>.
+<strong>Transformations</strong> read an RDD and return a new RDD. Example transformations
+are <em>map</em>, <em>filter</em>, <em>groupByKey</em>, and <em>reduceByKey</em>. Transformations are evaluated lazily,
+which means they are computed only when some task wants their data (the RDD that they
+generate). At that point, the driver schedules them for execution. </p>
+
+<p><strong>Actions</strong> are operations that evaluate and return a new value. When an action is
+requested on an RDD object, the necessary transformations are computed and the result
+is returned. Actions tend to be the things that generate the final output needed by
+a program. Example actions are <em>reduce</em>, <em>grab samples</em>, and <em>write to file</em>.</p>
+
+<h2 id="sampletransformations">Sample transformations</h2>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Transformation</th>
+	<th style="text-align:left;">Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">map(func)</td>
+	<td style="text-align:left;">Pass each element through a function func</td>
+</tr>
+<tr>
+	<td style="text-align:left;">filter(func)</td>
+	<td style="text-align:left;">Select elements of the source on which func returns true</td>
+</tr>
+<tr>
+	<td style="text-align:left;">flatmap(func)</td>
+	<td style="text-align:left;">Each input item can be mapped to 0 or more output items</td>
+</tr>
+<tr>
+	<td style="text-align:left;">sample(withReplacement, fraction, seed)</td>
+	<td style="text-align:left;">Sample a fraction fraction of the data, with or without replacement, using a given random number generator seed</td>
+</tr>
+<tr>
+	<td style="text-align:left;">union(otherdataset)</td>
+	<td style="text-align:left;">Union of the elements in the source data set and otherdataset</td>
+</tr>
+<tr>
+	<td style="text-align:left;">distinct([numtasks])</td>
+	<td style="text-align:left;">The distinct elements of the source dataset</td>
+</tr>
+<tr>
+	<td style="text-align:left;">groupByKey([numtasks])</td>
+	<td style="text-align:left;">When called on a dataset of (K, V) pairs, returns a dataset of (K, seq[V]) pairs</td>
+</tr>
+<tr>
+	<td style="text-align:left;">reduceByKey(func, [numtasks])</td>
+	<td style="text-align:left;">Aggregate the values for each key using the given reduce function</td>
+</tr>
+<tr>
+	<td style="text-align:left;">sortByKey([ascending], [numtasks])</td>
+	<td style="text-align:left;">Sort keys in ascending or descending order</td>
+</tr>
+<tr>
+	<td style="text-align:left;">join(otherDataset, [numtasks])</td>
+	<td style="text-align:left;">Combines two datasets, (K, V) and (K, W) into (K, (V, W))</td>
+</tr>
+<tr>
+	<td style="text-align:left;">cogroup(otherDataset, [numtasks])</td>
+	<td style="text-align:left;">Given (K, V) and (K, W), returns (K, Seq[V], Seq[W])</td>
+</tr>
+<tr>
+	<td style="text-align:left;">cartesian(otherDataset)</td>
+	<td style="text-align:left;">For two datasets of types T and U, returns a dataset of (T, U) pairs</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sampleactions">Sample actions</h2>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Action</th>
+	<th style="text-align:left;">Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">reduce(func)</td>
+	<td style="text-align:left;">Aggregate elements of the dataset using func.</td>
+</tr>
+<tr>
+	<td style="text-align:left;">collect(func, [numtasks])</td>
+	<td style="text-align:left;">Return all elements of the dataset as an array</td>
+</tr>
+<tr>
+	<td style="text-align:left;">count()</td>
+	<td style="text-align:left;">Return the number of elements in the dataset</td>
+</tr>
+<tr>
+	<td style="text-align:left;">first()</td>
+	<td style="text-align:left;">Return the first element of the dataset</td>
+</tr>
+<tr>
+	<td style="text-align:left;">take(n)</td>
+	<td style="text-align:left;">Return an array with the first n elements of the dataset</td>
+</tr>
+<tr>
+	<td style="text-align:left;">takeSample(withReplacement, fraction, seed)</td>
+	<td style="text-align:left;">Return an array with a random sample of num elements of the dataset</td>
+</tr>
+</tbody>
+</table>
+<h1 id="datastorage">Data storage</h1>
+
+<p>Spark does not care how data is stored. The appropriate RDD connector determines how to read data. For
+example, RDDs can be the result of a query in a Cassandra database and new RDDs can be written to Cassandra tables.
+Alternatively, RDDs can be read from HDFS files or written to an HBASE table.</p>
+
+<h1 id="faulttolerance">Fault tolerance</h1>
+
+<p>For each RDD, the driver tracks the sequence of transformations used to create it. That means every RDD knows
+which task needed to create it. If any RDD is lost (e.g., a task that creates one died), the driver
+can ask the task that generated it to recreate it. The driver maintains the entire dependency graph, so this
+recreation may end up being a chain of transformation tasks going back to the original data.</p>
+
+<h1 id="sampleprogram">Sample program</h1>
+
+<p>Here is a sample of a trivially small program that uses Spark and processes log files.</p>
+
+<p>The transformation (which creates new RDDs) reads ERROR message from a log file. Anything that is
+not an error is ignored. The assumption is that the log message begins with the text &#8220;ERROR&#8221;, contains
+tab-separated fields, and the next field identifies the source of the error. In this case the error may
+be due to &#8220;php&#8221; or &#8220;mysql&#8221;. We split the string by tabs, extract the second element (element 1), and
+that becomes our output RDD.</p>
+
+<p>The actions are to count messages that contain &#8220;mysql&#8221; and to count messages that contain &#8220;php&#8221;.</p>
+
+<pre><code>// base RDD
+val lines = sc.textFile(&quot;hdfs://...”)
+// transformed RDDs
+val errors = lines.filter(_.startsWith(&quot;ERROR&quot;))
+val messages = errors.map(_.split(&quot;\t&quot;)).map(r =&gt; r(1)) messages.cache()
+
+// action 1 messages.filter(_.contains(&quot;mysql&quot;)).count()
+// action 2 messages.filter(_.contains(&quot;php&quot;)).count()
+</code></pre>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><a href="http://spark.apache.org/docs/latest/job-scheduling.html">Job Scheduling</a>, Spark 1.5.2 Documentation.</li>
+<li><a href="http://spark.apache.org/docs/latest/cluster-overview.html">Cluster Mode Overview</a>, Spark 1.5.2 Documentation.</li>
+<li>Paco Nathan, <a href="http://stanford.edu/~rezab/sparkclass/slides/itas_workshop.pdf">Intro to Apache Spark</a>, ITAS Workshop, Databricks</li>
+<li><a href="http://hortonworks.com/hadoop-tutorial/hands-on-tour-of-apache-spark-in-5-minutes/">Hands-on Tour of Apache Spark in 5 Minutes</a>. Hortonworks</li>
+<li><a href="http://www.cloudera.com/content/www/en-us/documentation/enterprise/latest/topics/cdh_ig_running_spark_apps.html">Running Spark Applications</a>, Cloudera 5.5.x documentation</li>
+<li>Sandy Ryza, <a href="https://blog.cloudera.com/blog/2014/05/apache-spark-resource-management-and-yarn-app-models/">Apache Spark Resource Management and YARN App Models</a>,
+Cloudera Engineering Blog, May 30, 2014.</li>
+<li>Srini Penchikala, <a href="http://www.infoq.com/articles/apache-spark-introduction">Big Data Processing with Apache Spark – Part 1: Introduction</a>, InfoQ, Jan 30, 2015</li>
+</ul>
+
+<p>This is an update to a document originally created on November 25, 2015.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2017 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: November 27, 2017 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/9cbf3407-e64c-4dd9-b644-238d707b91b3"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

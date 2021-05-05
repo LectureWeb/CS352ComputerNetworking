@@ -1,0 +1,532 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Real Time Scheduling </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 416 </a> 
+ 	<li> <a href="../notes/index.html"> Documents </a> 
+ 	<li> <a href="../notes/08-rt_scheduling.html"> Real Time Scheduling </a> 
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Real-Time Process Scheduling </h1>
+
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> February 21, 2012 [original: September 27, 2010]</p>
+</div>
+
+<blockquote>
+<em>
+I don't care how; I want it now! 
+<br/>
+&mdash; Willy Wonka and the Chocolate Factory
+</em>
+</blockquote>
+<h1> What's wrong with priorities? </h1>
+<p>
+When we looked at scheduling policies for time-sharing systems, we found
+that attaching priorities to processes provided a convenient mechanism
+for proper scheduling (favoring processes with higher priorities).
+Unfortunately, there are some mysteries and uncertainties involved with priorities
+as well. Let's consider the two forms:
+</p>
+<dl>
+<dt>
+Fixed priorities:
+</dt>
+<dd>
+If we assign too many processes to high priority levels, they may
+keep the CPU busy all the time and lower priority processes will
+starve. Also, what priority is one to pick? Should my process be
+priority level 4 or level 6? What's the difference? A priority only
+make sense when compared to the priorities of all the other processes
+on the system and provide no assurance of getting a certain amount
+of CPU time on their own. Even a high priority process can itself
+starving if an even higher priority process starts to run. If other
+processes come in at the same level, the process may end up sharing
+the CPU round-robin.
+</dd>
+<dt>
+Dynamic priorities:
+</dt>
+<dd>
+With dynamic priorities, our priority will be 
+adjusted by the operating system. It may be lowered when the process has been
+using a lot of the CPU and raised for interactive jobs. At any given
+time, a process generally has no idea what its priority level is.
+</dd>
+</dl>
+
+<h1> Real-time demands </h1>
+
+<p>
+A process frequently does not need all of the CPU time, but needs
+enough to finish its task in a certain, often critical, amount of
+time. Consider, for example, the task of decompressing a video frame
+and sending it to a display device. We do not need 100% of the CPU
+all the time, but we need enough of it at proper intervals to
+decompress and send the video frames at a sustained rate of, say,
+30 frames per second. As another example, suppose a core meltdown
+was detected at the Springfield Nuclear Power Plant. A process
+managing the corrective actions might have a very tight deadline
+of 1 minute to complete its tasks.
+</p>
+<p>
+What priority levels should we assign to these important (time-critical)
+tasks? If there is only one such process, we can give it the highest
+priority. What if there are several time-critical processes? The
+schedulers we studied for time-sharing systems were primarily designed to be
+fair to the system and to processes or users. Their goal was to put
+the CPU and system resources to the best use and to minimize average
+response time. Unfortunately, they are generally inadequate to
+support real-time demands.
+</p>
+
+<h1> Deadlines </h1>
+
+<p>
+Real-time processes are often specified as having a <strong>start
+time</strong> (<strong>release time</strong>) and a <strong>stop
+time</strong> (<strong>deadline</strong>). The release time is the
+time at which the process must start after some event occurred that
+triggered the process. For example, suppose that a collision sensor
+interrupt must start airbag deployment within 20 msec.  of sense
+time. The deadline is the time by which the task must complete. The
+scheduler must allot enough CPU time to the job so that the task
+can indeed complete. There are several times of deadlines. A
+<strong>hard deadline</strong> is one in which there is <em>no
+value</em> to the computation if it completes after the deadline.
+</p>
+
+<p>
+Some systems require even more strict scheduling because real harm
+can result if the process is dispatched either too early or if it
+misses its deadline. These systems are called <strong>safety
+critical systems</strong>.
+</p>
+
+<p>
+Luckily, most real-time demands that we can expect to encounter on
+general purpose time-sharing computer systems fall in the category
+of soft deadlines.  With a <strong>soft deadline</strong>, the value
+of a late result diminishes but doesn't immediately disappear with
+time. That is, you can sometimes be a little late with no
+harm done.
+
+Consider a video server that is required to
+generate 30 video frames per second. This means that 
+a frame has to be generated every 33.3 milliseconds. What if it is 5
+millisecond late? The user probably will not notice. What if it is 40
+milliseconds late? Well, by then we expect to present the next frame and there
+is no value in the current data.
+</p>
+
+<h1> Real-time operating systems </h1>
+<p>
+If you are serious about meeting hard deadlines or designing a safety
+critical system, you will likely need to run a <strong>real-time operating system</strong>
+on a system that is dedicated to those tasks and minimizes all other forms of interference.
+For example, you may not be able to afford wasting time servicing
+disk interrupts and you certainly will not want to move memory pages
+back and forth between the disk and memory for fear of the time it
+will take to retrieve them if they are suddenly needed. You also will
+need to ensure that your operating system has preemptable system
+calls since you don't want a process held up because the operating
+system is tied up servicing a system call.
+</p>
+<p>
+A real-time operating system has a well-specified maximum time for each action
+that it performs to support applications with precise timing needs. Systems
+that can guarantee these maximum times are called <strong>hard real-time</strong>
+systems. Those that meet these times most of the time are called <strong>soft real-time</strong>
+systems. Deploying an airbag in response to a sensor being actuated is a case where
+you would want a hard real-time system. Decoding video frames is an example of
+where a soft real-time system will suffice. Real-time systems will usually have
+the following characteristics:
+</p>
+<ul>
+<li> Priority-based scheduler </li>
+<li> Guaranteed maximum time to service interrupts </li>
+<li> Ability to ensure that processes are fully loaded into memory and stay in memory </li>
+<li> Consistent and efficient memory allocation </li>
+<li> Preemptable system calls </li>
+</ul>
+
+
+<h1> Process types </h1>
+<p>
+As we start to use terms such as <em>compute time</em> and <em>deadline</em>,
+it helps to see how these terms relate to different categories
+of processes:
+</p>
+<ol>
+<li>
+<strong>Terminating processes</strong>:
+A terminating process may be considered as one that runs and then
+exits (terminates). We are interested in the amount of time that it
+takes it to run to completion. Its deadline is the time that at
+which it should complete all its work and its compute time is the
+amount of CPU time it needs.
+</li>
+
+<li>
+<p>
+<strong>Nonterminating processes</strong>:
+For processes such as video and audio servers as well as editors,
+we are not interested in the terminating time of these processes but
+rather in the time between events. For example, we would like our audio
+server to fill a 4K byte audio buffer every 500 milliseconds or we would
+like our video server to provide a new video frame every 33.3
+milliseconds. For these processes, the compute time is the CPU time
+that the process needs to compute its periodic event and the deadline
+is the time at which it must have the results ready. Nonterminating
+processes may be divided into two classes:
+</p>
+<ul>
+<li>
+<strong>Periodic</strong>:
+A periodic process has a fixed frequency at which it needs to run.
+For example, a video decompressor may have to run 30 times per
+second at 33.3 millisecond intervals.
+</li>
+<li>
+
+<strong>Aperiodic</strong>:
+Aperiodic processes have no fixed, cyclical, frequency between
+events. Event interrupts may occur sporadically and event computation
+times may vary dramatically. For purposes of scheduling, we use the
+shortest period and the longest computation time to play it safe.
+</li>
+</ul>
+</ol>
+
+<h1> How much can we do? </h1>
+<p>
+The CPU cannot work magic. If we want to have our system process
+four video streams at the same time at 30 frames per second and
+processing a single frame requires 40 milliseconds of CPU time,
+we will be forced to fail in our scheduling needs. There is just not
+enough CPU time to go around. If <em>C</em> represents our computation time
+and <em>D</em> represents the deadline, the following relation must hold:
+</p>
+<p class="center">
+<em>C &le; D</em>
+</p>
+<p>
+This assures us that we will have enough CPU time to complete the
+task. Moreover, for periodic tasks, the deadline must be within the
+period. If the period of the process is <em>T</em>, the following relation
+must now hold:
+</p>
+<p class="center">
+<em>C &le; D &le; T </em>
+</p>
+<p>
+Let's now look at a few popular algorithms for scheduling processes with real-time constraints.
+</p>
+
+<h1> Earliest deadline scheduling </h1>
+<p>
+Earliest deadline scheduling is simple in concept. Every process
+tells the operating system scheduler its absolute time deadline.
+The scheduling algorithm simply allows the process that is in the
+greatest danger of missing its deadline to run first. Generally,
+this means that one process will run to completion if it has an
+earlier deadline than another. The only time a process would be
+preempted would be when a new process with an even shorter deadline
+becomes ready to run. To determine whether all the scheduled processes
+are capable of having their deadlines met, the following condition
+must hold :
+</p>
+<p class="center">
+<img width="60" height="45" src="images/08-rt-eq1.png">
+</p>
+<p>
+This simply tells us sum of all the percentages of CPU time used per 
+process has to be less than or equal to 100%.
+</p>
+
+<h1> Least slack scheduling </h1>
+<p>
+This method is similar to shortest remaining time scheduling with
+the concept of a deadline thrown in. The goal is to pick the process
+that we can least afford to delay. This differs from earliest
+deadline scheduling because we're not looking only at the deadline,
+but at the amount of time we can procrastinate (work on something
+else) before we will have to put 100% of the CPU resource to finishing
+the task. Least slack is computed as the time to the deadline minus
+the amount of computation. For example, suppose that our remaining
+computation time, <em>C</em>, is 5 msec. and the deadline, <em>D</em>, is 20 msec. from
+now. The slack time is <em>D - C</em>, or 15 msec. The scheduler
+will compare this slack time with the slack times of other processes
+in the system and run the one with the lowest slack time.
+</p>
+<p>
+The effect of least slack scheduling is significantly different
+from that of earliest deadline scheduling. With earliest deadline,
+we will always work on the process with the nearest deadline,
+delaying all the other processes. With least slack scheduling, we
+get a balanced result in that we attempt to keep the differences
+from deadlines balanced among processes. If the CPU has no problem
+meeting all deadlines, both scheduling policies will work satisfactorily.
+If there is too much of a workload and some deadlines must be missed,
+earliest deadline will satisfy the processes with the
+earliest deadlines (assuming all processes arrived at the same time)
+because it started working on them early. Processes with later
+deadlines will get delayed significantly. With least slack scheduling,
+all deadlines will be missed, but they all will be missed
+by roughly the same amount of time. Which is better? It depends on
+the applications. The same scheduling constraint applies to Least
+Slack scheduling as to Earliest Deadline First scheduling.
+</p>
+
+<h1> Rate monotonic analysis </h1>
+<p>
+<strong>Rate monotonic analysis</strong> is a technique for assigning static priorities
+to periodic processes. As such, it is not a scheduler but a mechanism
+for governing the behavior of a preemptive priority scheduler.
+A conventional priority scheduler is used with this system, where
+the highest priority ready process will always get scheduled, preempting 
+any lower priority processes.
+</p><p>
+A scheduler that is aware of rate monotonic scheduling would be provided
+with process timing parameters (period of execution)
+when the process is created and compute a suitable priority for the
+process.
+Most schedulers that support priority scheduling (e.g., Windows, 
+Linux, Solaris, FreeBSD, NetBSD) do not perform rate monotonic
+analysis but only allow fixed priorities, so it is up to the user to assign
+proper priority levels for all real-time processes on the system.
+To do this properly, the user must be aware of all the real-time
+processes that will be running at any given time and each
+process'
+frequency of execution (1/<em>T</em>, where <em>T</em> is the period).
+To determine whether all
+scheduled processes can have their real-time demands met, the system has to
+also know each process' compute needs per period (<em>C</em>) and check that the
+following condition holds:
+</p>
+<p class="center">
+<img width="77" height="45" src="images/08-rt-eq2.png">
+</p>
+<p>
+To assign a rate monotonic priority, one simply uses the
+frequency information for each process.
+If a process is an aperiodic
+process, the worst-case (fastest) frequency should be used. The
+highest frequency (smallest period) process gets the highest priority
+and successively lower frequency processes get lower priorities.
+</p>
+<p>
+Scheduling is performed by a simple priority scheduler. At each
+quantum, the highest priority ready process gets to run. Processes
+at the same priority level run round-robin.
+</p>
+<p>
+Here is an example of ratemonotonic priority assignment. Suppose
+we have the following processes:
+</p>
+<blockquote>
+<em>A</em> runs every 50 msec for 20 msec
+<br/>
+<em>B</em> runs every 50 msec for 10 msec
+<br/>
+<em>C</em> runs every 30 msec for 10 msec
+</blockquote>
+<p>
+Rate-monotonic assignment requires that the highest frequency
+process(es) (<em>B</em> and <em>C</em>) get the highest priority and <em>A</em>, having the
+lowest frequency of execution, gets a lower priority. If we do not
+follow the rules and give <em>A</em> the highest priority, <em>B</em> the next highest,
+and <em>C</em> the lowest, the CPU will run processes in the following order:
+</p>
+<p class="center">
+<img width="350" height="143" src="images/08-rate_monotonic1.png"/>
+</p>
+
+<p>
+This does not give us the desired performance because, while processes
+<em>A</em> and <em>B</em> get scheduled acceptably, process <em>C</em> is late the second time
+it is scheduled and misses an entire period!  Now let us reverse the
+priorities as ratemonotonic assignment would dictate:
+</p>
+<p class="center">
+<img width="350" height="142" src="images/08-rate_monotonic2.png"/>
+</p>
+
+<p>
+The scheduler can now satisfactorily meet the real-time requirements these tasks.
+Rate monotonic priority assignment is guaranteed to be optimal. If processes
+cannot be scheduled using rate monotonic assignment, the processes cannot be
+properly scheduled with any other static priority assignment.
+</p>
+
+<h1> References </h1>
+<ul>
+<li>
+<em>Real-Time System Scheduling</em>, Audsley, N and Burns, A.,
+Department of Computer Science, University of York, UK, &copy; 1990
+</li>
+<li>
+<a href="http://www.netrino.com/node/77">Introduction to Rate Monotonic Scheduling</a>, by David Steward and Michael Barr, Netrino, November 8, 2007.
+</li>
+<li>
+<a href="http://en.wikipedia.org/wiki/Rate-monotonic_scheduling">Rate-monotonic scheduling</a>, Wikipedia
+</li>
+<li>
+Schedulability constraints for Earliest Deadline First and Rate Monotonic scheduling are from:
+Lin and Layland, <em>Scheduling Algorithm for Multiprogrammability in Hard Real Time Environments</em>,
+Journal of the ACM, 20(1)-46-61, January 1973.
+</li>
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

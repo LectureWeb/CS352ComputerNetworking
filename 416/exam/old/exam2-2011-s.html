@@ -1,0 +1,407 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 417 old exams: Exam 2 Spring 2011 </title>
+
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+#main ol h1 {
+	font-size: 140%;
+	margin-left: -1.3em;
+}
+#main ol li {
+	margin-bottom: 1em;
+}
+</style>
+</head>
+
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> 416 </a> 
+ 	<li> <a href="../../exam/index.html"> Exam info </a> 
+ 	<li> <a href="../../exam/old/index.html"> Old exams </a> 
+ 	<li> <a href="../../exam/old/exam2-2011-s.html"> Exam 2 Spring 2011 </a> 
+</ul>
+</p>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> CS 416 Exam 2 </h1>
+<h2>Spring 2011</h2>
+</div>
+
+<ol>
+<h1>Part I &ndash; 90 Points; 3 points each</h1>
+<p>
+For each statement, select the most appropriate answer.
+You may omit three questions. Please indicate your omissions clearly.
+</p>
+
+<li> CPU utilization tends to be lower when:
+<br/>(a) There are more processes in memory.
+<br/>(b) There are fewer processes in memory.
+<br/>(c) There is a higher degree of multiprogramming.
+<br/>(d) Processes perform very little I/O.
+
+</li><li> A major problem with the base & limit approach to memory translation is:
+<br/>(a) It requires the process to occupy contiguous memory locations.
+<br/>(b) The translation process is time-consuming.
+<br/>(c) The translation must be done for each memory reference.
+<br/>(d) A process can easily access memory that belongs to another process.
+
+</li><li> Page-based virtual memory is subject to:
+<br/>(a) Internal fragmentation.
+<br/>(b) External fragmentation.
+<br/>(c) Both.
+<br/>(d) Neither.
+
+</li><li> Memory compaction is a technique to:
+<br/>(a) Free up unused memory in a process to create more free memory.
+<br/>(b) Remove redundant data in a process so it takes up less space in memory.
+<br/>(c) Apply real-time data compression to a process’ memory to reduce its footprint.
+<br/>(d) Move a process to a different part of memory to create a larger region of contiguous memory.
+
+</li><li> The difference between base & limit addressing and segmentation is:
+<br/>(a) A process may have a discontiguous address space with segmentation.
+<br/>(b) A process cannot access another process’ memory under segmentation.
+<br/>(c) Segmentation requires dynamic address translation.
+<br/>(d) Segmentation does not have problems with external fragmentation.
+
+</li><li> In contrast to segmentation, paging:
+<br/>(a) Requires real-time address translation.
+<br/>(b) Requires less memory to store memory address translation tables.
+<br/>(c) Divides memory into fixed-size chunks.
+<br/>(d) Requires that a process be allocated a contiguous chunk of memory.
+
+</li><li> With a direct mapping paging system on a 32-bit processor with 32 KB pages, what is the size of each process’ page table?
+<br/>(a) 32K entries
+<br/>(b) 64K entries
+<br/>(c) 128K entries
+<br/>(d) 4G entries
+
+</li><li> In contrast to a single-level page table, multilevel page tables:
+<br/>(a) Reduce the maximum amount of memory that a process can need for a page table.
+<br/>(b) Result in faster page table lookups.
+<br/>(c) Allow processes to share regions of memory.
+<br/>(d) Typically use much less memory per process.
+
+</li><li> A logical address of 0x514413ab on a 32-bit page-based virtual memory system with 4 KB pages has the following offset:
+<br/>(a) 0x3ab  
+<br/>(b) 0x413ab  
+<br/>(c) 0x51441  
+<br/>(d) 0x514   
+
+</li><li> Effective memory access time on a TLB miss with a 4-level page table compared with a 2-level page table is:
+<br/>(a) 167% the speed of a two-level page table (5/3× slower).
+<br/>(b) 200% the speed of a two-level page table (2× slower).
+<br/>(c) 60% the speed of a two-level page table (5/3× faster).
+<br/>(d) 50% the speed of a two-level page table (2× faster).
+
+</li><li> The ARM v7 MMU architecture is best described as:
+<br/>(a) Combined direct mapped paging and segmentation.
+<br/>(b) Combined associative and direct mapped paging.
+<br/>(c) Pure direct mapped paging.
+<br/>(d) Pure segmentation.
+
+</li><li> The ideal page replacement algorithm would evict:
+<br/>(a) Any page that has not been used since the last periodic interrupt.
+<br/>(b) The oldest page.
+<br/>(c) The least frequently used page.
+<br/>(d) The least recently used page.
+
+</li><li> If evicted, the following pages do not need to be written to a swap file:
+<br/>(a) Program text (pages containing executable code).
+<br/>(b) Heap (allocated memory with data).
+<br/>(c) Stack.
+<br/>(d) Any of the above must be written to a swap file if evicted.
+
+</li><li> Page fault frequency is a way of:
+<br/>(a) Measuring the effectiveness (hit ratio) of a TLB.
+<br/>(b) Identifying the specific pages that are best targets for eviction.
+<br/>(c) Measuring the efficiency of page fault processing within an operating system.
+<br/>(d) Ensuring that all processes have their working sets in memory.
+
+</li><li> Thrashing in a virtual memory system is caused by:
+<br/>(a) A process making too many requests for disk I/O.
+<br/>(b) Multiple processes requesting disk I/O simultaneously.
+<br/>(c) Processes not having their working set resident in memory.
+<br/>(d) Slow operating system response to processing a page fault.
+
+</li><li> A buffer cache is used with:
+<br/>(a) Character devices.
+<br/>(b) Block devices.
+<br/>(c) Network devices.
+<br/>(d) All categories of devices.
+
+</li><li> On POSIX systems, devices are presented as files. When you send an I/O request to such a file, it goes to the:
+<br/>(a) device driver that was identified in the metadata of the file when it was opened.
+<br/>(b) device driver, which is contained within data of the device file. 
+<br/>(c) device driver based on the major and minor numbers contained in the file’s data.
+<br/>(d) file system driver (module), which then interprets it as a device request.
+
+</li><li> When a user process makes a system call, the kernel code is run in the:
+<br/>(a) User context.
+<br/>(b) Kernel context.
+<br/>(c) Interrupt context.
+<br/>(d) Device context.
+
+</li><li> A buffer cache: 
+<br/>(a) Allows user programs to read and write byte streams when the back-end device supports only block I/O.
+<br/>(b) Stores frequently used blocks of data.
+<br/>(c) Is an intermediate place for data to reside between the user program and device driver.
+<br/>(d) All of the above.
+
+</li><li> What data identifies the device driver that should be used for a specific device?
+<br/>(a) Major number.
+<br/>(b) Major number, minor number.
+<br/>(c) Device type (block or character), major number.
+<br/>(d) Device type (block or character), major number, minor number.
+
+</li><li> Interrupt handling is separated into two parts to:
+<br/>(a) minimize the amount of work done in the interrupt service routine.
+<br/>(b) separate generic interrupt processing operations from device-specific ones.
+<br/>(c) allow a user process to handle all non-critical parts of interrupt processing.
+<br/>(d) make the code more modular.
+
+</li><li> The purpose of device frameworks is to:
+<br/>(a) Allow devices to present themselves as dynamically loaded modules.
+<br/>(b) Provide an alternate interface to devices that don’t fit the character or block model.
+<br/>(c) Ensure that devices can properly implement a file interface.
+<br/>(d) Provide a well-defined set of interfaces for specific device types.
+
+</li><li> Disk scheduling algorithms try to minimize the effects of:
+<br/>(a) Seek time.
+<br/>(b) Rotational latency.
+<br/>(c) Transfer rate.
+<br/>(d) All of the above.
+
+</li><li> A system has the following blocks queued for writing: 8000, 3000, 5000, 2000. The most recently written block was 4500. The block read before that was 2500. What sequence of writes will a Circular-LOOK (or C-SCAN) algorithm generate?
+<br/>(a) 5000, 8000, 3000, 2000	
+<br/>(b) 5000, 8000, 2000, 3000	
+<br/>(c) 5000, 3000, 2000, 8000	
+<br/>(d) 8000, 3000, 5000, 2000	
+
+</li><li> The VFS interface to set a file’s attributes is present in this component:
+<br/>(a) inode
+<br/>(b) dentry
+<br/>(c) file
+<br/>(d) superblock
+
+</li><li> Which of the following is not a valid function in the file_operations interface for the VFS file object?
+<br/>(a) open   
+<br/>(b) lock   
+<br/>(c) rename    
+<br/>(d) write    
+
+</li><li> An inode-based file system that contains i indirect blocks, has a block size of b bytes, and the length of a block pointer is p bytes. The maximum file size is:
+<br/>(a) ib3/p      
+<br/>(b) ib2/p2  
+<br/>(c) ib/p   
+<br/>(d) ib2/p   
+
+</li><li> Microsoft’s FAT32 file system is an example of:
+<br/>(a) Contiguous allocation.
+<br/>(b) Linked allocation.
+<br/>(c) Indexed allocation.
+<br/>(d) Combined indexing.
+
+</li><li> Block groups in the ext2 file system primarily serve to:
+<br/>(a) Improve the reliability of file storage.
+<br/>(b) Provide better wear leveling.
+<br/>(c) Reduce seek latency when accessing files.
+<br/>(d) Reduce rotational latency when accessing files.
+
+</li><li> Differing from full data journaling, ordered journaling: 
+<br/>(a) Does not ensure that the file system is kept in a consistent state.
+<br/>(b) Ensures that journal entries appear in the exact same order as file operations are issued.
+<br/>(c) Does not perform journaling for all files.
+<br/>(d) Commits a journal entry after writing file data.
+
+</li><li> Differing from its predecessor, ext3, the ext4 file system:
+<br/>(a) Uses block groups.
+<br/>(b) Uses extents instead of cluster pointers.
+<br/>(c) Allows journaling to be enabled.
+<br/>(d) No longer uses inodes.
+
+</li><li> The logs in a log structured file system such as YAFFS2 differ from journaling in that:
+<br/>(a) Logs are the primary storage structure of the file system.
+<br/>(b) Logs are cleared after the data writes associated with them are complete.
+<br/>(c) Logs improve the integrity of the file system.
+<br/>(d) A sequence of logs represents an indivisible transaction.
+
+</li><li> Many mobile devices running Android OS use the YAFFS2 file system because it:
+<br/>(a) Provides wear leveling.
+<br/>(b) Is transaction-oriented for reliability.
+<br/>(c) Allows systems to boot quickly.
+<br/>(d) Avoids the overhead of more complex file systems such as ext4 or FAT32.
+
+</li>
+
+<h1>Part II &ndash; 10 Points; 2 points each</h1>
+<p>
+For each statement, specify whether it is true or false by circling the correct choice. 
+</p>
+<li>	A TLB miss will cause a page fault to occur.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li>	A device driver is responsible for implementing the mechanism & policy for device access.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li>	A cluster is a series of extents.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li>	C-SCAN disk read/write scheduling has no benefit when used with NAND flash memory.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+
+</li><li>	Block groups in ext2/3/4 file systems have no benefit when used with NAND flash memory.
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;True &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; False
+</li>
+
+</ol>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../../about.html"> About the course </a> </li>
+	<li> <a href="../../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../../things.html"> Things you need </a> </li>
+	<li> <a href="../../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> Exam Info </h2>
+	<ul>
+	<li> <a href="../index.html#list">List of topics</a>
+	<li> <a href="../study-guide-1.html">Exam 1 Study Guide</a> </li>
+	<li> <a href="../study-guide-2.html">Exam 2 Study Guide</a> </li>
+	<li> <a href="../study-guide-3.html">Exam 3 Study Guide</a> </li>
+	</ul>
+		<h2> Old exams </h2>
+	<ul>
+	<li> <a href="exam1-2012-s.html"> Spring 2012 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2012-s.html"> Spring 2012 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2012-s.html"> Spring 2012 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2011-s.html"> Spring 2011 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2011-s.html"> Spring 2011 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2011-s.html"> Spring 2011 &ndash; Exam 3</a> </li>
+	<hr/>
+	<li> <a href="exam1-2010-f.html"> Fall 2010 &ndash; Exam 1</a> </li>
+	<li> <a href="exam2-2010-f.html"> Fall 2010 &ndash; Exam 2</a> </li>
+	<li> <a href="exam3-2010-f.html"> Fall 2010 &ndash; Exam 3</a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

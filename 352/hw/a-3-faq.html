@@ -1,0 +1,500 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Assignment 3 FAQ </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+
+.subhead {
+	background-color: #ddd;
+	text-align: center;
+	margin-left: 5em;
+	margin-right: 5em;
+	border: 1px solid #555;
+}
+.note {
+	font-style: italic;
+	color: #444;
+}
+#main blockquote {
+        background-color: #D1DBDB;
+	margin: 0;
+	margin-bottom: 1em;
+}
+
+#main > p {
+	margin-left: 1em;
+}
+
+#main dd {
+        margin-left: 2em;
+        margin-bottom: 2em;
+}
+#main dt {
+        background-color: #D1DBDB;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        padding-top: 0.25em;
+        padding-left: 0.5em;
+        color: black;
+	font-weight: normal;
+}
+#main dt strong, #main dt b {
+	color: red;
+}
+#main dt p + p {
+	padding-top: 1em;
+}
+#main dt p {
+	margin-bottom: 0;
+}
+
+#main .answer {
+	color: #a00000;
+}
+
+#main table.doclist {
+	width: 80%;
+}
+
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+#main figure {
+	float: left; 
+	display: block
+}
+
+</style>
+</head>
+<body id="s_ru352">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Internet Technology </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 352 </a>
+        <li> <a href="../notes/index.html"> Assignments </a>
+        <li> <a href="../notes/a-3-faq.html"> Assignment 3 FAQ </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Assignment 3 FAQ </h1>
+</div>
+<div class="subhead"> Due February 26, 2016 11:59pm via sakai </div>
+<h1 id="assignment3faq">Assignment 3 FAQ</h1>
+
+<p>Latest update: Sun Jun 26 19:29:26 EDT 2016
+</p>
+
+<p><a href="a-3.html">Back to assignment 3</a></p>
+
+<blockquote>
+<p>Should the group name having printable characters be verified client side or server side? We made it server side but the directions are a little ambiguous. </p>
+</blockquote>
+
+<p>You should verify it at the server since you cannot always count on whose client may be connecting to the server and whether it will send bad data.</p>
+
+<blockquote>
+<p>We also define nonprintable to be ASCII characters less than 32 and greater that 128, is this correct?</p>
+</blockquote>
+
+<p>Your definition of non-printable is fine since you&#8217;ll be using ASCII characters. Check the FAQ below for other options.</p>
+
+<blockquote>
+<p>For our input for post if the client doesn&#8217;t echo it beforehand we expect them to control + D out of the input stream, is this acceptable?</p>
+</blockquote>
+
+<p>Sure.</p>
+
+<blockquote>
+<p>If a multiline message is being posted we return it as just one continuous line on a get call, is this ok or should we keep the original format?</p>
+</blockquote>
+
+<p>No. You should keep to the original format. Just have the client send newlines at the end of each line.</p>
+
+<blockquote>
+<p>We also have multiple print statements to verify for the user that a certain portion executed properly. Should we remove these or would you prefer that we leave them in so it&#8217;s easy to see the control flow for the program?</p>
+</blockquote>
+
+<p>You can leave them in if they’re not totally cryptic or generate tons of output. </p>
+
+<blockquote>
+<p>With our current functionality if no message is entered beforehand and the client creates a new group but exits before entering a message that group remains and has a message count of zero. Is this acceptable or should the group be removed?</p>
+</blockquote>
+
+<p>That’s ok.</p>
+
+<blockquote>
+<p>If one of the clients sends an incorrect group/user name, does the server print this message to itself, or does it send a message to the client that the name is invalid?</p>
+</blockquote>
+
+<p>It sends the error message back to the client. Instead of a line with “ok”, the server sends back a lines stating “error: invalid group name”, “error: invalid command”, or “invalid user name&quot;</p>
+
+<blockquote>
+<p>I have a question regarding the header. I attach the header to the top of the message (first line) at the client and send the header + message combined to the server after the id returns &#8220;ok&#8221;. Is this okay? The protocol doesn&#8217;t seem to define how header information is sent. </p>
+</blockquote>
+
+<p>You don’t attach the header at the client. The client sends a line containing the user ID message followed by possibly multiple lines of the message.
+At the server, you:</p>
+
+<pre><code>- parse the user ID from the client message
+- get the IP address and port number from the accepted socket connection
+- generate a time stamp
+- put them all together into one header.
+</code></pre>
+
+<blockquote>
+<p>I just have a quick question about the post client. In the example:</p>
+
+<p>echo &#8220;What do you call a bear with no teeth? &#8211; A gummy bear!&#8221; | post -h ls.cs.rutgers.edu jokes</p>
+
+<p>What exactly is echo ? and why is there a | before post?</p>
+</blockquote>
+
+<p>This example is Linux shell command. echo is a program that just prints its arguments. The | is the pipe command in the shell. It takes the output of one program (to the left of the pipe) and sends it as input to the program to the right of the pipe. For example:</p>
+
+<pre><code>ls | wc -l
+</code></pre>
+
+<p>lists all the files in your current directory and sends that output to the wc (word count) program. The -l option counts lines, so this pipeline of commands counts the number of files in your current directory.</p>
+
+<blockquote>
+<p>For your second example, what is &lt;&lt;! ?</p>
+</blockquote>
+
+<p>In the second example, the &lt;&lt; is the shell directive to take the text that follows and use it as the standard input for the program. The character after the &lt;&lt; indicates what the end of input character will be (a single line with that character ends input). Again, using the line counting example, the command:</p>
+
+<pre><code>wc -l &lt;&lt;@
+   line 1
+   line 2
+   line 3
+   @
+</code></pre>
+
+<p>will give you an output of 3.
+The examples I’m giving don’t require the user to enter data interactively. Your program will not care. It just reads from the standard input.</p>
+
+<blockquote>
+<p>For the test-cases in the write-up, is it good enough to just write something like:</p>
+
+<p>&#8220;To test proper syntax, I did a, b, c &#8230;&#8221;</p>
+
+<p>or do you want us to show the commands on the terminal we did for each test case?</p>
+</blockquote>
+
+<p>Just explaining what you did is fine. Don&#8217;t hesitate to provide details, however.</p>
+
+<blockquote>
+<p>Is using ctrl + c or ctrl + v to exit out of post and thus conclude the message enough? Or do we need another distinctive way? Would we then need to tell the user how to exit post? </p>
+</blockquote>
+
+<p>Terminating the program is fine. If you want to be more elegant, you can add a quit/exit command (or, like smtp, a single line with a period). Just document whatever you choose.</p>
+
+<blockquote>
+<p>When a user runs post, is the user only able to enter one message, so one post = one message? Or can the user enter a series of lines, each line being a msg of its own? </p>
+</blockquote>
+
+<p>Yes, one post command produces one message. The message, however, may be multiple lines long.</p>
+
+<blockquote>
+<p>Can we assume tha we&#8217;ll be given a correctly formatted server name and a port number after the &#8216;-h&#8217; and &#8216;-p&#8217; tags?</p>
+</blockquote>
+
+<p>You can assume the name is correctly formatted but if you can’t connect to the server on the supplied port, you should print a user-friendly error (rather than have Java print an exception message, for example). It’s reasonable to expect that the user may mistype a name.</p>
+
+<blockquote>
+<p>When you call get, do you get the &#8216;accumulated&#8217; messages? As in, does it show the past messages that was already read through get along with the new messages?</p>
+</blockquote>
+
+<p>Yes. When you call get, you get all accumulated messages.</p>
+
+<blockquote>
+<p>I was wondering if there are any restrictions on versions of python I would use for this project or is any version all right as long as I specify it into the readme? </p>
+</blockquote>
+
+<p>I’m running 2.7.10 on my macs, 2.7.6 on my Linux systems, and the iLab machines seem to have 2.6.6.
+If you could be compatible with the lowest of these versions that
+will be great. I haven’t kept up on whether significant changes
+were added to the language. If you need to use a late version,
+please point that out in your writeup.</p>
+
+<blockquote>
+<p>Could you please elaborate on the part where you require the post client to send a user name to the server. In the description, you&#8217;re saying that we should get the user&#8217;s log in name, but then it also says that it can be invalid. However, I don&#8217;t understand how it could be invalid if we are getting the user name straight from the computer. Just to clarify, we&#8217;re not letting the user set their own ID, correct?</p>
+</blockquote>
+
+<p>Correct. The client is getting the user’s name and sending it. There’s no authentication taking place and you can override it by redefining the property by running </p>
+
+<pre><code>java -Duser.name=testname post 
+</code></pre>
+
+<p>I’m asking you to make sure that your server is robust enough to be able to handle the case where the name might be missing or invalid.</p>
+
+<blockquote>
+<p>Could you also explain what you mean by &#8220;only printable text&#8221;? Could you give us an example of what a non-printable text is?</p>
+</blockquote>
+
+<p>By printable text, I mean to make sure that the string does not contain control characters - just letters, numbers, and symbols.
+I also state that spaces should also be disallowed.
+In C, you can check with </p>
+
+<pre><code>isprint(c) &amp;&amp; !isspace(c)
+</code></pre>
+
+<p>or simply</p>
+
+<pre><code>isgraph(c)
+</code></pre>
+
+<p>Java doesn’t provide this but you can check that the character is not a control character:
+ !Character.isISOControl(c)
+and that will be good enough.</p>
+
+<blockquote>
+<p>with regards to the command line input, you wrote &#8220;The command line accepts an optional -h followed by the server’s host name, an optional -p followed by the server’s port number, and a mandatory group name&#8221;. I was wondering if the -h and -p delimiters should be optional for the user to write, or optional for the client to accept (meaning should the client have to know how to handle those delimiters if they are input by the user).</p>
+</blockquote>
+
+<p>The use of command-line options (flags) is common in Unix/Linux commands, where some options may accept parameters. I gave examples in the writeup. Your client should run with commands such as</p>
+
+<pre><code>get -h ls.cs.rutgers.edu mygroup
+</code></pre>
+
+<p>In this case you will use a hard-coded default port.</p>
+
+<pre><code>get mygroup
+</code></pre>
+
+<p>In this case you will use the hostname “localhost” and a hard-coded default port.</p>
+
+<pre><code>get -p 12345 mygroup
+</code></pre>
+
+<p>In this case you will use the hostname “localhost” and connect to the server on port 12345.</p>
+
+<p>Ideally, you will be flexible and support the options in any order. For example:</p>
+
+<pre><code>get -p 12345 -h ls.cs.rutgers.edu mygroup
+</code></pre>
+
+<p>You cannot leave out the -h or -p strings. They identify that the next argument is a host or port.
+For a C langage discussion of command line options and parsing them using getopt(), see <a href="../../416/notes/c-tutorials/getopt.html">here</a>.</p>
+
+<blockquote>
+<p>I was planning to do this project in C, but it working with sockets seems much more difficult than in Java.</p>
+</blockquote>
+
+<p>Working with C should not be a lot more difficult if you are comfortable with C. You can copy my example code to set up the sockets. After that, you can use the stdio library and convert the file descriptor to a FILE pointer with:</p>
+
+<pre><code>fp = fdopen(s, “rw”);
+</code></pre>
+
+<p>Then you can use fgets() to read lines of input and fprintf or fputs() to write lines of text to the socket.</p>
+
+<blockquote>
+<p>Can I write a GUI instead of dealing with the command line?</p>
+</blockquote>
+
+<p>No.</p>
+
+<blockquote>
+<p>Is there any leniency with how debugging messages or items are displayed? Are you or the graders expecting exact input/output protocol as specified on the assignment page? For example, the formatting with GET client or &#8220;error: invalid group&#8221; messages - do these need to be exact?</p>
+</blockquote>
+
+<p>You should not display any debugging messages on the client (unless you add support for a debug command-line option). As for the server, you can print a small amount of debugging information if you feel it will be useful. As far as displaying items, you should stick to the basic format: a header, followed by a blank line, followed by the message and blank lines separating a previous message from the next header. You can format the IP address and data to anything that looks reasonable.</p>
+
+<p>The protocol itself should be exactly as described. You can modify your error messages a little bit if you feel a need to make them more descriptive.</p>
+
+<blockquote>
+<p>Additionally, when displaying the IP of a poster - if it was local hosted, should we show 198.162.1.X (machine IP) or is 127.0.0.1 okay? </p>
+</blockquote>
+
+<p>If you’re running the server locally and connecting to it via localhost, you can (and should) display 127.0.0.1. That is its address on that interface.</p>
+
+<blockquote>
+<p>For the messages we are displaying for assignment 3, do we have to display the time stamp with its elements preinted exactly in the order you provided us or is it ok if they&#8217;re all there but out of order?</p>
+</blockquote>
+
+<p>It’s ok if the timestamp looks somewhat different.</p>
+
+<blockquote>
+<p>You had posted Java TCP examples on your website. Can we use it as reference material for the project, or should I not touch/see that code and try to code my own first for the assignment and then see and mess around with that code.</p>
+</blockquote>
+
+<p>You can definitely use the code I posted.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2016 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: June 26, 2016
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 352 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 352 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 352 Assignments </h2>
+	<ul>
+	<!-- <li> <a href="../hw/a-1.html">Assignment 1</a> </li> -->
+	</ul>
+<!--
+	<h2> Tutorials </h2>
+	<ul>
+	<li> <a href="../notes/sockets/index.html"> TCP Sockets tutorial </a> </li>
+	<li> <a href="../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+	<li> <a href="../notes/make/index.html"> Makefile tutorial </a> </li>
+	</ul>
+-->
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

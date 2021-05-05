@@ -1,0 +1,710 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Concurrency Control </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru417">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Distributed Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 417 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/consensus.html"> Concurrency Control </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Concurrency Control </h1>
+<h2>  </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> November 2017 </p>
+</div>
+<h1 id="consensus">Consensus</h1>
+
+<h2 id="reachingagreement">Reaching agreement</h2>
+
+<h1 id="introduction">Introduction</h1>
+
+<p><em>Consensus</em> is the task of getting all processes in a group to agree on some specific value based on the votes proposed by one or more processes.
+All processes must agree upon the same value and it must be a value that was submitted by at least one of the processes
+(i.e., the consensus algorithm cannot just invent a value).</p>
+
+<p>This is a simple-sounding problem but finds a surprisingly large amount of use in distributed systems. Any algorithm that
+relies on multiple processes maintaining common state relies on solving the consensus problem.</p>
+
+<p>Some examples of places where consensus is useful are:</p>
+
+<ul>
+<li>synchronizing replicated state machines and making sure all replicas have the same (consistent) view of system state</li>
+<li>electing a leader (e.g., for mutual exclusion)</li>
+<li>distributed, fault-tolerant logging with globally consistent sequencing</li>
+<li>managing group membership</li>
+<li>deciding to commit or abort for distributed transactions</li>
+</ul>
+
+<p>Consensus among processes is easy to achieve in a perfect world.<br/>
+For example, when we examined distributed mutual exclusion algorithms earlier, we visited a form of consensus
+where everybody reaches the same decision on who can access a resource.
+The simplest implementation was to assign a system-wide coordinator who is in charge of determining
+the outcome.</p>
+
+<p>This is easy because we assume that
+all processes are functioning and are able to communicate with each other.
+Faulty processes, computers, and networks make consensus challenging.</p>
+
+<!--
+
+#  Synchronous vs. Asynchronous Systems 
+
+A **synchronous** system is one where one process sends a message to the other within a bounded time.
+This means there is a time limit for the transit of a message as well as for the operating system to schedule
+the sending process to dipatch the message and for the other process to receive it. A direct serial port connection
+between two computers or the public switched telephone network are examples of a synchronous communication link.
+
+
+In an **asynchronous** system, there are no prescribed time limits for message arrival. We might
+have expectations for delivery within a certain time but the system will not guarantee that these expectations will
+be met. The Internet is an example of an asynchronous system. 
+
+In building a distributed system, we assume that processes are **concurrent**,
+**asynchronous**, and **subject to failure**.
+
+#  Dealing with failure 
+
+We cannot provably achieve consensus with completely asynchronous faulty processes.
+This means making no assumption on the speeds of the processes or network communication.
+The core problem is that there is no way to check whether a process has failed or whether the process is alive but
+the communication to the process is intolerably slow. This impossibility is proved by Fischer, Lynch, Patterson (FLP[85]).
+Also, in the presence of unreliable communication, consensus is impossible to achieve since we may never be
+able to communicate with a process. 
+
+
+We will examine two fault tolerance scenarios that illustrate some basic constraints
+that are imposed on us. The two army problem is particularly relevant.
+
+
+## Two Army Problem
+
+Let us examine the case of good processors but faulty communication lines.
+This is known as the **two army problem** and can be summarized as follows:
+
+<blockquote>
+Two divisions of an army, _A_ and _B_, coordinate an attack on enemy army, _C_.
+_A_ and _B_ are physically separated and use a messenger to communicate.
+_A_ sends a messenger to _B_ with a message of "_let's attack at dawn_".
+_B_ receives the message and agrees, sending back the messenger with an
+"_OK_" message. The messenger arrives at _A_, but _A_ realizes that _B_ did
+not know whether the messenger made it back safely.
+If _B_ is not convinced that _A_ received the acknowledgement, then it will not be
+confident that the attack should take place since the army will not win on its own.
+_A_ may choose to send the messenger back to _B_ with a message of
+"_A received the OK_" but _A_ will then be unsure as to
+whether _B_ received this message. 
+The two army problem demonstrates that even with non-faulty processors,
+provable agreement between two processes is _not_
+possible with unreliable communication channels.
+</blockquote>
+
+
+In the real world, we will need to place upper bounds on communication and computing speeds and consider
+a process to be faulty if it does not respond within that bounded time. Not only that, but we need to
+account for the possibility that the process is not faulty and may continue trying to participate in the 
+computation. 
+
+
+
+**Fail-stop**, also known as **fail-silent**, is the condition when a failed process
+does not communicate.
+A **byzantine fault** is where the faulty 
+process continues to communicate but may produce faulty information.
+We can create a consensus algorithm that is resilient to fail-stop.
+If there are _n_ processes, of which _t_ may be faulty,
+then a process can never expect to receive more than _(n-t)_ acknowledgements.
+The consensus problem now is to make sure that the same decision is made by all processes,
+even if each process receives up to _(n-t)_ answers from a different set of processes
+(perhaps due to partial network segmentation or routing problems).
+
+
+A fail-stop resilient algorithm can be demonstrated as follows. It is an iterative algorithm. Each phase consists of:
+
+    1. A process broadcasts its preferred value and the number of processes that it has seen that also have that preferred
+    value (this count is called the cardinality and is 1 initially).
+
+    2. The process receives _(n-t)_ answers, each containing a preferred value and cardinality.
+
+    3. The process may then change its preferred value according to which value was preferred most by other processes.
+    It updates the corresponding cardinality to the number of responses it has received with that value plus itself.
+
+
+
+Continue this process until a process receives _t_ messages of a single value with cardinality at least _n/2_.
+This means that at least half of the systems have agreed on the same value.
+At this point, run two more phases, broadcasting this value.
+
+As the number of phases goes to infinity,
+the probability that consensus not reached approaches 0. 
+
+
+
+To make it easier to develop algorithms in the real world, we can relax the definition of _asynchronous_ and allow some synchrony.
+Several types of asynchrony may exist in a system:
+
+1. **Process asynchrony**:
+a process may go to sleep or be suspended for an arbitrary amount of time.
+
+2. **Communication asynchrony**:
+there is no upper bound on the time a message may take to reach its destination.
+
+3. **Message order asynchrony**:
+messages may be delivered in a different order than sent.
+
+It has been shown [Dolev, D., Dwork, C., and Stockmeyer] that it is not sufficient to make processes synchronous but that any of the following 
+cases is sufficient to make a consensus protocol possible:
+
+1.  Process and communication synchrony: place an upper bound on
+process sleep time and message transmission).
+
+2. Process and message order synchrony: place an upper bound on
+process sleep time and message order).
+
+3.  Message order synchrony and broadcast capability.
+
+4. Communication synchrony, broadcast capability, and send/receive
+atomicity.
+_Send/receive atomicity_ means that a processor can carry
+through the operations of receiving a message, performing computation,
+and sending messages to other processes.
+
+##  Byzantine failures in synchronous systems 
+
+   Solutions to the Byzantine Generals problem are _not_ obvious, intuitive,
+   or simple. They are not presented in these notes.
+   You can read Lamport's paper on the
+   problem
+   <a href="http://research.microsoft.com/en-us/um/people/lamport/pubs/byz.pdf"
+   target="_blank">
+   here</a>. You can also check out the brief summary
+   and various solutions -- which go beyond the Lamport paper --
+   <a href="http://pages.cs.wisc.edu/~sschang/OS-Qual/reliability/byzantine.htm"
+   target="_blank">here</a>.
+
+
+We looked at the case of unreliable communication lines with reliable or fail-stop communication. 
+The other case to consider is that of reliable communication lines but faulty (not fail-stop)
+processors. Byzantine failures are failed processors that, instead of staying quiet (fail-stop), instead
+communicate with erroneous data.
+
+
+### Byzantine Generals Problem
+
+Consensus with reliable communication lines and byzantine failures is illustrated
+by the **Byzantine Generals Problem**.
+
+In this problem, there are _n_ army generals who head different divisions. Communication is reliable (radio or telephone) but
+_m_ of the generals are traitors (faulty) and are trying to prevent others
+from reaching agreement by feeding them incorrect information. The question is:
+can the loyal generals still reach agreement? Specifically, each general knows
+the size of his division. At the end of the algorithm can each general know the troop strength of every other loyal division?
+
+
+Lamport demonstrated a solution that works for certain cases. His answer to this
+problem is that any solution to the problem of overcoming _m_ traitors
+requires a minimum of 3_m_+1 participants (2_m_+1 loyal generals).
+This means that more than 2/3 of the generals must be loyal. Moreover, it was demonstrated that no protocol can overcome _m_ faults with
+fewer than _m_+1 rounds of message exchanges and O(_mn_^{2}) messages.
+If _n_ &lt; _3m + 1_ then the problem has no solution.
+
+
+Clearly, this is a rather costly solution. While the Byzantine model may be applicable to certain types of special-purpose hardware, it will rarely be useful in general purpose distributed computing environments.
+
+
+There is a variation on the Byzantine Generals Problem that uses signed messages. What this means is that
+messages from loyal generals cannot be forged or modified. In this case, there are algorithms that
+can achieve consensus for values of _n_ &ge; _m + 2_, where
+
+<blockquote>
+ n = total number of processors
+<br/>
+ m = total number of faulty processors
+</blockquote>
+
+#  Replicated state machines 
+
+An important motivation for building distributed systems is to achieve high scalability and high availability. 
+High availability can be achieved via **redundancy**: replicated functioning components will take the place of those
+that ceased to function. To achieve redundancy with multiple active components, we want all working replicas to 
+do the same thing: produce the same outputs given the same inputs.
+
+
+A state machine approach to systems design models each replica (each component of the system) as a deterministic
+state machine. For some given input to a specific state of the system, a deterministic output and 
+transition to a new state will be produced. We refer to each replica (component) as a _process_.
+For correct execution and high availability, it is important that each process sees the same inputs. To do
+this, we rely on a consensus algorithm. This ensures that multiple processes will do the same thing since
+they will each be provided with the same set of inputs.
+
+
+An example of an input may be a request from a 
+client to read data from a specific location from a file or write data to a specific location of a file.
+We want the replicated files to contain the exact same data and yield the same results. To achieve
+this, we need agreement among all processes on what the client requests are and the
+requests must be totally ordered: each server must see file read/write requests in the exact same
+order as everyone else. The total ordering part is most easily achieved by electing one process to 
+serve sequence numbers (although there are other more complex but more distributed implementations.
+
+-->
+
+<h1 id="paxos">Paxos</h1>
+
+<p>Paxos is a popular and widely-used
+fault-tolerant distributed consensus algorithm. It allows a globally consistant (total) order to be assigned to
+client messages (actions). </p>
+
+<p>Much of what is summarized here is from Lamport&#8217;s <em>Paxos Made Simple</em> but I tried to simplify it
+substantially. Please refer to that paper for more detail and definitive explanations.</p>
+
+<p>The goal of a distributed consensus algorithm is to allow a set of computers to all agree on a single value
+that one of the nodes in the system proposed (as opposed to making up a random value). The
+challenge in doing this in a distributed system is that messages can be lost or machines can fail. Paxos guarantees
+that a set of machines will chose a single proposed value as long as a majority of systems that participate
+in the algorithm are available.</p>
+
+<p>The setting for the algorithm is that of a collection of processes that can propose values.
+The algorithm has to ensure that a single one of those proposed values is chosen and all processes should learn that value.
+<p>
+There are three classes of agents:</p>
+
+<ol>
+    <li> Proposers</li>
+    <li> Acceptors</li>
+    <li> Learners</li>
+</ol>
+
+<p>A machine can take on any or all of these roles. Typically, learners will be integrated with acceptors, for example.</p>
+
+<p><strong>Proposers</strong> put forth proposed values.
+<strong>Acceptors</strong> drive the algorithm&#8217;s goal to reach agreement on
+a single value and let the <strong>learners</strong> are informed of the outcome. Acceptors either reject a proposal or
+agree to it and make promises on what proposals they will accept in the future. This ensures
+that only the latest set of propsals will be accepted.
+A process can act as more than one agent in an implementation. Indeed, many implementations have collections of processes where each
+process takes on all three roles.</p>
+
+<p>Agents communicate with each other asynchronously. They may also fail to communicate and may restart.
+Messages can take arbitrarily long to deliver. They may can be duplicated or lost but are not corrupted.
+A corrupted message should be detectable as such and can be counted as a lost one (this is what UDP does, for example).</p>
+
+<p>The absolutely simplest implementation contains a single acceptor.
+A proposer sends a proposal value to the acceptor. The acceptor processes one request at a time, chooses the first
+proposed value that it receives, and lets everyone (learners) know. Other proposers must agree to that value.</p>
+
+<p>This works as long as the acceptor does not fail. Unfortunately, acceptors are subject to failure.
+To guard against the failure of an acceptor, we turn to replication and use multiple acceptor processes.
+A proposer now sends a <em>proposal</em> containing a value to a set of acceptors.
+The value is chosen when a majority of the acceptors <em>accept</em> that proposal (agree to it).</p>
+
+<p>Different proposers, however, could independently initiate proposals at approximately the same
+time and those proposals could contain different values. They each will communicate with a different subset of acceptors.
+Now different acceptors will each have different values but none will have a majority.
+We need to allow an acceptor to be able to accept more than one proposal.
+We will keep track of proposals by assigning a unique <strong>proposal number</strong> to each proposal.
+Each proposal will contain a proposal number and a value. The value is the thing on which we need to agree; for example
+setting a <em>name=value</em> field in a replicated database.</p>
+
+<p>Each proposal must have a unique proposal number.
+Our goal is to agree on one of those proposed values from the pool of proposals sent to different subsets of acceptors.</p>
+
+<p>A value is chosen when a single proposal with that value has been accepted by a majority of the acceptors.
+That means it has been <em>chosen</em>.
+Multiple proposals can be chosen but all of them bust have the same value:
+if a proposal with a value <em>v</em> is chosen, then every higher-numbered proposal that is chosen must also have value <em>v</em>.</p>
+
+<p>If a proposal with proposal number <em>n</em> and value <em>v</em> is issued,
+then there is a set <em>S</em> consisting of a majority of acceptors such that either:</p>
+
+<ol>
+<li>no acceptor in S has accepted any proposal numbered less than n, or</li>
+<li>v is the value of the highest-numbered proposal among all proposals numbered &lt; n accepted by the acceptors in S.</li>
+</ol>
+
+<p>A proposer that wants to issue a proposal numbered <em>n</em> must learn the highest numbered proposal
+with number less than <em>n</em>, if any, that has been or will be accepted by each acceptor in a majority of acceptors.</p>
+
+<p>To do this, the proposer gets a <em>promise</em> from an acceptor that there will be no future acceptance
+of proposals numbered less than <em>n</em>.</p>
+
+<h2 id="thepaxosalgorithm">The Paxos algorithm</h2>
+
+<p>With Paxos, a client sends a proposal (e.g., a <em>name=value</em> setting) to a <em>proposer</em>, which is then
+responsible for running the algorithm.
+The Paxos algorithm operates in two phases:</p>
+
+<h3 id="phase1:prepare:sendaproposalrequestdt">Phase 1: <strong>PREPARE</strong>: send a proposal request </dt></h3>
+
+<p>1A. Proposer: <strong>prepare</strong></p>
+
+<ul>
+<li><p>A proposer chooses a proposal number <em>N</em> and sends a <em>prepare</em> request to a majority of acceptors.
+The number <em>N</em> is stored in the proposer&#8217;s stable storage so that
+the proposer can ensure that a higher number is used for the next proposal
+(even if the proposer process restarts). To ensure uniqueness among all proposers, the
+proposal number can be of the form <em>sequence_number</em>.<em>process_id</em>, where
+<em>sequence_number</em> is a monotonically-increasing local number and <em>process_id</em>
+is a unique identifier for the process, such as the machine&#8217;s IP or Ethernet MAC address
+concatenated with its process ID. </p></li>
+<li><p>The proposer sends a <strong>prepare(N)</strong> message to the majority of acceptors.</p></li>
+</ul>
+
+<p>1B. Acceptor: <strong>promise</strong> &#8211; receive a <em>prepare(N)</em> message</p>
+
+<ul>
+<li>The acceptor promises not to accept any <em>prepare</em> messages with smaller request numbers.
+If an acceptor has already received a proposal greater than <em>N</em>, it
+will reject this <em>prepare(N)</em> request.
+To do this, it keeps track of the highest proposal number that it has seen.</li>
+</ul>
+
+<pre><code>if (N > max_received_proposal)
+    max_received_proposal = N
+else
+    reject()
+</code></pre>
+
+<ul>
+<li>It is possible that the acceptor may have already accepted a proposal (e.g.,
+one that came concurrently from another proposer). In this case, it will
+convey that information to the proposer. To be able to do this, the acceptor keeps
+track of the highest previously accepted proposal number and its value.
+<pre><code>if (have_accepted_proposal)
+promise(accepted_number, accepted_value)
+else
+promise(N)
+</code></pre></li>
+</ul>
+
+<p>1C. Proposer: receive <em>promise</em> messages from a majority of acceptors</p>
+
+<ul>
+<li>If a proposer receives <em>promise</em> message from a majority of
+acceptors, it can now choose a value. If <em>any</em> of the
+acceptors returned an accepted proposal, the proposer
+chooses the one associated with
+the highest proposal number. The proposer <em>must</em> use
+this value instead of the one it originally proposed. Note that the proposer
+changes its value but does not change its proposal number in this case.
+If no acceptor returned an accepted value, then the proposer is free to
+use the value it originally proposed along with its proposal number.</li>
+</ul>
+
+<h3 id="phase2:accept:sendaproposalandthenpropagateittolearnersafteracceptancedt">Phase 2: <strong>ACCEPT</strong>: send a proposal (and then propagate it to learners after acceptance) </dt></h3>
+
+<p>Proposer:</p>
+
+<ul>
+<li>A proposer can now issue its proposal. Note that the value is either the proposer&#8217;s initial value or
+a value it received from an acceptor.
+It will send a message to all acceptors (reaching a majority):
+<strong>accept(N, value)</strong></li>
+</ul>
+
+<p>Acceptor:</p>
+
+<ul>
+<li>When an acceptor receives an <em>accept(N, value)</em> message, it checks to see if it is the highest
+sequence number that it has seen. If so, then it accepts the proposal and stores information
+about the request so it can return it to other proposers, if necessary.
+It also sends the proposal value to each <em>learner</em> node. Note that, in some implementations,
+the learner may implemented at the proposer. In this case, that proposed value is returned to<br/>
+the acceptor.</li>
+</ul>
+
+<pre><code>
+if (N &ge; max_received_proposal) {
+    accepted_value = value
+    accepted_number = N
+    max_received_proposal = N
+    have_accepted_proposal = true
+}
+return max_received_proposal (or send to learner)
+</code></pre>
+
+<p>In all cases, the acceptor returns the maxium received proposal number.</p>
+
+<p>Acceptor:</p>
+
+<ul>
+<li>The learner (or proposer, if it implements the learner&#8217;s funciton) must receive responses from a majority of acceptors.
+If a proposer receives response contains a proposal number that is greater than
+the proposal number it submitted, then it knows that that request has been
+rejected.</li>
+</ul>
+
+<p>The acceptor receives two types of requests from proposers: <em>prepare</em> and <em>accept</em> requests.
+Any request can be ignored.
+An acceptor only needs to remember the highest-numbered proposal that it has ever
+accepted and the number of the highest-numbered <em>prepare</em> request to which it has responded.
+The acceptor must store these values in stable storage so they can be preserved in case the acceptor fails and has to restart.</p>
+
+<p>A proposer can make multiple proposals as long as it follows the algorithm for each one.</p>
+
+<h2 id="consensus">Consensus</h2>
+
+<p>Now that the acceptors have a proposed value, we need a
+way to learn that a proposal has been accepted by a majority of acceptors.
+The <em>learner</em> is responsible for getting this information, although
+its role is often integrated into the proposer process.
+Each acceptor, upon accepting a proposal, forwards it to all
+the learners. The problem with doing this is the potentially large
+number of duplicate messages: <em>(number of acceptors) * (number
+of learners)</em>. If desired, this could be optimized. One or more
+<em>&#8220;distinguished learners&#8221;</em> could be elected. Acceptors will communicate
+to them and they, in turn, will inform the other learners.</p>
+
+<h2 id="ensuringprogress">Ensuring progress</h2>
+
+<p>One problem with the algorithm is that its possible for two proposers
+to keep issuing sequences of proposals with increasing numbers,
+none of which get chosen. An <em>accept</em> message from one proposer may
+be ignored by an acceptor because a higher numbered <em>prepare</em> message
+has been processed from the other proposer. To ensure that the
+algorithm will make progress, a <em>&#8220;distinguished proposer&#8221;</em> is selected
+as the only one to try issuing proposals.</p>
+
+<p>In operation,
+clients send commands to the leader, an elected <em>&#8220;distinguished
+proposer&#8221;</em>. This proposer sequences the commands (assigns a value)
+and runs the Paxos algorithm to ensure that an agreed-upon sequence number
+gets chosen. Since there might be conflicts due to failures or
+another server thinking it is the leader, using Paxos ensures that only
+one command (proposal) gets assigned that value.</p>
+
+<h1 id="leasingversuslocking">Leasing versus Locking</h1>
+
+<p>Processes often rely on locks to ensure exclusive access to a resource.
+The difficulty with locks is that they are not fault-tolerant. If a process holding a lock dies or forgets
+to release the lock, the lock exists unless additional software is in place to detect these actions and
+break the lock. For this reason, it is more safer to add an expiration time to a lock. This turns a
+<em>lock</em> into a <em>lease</em>. </p>
+
+<p>We saw an example of this approach with the two-phase and three-phase commit protocols. A two-phase commit
+protocol uses locking while the three-phase commit uses leasing; if a lease expires, the transaction is
+aborted. We also saw this approach with maintaining references to remote objects.
+If the lease expires, the server considers
+the object unreferenced and suitable for deletion. The client is responsible for
+renewing the lease periodically as long as it needs the object. </p>
+
+<p>The downside with a leasing approach is that the resource is unavailable to others until the lease expires.
+Now we have a trade-off: have long leases with a possibly long wait after a failure or have short leases
+that need to be renewed frequently.</p>
+
+<h1 id="hierarchicalleasesversusconsensus">Hierarchical leases versus consensus</h1>
+
+<p>In a fault tolerant system with replicated components, leases for resources should be granted
+by running a consensus algorithm. Looking at Paxos, it is clear that, while there is not
+a huge amount of message passing taking place, there are number of players involved and
+hence there is a certain efficiency cost in using the algorithm. A compromise approach
+is to use the consensus algorithm as an election algorithm to elect a coordinator. This
+coordinator is granted a lease on a large set of resources or the state of the system. In turn,
+the
+coordinator is now responsible for handing out leases for all or a subset of the system state.<br/>
+When the coordinator&#8217;s main lease expires, a consensus algorithm has to be run again to grant a
+new lease and possibly elect a new coordinator but it does not have
+to be run for every client&#8217;s lease request; that is simply handled by the coordinator.</p>
+
+<h1 id="references">References</h1>
+<dl>
+<dt>Leslie Lamport,</dt>
+<dt><em><a href="pdos.csail.mit.edu/6.824/papers/paxos-simple.pdf">Paxos Made Simple</a></em>,</dt>
+<dt>November 2001.</dt>
+<dd>One of the clearest papers out there detailing the Paxos algorithm</dd>
+
+<dt>Angus MacDonald,</dt>
+<dt>_<a href="http://angus.nyc/2012/paxos-by-example/">Paxos By Example</a>,</dt>
+<dt>June 27, 2012.</dt>
+<dd>Short and clear walkthough of an example of using Paxos to achieve consensus.</dd>
+
+<dt>Lampson, Butler.</dt>
+<dt><em><a href="http://research.microsoft.com/en-us/um/people/blampson/58-Consensus/Acrobat.pdf">How to Build a Highly Available System Using Consensus</a></em>,</dt>
+<dt>Microsoft Research</dt>
+<dd>An updated version of
+<em>Distributed Algorithms</em>, ed. Babaoglu and Marzullo, Lecture Notes in Computer Science 1151, Springer, 1996, pp 1&#8211;17.
+<br/></dd>
+
+<dd>A great coverage of leases, the Paxos algorithm, and the need for consensus in achieving highly available computing using replicated state machines.</dd>
+
+<dt>Henry Robinson,</dt>
+<dt>_</dt>
+<dt><a href="http://the-paper-trail.org/blog/?p=173">Consensus Protocols: Paxos</a>_,</dt>
+<dt>Paper Trail blog, February 2009.</dt>
+<dd></dd>
+</dl>
+
+
+<p>Iair Amir, Jonathan Kirsch,
+<em><a href="http://www.cnds.jhu.edu/pub/papers/psb_ladis_08.pdf">Paxos for System Builders: An Overview</a></em>,
+Johns Hopkins University.
+: Written from a system-builder&#8217;s perspective and covers some of the details of implementation. The paper is a really brief (5 page)
+overview. </p>
+
+<p>Iair Amir, Jonathan Kirsch,
+<em><a href="http://www.cnds.jhu.edu/pub/papers/cnds-2008-2.pdf">Paxos for System Builders</a></em>,
+Johns Hopkins University, Technical Report CNDS&#8211;2008&#8211;2, March 2008.
+:
+This is the 35-page full version of the above paper.</p>
+<dl>
+<dt>Michael J. Fischer, Nancy A. Lynch, Michael S. Paterson,</dt>
+<dt><em><a href="https://groups.csail.mit.edu/tds/papers/Lynch/jacm85.pdf">Impossibility of Distributed Consensus with One Faulty Process</a></em>,</dt>
+<dt>Journal of the Association for Computing Machinery, Volume 32, No. 2, April 1985, pp. 374&#8211;382.</dt>
+<dd>This is the seminal paper (known as FLP85) that proves that one cannot achieve consensus with completely asynchronous faulty processes.</dd>
+
+<dt>Bracha, G. and Toueg, S.</dt>
+<dt><em>Asynchronous Consensus and Broadcast Protocols,</em> Journal of the ACM 32, 4 (October 1985), 824&#8211;840.</dt>
+<dd>Describes a fail-stop consensus algorithm.</dd>
+</dl>
+
+
+<p>Dolev, D., Dwork, C., and Stockmeyer, L.
+<em>On the Minimal Synchronism Needed for Distributed Consensus,</em> J. ACM 34, 1 (January 1987), 77&#8211;97.</p>
+
+<p>This is an updated version of the original that was oritinally published on October, 2011.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2017 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: November  3, 2017 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 417 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal/site/9cbf3407-e64c-4dd9-b644-238d707b91b3"> Sakai </a> </li>
+	<!-- <li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li> -->
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+This is some stuff I'm throwing away. Please send me mail if you want any of it:
+</p>
+<hr/>
+<ul>
+<li> 
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

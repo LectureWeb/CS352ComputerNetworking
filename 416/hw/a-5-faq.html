@@ -1,0 +1,1320 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Assignment 5 FAQ </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+/* colors */
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+/* nav bar: not-selected */
+
+
+
+
+
+
+/* body colors - greenish */
+ /* banner color: red */
+ /* title color: red */
+ /* heading color: dark/pale green */
+ /* darker reddish */
+
+  /* dark red */
+ 
+
+
+
+
+
+.subhead {
+	background-color: #ddd;
+	text-align: center;
+	margin-left: 5em;
+	margin-right: 5em;
+	border: 1px solid #555;
+	border-radius: 5px;
+}
+.note {
+	font-style: italic;
+	color: #444;
+}
+#main .faqlist dd {
+        margin-left: 2em;
+        margin-bottom: 2em;
+}
+#main .faqlist dt {
+        background-color: #D1DBDB;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        padding-top: 0.25em;
+        padding-left: 0.5em;
+        color: black;
+	font-weight: normal;
+}
+#main .faqlist dt strong, #main .faqlist dt b {
+	color: red;
+}
+#main .faqlist dt {
+	margin-bottom: 1em;
+}
+#main .faqlist dt p + p {
+	padding-top: 1em;
+}
+#main .faqlist p + pre {
+	margin-top: -1em;
+}
+#main .faqlist dt ul {
+	margin-top: 1em;
+}
+#main .faqlist dt p {
+	margin-bottom: 0;
+}
+#main .newslist dt {
+        background-color: white;
+        color: #555;
+}
+#main .answer {
+	color: #a00000;
+}
+
+</style>
+</head>
+
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../index.html"> CS 416 </a> 
+ 	<li> <a href="../hw/index.html"> Homework </a> 
+ 	<li> <a href="../hw/a-5-faq.html"> Assignment 5 FAQ </a> 
+</ul>
+</div>
+  
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Assignment 3 FAQ, Errata, and Addenda</h1>
+</div>
+
+<div class="subhead">
+Due March 23, 2015 6:00pm on-line via sakai
+</div>
+
+<p>
+<em>
+Last update:
+Monday, March 23, 2015 13:57 EDT
+
+</em>
+</p>
+
+<h1> Addenda </h1>
+<dl class="faqlist">
+<dt> Group submission </dt>
+<dd>
+<p>
+Submissions from a larger group will be held to far higher standards than individual submissions or submissions from a smaller group.
+If there are more than three of you in a group, I expect the assignment to be perfect: all <a href="a-5-test.html">tests</a>
+must pass and the code must look beautiful (nicely commented, functionally partitioned).
+</p>
+<p>
+If you are doing the assignment individually, be sure to have command processing fully working. Then work on built-in commands,
+and then get pipes working. You can still get a decent grade if you do not get pipes working properly.
+</p>
+<p>
+Regardless of the size of the group, you should submit a <strong>test report</strong>
+that summarizes your results following the tests presented in the <a href="a-5-test.html">Guidelines for Testing</a>.
+</dd>
+
+<dt>
+Be sure to close your pipes!
+</dt>
+<dd>
+If any process has a writing end of a pipe open, the process that is reading
+from that pipe will never get an end-of-file indication since the
+process that is holding it open could conceivably write something.
+You need to ensure that the parent closes the files (pipes) as soon as it
+no longer needs them ... <strong>before</strong> it executes <em>wait</em>.
+By the time <em>wait</em> is called, every pipe should be closed at the parent.
+</dd>
+
+<dt>
+GENERAL NOTE: Don't put too much logic in the <em>main</em> function.
+</dt>
+<dd>
+Do not implement the bulk of the program within the <em>main</em> function. 
+You'll lose points for this.  Write a bunch of smaller functions.  Break your code into bite-sized chunks.
+</dd>
+
+<dt> GENERAL NOTE: Do not check for any specific characters to determine an end of file </dt>
+<dd>
+<p>
+<strong>Important:</strong>
+You detect an end of file when <em>fgets</em> returns a 0
+(<em>getc</em> and <em>fgetc</em> return an EOF, which is -1).
+You should
+never check for specific characters, such as control-D. If that happens
+to be your end of file keyboard character (that's the default on
+Linux/Unix/OS X systems), the terminal driver handles processing that.
+Moreover, there is no end of file character when reading from a file.
+</p>
+</dd>
+
+</dl>
+
+
+<h1> FAQ </h1>
+<dl class="faqlist">
+
+<dt>
+What if the user types some garbage as an argument for <em>exit</em> built-in command?
+For example, if the user types a string or a floating point number as an argument 
+instead of an int value. What should my program do in this case?
+</dt>
+<dd>
+<p>
+You want the shell to exit, even if <em>exit</em> is given a bad
+argument (for example, pretend you're running a shell script - you
+would not want the shell to continue executing just because you
+made a mistake). It’s up to you to decide if you want to print a
+message. If you look at bash, for example, it prints a message such
+as:
+</p><pre><code>
+$ exit abcde
+bash: exit: abide: numeric argument required
+</code></pre>
+<p>
+It then exits with an exit code of 255. You can do something similar.
+</p>
+</dd>
+
+<dt>
+<p>
+How should we treat "" ? E.g., if we have the command
+</p>
+<pre><code>
+"" -l
+</code></pre>
+<p>
+or 
+</p><pre><code>
+command ""
+</code></pre>
+</dt>
+
+<dd>
+<p>
+The <code>""</code> will be treated as a separate argument containing the empty string.
+</p>
+<pre><code>
+	arg[0] = "command"
+	arg[1] = ""
+	arg[2] = "-1"
+	arg[3] = 0
+</code>
+</pre>
+</dd>
+
+<dt>
+<p>
+How should the program behave if the user provides the following input:
+</p><pre><code>
+command "h  -g
+</code></pre>
+<p>
+or 
+</p>
+<pre><code>
+command h -g"
+</code></pre>
+<p>
+or 
+</p>
+<pre><code>
+command "
+</code></pre>
+<p>
+Meaning we do not have open and closing quotes, we have only one quote. How should we treat it?
+</p>
+</dd>
+<dd>
+<p>
+You should print a message stating that there is a mismatched quote.
+You’ll know this because your parser needs to keep state of whether
+you are inside a quote (so spaces and tabs become part of the
+argument) or outside (where spaces and tabs mark the end of the
+token).
+</p>
+<p>
+You can then choose one of two designs: (1) warn about the mismatched
+quote and complete the string by assuming the missing quote is at
+the very end; (2) don't execute the command at all. In the case of
+a real shell, like bash, it would prompt you for more text after
+you press the return key, waiting for the ending quote character
+</dd>
+
+
+
+<dt>
+<p>
+What is we have multiple pipes one after another, e.g.,
+</p>
+<pre><code>
+command -g || -f
+</code></pre>
+<p>
+How should we treat this case?
+</p>
+</dt>
+<dd>
+<p>
+I will not test this, so you don't really have to worry about this
+case. You can either (1) print an error, (2) ignore extra pipes,
+or (3) treat it as a null command that ignores any input and produces
+no output.
+</p><p>
+In shells like bash, the double-pipe is a special directive that
+tells you to execute the next command only if the error code of the
+previous one was non-zero (that is, the first command reported an
+error).
+</p>
+</dd>
+
+<dt>
+Should we allow commands to contain non-alphabetic characters (except of quotes)? As I understood there is no requirement for that, but just to make sure.
+</dt>
+<dd>
+Yes. Commands may have non-alphabetic characters. For example, you can have a command with a space in it (which will have to be quoted) or a control character. Anything that is a valid file name can be a valid command.
+</dd>
+
+<dt>
+What is the maximum amount of commands we should expect? In the assignment it is said that we may assume maximum 50 arguments for a command, but I do not see any notion regarding the number of commands.
+</dt>
+<dd>
+There should not be a limit to the number of commands. For commands, you may use malloc to allocate a command struct (e.g., argument list, file descriptors for the pipe, argument count, next command) and create a linked list.
+</dd>
+
+<dt>
+<p>
+In the example below
+</p>
+<pre><code>
+"k", "lm | no"
+</code></pre>
+<p>
+Do we mean that "k" is a command and "," and "lm | no" are its arguments?
+</p>
+</dt>
+<dd>
+For this assignment, you can assume that quotes are present only
+at the beginning and end of each argument. In this case, you are
+correct in your example. In shells such as sh and bash, quotes may
+appear inside a command, so <code>"k",</code> is equivalent to <code>"k,"</code> which is
+equivalent to <code>k,</code> . As another example, <code>abc"de fg"hij</code> is the same
+as <code>"abcdefghij"</code>. You don't have to implement this behavior.
+</dd>
+
+<dt>
+<p>
+How should we treat input such as
+</p>
+<pre><code>
+"he llo"world
+</code></pre>
+<p>
+Is it a command <code>"he llo"</code> and an argument <code>"world"</code> or a one token with quote mismatch?
+</p>
+</dt>
+
+<dd>
+<p>
+It should not give you a quote mismatch. 
+</p>
+<p>
+When you see the first quote (<code>"</code>), you pick up everything
+from the next character until you come across the next quote
+(<code>"</code>). While doing so, you should check for the end of
+string. If you see one, then you have a quote mismatch. Otherwise,
+everything to becomes part of one token (i.e., an argument). You
+don't have to handle the case of a non-space character immediately
+after the token in any specific way but should make sure your program
+never crashes and handles this case in some determinate manner. For
+example, you may choose one of these two approaches:
+</p>
+<ol>
+<li> if the next character is not a  space (space or tab) or end
+of line, then turn off your quote flag and continue adding non-space
+characters to the token. In this case, you will have one argument
+<code>"he lloworld"</code>.
+</li>
+
+<li>
+treat the second quote as the end of string and start parsing the
+next token. In this case, you get two arguments: <code>"he llo"</code>
+ and <code>world</code>.
+</li>
+</ol>
+<p>
+The assignment isn’t about parsing, so I don't want you to have to spend too much time dealing with these conditions.
+However, make sure you handle everything in a graceful and well-defined manner.
+</p>
+</dd>
+
+<dt>
+<p>
+As I understand if we have input such as
+</p>
+<pre><code>
+hello""
+</code></pre>
+It is being treated as one token along with 2 quotes (e.g a token is <code>hello""</code> ). Right?
+</dt>
+
+<dd>
+<p>
+Again, you don't have to handle the case of embedded quotes. I
+expect the quotes to surround an argument that has spaces preceding
+it and/or following it. You do one of several things here too:
+</p>
+<ol>
+<li>
+<p>
+You’re adding characters to your token and get to the first
+<code>"</code>. Since you're not in a quoted string, this quote
+does not toggle an <em>in_quote</em>flag, so you continue grabbing
+all non-space characters and making them part of the argument. In
+this case, the argument becomes
+</p>
+<pre><code>
+	hello""
+</code></pre>
+</li>
+<li>
+You get to the <code>"</code> and decide to now set an in_quote
+flag and continue grabbing input until the next matching quote. In
+this case, you grab 0 additional characters and your argument becomes
+<pre><code>
+	hello
+</code></pre>
+</li>
+</ol>
+</dd>
+
+<dt>
+What is meant by the instruction <em>You may not use the system library function</em>?
+</dt>
+<dd>
+Unix/Linux/etc. systems have a library function named <em>system</em>
+(run <code>man 3 system</code> or <a href="http://www.kernel.org/doc/man-pages/online/pages/man3/system.3.html">look here</a>).
+It runs a shell command by forking and execing <code>sh -c <em>your_command</em></code>.
+You <strong>cannot</strong> use this. Your assignment must use the basic system calls.
+You also cannot use the <em>popen</em> library function (not that it will help).
+</dd>
+
+
+<dt>
+What is the maximum string length for a user input? This is smth I should know for fgets function. 
+</dt>
+<dd>
+You can assume 512 bytes.
+</dd>
+
+<dt>
+What is the maximum length for command name and an argument?
+</dt>
+<dd>
+You need not make any assumptions on the maximum length of a command
+name and argument since you can create pointers to input strings
+containing those names (or, if desperate, allocate space).
+</dd>
+
+<dt>
+Should we throw an error if user starts command with pipe?
+</dt>
+<dd>
+That would be nice but isn’t critical.
+</dd>
+
+<dt>
+<p>
+I did not understand first part of specification:
+</p>
+<p><em>
+If the standard input is coming from a terminal, then print a prompt
+("$ " or anything else you'd like; preferably something different
+than your normal shell prompt so that you'll remember when you're
+running this shell). You can detect if the standard input to the
+shell is a terminal or not via the isatty() library function.
+</em></p>
+<p>
+Particularly I do not understand when we need to print the prompt.
+I thought that when our program is run we immediately should give a prompt to a user.
+</p>
+</dt>
+
+<dd>
+<p>
+Let’s say you're running a test. Instead of getting the input from
+the keyboard, you're giving the shell input from a file:
+</p>
+<pre><code>
+	./myshell &lt;testfile
+</code></pre>
+<p>
+If you print a prompt without checking if the input is from a user 
+at a keyboard, you'll see a prompt printed for each
+command, which is unnecessary because you, as a user, are not
+entering commands: they are read from the file.
+</p>
+<p>
+Try something like:
+</p>
+<pre><code>
+	char line[MAXLINE];
+	int give_prompt = isatty(0);
+
+	if (give_prompt) fputs(prompt, stderr);
+	while (fgets(but, MAXLINE, stdin)) {
+		// parse & run the command in line
+		if (give_prompt) fputs(prompt, stderr);
+	}
+</code></pre>
+</dd>
+
+<dt>
+<p>
+Part 5 of specs states:
+</p>
+<p><em>
+"Neither of the built-in commands have to function in a pipeline of commands."
+</em></p>
+<p>
+What does that really mean? What should be done if user types a <em>cd</em> or <em>exit</em>
+command in between other commands separated by pipe?
+</p>
+</dt>
+<dd>
+It does not make sense to put a <em>cd</em> or <em>exit</em> command into a pipe since
+neither of those commands consumes input or checks output. I won't
+check this condition. Make sure your program does not crash. You
+can handle the situation
+either by printing an error or by running the command
+locally and ignoring the input/output.
+</dd>
+
+<dt>
+In the <em>pipe</em> and <em>dup2</em> tutorial, you wrote sample code for a pipe
+sharing two processes in <code>pipe-exec.c</code>. I am confused as to how you
+manage to make the parent process, which contains the first command,
+execute first and the child process execute second without using a
+locking mechanism like a mutex or a semaphore
+</dt>
+<dd>
+<p>
+No need to use locking mechanisms. The parent simply forks off one
+child for each command in the pipeline. All commands run as child
+processes &ndash; the parent is still the shell. There is no ordering
+involved. The operating system can schedule the commands in whatever
+order it chooses. If a command is trying to read from a pipe that
+has nothing in it, it will block.
+</p>
+<p>
+The example I had in the pipe tutorial has a parent sending data
+to the child. In your case, you have to do things differently since
+your parent never execs anything directly since that would overwrite
+your shell.
+</p>
+<p>
+If you have one command (cmd1) that needs to pipe its output to
+another command (cmd2), first create a pipe. For example,
+</p>
+<pre><code>
+	int pipefd[2];
+	pipe(pipefd);
+</code></pre>
+<p>
+Then you fork the two child processes (the parent remains the shell):
+</p>
+<pre><code>
+fork:
+	child:
+		cmd1 sends its output to the pipe, so change the standard output to the pipe
+		dup2(pipefd[1], 1)
+		execvp(cmd1, ...)
+fork again:
+	child:
+		cmd2 reads its input from the pipe, so change the standard input to the pipe
+		dup2(pipefd[0], 0)
+		execvp(cmd2, ...)
+
+parent:
+	close(pipefd[0])
+	close(pipefd[1])
+	wait for all child processes to exit
+</code></pre>
+</dd>
+
+<dt>
+How is it possible not to allocate space for a command name and
+command arguments if we still need to send them to <em>execvp</em> as an
+argument?
+</dt>
+<dd>
+If you cannot come up with a way, then you can use <em>malloc</em> (or
+<em>strdup</em>). However, it's not really necessary to go and allocate more memory
+when all the data you need is already in the string and you can
+create pointers that point to the parts you want. Take a look
+at <a href="../notes/c-tutorials/nomalloc.html">this tutorial</a> for an example.
+</dd>
+
+<dt>
+<p>
+You said that I should have pipe[2] in each command struct. I do not
+understand why I need that. Can't I use one pipe for all commands?
+</p><p>
+I am still a bit confused on how to use pipes. I checked several
+examples, but all of them were showing the case with one pipe. It
+is not exactly clear for me as of now how to work with multiple
+pipes.
+</p><p>
+As I understand we should have one parent process that forks child
+processes per each command. The child process then reads from pipe[0]
+and writes to pipe[1]. Correct?
+</dt>
+<dd>
+<p>
+You will have to create a new pipe for each set of piped commands. If you have:
+</p>
+<pre>
+	A | B | C | D | E
+</pre>
+<p>
+then you will create four pipes and fork 5 child processes. For each child that you fork, you will implement logic along the lines of:
+</p>
+<ul><li>
+	If this process gets input from a pipe then dup2() to change the standard input to that pipe.
+</li><li>
+	If this process sends output to a pipe, then dip2() to change the standard output to that pipe.
+</li>
+</ul>
+<p>
+The parent will close all pipes after it forks the children. You’ll
+need to maintain a list since you may have an arbitrary number of
+pipes.
+</p>
+</dd>
+
+<dt>
+<p>
+I am not sure when we should use close function. As I understand in the case 
+</p>
+<code><pre>
+	cat moby.txt |tr A-Z a-z|tr -C a-z '\n' 
+</pre></code>
+<p>
+a child for our second command will need to access read-end to read
+what was produces by first process and write-end to write its own
+output. Is it correct or no? This process is not fully clear to me
+yet.
+</p>
+</dt>
+
+<dd>
+<p>
+You have three commands in this example (<em>cat</em>, <em>tr</em>, and <em>tr</em>).
+What your shell will do is create three child processes (one for each command) and two sets of pipes.
+</p>
+<pre>
+	fork:
+		child: // command 1 (cat)
+			command sends its output to the pipe, so change the standard output to the pipe
+			dup2(firstpipe[1], 1)
+			execvp(“cat”, …)
+	fork:
+		child: // command 2 (tr)
+			command sends its output to the pipe, so change the standard output to the pipe
+			dup2(secondpipe[1], 1)
+			command reads its input from the pipe, so change the standard input to the pipe
+			dup2(firstpipe[0], 0)
+			execvp(“tr”, …)
+	fork:
+		child: //command 3 (tr)
+			command reads its input from the pipe, so change the standard input to the pipe
+			dup2(secondpipe[0], 0)
+			execvp(“tr”, …)
+	parent:
+		close all pipes
+</pre>
+</dd>
+
+
+<dt>
+<p>
+What if we encounter commands that do not do any reads/writes? How should we treat them? e.g we have smth like:
+</p>
+<pre><code>
+	cat moby.txt |cd /src/smth |tr -C a-z '\n' 
+</code></pre>
+<p>
+How my program should behave in this case?
+</p>
+</dt>
+<dd>
+Don't do anything special but make sure your program does not crash.
+You don't have to handle the case of built-in commands in a pipe.
+For regular commands, you have no idea if they generate output or
+consume input, so treat them as if they do (see previous example).
+</dd>
+
+<dt>
+<p>
+In the example on the assignment specification:
+</p>
+<pre><code>
+	'abc' "de f'g" hij| k "lm | no"
+</code></pre>
+<p>
+you had a single ' after the f. How should we handle a nested sequence such as <code>"ab 'e f' g"</code>?
+</p>
+</dt>
+<dd>
+With nesting, you just treat any other quote as an ordinary character. For example.
+<code>"a'b'c’d"</code> gives you a token <code>a'b'c'd</code>
+</dd>
+
+<dt>
+Which shell functions do we have to implement? For example, "echo"
+is a command. Which other ones are we required to do for this
+assignment?
+</dt>
+<dd>
+You only need to implement cd and exit as built-in shell functions.
+Every other command is an executable program that you’ll run. For
+example, echo is a program (/bin/echo).
+</dd>
+
+<dt>
+The pipe of commands I run never exits.
+</dt>
+<dd>
+Chances are that you have not closed your pipes at the parent. If a command is reading its input from a
+pipe, it will never detect an end of file if the parent still has the writing end of that pipe open
+(the parent has the option to send data to that pipe as well, not that it needs to).
+</dd>
+
+
+<dt>
+Can I have an extension? I was out for spring break, my machine crashed, I had other assignments due, etc.
+</dt>
+<dd>
+I mentioned there would be no extensions when I posted the assignment
+18 days ago. Please submit what you have. If you were stuck at any
+point, you had ample opportunity to ask questions. This assignment
+did not involve a tremendous amount of programming (perhaps around
+300 lines of code). I’d expect that a single student should be able
+to get most of it working within an evening of coding (I provided
+examples for things such as pipe, dup, fork, and exec) but gave you
+a full week not counting the break and the option to work in a group.
+</dd>
+
+<!--
+
+<dt>
+You said we could tokenize without using strcopy by terminating the
+end of the token within the command line buffer.  I'm not sure how
+we would insert the end of string character?
+</dt>
+<dd>
+<p>
+You add the 0 (end of string) at the end of each token. It will 
+overwrite the character that's immediately after the token (whitespace,
+pipe, or a 0 if you're at the end of the string). For example, suppose you have a
+string: "my name is bob" and you want an array of pointers to each
+of the tokens: "my", "name", "is", "bob". As you parse through the
+string, you set the argument to the start and keep advancing over
+the string until you get to a token separator (such as a space).
+Overwrite that with a 0 (end of string) and skip over all spaces.
+When you hit the start of the next token, set the next argument to
+that address and do the same thing.
+</p>
+<p>
+You might detect a pipe character right after a command, giving you
+no room to put a 0 (end of string) unless you first set a flag that
+you just encountered a pipe symbol.  Once you encounter a pipe
+symbol, you're done with your argument list for one command and can
+start the list for the next command. I use a sequence of linked
+list structs, each of which contains an argument list.
+</p>
+</dd>
+
+<dt>
+Can we assume that all the command-line inputs that are valid in
+the Linux shell (e.g., bash) should also be valid in our program, and all the
+command-line inputs that are invalid in the Linux shell should also
+be invalid in our program?
+e.g.:
+<ol class="alphalist">
+<li> <code>l"s"</code> is equivalent to <code>ls</code> in shell,
+so does <code>"l""s"</code>, <code>""""""""ls</code>, <code>"ls"""""""""</code>,
+etc. All of them are valid commands. 
+</li>
+<li>  <code>|ls</code> is an invalid command; the shell will just throw an
+error without processing anything, but
+ ""|ls is a partial valid command, the shell will throw an error saying
+": command not found". and prints out all the files in the current directory.
+</li>
+<li> "<code>||</code>" - two vertical bars act like the same as "|" in the shell.
+</li>
+</dt>
+<dd>
+<p>
+In general, just follow the specs in the assignment and do not try
+to emulate bash or any other shell. There's a lot of additional processing
+that shells do, such as expanding environment variables.
+</p>
+<ol class="alphalist">
+<li> 
+<p>
+No. You do not need to follow  bash's quoting rules where quoting
+just part of a token is permitted. Far some string <code>abcde</code>, all you need to
+support is:
+</p>
+<pre><code>
+	abcde
+	"abcde"
+	'abcde'
+</code></pre>
+<p> not </p>
+<pre><code>
+	ab"cde"
+	a'bcd'e
+	a""""""bc""""""d'e'
+</code></pre>
+
+Do not implement this. If your attempt to execute
+a file fails, just print the error message using perror().
+</p>
+
+<li>
+Don't worry about a pipe at the beginning with no command prior to
+it or two pipes. In both cases, you can treat them as "null" commands
+and quit processing or do whatever else you like ... just make sure
+the shell doesn't crash.
+</li>
+
+<li>
+Several shells (sh, bash, ksh, and possibly others) support a syntax
+where commands can be separated by two vertical bars (||) or two
+ampersands (&&). The first one (cmd1 || cmd2) means to run cmd1 but
+run cmd2 after it only if cmd1 returns a non-zero exit. The second
+one (cmd1 && cmd2) means to run cmd1 and then run cmd2 after it
+only if cmd1 returns an exit code of 0. Do not implement this
+feature. All you have to implement is the pipe.
+</li>
+</dd>
+
+<dt>
+Will the input always come from stdin? do we need to account for
+the cases where inputs are coming from a file or somewhere else?
+</dt>
+<dd>
+The input will only come from the standard input but the standard
+input may be a redirected
+file and not the keyboard/terminal. The only thing you should do
+is use <em>isatty()</em> to decide whether to print a prompt.
+</dd>
+
+
+<dt> 
+Do the 50 arguments include the command?  Is the user input going to be 1 command + 15 arguments, or 1 command + 16 arguments.
+</dt>
+<dd>
+You can have the 50 arguments include the command: 1 command + 49 arguments. First the limit to something small, such as 3 or 4,
+to make testing easy.
+</dd>
+
+<dt>
+When I type ^D, my shell prints out an infinite loop of nothing. How do I check for end of file. I have no idea how to check for the ^ character.
+</dt>
+<dd>
+You will never see a ^ character. That's just an accepted written
+shorthand for control characters. 
+You should not check for a control-D at all. It's the
+convention in POSIX systems to use it to indicate an end of file on
+terminal input streams but it's just that: a convention. It can be
+changed to any other character with the <code>stty</code> command.
+That character is parsed by the
+terminal driver. What you should do is just check for an end-of-file
+from your calls to <em>fgets()</em> &mdash; a return of 0.
+</dd>
+
+<dt>
+How do you pipe for more than two commands? Do I need <em>N-1</em> pipes for <em>N</em> processes being piped?
+</dt>
+<dd>
+<p>
+A single pipe is for a single unidirectional communication stream. You will use one pipe between two
+processes. You will use two pipes in a pipeline of three process, three in a pipeline of four processes, etc.
+When you parse your command line, you will parse out a list of one or more commands that
+are separated by a pipe (<tt>|</tt>).  Each command will contain
+a list of arguments (arg[0], arg[1], etc.). The last argument of each command list will be a 0 (null argument).
+When you're done parsing and assembling this list, you will iterate through the commands, forking and
+executing one after the other. Your code will need logic that includes
+</p>
+<ul>
+<li> Is output of the command going to a pipe? If so, create a pipe. Change
+the standard output to the output end of that pipe <em>after</em> you fork.
+</li>
+<li> Is the input coming from a pipe? If so, change the standard input to the input
+end of that pipe <em>after</em> you fork.
+</li>
+<li>
+If the parent process no longer needs an end of a pipe, close it.
+</li>
+</ul>
+</dd>
+
+<dt>
+The way I understand it, commands are separated by pipes and the arguments to commands are separated by spaces. Is that correct? 
+</dt>
+<dd>
+<p>
+Yes. Think of a command as a sequence of one or more arguments, or tokens. Argument 0 happens to be the command name.
+There are several things to keep in mind:
+</p>
+<ol class="alphalist">
+<li> Arguments and commands may be quoted with either single or
+double quotes. In that case, any spaces, pipe symbols, or quotes
+embedded within become part of the argument.
+</li>
+<li>
+Any number of spaces and/or tabs may precede or follow any token.
+</li>
+<li>
+You do not need to separate the pipe symbol with spaces. Any of the
+following is valid:
+<pre><code>
+	ls|wc -l
+	ls  |  wc -l
+	ls|   wc -l
+</code></pre>
+</li>
+</ol>
+</dd>
+
+<dt>
+Is there a limit to how many commands are going to be given to the shell? I know the argument limit is 50. 
+</dt>
+<dd>
+As you parse the command line, you'll be building up a list of
+commands and, within each command, building up an argument list.
+Each time you add an argument to the argument list, check that
+you're not exceeding the limit. With the limit of 50, you don't
+need to use malloc() to allocate an argument list and can simply
+declare it in the structure: <code>arg[51]</code>. The command counts as an
+argument and you want to ensure that you can put a null (0) as the
+last argument. Test your program by setting the argument limit 
+to something small, such as 3 or 4, to see that you are checking
+limits correctly.
+</dd>
+
+<dt>
+How long of an input line can I expect to read?
+</dt>
+<dd>
+<p>
+Pick a reasonably large number, such as 1024 and declare that as a line buffer:
+</p>
+<pre><code>
+	char buf[1024];
+</code></pre>
+</dd>
+
+<dt>
+Should we treat <code>"ls""-l"</code> as one argument or two arguments? The
+instruction says <em>"Each command is a sequence of one or more tokens
+separated by whitespace (spaces or tabs)."</em> Since there's no
+whitespace between <code>"ls"</code> and <code>"-l"</code>,
+should we treat it as one argument?
+</dt>
+<dd>
+No, you do not need to treat that as one argument. Most Unix/Linux shells (bash, sh, ksh)
+allow quoted regions anywhere within an argument. For example,
+<code>abc"def"gh'ijk'lmn</code> is equivalent to <code>abcdefghijklmn</code>.
+In this assignment, quotes have special meaning at the start of an
+argument. If there is a quote at the start, the token <em>ends</em> when
+the corresponding matching quote is found. Hence, <code>"ls""-l"</code>
+has <code>ls</code> as the first argument. The second argument is <code>-l</code>.
+You need not worry about this case.
+</dd>
+
+<dt>
+Are the commands executed in order? 
+</dt>
+<dd>
+<p>
+In general, if your pipe is:
+</p>
+<pre><code>
+	ls -l | awk '{ print $5 }' | sort -n
+</code></pre>
+<p>
+(this lists the length of files in your current directory, sorted from smallest to largest)
+<br/>
+you would do the following operations (I left out the parts about closing ends of pipes):
+</p>
+<pre><code>
+	create pipe #1 (from the first to the second command)
+	fork
+		- child redirects standard output
+		- child execs ls -l
+	create pipe #2 (from the second to the third command)
+	fork
+		- child redirects standard input
+		- child redirects standard output
+		- child execs awk '{ print $5 }' 
+	fork
+		- child redirects standard input 
+		- child execs sort -n
+	wait for all children to exit
+		- print each exit message as the wait returns (this may cause it to get interspersed with command output)
+</code></pre>
+
+<dt>
+Why can't I use strtok to parse the command line?
+</dt>
+<dd>
+<p>
+strtok won't work well for this task because it won't pick up quoted
+strings as one token. You'll have to take a more low-level approach.
+I recommend creating a command struct that contains an argument
+list in it. Create a linked list of one or more commands. This will
+represent your pipeline of commands. For each command, keep getting
+tokens until you get a pipe or you run out of tokens in the line.
+</p><p>
+That command parser will call a lower-level function each time it
+needs a new token. This token parsing function can be coded with
+logic similar to this (the below is not complete code):
+</p>
+<pre><code>
+	while (isspace(*s))	/* skip spaces */
+		++s;
+
+	if (*s == '|') {
+		/* return a pipe token */
+	}
+	if ((*s == '\'') || (*s == '"')) {  /* grab the quoted string */
+		/* pick up everything until we get the matching closing quote */
+	}
+	else {     /* unquoted token */
+		/* grab everything that's not a space or pipe */
+	}
+</code></pre>
+<p>
+The above is just one of several approaches. The classy approach
+would be to use a lexical analyzer such as lex. Another approach
+would be to implement the parsing as a true state machine.
+</dd>
+
+<dt>
+Do you fork for a built-in command?
+</dt>
+<dd>
+No. the point of the two built-in commands is that they must run 
+without you forking. If a child process were to change its default
+directory (chdir), it would have no bearing on the parent. Similarly,
+if a child were to exit, the parent would not.
+</dd>
+
+<dt>
+How do you search through a table of functions?
+</dt>
+<dd>
+You need to define
+a struct that contains the function name (<code>char *</code>) and
+the corresponding function pointer (<code>int (*f)()</code>). Then
+define a static array of sets of names and functions.
+You will write code for <strong>each</strong> of the built-in
+functions. For example, you will not have a table that maps 
+the <code>cd</code> command to the <em>chdir</em> system call.
+Instead, you will write a local cd function that will check
+the argument list it is given, print any errors, and call
+<em>chdir</em> with the necessary parameters.
+</dd>
+
+<dt>
+Do all errors have to be printed using perror()? Or can we use fprintf(stedrr)?
+</dt>
+<dd>
+<p>
+<em>perror</em> is a library function that prints a user-friendly
+error message that corresponds to a system call error. You'd use
+it only after a failed system call. Alternatively, you can use
+<em>strerror(errno)</em> to get the string containing the error message and
+print it yourself:
+</p>
+<pre><code>
+	fprintf(stderr, "%s: file %s: %s\n", cmd, filename, strerror(errno);
+</code></pre>
+<p>
+See the strerror man page (<code>man strerror</code>).
+</p>
+<p>
+For anything else, just print to stderr:
+</p>
+<pre><code>
+	fprintf(stderr, "%s: you must specify at least two files\n", cmd);
+</code></pre>
+</dd>
+
+<dt>
+Does my code have to be commented?
+</dt>
+<dd>
+Yes! You don't have to overdo comments (no need to comment every line) but I
+expect your code to look beautiful and be easy to read. A big part of this
+is your choice of variable names and ensuring that one can read through the 
+code. Beyond that, I at least expect a comment block in front of each function
+that briefly explains what every function does. If any function is 100 or 
+so lines of code long, you have not done a good job of modularizing your
+code.
+</dd>
+
+<dt>
+<p>
+Our group is having some trouble with <em>the</em> ls command. We have tested our piping with <em>echo</em> commands but whenever we test <em>with</em> ls it gives us issues. <em>Sometimes</em> ls works fine and prints out the directories; other times, it tells us "no such directory" or "invalid directory". 
+Here is one example test case
+</p>
+<pre><code>
+$  ls -alF  / | grep bin | cat -n
+
+grep: : No such file or directory
+process 15260 exits with 2
+ls: cannot access : No such file or directory
+process 15259 exits with 2
+</code></pre>
+</dt>
+<dd>
+<p>
+Something seems wrong with your argument parsing and you're calling <em>execve</em> with a messed-up argument list for both <em>ls</em> and <em>grep</em> (and probably <em>cat</em> as well).
+Before you call <em>execve,</em> print out the entire argument list so you can be sure of what you're asking it to run. Something like:
+</p>
+<pre><code>
+	for (; *argv; i++, argv++) {
+		printf("arg %d: \"%s\" (%d bytes)\n",
+			i, *argv, (int)strlen(*argv));
+	}
+</code></pre>
+</dd>
+
+<dt>
+After searching through the table of the built-in functions and
+calling <em>cd</em>, do we implement the new function with
+<em>chdir</em>? Is that not the same as mapping <em>chdir</em> to
+the function pointer because in both cases, it uses <em>chdir<em>?
+</dt>
+<dd>
+You need to implement a new function and that function will use the <em>chdir()</em> system call to change the process' current working directory. You can't put <em>chdir()</em> directly into the table of function pointers because:
+1. You need to check the arguments to <em>cd</em> to make sure there are at most 1. Print an error message if > 1.
+2. If there are no arguments (e.g., just <em>cd</em> on its own), you need to get the current directory with <em>getcwd</em> and change to that. 
+3. You need to detect if <em>chdir</em> fails because you're changing to a nonexistent directory or one you do not have permission to access.
+4. Your table of built-in commands has to be general enough to take arbitrary commands. For the <em>exit</em> command, for example, you will need to parse an optional parameter as an integer and pass that to the exit <em>function</em>.
+</dd>
+
+<dt>
+Does the parent thread need to iterate through all the pipes and close them after it forks all of the children?
+</dt>
+<dd>
+Yes, the parent must close all the pipes before waiting for the child processes to exit. If you don't do this, then a process that is reading from a pipe will never detect an end of file because the parent still has the writing end of the pipe open and can conceivably write to that pipe. If the parent closes the writing end of the pipe and the only other process that has the writing side open is the child process that's writing output to it, then the pipe will have an end of file condition when that child exits. And end of file on a pipe is detected only when all processes that have that pipe close the writing end of the pipe (fd[1]) or exit, which causes files open by that process to be closed.
+</dd>
+
+<dt>
+<p>
+For parsing, do we have to strip the quotes from the arguments?
+For example, our shell for test case 10 outputs the following:
+</p>
+<pre><code>
+$  ./echoargs 'abc def ghi' "j     k   l"
+argc = 3
+arg[0] = "./echoargs"
+arg[1] = "'abc def ghi'"
+arg[2] = ""j     k   l""
+</code></pre>
+<p>
+and the output for test case 9 outputs:
+</p>
+<pre><code>
+$  echo "abc" "def" 'ghi' 'jkl'
+"abc" "def" 'ghi' 'jkl'
+</code></pre>
+</dt>
+<dd>
+<p>
+Yes, you have to strip quotes out of the arguments. They're there just for quoting - to allow you to create arguments that have spaces in them. The shell command
+</p>
+<pre><code>
+echo "abc def" 'ghi'
+</code></pre>
+should produce an output of:
+<pre><code>
+abc def ghi
+</code></pre>
+-->
+
+</dl>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: February 14, 2019
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 417 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> CS 417 Assignments </h2>
+	<ul>
+	<li> <a href="a-1.html"> Assignment 1 </a>
+	<li> <a href="a-2.html"> Assignment 2 </a>
+	<li> <a href="a-3.html"> Assignment 3 </a>
+	<li> <a href="a-4.html"> Assignment 4 </a>
+	<li> <a href="a-5.html"> Assignment 5 </a>
+	<li> <a href="a-6.html"> Assignment 6 </a>
+	<li> <a href="a-7.html"> Assignment 7 </a>
+	<li> <a href="a-8.html"> Assignment 8 </a>
+	</ul>
+	<h2> Tutorials </h2>
+	<ul>
+<!--
+	<li> <a href="../notes/sockets/index.html"> TCP Sockets tutorial </a> </li>
+	<li> <a href="../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+-->
+	<li> <a href="../notes/c-tutorials/index.html"> C/Unix tutorials </a> </li>
+	<li> <a href="../notes/make/index.html"> Makefile tutorial </a> </li>
+	</ul>
+
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

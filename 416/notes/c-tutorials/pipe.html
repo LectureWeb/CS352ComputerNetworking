@@ -1,0 +1,556 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 416 Documents </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> CS 416 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/c-tutorials/index.html"> Tutorials </a> 
+ 	<li> <a href="../../notes/c-tutorials/pipe.html"> Signal Tutorial </a> 
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> C Tutorial: Pipes </h1>
+</div>
+
+<h1> How to use a pipe </h1>
+<p>
+A <strong>pipe</strong> is a system call that creates a unidirectional communication link
+between two file descriptors. The <em>pipe</em> system call is called with a pointer to
+an array of two integers. Upon return, the first element of the array contains the 
+file descriptor that corresponds to the output of the pipe (stuff to be read). The second element of the
+array contains the file descriptor that corresponds to the input of the pipe (the place
+where you write stuff).
+Whatever bytes are sent into the input of the pipe can be read from the other end of the pipe.
+</p>
+
+<h2> Example  </h2>
+<p>
+This is a small program that gives an example of how a pipe works. The array of two file
+descriptors is <code>fd[2]</code>. Whatever is written to <code>fd[1]</code> will be read
+from <code>fd[0]</code>.
+</p>
+
+<div class="codeblock-box"><span class="comment">/*
+	The simplest example of pipe I could think of
+	Paul Krzyzanowski
+*/</span>
+
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt; 	<span class="comment">/* for printf */</span>
+#include &lt;string.h&gt;	<span class="comment">/* for strlen */</span>
+
+int
+main(int argc, char **argv)
+{
+	int n;
+	int fd[2];
+	char buf[1025];
+	char *data = "hello... this is sample data";
+
+	pipe(fd);
+	write(fd[1], data, strlen(data));
+	if ((n = read(fd[0], buf, 1024)) &gt;= 0) {
+		buf[n] = 0;	<span class="comment">/* terminate the string */</span>
+		printf("read %d bytes from the pipe: \"%s\"\n", n, buf);
+	}	
+	else
+		perror("read");
+	exit(0);
+}
+
+</div>
+<p> <a href="files/pipe-simple.c">Download this file</a> </p>
+<p> Save this file by control-clicking or right clicking the download link and then saving it as <tt>pipe-simple.c</tt>. </p>
+<p> Compile this program via: </p>
+<div class="codeblock">
+gcc -o pipe-simple pipe-simple.c
+</div>
+<p> If you don't have gcc, You may need to substitute the gcc command with cc or another name of your compiler.  </p>
+<p> Run the program: </p>
+<div class="codeblock">
+./pipe-simple
+</div>
+
+<h2> Pipes between processes </h2>
+<p>
+This next example shows the true value of a pipe. We create a pipe between the "/bin/ls -al /" command and
+the "/usr/bin/tr a-z A-Z" command. This is the equivalent of running the shell command:
+</p>
+<pre><code>
+/bin/ls -al / | /usr/bin/tr a-z A-Z
+</code></pre>
+</p>
+<p>
+The first command generates a long-format directory listing of the root (<code>/</code>) directory and the
+second command takes that listing and translates all lowercase characters to uppercase.
+</p>
+<p>
+We start off by creating a pipe. Then we fork a child process. 
+The parent will use the pipe for command output. That means it needs to change its standard output
+file descriptor (1) to the writing end of the pipe (<code>pfd[1]</code>). It does this via the <strong>dup2</strong>
+system call: <code>dup2(pfd[1], 1)</code>. Then it executes the command in <code>cmd1</code>.
+</p>
+<p>
+The child will use the pipe for command input. It needs to change its standard input
+file descriptor (0) to the reading end of the pipe (<code>pfd[0]</code>). It also does this via the <strong>dup2</strong>
+system call: <code>dup2(pfd[0], 0)</code>. Then it executes the command in <code>cmd2</code>.
+</p>
+
+<div class="codeblock-box"><span class="comment">/* pipe demo */</span>
+<span class="comment">/* Paul Krzyzanowski */</span>
+
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+void runpipe();
+
+int
+main(int argc, char **argv)
+{
+	int pid, status;
+	int fd[2];
+
+	pipe(fd);
+
+	switch (pid = fork()) {
+
+	case 0: <span class="comment">/* child */</span>
+		runpipe(fd);
+		exit(0);
+
+	default: <span class="comment">/* parent */</span>
+		while ((pid = wait(&amp;status)) != -1)
+			fprintf(stderr, "process %d exits with %d\n", pid, WEXITSTATUS(status));
+		break;
+
+	case -1:
+		perror("fork");
+		exit(1);
+	}
+	exit(0);
+}
+
+char *cmd1[] = { "/bin/ls", "-al", "/", 0 };
+char *cmd2[] = { "/usr/bin/tr", "a-z", "A-Z", 0 };
+
+void
+runpipe(int pfd[])
+{
+	int pid;
+
+	switch (pid = fork()) {
+
+	case 0: <span class="comment">/* child */</span>
+		dup2(pfd[0], 0);
+		close(pfd[1]);	<span class="comment">/* the child does not need this end of the pipe */</span>
+		execvp(cmd2[0], cmd2);
+		perror(cmd2[0]);
+
+	default: <span class="comment">/* parent */</span>
+		dup2(pfd[1], 1);
+		close(pfd[0]);	<span class="comment">/* the parent does not need this end of the pipe */</span>
+		execvp(cmd1[0], cmd1);
+		perror(cmd1[0]);
+
+	case -1:
+		perror("fork");
+		exit(1);
+	}
+}
+
+</div>
+<p> <a href="files/pipe-exec.c">Download this file</a> </p>
+<p> Save this file by control-clicking or right clicking the download link and then saving it as <tt>pipe-exec.c</tt>. </p>
+<p> Compile this program via: </p>
+<div class="codeblock">
+gcc -o pipe-exec pipe-exec.c
+</div>
+<p> If you don't have gcc, You may need to substitute the gcc command with cc or another name of your compiler.  </p>
+<p> Run the program: </p>
+<div class="codeblock">
+./pipe-exec
+</div>
+
+<h2> Creating a pipe between two child processes </h2>
+<p>
+The above example put the parent process into a state where it gave up its standard output to the pipe and
+the process itself was replaced by the exec of <code>cmd1</code>. If we want to preserve the parent program and
+its input and output streams but run the pipe between two child processes, we need to fork off two children.
+</p>
+<p>
+The child that generates output will set its standard output to the writing end of the pipe and
+the child that consumes that data will set its standard input to the reading end of the same pipe.
+Once this is done the parent no longer needs the pipe and can close its file descriptors.
+<strong>This is important!</strong> If the parent does not close the writing end of the pipe (<code>pfd[1]</code>)
+then the child that is reading from the pipe will never read an end of file and will never exit.
+</p>
+
+<div class="codeblock-box"><span class="comment">/*
+	Sample progam illustrating the use of Unix pipes between processes.
+	Paul Krzyzanowski
+
+	This forks and execs two commands (cmd1 and cmd2), with the standard output of 
+	cmd1 going to the standard input of cmd2.
+	
+	The commands are:
+	cmd1:
+		/bin/ls -al /
+		lists all the files in the root directory in the long format
+	cmd2:
+		/usr/bin/tr a-z A-Z
+		translates all input from lowercase to uppercase
+	Feel free to modify cmd1 and cmd2 to get them to work on your system or to do something differnt.
+
+	Key points:
+
+	0. Processes start with three open file descriptors. File descriptor 0 is
+	the standard input and is typically the keyboard input. File descriptor 1
+	is the standard output and is typically the virtual terminal that is the
+	window where the shell is running. File descriptor 2 is the standard error
+	and is typically the same as the standard output. If the standard output
+	is redirected to a file or another command, errors can still be sent to 
+	the screen where a user can see them.
+
+	1. In main(), we use the pipe() system call to create a communication pipe. 
+	A pipe gives us a set of two file descriptors, fd[0] and fd[1].
+	Anything written to fd[1] can be read from fd[0].
+	Pipes are unidirectional.
+
+	2. We call runsource() and rundest(), which run cmd1 and cmd2 respectively.
+	Each of these functions forks a child and execs the command.
+	
+	3. We close both file descriptors of the pipe since we don't need them
+	anymore in the parent process. This is an important step. Otherwise, the 
+	child that is reading from the pipe will never detect and end of file since
+	the other end of the pipe will remain open even if the child that was writing
+	into it terminated.
+
+	4. We now wait for all child processes to exit. In this demo, we print the exit code of
+	the process. This is the number supplied as an argument to the exit() call. For example,
+	exit(5) will cause a process to exit with the exit code 5. The convention for Unix commands
+	is that an exit code of 0 means that the command executed successfully.
+
+	5. In runsource(), we fork() to create a child process. The child process will run cmd1.
+	First, we need to change the standard output of the process to the writing end of 
+	the pipe (fd[1]). 
+
+	We use the dup2() system call to duplicate the writing file descriptor of the
+	pipe (pfd[1]) onto the standard output file descriptor, 1.
+
+	We don't need the input end of the pipe (pdf[0]), so we close it.
+
+	6. Once that is done, we simple call execvp() to run the program. This program will 
+	overwrite our process' memory. If it fails, then we call the perror() function to 
+	print an error message.
+
+	7. rundest() is the receiving command of our pipeline and is similar to runsource().
+	Here, we need to change the standard input of the process to the reading end of 
+	the pipe (fd[0]). 
+
+	We use the dup2() system call to duplicate the reading file descriptor of the
+	pipe (pfd[0]) onto the standard input file descriptor, 0.
+
+	We don't need the output end of the pipe (pdf[1]), so we close it.
+
+	8. In both runsource() and rundest(), the parent process simply returns back to main().
+
+*/</span>
+
+
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+char *cmd1[] = { "/bin/ls", "-al", "/", 0 };
+char *cmd2[] = { "/usr/bin/tr", "a-z", "A-Z", 0 };
+
+void runsource(int pfd[]);
+void rundest(int pfd[]);
+
+int
+main(int argc, char **argv)
+{
+	int pid, status;
+	int fd[2];
+
+	pipe(fd);
+
+	runsource(fd);
+	rundest(fd);
+	close(fd[0]); close(fd[1]); 	<span class="comment">/* this is important! close both file descriptors on the pipe */</span>
+
+	while ((pid = wait(&amp;status)) != -1)	<span class="comment">/* pick up all the dead children */</span>
+		fprintf(stderr, "process %d exits with %d\n", pid, WEXITSTATUS(status));
+	exit(0);
+}
+
+
+void
+runsource(int pfd[])	<span class="comment">/* run the first part of the pipeline, cmd1 */</span>
+{
+	int pid;	<span class="comment">/* we don't use the process ID here, but you may wnat to print it for debugging */</span>
+
+	switch (pid = fork()) {
+
+	case 0: <span class="comment">/* child */</span>
+		dup2(pfd[1], 1);	<span class="comment">/* this end of the pipe becomes the standard output */</span>
+		close(pfd[0]); 		<span class="comment">/* this process don't need the other end */</span>
+		execvp(cmd1[0], cmd1);	<span class="comment">/* run the command */</span>
+		perror(cmd1[0]);	<span class="comment">/* it failed! */</span>
+
+	default: <span class="comment">/* parent does nothing */</span>
+		break;
+
+	case -1:
+		perror("fork");
+		exit(1);
+	}
+}
+
+void
+rundest(int pfd[])	<span class="comment">/* run the second part of the pipeline, cmd2 */</span>
+{
+	int pid;
+
+	switch (pid = fork()) {
+
+	case 0: <span class="comment">/* child */</span>
+		dup2(pfd[0], 0);	<span class="comment">/* this end of the pipe becomes the standard input */</span>
+		close(pfd[1]);		<span class="comment">/* this process doesn't need the other end */</span>
+		execvp(cmd2[0], cmd2);	<span class="comment">/* run the command */</span>
+		perror(cmd2[0]);	<span class="comment">/* it failed! */</span>
+
+	default: <span class="comment">/* parent does nothing */</span>
+		break;
+
+	case -1:
+		perror("fork");
+		exit(1);
+	}
+}
+
+</div>
+<p> <a href="files/pipedemo.c">Download this file</a> </p>
+<p> Save this file by control-clicking or right clicking the download link and then saving it as <tt>pipedemo.c</tt>. </p>
+<p> Compile this program via: </p>
+<div class="codeblock">
+gcc -o pipedemo pipedemo.c
+</div>
+<p> If you don't have gcc, You may need to substitute the gcc command with cc or another name of your compiler.  </p>
+<p> Run the program: </p>
+<div class="codeblock">
+./pipedemo
+</div>
+
+
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: March 28, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+        <h2> Tutorials </h2>
+        <ul>
+        <li> <a href="../../notes/c-tutorials/index.html"> C/Unix tutorials </a> </li>
+        <li> <a href="../../notes/make/index.html"> Makefile tutorial </a> </li>
+        <li> <a href="../../notes/sockets/index.html"> TCP/IP Sockets </a> </li>
+        <li> <a href="../../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+<!--
+        <li> <a href="../../notes/clocks/index.html"> Clocks demo </a> </li>
+-->
+        </ul>
+
+	
+        <h2> <a href="index.html">C Tutorials</a> </h2>
+	<h3> Processes </h3>
+        <ul>
+        <li> <a href="../../notes/c-tutorials/getpid.html"> getpid </a> </li>
+        <li> <a href="../../notes/c-tutorials/getppid.html"> getppid </a> </li>
+        <li> <a href="../../notes/c-tutorials/fork.html"> fork </a> </li>
+        <li> <a href="../../notes/c-tutorials/exec.html"> exec </a> </li>
+        <li> <a href="../../notes/c-tutorials/forkexec.html"> fork&amp;exec </a> </li>
+        <li> <a href="../../notes/c-tutorials/wait.html"> wait </a> </li>
+        <li> <a href="../../notes/c-tutorials/signal.html"> signal </a> </li>
+	</ul>
+	<h3> I/O and IPC </h3>
+	<ul>
+        <li> <a href="../../notes/c-tutorials/dup2.html"> dup2 </a> </li>
+        <li> <a href="../../notes/c-tutorials/pipe.html"> pipe and dup2 </a> </li>
+        <li> <a href="../../notes/c-tutorials/isatty.html"> isatty </a> </li>
+	<ul>
+	</ul>
+	<h3> Timing </h3>
+        <li> <a href="../../notes/c-tutorials/times.html"> times </a> </li>
+        <li> <a href="../../notes/c-tutorials/gettime.html"> clock_gettime </a> </li>
+	<ul>
+	<h3> Basics </h3>
+	<ul>
+        <li> <a href="../../notes/c-tutorials/getopt.html"> Command options </a> </li>
+        <li> <a href="../../notes/c-tutorials/strtok.html"> Parsing tokens </a> </li>
+<!--
+        <li> <a href="../../notes/c-tutorials/fpointer.html"> Pointers to functions </a> </li>
+-->
+        <li> <a href="../../notes/c-tutorials/list.html"> Linked list </a> </li>
+<!--
+        <li> <a href="../../notes/c-tutorials/hash.html"> Hash tables </a> </li>
+-->
+        </ul>
+
+</div>
+
+<div id="sidebar2">
+<h1 class="first"> Recommended </h1>
+<p>
+</p>
+<p>
+<a href="http://www.amazon.com/exec/obidos/ASIN/020161586X/pkorg/">
+<img align="left" width="100" height="138" src="images/practice-of-programming.jpg"
+alt="The Practice of Programming"/>
+</a>
+</p>
+<p>
+&nbsp;
+</p>
+
+<p>
+<a href="http://www.amazon.com/exec/obidos/ASIN/0131103628/pkorg/">
+<img align="left" width="100" height="132" src="images/c-programming-language.jpg"
+alt="The C Programming Language"/>
+</a>
+</p>
+<p>
+&nbsp;
+</p>
+
+<p>
+<a href="http://www.amazon.com/dp/013937681X/pkorg/">
+<img align="left" width="100" height="132" src="images/unix-programming-environment.jpg"
+alt="The UNIX Programming Environment"/>
+</a>
+</p>
+</div>
+
+</div>
+</div>
+</body>
+</html>

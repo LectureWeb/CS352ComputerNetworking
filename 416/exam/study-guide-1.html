@@ -1,0 +1,884 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 416 Exam 1 Study Guide </title>
+
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+.rqbox {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+        position: relative;
+	width: 15em;
+        background-color: #FDF5B6;
+        border-style: double; border-width: 3px;
+        padding: 0.5em 0.5em 0.5em 0.5em;
+}
+#main em {
+	color: darkred;
+}
+
+</style>
+</head>
+
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<P>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a>  </li>
+ 	<li> <a href="../index.html"> Rutgers CS 416 </a>  </li>
+ 	<li> <a href="../exam/index.html"> Exam info </a>  </li>
+ 	<li> <a href="../exam/study-guide-1.html"> Exam 1 study guide </a>  </li>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main"> <div id="headline">
+<h1> Exam 1 study guide </h1>
+<h2> The one-hour study guide for exam 1 </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> Latest update: Tue May  5 15:51:06 EDT 2015
+ </p>
+</div>
+
+<p>
+
+<em>Disclaimer: </em>
+This study guide attempts to touch upon the most
+important topics that may be covered on the exam but does not claim to
+necessarily cover everything that one needs to know for the exam. Finally,
+don't take the <em>one hour</em> time window in the title literally.
+</p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p><a href="../lectures/l-intro.html">Go here for lecture notes</a></p>
+
+<blockquote>
+<p><strong>Goal: </strong>
+Understand the basic goal of an operating system, some of its history, and the
+design principle of separating mechanism from policy.</p>
+</blockquote>
+
+<p>Some introductory terms:</p>
+
+<ul>
+<li><p><strong>Batch systems</strong>: operating systems that would run a program to completion and then load and run the next program. </p></li>
+<li><p><strong>Multiprogramming</strong>: keep several programs in memory at once and switch between them. The goal is throughput and not interactivity.</p></li>
+<li><p><strong>Time-sharing</strong>: multiprogramming with preemption, where the system may stop one process from executing and starts another. </p></li>
+<li><p><strong>Portable operating system</strong>: an operating system that is not
+tied to a specific hardware platform. UNIX was one of the early
+portable operating systems. Windows NT was also written to be
+architecture-independent.</p></li>
+<li><p><strong>Microkernel operating system</strong>: an operating system that
+provides just the bare essential mechanisms that are necessary to
+interact with the hardware and manage threads and memory. Higher-level
+operating system functions, such as managing file systems, the
+network stack, or scheduling policies, are delegated to user-level
+processes that communicate with the microkernel via interprocess
+communication mechanisms (usually messages).</p></li>
+</ul>
+
+<p>A <strong>mechanism</strong> is the presentation of a software abstraction: the functional interface.
+It defines <em>how to do</em> something.
+A <strong>policy</strong> defines how that mechanism <em>behaves</em> (e.g., enforce permissions, time limits, or goals).
+Good design dictates that we keep mechanisms and policies separate.</p>
+
+<h1 id="bootinganoperatingsystem">Booting an operating system</h1>
+
+<p><a href="../lectures/l-intro.html">Go here for lecture notes</a></p>
+
+<blockquote>
+<p><strong>Goal: </strong>
+How does the operating system get loaded into the computer&#8217;s memory so it can run?</p>
+</blockquote>
+
+<p>The <strong>boot loader</strong> is a small program that is run at boot time
+that loads the operating system. Boot loaders are sometimes broken
+into several stages. A <strong>multi-stage boot loader</strong> starts off with
+a simple boot loader that then loads a more sophisticated boot
+loader that then loads the operating system. This cascaded boot
+sequence is called <strong>chain loading</strong>.</p>
+
+<p>On a classic PC architecture, the computer starts running code in
+the system&#8217;s BIOS on startup. This BIOS code performs a power-on
+test, identifies and initializes some hardware, and then loads the
+first block of the disk, which is known as the <strong>master boot record</strong>,
+or <strong>MBR</strong>. The MBR contains a table identifying disk partitions
+and code that will run and load the <strong>Volume Boot Record</strong> (<strong>VBR</strong>), which
+is the first disk block of the designated boot partition. The VBR
+contains code to read successive consecutive blocks to load additional
+blocks that comprise the second stage boot loader.
+This boot loader may present the user with a choice of operating systems to load and
+will have the intelligence to read those files from the file system.</p>
+
+<p>The <strong>Universal Extensible Firmware Interface</strong>, <strong>UEFI</strong>, is a
+successor to the BIOS and contains a boot manager that can directly
+boot files that are placed into an UEFI boot partition. It has the
+intelligence to parse several file system types so that it can load
+a file that does not necessarily occupy consecutive disk blocks.
+The files that are loaded from the UEFI partition are often boot
+loaders for individual operating systems that then load in the file
+or files that comprise the operating system. </p>
+
+<h1 id="operatingsystems:essentialconcepts">Operating Systems: essential concepts</h1>
+
+<p><a href="../lectures/l-intro.html">Go here for lecture notes</a></p>
+
+<blockquote>
+<p><strong>Goal: </strong>
+Enable the operating system to run with special privileges that normal processes do
+not have by switching between user mode and kernel mode.
+Create a system call mechanism to enable a user process to request operations from the operating system
+Create timer interrupts to ensure the operating system can regain control periodically.
+Identify how an operating system interacts with devices.</p>
+</blockquote>
+
+<p>An <strong>operating system</strong> does a number of things. It is a program
+that loads and runs other programs. It provides programs with a
+level of abstraction so they don&#8217;t have to deal with the details
+of accessing hardware. It also manages access to resource, including
+the CPU (via the scheduler), memory (via the memory management
+unit), persistent files (via the file system), a communications
+network (via sockets and IP drivers), and devices (via device
+drivers).</p>
+
+<p>The operating system runs with the processor in <strong>kernel mode</strong>
+(also called <strong>privileged</strong>, <strong>supervisor</strong>, or <strong>system mode</strong>).
+In this mode, the processor can execute privileged instructions
+that define interrupt vectors, enable or disable system interrupts,
+interact with I/O ports, set timers and manipulate memory mappings.
+Programs other than the kernel run with the processor in <strong>user
+mode</strong> and do not have privileges to execute these instructions. A
+processor running in user mode can switch to kernel mode by executing
+a <strong>trap</strong> instruction, also known as a <strong>software interrupt</strong>.
+Some processors also offer explicit <em>syscall</em> instructions This
+is a faster mechanism since it does not need to read the branch
+address from an <strong>interrupt vector table</strong> that is stored in memory
+but keeps that address in a CPU register. Either of these approaches
+switches the processor to kernel mode, saves the current program
+counter on the stack, and transfers execution to a predefined address
+for that trap. Control is switched back to user mode and the location
+right after the trap by executing a <strong>return from exception</strong>
+instruction.</p>
+
+<p>Programs interact with operating systems via <strong>system calls</strong>. A
+system call uses the <strong>trap</strong> mechanism to switch control to operating
+system code running in kernel mode. The operating system can either
+service the request immediately or may need to put the process in
+a waiting state because it requires data that isn&#8217;t ready (such as
+a disk block or network message). If an operating system decides
+that a process has been executing long enough, it may <strong>preempt</strong>
+that process to let another process run.</p>
+
+<p>To allow the operating system to get control at regular intervals,
+a <strong>programmable interval timer</strong> can be configured to generate
+periodic hardware interrupts, for example every 10 milliseconds.
+When the timer generates the interrupt, control is transferred to
+an interrupt handler in the kernel and the processor is switched
+to kernel mode. When the operating system is ready to return back,
+it issues a <em>return from exception</em> instruction. An interrupt or
+trap results in a <strong>mode switch</strong>, where execution is transferred
+from user mode to kernel mode. If the operating system decides it
+is time to replace the currently executing processes with another
+process, it will save the current process&#8217; <strong>context</strong> and restore
+the saved context of another process. The context includes the
+values of a processor&#8217;s registers, program counter, stack pointer,
+and memory mappings. Saving the context of one process and restoring
+that of another is called a <strong>context switch</strong>.</p>
+
+<p>The operating system is responsible for managing system devices.
+The three categories of devices are:</p>
+
+<ul>
+<li><p><strong>character devices</strong>: any device whose data that can be thought
+ of as a byte stream. This includes keyboard input, mouse movements,
+ printer output, camera inputs, etc.</p></li>
+<li><p><strong>block devices</strong>: any device that has persistent storage that
+ is randomly addressable and read or written in fixed-size chunks
+ (blocks). These devices include disks and flash memory. Because
+ the data is persistent and addressable, it can be cached by the
+ operating system so that future requests for cached content may
+ be satisfied from system memory instead of accessing the device
+ again. This cache of frequently-used blocks of data is called
+ the <strong>buffer cache</strong>. Basically, any device that can be used to
+ hold a file system is a block device.</p></li>
+<li><p><strong>network devices</strong>: packet-based communications networks.</p></li>
+</ul>
+
+<p>Devices can be controlled by mapping their control and data registers
+onto memory. This is called <strong>memory-mapped I/O</strong>. The processor
+can get device status notifications (e.g., data is ready) either
+via a hardware interrupt or by periodically polling the hardware
+(e.g., when the interval timer goes off). Data can be transferred
+between the device and system via software that reads/writes the
+device&#8217;s memory. This is called <strong>programmed I/O</strong> (PIO). Alternatively,
+the device may have access to the system&#8217;s memory bus and can use
+<strong>direct memory access</strong> (<strong>DMA</strong>) to transfer data to/from system
+memory without using the processor.</p>
+
+<h1 id="processes">Processes</h1>
+
+<p><a href="../lectures/l-processes.html">Go here for lecture notes</a></p>
+
+<blockquote>
+<p><strong>Goal: </strong>
+What is a running program and what states can it take? How does the operating
+system allow user programs to manage processes?</p>
+</blockquote>
+
+<p>A <strong>process</strong> is a program in execution. It comprises the state of
+the processor&#8217;s registers and the <strong>memory map</strong> for the program.
+The memory map contains several regions that the operating system
+allocated and initialized when the process was first created. These
+regions are:</p>
+
+<ul>
+<li><p>text: the machine instructions </p></li>
+<li><p>data: initialized static and global data </p></li>
+<li><p>bss: uninitialized static data that was defined in the program (e.g., global uninitialized strings, numbers, structures) </p></li>
+<li><p>heap: dynamically allocated memory (obtained through memory allocation requests) </p></li>
+<li><p>stack: the call stack, which holds not just return addresses but also local variables, temporary data, and saved registers</p></li>
+</ul>
+
+<p>Text and data are present in the stored program. The size of the
+bss segment is also fixed and known in the stored program. The heap
+and stack are dynamically allocated. A process may be in one of
+three states:</p>
+
+<ul>
+<li><strong>running</strong>: the process is currently executing code on the CPU</li>
+<li><strong>ready</strong>: the process is not currently executing code but is ready to do so if the operating system would give it the chance</li>
+<li><strong>blocked</strong> (or <strong>waiting</strong>): the process is waiting for some
+event to occur (such as a requested I/O operation to complete) and
+will not ready to execute instructions until this event is ready.</li>
+</ul>
+
+<p>The operating system&#8217;s <strong>process scheduler</strong> is responsible for
+moving processes between the <em>ready</em> and <em>running</em> states. A system
+where the operating system can save the context of a running program
+and restore the context of a ready program to give it a chance to
+run is called a <strong>preemptive multitasking</strong> system. Just about every
+operating system uses this today. Systems that allow program to run
+until it terminates or blocks on I/O are called <strong>non-preemptive</strong>
+or <strong>cooperative</strong> systems.</p>
+
+<p>The operating system keeps track of all processes via a list. Each
+element in that list is a pointer to a data structure that contains
+information about one process. This data structure is called a
+<strong>process control block</strong> (<strong>PCB</strong>). The process control block
+stores all pertinent information about the process, including its
+state, saved registers, memory map, owner ID, parent process, child
+processes, and open files. Each process is uniquely identified with
+a <strong>process ID</strong> (<strong>PID</strong>).</p>
+
+<p>The basic process manipulation capabilities that POSIX systems (Unix, OS X, Linux, *BSD, etc.) offer include:</p>
+<dl>
+<dt>fork</dt>
+<dd><em>fork</em> creates a new process. The new process is a copy of the
+ parent.
+ It is running the same program and has the same open files.
+ It is, however, a copy and not a reference to the parent. Any memory
+ modifications or changes to open file status will be invisible to
+ the parent and vice versa.
+ After a call to <em>fork</em>, both the parent and child continue
+ execution at the same place in the program. They can identify
+ their role by the return value from <em>fork</em>. The parent gets
+ the process ID of the child while the child gets a return
+ value of 0.</dd>
+
+<dt>execve</dt>
+<dd><em>execve</em> does not create a new process. It loads a new program
+ from the file system to overwrite the current process, reinitializing
+ the process&#8217; memory map. It is often used immediately after <em>fork</em>
+ to allow have the child process created by <em>fork</em> to load and run
+ a new program.</dd>
+
+<dt>exit</dt>
+<dd><em>exit</em> tells the operating system to terminate the current process.</dd>
+
+<dt>wait</dt>
+<dd><em>wait</em> allows a parent to wait for and detect the termination of
+ child processes. Once a process exits, the operating system can
+ reclaim the memory that it used. However, its PCB entry in the
+ process list is not deleted so that the parent process can read
+ that process&#8217; exit code and execution statistics, which are stored
+ in the PCB. Once the parent gets this data via a call to <em>wait</em>,
+ this remaining process state can be cleaned up. A process in this
+ state (exited but with an active PCB entry) is called a <strong>zombie</strong>.</dd>
+
+<dt>signal</dt>
+<dd><em>signal</em> allows a process to detect signals, which include software exceptions, user-defined signals, and death of child signals.</dd>
+
+<dt>kill</dt>
+<dd><em>kill</em> sends a signal to a specified process. The signal can
+ usually be detected with <em>signal</em>. It does not kill the process
+ unless the signal is a kill (or terminate) signal.</dd>
+</dl>
+
+
+<p>The operating system starts one process initially. On UNIX/Linux systems, it is
+called <strong>init</strong>. This process reads configuration files and <em>forks</em> other
+processes to run other programs. If a process dies and the
+parent exits without detecting the child&#8217;s death via a <em>wait</em> call, that
+child process is inherited by <em>init</em>. </p>
+
+<h1 id="threads">Threads</h1>
+
+<p><a href="../lectures/l-threads.html">Go here for lecture notes</a></p>
+
+<blockquote>
+<p><strong>Goal: </strong>
+How can an operating system manage multiple threads of execution within one program?</p>
+</blockquote>
+
+<p>A thread can be thought of as the part of a process that is related to the execution flow. A process may have
+one or more threads of execution. A process with more than one thread is said to be <strong>multithreaded</strong>.
+A thread-aware operating system keeps track of processes like we mentioned above: via a list of process control
+blocks. Each PCB now keeps a list of threads for that process (a process will have to have at least
+one thread). Thread-specific information (registers, program counter, stack pointer, priority) is stored
+within a <strong>thread control block</strong> (<strong>TCB</strong>). All other information that is shared
+among threads in a process is stored within the common PCB. Note that even though each thread gets its own
+stack, the stacks all reside in memory that is accessible to all threads within the process.</p>
+
+<p>One advantage of threads is that creating threads and switching among threads in a process is more
+efficient than creating processes and context switching among processes. Threading also makes certain
+types of programming easier since all memory is shared among threads. Moreover, on multi-core or multiprocessor
+systems, the operating system can take advantage of the hardware architecture and schedule threads onto
+multiple processor cores to allow the threads to run in parallel. </p>
+
+<p>Threads can be implemented in, and managed by, the operating system. These are known as <strong>kernel-level threads</strong>.
+It is also possible to create a thread library that will create and manage threads within a process.
+The library will
+save and restore registers and manage switching stacks among threads. It may ask the operating system for periodic
+software interrupts to enable it to preempt threads. To the operating system, this appears as one single-threaded process.
+These are called <strong>user-level threads</strong>.
+One caveat with user-level threads is that if one thread blocks on a system call then the entire process is blocked and
+no threads within that process get to run. Most operating systems offer non-blocking versions of system calls that a threading
+library can use to simulate blocking system calls.</p>
+
+<p>The advantage of user-level threads is that they can be even more efficient than kernel-level threads since there is
+no need to even do a mode switch into the kernel. The threading library can also have its own thread scheduling algorithm
+that is optimized to a specific job. A disadvantage is that user-level threads cannot take advantage of multiprocessors.
+Threading models can be combined and user-level thread libraries can be used with operating systems that offer kernel
+threads. In the general case, <strong>hybrid threading</strong> maps <em>N</em> user-level threads onto <em>M</em> kernel-level threads.</p>
+
+<p>The operations for creating and handling threads are conceptually similar to those for processes. Since threads share
+the same program and memory map, there is no concept of an <em>execve</em> operation. When a new thread is created,
+it starts execution at a given function in the program. When it returns from that function, the thread is destroyed.
+A thread can also exit explicitly via a system call. Instead of a <em>wait</em> operation, where a parent process waits for
+the termination of a child process, threads support a <em>join</em> operation, where any one thread within a process
+can wait for any other thread to terminate. There is no parent-child relationship in threads.</p>
+
+<p>In Linux, there is no distinction between processes and threads. Linux calls them all <strong>tasks</strong>.
+Linux provides a <strong>clone</strong> system call that allows one to implement the behavior of threads. <em>Clone</em>
+operates like <em>fork</em> in that it creates a running copy of the current process. However, it allows the
+caller to specify what, if any, data should remain in common with the parent. For example, memory,
+open files descriptors, and signals could be shared to provide thread-like behavior.</p>
+
+<p>Because threads access the same memory, the potential for conflicts is greater than it is for processes, which
+do not share memory unless they explicitly request a shared memory segment.
+Access to shared data needs to be properly controlled to ensure <strong>mutual exclusion</strong>.</p>
+
+<h1 id="synchronization">Synchronization</h1>
+
+<p><a href="../lectures/l-sync.html">Go here for lecture notes</a></p>
+
+<blockquote>
+<p><strong>Goal: </strong>
+How do we ensure that one thread can stay out of the way of another thread?</p>
+</blockquote>
+
+<p>Threads (or processes) are <strong>concurrent</strong> if they exist at the same time. They are <strong>asynchronous</strong> if
+they need to synchronize with each other occasionally. They are <strong>independent</strong> if they have no dependence on
+each other: it does not affect a thread whether another thread exists or not. Threads are <strong>synchronous</strong> if they
+synchronize frequently so that their relative order of execution is guaranteed.</p>
+
+<p>A <strong>race condition</strong> is a bug where the outcome of concurrent threads is dependent on the precise sequence of execution
+(particularly, the interleaving of executing two threads). A race condition typically occurs when two or more threads try to read, write,
+and possibly make decisions based on the contents of memory that they are accessing concurrently.
+The regions of a program that try to access shared resources and cause race conditions are called <strong>critical sections</strong>.
+To avoid race conditions, we want to make sure that only one thread at a time can execute within a critical section.
+Enforcing this is called <strong>mutual exclusion</strong>. <strong>Deadlock</strong> is a condition where there is a circular
+dependency for resources among threads and each one is waiting on the other to release a lock
+(a simple case of deadlock is,
+&#8220;<em>I need B before I release my lock on A</em>&#8221; while
+&#8220;<em>you need A before you release your lock on B</em>&#8221;). <strong>Starvation</strong> is the case where the scheduler
+never gives a thread a chance to run. If a thread doesn&#8217;t get to run, it may not get a chance to release any resources that
+it is holding.</p>
+
+<p>Mutual exclusion can be achieved in a number of was. <strong>Disabling interrupts</strong> when entering a critical section
+ensures that other threads will never get a chance to preempt you and run at all. This is a drastic solution. It also requires
+that you are running in kernel mode and have the privileges to disable interrupts. Moreover, doing so on a multiprocessor
+system will usually disable interrupts only on a single processor, allowing threads to run on other processors and access
+the critical section. <strong>Test and set locks</strong> (<code>if (!locked) lock = 1</code>)
+implemented in software are a simple approach but a buggy one
+because they introduce a race condition: a thread can be preempted between testing the value of a lock and setting it (grabbing it).
+This can allow multiple threads to get the same lock.</p>
+
+<p>Processor manufacturers have introduced <strong>atomic instructions</strong> that can perform operations such as test-and-set
+as one indivisible operation, meaning that another thread cannot preempt the sequence of operations and they all execute
+sequentially and indivisibly. Some of these instructions are:</p>
+<dl>
+<dt>test-and-set</dt>
+<dd>Set a memory location to 1 and return the previous value of the
+ location. If the returned value is a 1 that means that somebody
+ already grabbed the lock. If the value is 0 then you know that there
+ was no lock before you executed the instruction and that you grabbed
+ it while running the instruction.</dd>
+
+<dt>compare-and-swap</dt>
+<dd>Compare the value of a memory location with an old value that is
+ passed to the instruction. If the two values match then write the
+ new value into that memory location. With this instruction, we set
+ a memory location to a specific value <em>provided that</em> that somebody
+ did not change the contents since we last read them. If they did,
+ our new value will not be set.</dd>
+
+<dt>fetch-and-increment</dt>
+<dd>Increment a memory location and return the previous value of that
+ location. This is analogous to the deli counter number dispensing
+ machine that gives out incrementally increasing numbers. You grab
+ a ticket (fetch-and-increment) and wait until it&#8217;s your turn. When
+ you&#8217;re done, you increment turn so that the thread that grabbed the
+ next ticket gets to go.</dd>
+</dl>
+
+
+<p>These atomic-instruction-based mechanisms all require looping in software to wait until the lock is released. This is called
+<strong>busy waiting</strong> or a <strong>spinlock</strong>. It is undesirable because it keeps the threads in a ready
+to run state even though they have no useful work to do except loop and wait for a value to change. Moreover, if a thread
+that is looping on a spinlock is a high priority one, it is <em>always</em> ready to run. With a priority scheduler, it
+may always get scheduled to run, starving a low priority thread that may be the one that has the lock that needs to be released.
+This situation is known as <strong>priority inversion</strong>: the low priority thread <em>needs</em> to be given
+a high priority so it can exit the critical section as quickly as possible and let the high priority thread get it.</p>
+
+<p>A more desirable approach than spinlocks is to have the operating system provide user processes with system calls that we can use for mutual
+exclusion and put processes that are waiting for a critical section into a waiting state. This way, a waiting process will
+not be running until it is allowed entry into the critical section.</p>
+<dl>
+<dt>Semaphores</dt>
+<dd>A semaphore counts the number of wake-ups that are saved for
+ future use. Each time you call <em>down</em> on a semaphore, you decrement
+ its value. If the value is 0 and you call <em>down</em> then your thread
+ goes to sleep. When a thread calls <em>up</em> on a semaphore, the operating
+ system will wake up one of the threads that is sleeping on that
+ semaphore. If no threads are sleeping on a semaphore then <em>up</em>
+ will just increment the value of the semaphore. The most basic use
+ of a semaphore is to initialize it to 1. When a thread want to enter
+ a critical section, it calls <em>down</em> and enters the section. When
+ another thread tries to do the same thing, the operating system
+ will put it to sleep because the value of the semaphore is already
+ 0 due to the previous call to <em>down</em>. When the first thread is
+ finished with the critical section, it calls <em>up</em>, which wakes up
+ the other thread that&#8217;s waiting to enter. In general, the semaphore
+ is initialized to the number of concurrent threads that you want
+ to enter a section before they block.</dd>
+
+<dt>Event counters</dt>
+<dd>An event counter works similar to the way you would use a
+ fetch-and-increment instruction but without the spinlock since the
+ thread can go to sleep waiting for a value. Three operations are
+ permitted: you can read the current value of an event counter,
+ increment it, and wait until the event counter reaches a certain
+ value. This last operation is a blocking one.</dd>
+
+<dt>Condition variables (also known as monitors)</dt>
+<dd>A condition variable supports two operations: <em>wait</em> until a
+ condition variable is signaled and <em>signal</em> a condition variable.
+ Signaling a condition variable will wake up one thread that is
+ waiting on the condition variable.</dd>
+
+<dt>Message passing</dt>
+<dd>Message passing supports two operations: <em>send</em> and <em>receive</em>.
+ The most common behavior of message passing is where a <em>send</em>
+ operation does not block and a <em>receive</em> operation does block.
+ We can use the blocking aspect of receive to coordinate mutual
+ exclusion by sending a null message ahead of time. The first
+ thread that does a receive will get the message and then enter
+ the critical section. The second thread will block on the <em>receive</em>.
+ A message passing system where the <em>send</em> blocks until the data
+ is received via <em>receive</em> is called <strong>rendezvous</strong>. Rendezvous
+ is efficient when messaging is done within the machine (versus a
+ network) in that it does not require the message to be copied to
+ an intermediate buffer. However, it forces the senders and receivers
+ to be tightly synchronized.</dd>
+</dl>
+
+
+<p>Conventional message passing requires that the sender knows the
+ identity of the thread/process that will be receiving the message.
+ This is known as <strong>direct addressing</strong>.</p>
+
+<p>An alternate form of messaging is via mailboxes using <strong>indirect
+ addressing</strong>. <strong>Mailboxes</strong> allow any number of threads to send
+ to an intermediate queue, called a mailbox. Any number of threads
+ can read from this queue. Hence, it is easy to support multiple
+ readers and writers and nether the writers nor readers have to
+ know how to address each other.</p>
+
+<h1 id="scheduling">Scheduling</h1>
+
+<p><a href="../lectures/l-scheduling.html">Go here for lecture notes</a></p>
+
+<blockquote>
+<p><strong>Goal: </strong>
+How does the operating system decide what process should run next?
+How does it decide to stop running one process and start running another one?</p>
+</blockquote>
+
+<p>Processes execute for a while, then block on I/O, then execute some more, then block, etc. Each period of execution is
+called a <strong>CPU burst</strong>. Overall throughput is increased if another process can run when a process is in a
+blocked state. A <strong>scheduler</strong> is responsible for deciding what process should get to run next
+and, if the current process did not finish its CPU burst, whether the current process has run too long and needs
+to be <strong>preempted</strong> with another process. If a scheduler can preempt a process and context switch another process in then
+it is a <strong>preemptive</strong> scheduler. Otherwise it is a <strong>non-preemptive</strong>, or <strong>cooperative</strong>
+scheduler.</p>
+
+<p>A <strong>time slice</strong> (also known as <strong>quantum</strong>) is the maximum time that a process will be allowed to
+run before it gets preempted and another process gets a chance to run. Short time slices are good for maximizing interactive
+performance. Long time slices reduce the overhead of context switching but reduce response time.
+The scheduling algorithm determines whether a process should be preempted and which process gets to run next.
+The <strong>dispatcher</strong> is the component of the scheduler that is responsible for restarting the chosen
+process. It does so by restoring the process&#8217; context (loading saved registers and memory mapping) onto the CPU
+and executing a <em>return from interrupt</em> instruction that
+will cause the process to to execute from the location that was
+saved on the stack at the time that the
+program stopped running &mdash; either via an interrupt or a system call.</p>
+
+<h2 id="first-comefirstservedscheduling">First-come, first served scheduling</h2>
+
+<p>This is a non-preemptive scheduler that uses a simple FIFO queue. New processes are added to the queue. When
+a process blocks on I/O, the scheduler takes the earliest (first in) process out of the queue. When a process is no longer
+blocking and is ready to run, it goes to the end of the queue. The drawback of FCFS is that it is non-preemptive and
+processes with long CPU bursts will delay other processes.</p>
+
+<h2 id="roundrobinscheduling">Round robin scheduling</h2>
+
+<p>This is a preemptive version of first-come, first served. When a quantum expires for a running process, the process is preempted
+and brought to the rear of the queue. The ready process at the head of the queue gets to run next.
+It&#8217;s a simple scheduler but giving every process an equal share of the CPU is not necessarily a good idea since it does not
+schedule highly interactive (I/O-intensive) processes more frequently.</p>
+
+<h2 id="shortestremainingtimefirstscheduling">Shortest remaining time first scheduling</h2>
+
+<p>This scheduler picks the process with the shortest estimated CPU burst time to run next. The idea is to maximize average response
+time and let I/O bound processes run first and, hopefully, quickly issue their I/O requests and block. It also maximizes
+I/O utilization since we give priority to processes that we expect to block quickly. The trick to this scheduler is that you need to
+estimate the next CPU burst time. A weighted <strong>exponential average</strong> of previous CPU bursts is used to do this.
+The weight may be adjusted to weigh recent CPU bursts more or less than historic averages.</p>
+
+<h2 id="priorityscheduling">Priority scheduling</h2>
+
+<p>A priority scheduler requires that each process be assigned a priority. It simply picks the highest priority process from the list
+of ready processes. Priorities may be <strong>internal</strong> or <strong>external</strong>. Internal priorities are determined by
+the system. External priorities are assigned by the administrator. Priorities may also be <strong>static</strong> or
+<strong>dynamic</strong>. Dynamic priorities are priorities that are adjusted by the system as a process executes. Static priorities
+remain fixed for the duration of execution. A danger with priority scheduling is <strong>starvation</strong>. Starvation
+occurs if there is always a higher priority process that is ready to run. The lower-priority process never gets scheduled. We
+saw an example of this in synchronization when we looked at priority inversion. Starvation can be handled by using dynamic priorities
+and temporarily boosting the priority of processes that has not been scheduled in a while (this is known <strong>process aging</strong>)
+or, conversely, by penalizing processes that do get scheduled and use up their quantum.</p>
+
+<h2 id="multilevelqueues">Multilevel queues</h2>
+
+<p>Instead of a pure priority scheduler that expects processes to have unique priorities, we can set up <strong>priority classes</strong>.
+Each class has its own unique priority and within each class we have a queue of processes that are associated with
+that priority class. We may give choose to give high-priority classes short time slices to ensure good interactive performance
+and low-priority classes longer time slices to run longer but less frequently. Each priority class can have its own scheduling
+algorithm to determine how to pick processes from that class. For example, some classes may use round robin scheduling
+while others may use shortest remaining time first scheduling.</p>
+
+<h2 id="multilevelfeedbackqueues">Multilevel feedback queues</h2>
+
+<p>Multilevel feedback queues are multilevel queues with dynamic priorities thrown in.
+The two basic rules in multilevel feedback queues are:</p>
+
+<ul>
+<li><p>A new process gets placed in the highest priority queue.</p></li>
+<li><p>If a process does not finish its quantum (that is, it blocks on
+ I/O) then it will stay at the same priority level (round robin)
+ otherwise it moves to the next lower priority level</p></li>
+</ul>
+
+<p>This enables a process with short CPU bursts to remain at a high priority level
+while processes that use the CPU for longer stretches of time get penalized.</p>
+
+<p>High priority queues often have a short time slice
+associated with them. If a process reaches the end of its time slice rather than blocking, the scheduler demotes it to the next
+lower-priority queue. Lower priority queues are then assigned increasingly longer time slices. The process will get knocked to a lower priority
+level each time it runs for the full quantum. The goal is to keep interactive processes with short CPU bursts at high priorities
+and lower the priorities of CPU-bound processes while giving them longer stretches of time to run (but less often).</p>
+
+<p>A drawback
+is that if an interactive process has a stretch of computation, it will get knocked to a low level and never get pushed up. Some systems
+deal with this by raising a process&#8217; priority whenever it blocks on I/O. Another approach is to
+raise the priority of a process that has not had a chance to run for a while. This is called <strong>process aging</strong>.
+Aging also ensures that starvation does not occur.</p>
+
+<p>Another problem with pure multilevel feedback queues is having a programmer game the system. If a programmer
+writes software that always blocks on a low-latency I/O operation just before a quantum expires, the process can
+remain at a high priority level even though it regularly uses up most of the quantum. A way of dealing with this
+is to not use quantum expiration to determine whether to demote a process&#8217; priority but rather to
+count the amount of CPU time that a process used over several time slices. If a process regularly uses up
+most of its time slice, it is deemed to be a CPU hog and gets demoted to a lower priority level.
+This is the general approach that the last couple of Linux schedulers have used.
+Because priority levels are no longer related to the expiration of a time slice,
+Linux gives interactive tasks a high priority and a <em>longer</em> time slice, with the
+expectation that they would block before using up the time slice. </p>
+
+<h2 id="lotteryscheduling">Lottery scheduling</h2>
+
+<p>The goal of <strong>lottery scheduling</strong>, known as a
+<strong>proportional-share scheduler</strong>, is to grant processes a fixed share of the
+CPU. For example, one process may be allotted 75% of the CPU, another 15%, and another 10%.
+Each process is allocated a range of &#8220;tickets&#8221;. Tickets are numbered sequentially 0&#8230;N.
+At the expiration of each time slice, the scheduler picks a number in that range. The
+process holding the winning ticket is scheduled to run.
+The more tickets a process has, the higher its chance of getting scheduled. If a process
+is given 75% of the tickets it will, on average, be scheduled to run 75% of the time.</p>
+
+<p>There are several difficulties in lottery scheduling. Tickets have to be reallocated
+as processes come and go (a system will often have hundreds or thousands of processes, not three
+as in the example above). Figuring out how to assign tickets is difficult.
+The scheduler will generally have to traverse the list of
+processes to find one with the valid range: a data structure that keeps processes in
+the run queue sorted by ticket range would help.
+Proportional-share schedulers are not used in general-purpose systems but have
+found use in applications such as scheduling multiple virtual machines. For example,
+you might have a server running eight instances of Linux and one instance of Windows.
+Each of these looks like a process to the native operating system and the scheduler
+might be configured to give each Linux virtual machine 10% of the CPU and give
+Windows 20% of the CPU.</p>
+
+<h2 id="multiprocessorscheduling">Multiprocessor scheduling</h2>
+
+<p>With multiple processors, the goals in scheduling are load balancing and processor affinity.
+<strong>Processor affinity</strong> is the desire to reschedule a process onto the same processor
+on which it was previously scheduled to take advantage of the fact that the processor may still
+have memory used by that process in its cache.
+<strong>Hard affinity</strong> is the case where
+the process will always be rescheduled onto the same processor.
+<strong>Soft affinity</strong> is the case where
+the process may be rescheduled onto another processor to keep the load balanced and ensure
+that all processors have processes to run.</p>
+
+<p>Linux, and most operating systems, maintain a run queue per CPU. Whenever a process
+running on a specific processor blocks or its quantum expires, the scheduler checks
+the run queue for that CPU and makes a decision which
+process should be scheduled next. This simplifies processor affinity and
+reduces contention for multiple CPUs accessing run queues at the same time.</p>
+
+<p><strong>Load balancing</strong> is the process of making sure that all processes
+have processes to run. <strong>Push migration</strong> is a periodic examination of the load
+(number of processes in the run queue) on each CPU. If one processor is more heavily loaded
+than another, some processes are moved to another CPU&#8217;s queue. <strong>Pull migration</strong>
+is the case where a scheduler has no ready processes to run on a CPU and has to get get one
+from another CPU&#8217;s queue. Push and pull migration are often used together.</p>
+
+<p>Scheduling across processors isn&#8217;t as simple as maintaining processor affinity.
+In reality, there are levels of affinity. An Intel <strong>hyperthreaded</strong> processor presents
+itself as two virtual CPUs. Each CPU shares all levels of cache. In many
+architectures, processor cores on
+the same chip share a common cache (typically L3) while faster caches (L1 and L2)
+are local to the core and not shared. Multiple CPU chips share no caches but may
+have equally efficient access to memory. A Non-Uniform Memory Access (<strong>NUMA</strong>)
+architecture gives all CPUs access to the same memory but each CPU has a region
+of that memory that it can access faster than other regions.</p>
+
+<p>Linux uses <strong>scheduling domains</strong>, which allows it model a hierarchy of
+processor <strong>groups</strong>. At the lowest level, each CPU is its own group.
+Two virtual CPUs on the same core form a group above that. Multiple cores on the same
+chip form a group above that, and so on.
+Each level in scheduling domain hierarchy has a <strong>balancing policy</strong>
+associated with it that defines when and if the the per-CPU queues need to be rebalanced.</p>
+
+<h1 id="real-timescheduling">Real-time scheduling</h1>
+
+<p><a href="../lectures/l-scheduling.html">Go here for lecture notes</a></p>
+
+<blockquote>
+<p><strong>Goal: </strong>
+What are the needs of time-critical processes and how can schedulers accommodate them?</p>
+</blockquote>
+
+<p>Real-time processes have to deal with providing guaranteed response.
+A <strong>start time</strong> is the time at which a process must start in response to some event, such as an interrupt
+from a sensor. A <strong>deadline</strong>, also known as <strong>stop time</strong> is the time at which the task
+must complete. A <strong>hard deadline</strong> is one in which there is no value if the deadline is missed. A <strong>soft
+deadline</strong> is one where there is decreasing value in the computation as the deadline slips. Processes may be
+<strong>terminating processes</strong>, which run and then exit. Their deadline is the maximum amount of time before
+they exit. Process may also be <strong>nonterminating processes</strong>. These run for a long time but perform
+periodic operations, such as encoding and decoding audio and video. Their deadline is not the time to exit but rather
+the time by which results have to be ready for each period of execution (e.g., decode video at 30 frames per second).</p>
+
+<p>Real-time systems have to be designed to be able to respond to events quickly. Systems that can guarantee response
+times are called <strong>hard real-time systems</strong>. Those that cannot are <strong>soft real-time systems</strong>.
+Real-time operating systems tend to use priority schedulers (possibly with variations), have a guaranteed maximum time to service interrupts,
+can ensure that processes are fully loaded into the system&#8217;s memory, provide efficient memory allocation, and support
+multi-threaded execution or preemptable system calls. You do not want your response to an event delayed because the
+operating system is busy doing something else.</p>
+
+<h2 id="earliestdeadlinescheduling">Earliest deadline scheduling</h2>
+
+<p>Each process has a deadline. The scheduler simply picks the process that has the nearest deadline (i.e., the process in
+greatest danger of missing its deadline).</p>
+
+<h2 id="leastslackscheduling">Least slack scheduling</h2>
+
+<p>For each process, we know its deadline and required amount of compute time. Slack is determined by how free time is left:
+time to deadline minus the compute time. This is the most amount of time that we can procrastinate before we devote
+100% of our resources to running the process. Least slack scheduling picks the process with the smallest slack: the one
+we can least procrastinate with.</p>
+
+<p>When we compare the effects of earliest deadline with least slack, we see that all processes will complete on time if there
+is sufficient compute time available. If there isn&#8217;t, earliest deadline scheduling will likely complete some processes
+on time while others may be significantly late. Least slack scheduling will have the effect of having all processes be
+late by about the same amount.</p>
+
+<h2 id="ratemonotonicanalysis">Rate monotonic analysis</h2>
+
+<p>Rate monotonic analysis is a way to assign priorities to periodic tasks. It simply gives the highest priority to the process
+with the shortest period (highest frequency). </p>
+
+</div>
+
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2015 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: May  5, 2015
+</p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+
+	<h2> Exam Info </h2>
+	<ul>
+	<li> <a href="../exam/index.html#list">List of topics</a>
+	<li> <a href="../exam/old/index.html"> Old Exams </a> </li>
+	<li> <a href="../exam/study-guide-1.html"> Exam 1 Study Guide </a> </li>
+	<li> <a href="../exam/study-guide-2.html"> Exam 2 Study Guide </a> </li>
+	<li> <a href="../exam/study-guide-3.html"> Exam 3 Study Guide </a> </li>
+	<li> <a href="../exam/study-guide-final.html"> Final Study Guide </a> </li>
+	</ul>
+	
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8293152-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

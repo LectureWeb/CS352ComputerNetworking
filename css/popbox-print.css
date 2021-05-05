@@ -1,0 +1,23 @@
+#main .gfigure {
+	display: inline-block;
+        margin-left: 0.4em;
+        margin-right: 0.4em;
+        text-align: center;
+        position: relative;
+	width: 1.2in;
+	height: 1.2in;
+        margin-top: 0.25em;
+	border: solid 1px #000;
+	background: #fff;
+	vertical-align:top;
+}
+
+#main .gfigure .innerframe {
+	display: inline-block;
+	margin-top: 1.25em;
+}
+
+#main .gfigure .innerframe img {
+	max-height: 0.9in;
+	max-width: 0.9in;
+}

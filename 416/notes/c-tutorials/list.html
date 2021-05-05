@@ -1,0 +1,483 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> CS 416 Documents </title>
+<link href="../../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../../about/contact.html">Contact</a></li>
+    <li><a href="../../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="ru419"><a href="../../../419/index.html">Computer Security [419]</a></li>
+	<li class="cslink"><a href="../../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+<p>
+You are in: 
+</p>
+<ul>
+	<li class="first"> <a href="index.html"> Home </a> 
+ 	<li> <a href="../../../rutgers/index.html"> Rutgers </a> 
+ 	<li> <a href="../../index.html"> CS 416 </a> 
+ 	<li> <a href="../../notes/index.html"> Documents </a> 
+ 	<li> <a href="../../notes/c-tutorials/index.html"> Tutorials </a> 
+ 	<li> <a href="../../notes/c-tutorials/list.html"> Linked List Tutorial </a> 
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> C Tutorial: Basics </h1>
+</div>
+
+<h1> Linked Lists </h1>
+<p>
+There are only a few data structures and algorithms that you need to keep fresh
+in your mind because they are used over and over again. The simple singly-linked
+list is one of these. 
+</p>
+
+<h2>
+What's a linked list and when do you use it? 
+</h2>
+<p>
+A linked list is useful when you need to read, keep track of, and process arbitrary amount of
+information. There are variations on the linked list: singly-linked, doubly-linked, and
+circular lists. This set of tutorials focuses on the basics so well look at how you program
+and use a singly-linked list in C. Besides, you'll use a singly-linked
+list at least a hundred times more than all of the other types combined. 
+</p>
+
+<h2> Implementation </h2>
+<p>
+A linked list data structure contains whatever data we want to store in the list along with
+a pointer to the next element of the list. 
+All we need to keep track of is the head of the list. Whenever we want to add a new element 
+to the list, we simply allocate the memory for the new element, set its pointer to point
+to the contents of the current head of the list and then set the head of the list to point
+to this new element. Hence, the new element becomes the head of the list.
+</p>
+
+<h2> Example 1: adding elements </h2>
+<p>
+Here's a simple example. We'll write a program that reads lines from the standard input. Each line
+gets entered as an element on the list. When we enter a line containing just a period, we'll 
+stop reading lines and iterate through the list, printing 
+out each one of the strings. Since each successive item goes to the head of the list, we'll be printing
+the last items first.
+</p>
+
+
+<div class="codeblock-box"><span class="comment">/* list: linked list example */</span>
+<span class="comment">/* Paul Krzyzanowski */</span>
+
+#include &lt;stdlib.h&gt;	<span class="comment">/* needed to define malloc() */</span>
+#include &lt;string.h&gt;	<span class="comment">/* needed to define strdup() */</span>
+#include &lt;stdio.h&gt;	<span class="comment">/* needed for printf() */</span>
+#define MAXLEN 128
+
+struct list_entry {
+	char *data;
+	struct list_entry *next;
+} *list = (struct list_entry *)0;
+
+int
+main(int argc, char **argv) {
+	void dump(void);
+	char *s, line[MAXLEN];
+	struct list_entry *item;
+
+	while (fgets(line, MAXLEN, stdin) != 0) {	<span class="comment">/* read until eof or . */</span>
+		<span class="comment">/* fgets reads in a \n - strip it */</span>
+		if ((s = strchr(line, '\n')) != 0)
+			*s = 0;
+
+		if (strcmp(line, ".") == 0) 	<span class="comment">/* we have a line with just "." */</span>
+			break;
+
+		<span class="comment">/* allocate a new list element */</span>
+		item = malloc(sizeof(struct list_entry));
+		if (item == 0) {
+			fprintf(stderr, "malloc failed\n");
+			exit(1);
+		}
+		<span class="comment">/* set the data in the list element */</span>
+		item-&gt;data = strdup(line);	<span class="comment">/* copy the string */</span>
+		item-&gt;next = list;
+
+		<span class="comment">/* we have a new head of the list */</span>
+		list = item;
+	}
+	dump();
+	exit(0);
+}
+
+<span class="comment">/* dump: dump the list */</span>
+
+void
+dump(void) 
+{
+	struct list_entry *lp;
+	
+	for (lp = list; lp != 0; lp=lp-&gt;next)
+		printf("item: \"%s\"\n", lp-&gt;data);	
+}
+</div>
+<p><a href="files/list1.c">Download this file</a></p>
+<p> Save this file by control-clicking or right clicking the download link and then saving it as <tt>list1.c</tt>.</p>
+<p> Compile this program via:</p>
+<div class="codeblock">
+gcc -o list1 list1.c
+</div>
+<p>If you don't have gcc, You may need to substitute the gcc command with cc or another name of your compiler.</p>
+<p>Run the program:</p>
+<div class="codeblock">
+./list1
+</div>
+<p>
+Now enter a bunch of stuff on multiple lines and then terminate with a line containing a single period.
+</p>
+
+<h2> Example 2: deleting elements  </h2>
+<p>
+Let's expand on the above example. Now, after we enter the line containing just a period, we will
+be asked to enter more test. Each time we enter a line, we will search through the list. If we find
+a match then we will state so and delete the list entry. A line with just a period will signify
+the end of this second phase.
+</p>
+<p>
+Deleting is straightforward. We just need to keep track of the prevous item we found.
+When we find the entry that we want to delete, we update the <tt>next</tt> pointer of the
+previous item to point to the next item instead of the current one. Then we free whatever space we
+allocated for the item:
+</p>
+<div class="codeblock">
+last->next = current->next;
+free(current);
+</div>
+<p>
+The special case that we have to handle is if we need to delete the first item on the list.
+In this case, we update the head of the list to point to the next item on the list:
+</p>
+<div class="codeblock">
+if (last != 0)
+	last->next = current->next;
+else
+	list = current->next;
+free(current);
+</div>
+
+<p>
+Here's the code.. I moved the code  read lines and create the list as well as the code to read
+lines and delete items from the list into separate functions to keep all functions short and to the point.:
+</p>
+
+<div class="codeblock-box"><span class="comment">/* list: linked list example */</span>
+<span class="comment">/* Paul Krzyzanowski */</span>
+
+#include &lt;stdlib.h&gt;	<span class="comment">/* needed to define malloc() */</span>
+#include &lt;string.h&gt;	<span class="comment">/* needed to define strdup() */</span>
+#include &lt;stdio.h&gt;	<span class="comment">/* needed for printf() */</span>
+#define MAXLEN 128
+
+struct list_entry {
+	char *data;
+	struct list_entry *next;
+} *list = (struct list_entry *)0;
+
+int genlist(void);
+
+int
+main(int argc, char **argv) {
+	int genlist(void);
+	void read_delete(void);
+
+	if (genlist()) {
+		<span class="comment">/* phase 2 - delete */</span>
+		printf("enter words to delete\n");
+		read_delete();
+	}
+	exit(0);
+}
+
+<span class="comment">/* read in list contents from stdin */</span>
+<span class="comment">/* return zero if we didn't read an end of file */</span>
+
+int
+genlist()
+{
+	char *s, line[MAXLEN];
+	struct list_entry *item;
+
+	while (fgets(line, MAXLEN, stdin) != 0) {	<span class="comment">/* read until eof or . */</span>
+		<span class="comment">/* fgets reads in a \n - strip it */</span>
+		if ((s = strchr(line, '\n')) != 0)
+			*s = 0;
+
+		if (strcmp(line, ".") == 0)  	<span class="comment">/* we have a line with just "." */</span>
+			return 1;
+
+		<span class="comment">/* allocate a new list element */</span>
+		item = malloc(sizeof(struct list_entry));
+		if (item == 0) {
+			fprintf(stderr, "malloc failed\n");
+			exit(1);
+		}
+		<span class="comment">/* set the data in the list element */</span>
+		item-&gt;data = strdup(line);	<span class="comment">/* copy the string */</span>
+		item-&gt;next = list;
+
+		<span class="comment">/* we have a new head of the list */</span>
+		list = item;
+	}
+	return 0;	<span class="comment">/* we reached the end of input! */</span>
+}
+
+<span class="comment">/* read in words from stdin and delete them from the list */</span>
+
+void
+read_delete()
+{
+	void delete(char *s);
+	char *s, line[MAXLEN];
+
+	while (fgets(line, MAXLEN, stdin) != 0) {	<span class="comment">/* read until eof or . */</span>
+		if ((s = strchr(line, '\n')) != 0)	<span class="comment">/* strip \n at end */</span>
+			*s = 0;
+
+		if (strcmp(line, ".") == 0) 	<span class="comment">/* we have a line with just "." */</span>
+			break;
+		delete(line);
+	}
+}
+
+<span class="comment">/* delete: delete an entry from the list */</span>
+
+void
+delete(char *s) 
+{
+	struct list_entry *current, *last = 0;
+	
+	for (current = list; current != 0; last = current, current=current-&gt;next)
+		if (strcmp(current-&gt;data, s) == 0) {
+			printf("deleting \"%s\"\n", s);
+			if (last != 0) <span class="comment">/* not the first entry */</span>
+				last-&gt;next = current-&gt;next;
+			else
+				list = current-&gt;next; <span class="comment">/* change head of list */</span>
+			free(current-&gt;data);
+			free(current);
+			return;
+		}
+	printf("\"%s\" not found\n", s);
+}
+</div>
+<p><a href="files/list2.c.c">Download this file</a></p>
+<p> Save this file by control-clicking or right clicking the download link and then saving it as <tt>list2.c.c</tt>.</p>
+<p> Compile this program via:</p>
+<div class="codeblock">
+gcc -o list2.c TEST.c
+</div>
+<p>If you don't have gcc, You may need to substitute the gcc command with cc or another name of your compiler.</p>
+<p>Run the program:</p>
+<div class="codeblock">
+./list2.c
+</div>
+<p>
+Now enter a bunch of text, such as a word per line. Then enter a line with just a period on it. You
+will be prompted to enter more words and they will either be found and deleted from the list or not
+found in the list.
+
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2019 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span>
+</p>
+<p>
+The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>
+Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect my own.
+</p>
+<p> Last updated: March 28, 2019
+</p>
+<img class="stamp" src="../../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../../index.html"> Main course page </a> </li>
+	<li> <a href="../../news.html"> News </a> </li>
+	<li> <a href="../../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../../hw/index.html"> Homework </a> </li>
+	<li> <a href="../../notes/index.html"> Documents </a> </li>
+	<li> <a href="../../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+        <h2> Tutorials </h2>
+        <ul>
+        <li> <a href="../../notes/c-tutorials/index.html"> C/Unix tutorials </a> </li>
+        <li> <a href="../../notes/make/index.html"> Makefile tutorial </a> </li>
+        <li> <a href="../../notes/sockets/index.html"> TCP/IP Sockets </a> </li>
+        <li> <a href="../../notes/rpc/index.html"> ONC RPC tutorial </a> </li>
+<!--
+        <li> <a href="../../notes/clocks/index.html"> Clocks demo </a> </li>
+-->
+        </ul>
+
+	
+        <h2> <a href="index.html">C Tutorials</a> </h2>
+	<h3> Processes </h3>
+        <ul>
+        <li> <a href="../../notes/c-tutorials/getpid.html"> getpid </a> </li>
+        <li> <a href="../../notes/c-tutorials/getppid.html"> getppid </a> </li>
+        <li> <a href="../../notes/c-tutorials/fork.html"> fork </a> </li>
+        <li> <a href="../../notes/c-tutorials/exec.html"> exec </a> </li>
+        <li> <a href="../../notes/c-tutorials/forkexec.html"> fork&amp;exec </a> </li>
+        <li> <a href="../../notes/c-tutorials/wait.html"> wait </a> </li>
+        <li> <a href="../../notes/c-tutorials/signal.html"> signal </a> </li>
+	</ul>
+	<h3> I/O and IPC </h3>
+	<ul>
+        <li> <a href="../../notes/c-tutorials/dup2.html"> dup2 </a> </li>
+        <li> <a href="../../notes/c-tutorials/pipe.html"> pipe and dup2 </a> </li>
+        <li> <a href="../../notes/c-tutorials/isatty.html"> isatty </a> </li>
+	<ul>
+	</ul>
+	<h3> Timing </h3>
+        <li> <a href="../../notes/c-tutorials/times.html"> times </a> </li>
+        <li> <a href="../../notes/c-tutorials/gettime.html"> clock_gettime </a> </li>
+	<ul>
+	<h3> Basics </h3>
+	<ul>
+        <li> <a href="../../notes/c-tutorials/getopt.html"> Command options </a> </li>
+        <li> <a href="../../notes/c-tutorials/strtok.html"> Parsing tokens </a> </li>
+<!--
+        <li> <a href="../../notes/c-tutorials/fpointer.html"> Pointers to functions </a> </li>
+-->
+        <li> <a href="../../notes/c-tutorials/list.html"> Linked list </a> </li>
+<!--
+        <li> <a href="../../notes/c-tutorials/hash.html"> Hash tables </a> </li>
+-->
+        </ul>
+
+</div>
+
+<div id="sidebar2">
+<h1 class="first"> Recommended </h1>
+<p>
+</p>
+<p>
+<a href="http://www.amazon.com/exec/obidos/ASIN/020161586X/pkorg/">
+<img align="left" width="100" height="138" src="images/practice-of-programming.jpg"
+alt="The Practice of Programming"/>
+</a>
+</p>
+<p>
+&nbsp;
+</p>
+
+<p>
+<a href="http://www.amazon.com/exec/obidos/ASIN/0131103628/pkorg/">
+<img align="left" width="100" height="132" src="images/c-programming-language.jpg"
+alt="The C Programming Language"/>
+</a>
+</p>
+<p>
+&nbsp;
+</p>
+
+<p>
+<a href="http://www.amazon.com/dp/013937681X/pkorg/">
+<img align="left" width="100" height="132" src="images/unix-programming-environment.jpg"
+alt="The UNIX Programming Environment"/>
+</a>
+</p>
+</div>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,659 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>The Web</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>The Web</h1>
+								<h2>Security model & threats</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>November 24, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<h1 id="introduction">Introduction</h1>
+
+<p>When the web browser was first created, it was relatively simple: it parsed static content for display and presented it to the user. The only page layout options supported were headings, paragraphs, and lists. The content could contain links to other pages Images were the only media that could be included in the text and even tables weren&#8217;t supported.</p>
+
+<p>As such, the browser was not an interesting security target. Any dynamic modification of pages was done on servers and all security attacks were focused on those servers. These attacks included things such as using malformed URLs, buffer overflows, root paths, and unicode characters.</p>
+
+<p>The situation is vastly different now. Browsers have become incredibly complex as more features were introduced:</p>
+
+<ul>
+<li><p>JavaScript to execute arbitrary downloaded code.</p></li>
+<li><p>The Document Object Model (DOM), which allows JavaScript code to change the content and appearance of a web page along with Cascading Style Sheets (CSS), which define the formatting properties of each HTML element in the document.</p></li>
+<li><p><em>XMLHttpRequest</em>, which enables JavaScript to make HTTP requests back to the server and fetch content asynchronously.</p></li>
+<li><p>WebSockets, which uses the existing TCP connection between the browser and server to allow JavaScript on the page to send and receive data without the need to send HTTP requests and wait for responses.</p></li>
+<li><p>Multimedia support; HTML5 added direct support for <code>&lt;audio&gt;</code>, <code>&lt;video&gt;~</code>, and <code>&lt;track&gt;~</code> tags, as well as MediaStream recording of both audio and video and even speech recognition and synthesis.</p></li>
+<li><p>Access to on-device sensors, including geolocation and device tilt. Programs can call the <code>getCurrentPosition</code> method to get the user&#8217;s current location.</p></li>
+</ul>
+
+<p>The computing environment available to web pages changed as well.
+The introduction of JavaScript into the browser gave the browser the ability to process data on the client rather than simply submitting forms to the server.</p>
+
+<p>JavaScript appeared early in the history of browsers (late 1995 in Netscape Communicator) but the versions on different browsers &#8211; Netscape&#8217;s SpiderMonkey and Microsoft&#8217;s JScript &#8211; were not always compatible. The language got standardized with the skin-disease-sounding name of ECMAScript and continued to evolve. Late 1999 saw the introduction of regular expressions and numeric data formatting. The 2004 version supported <code>XMLHttpRequest</code>, classes, packages, type definitions, and many features to turn it into a viable language for larger projects. BY 2015, JavaScript finally evolved into a general-purpose programming language (typed arrays, classes, module syntax, etc.).</p>
+
+<p>JavaScript remains an interpreted language. Source code files are specified in the HTML content of a web page and are downloaded from servers. Despite optimizations, there are times when web apps want better performance.</p>
+
+<p>Google designed the <strong>Chromium Native Client</strong>, NaCl, to allow browsers to run native applications securely on Chrome.
+Unlike other browser plug-ins for running apps, NaCl assumes that all downloaded code may be malicious and thus runs all code in a sandbox managed by the browser.
+Use of NaCl has been limited since the modules are only distributed through the Chrome web store and run on Chrome browsers. Users of other browsers are left out and developers may not be interested unless they can reach a broader audience.</p>
+
+<p>In a quest to provide a high-performing but portable environment for running binary code within a browser, <strong>WebAssembly</strong> (Wasm) was developed. WebAssembly is a portable binary format for running code compiled from various high-level languages, like C and C++ that is targeted to run on a processor virtual machine, a simple stack-based architecture that can be translated to native code with a just-in-time or ahead-of-time compiler on the browser. It uses a sandboxed architecture, a limited API and no direct access to system calls. WebAssembly&#8217;s design was finalized in 2017 and it became a standards recommendation in 2019. All four modern browsers support WebAssembly.</p>
+
+<p>Aside from vulnerabilities, that will no doubt be found and fixed over time, a concern for with software delivered as NaCl or Wasm modules is that it becomes much more difficult to identify malware when it comes as a module that’s already precompiled. One popular use of Wasm has been for malicious web pages to run cryptomining software on browsers much more efficiently than they could with JavaScript. The browser has no way of knowing what any code it downloadeds will do.</p>
+
+<p>The interaction model of the web evolved from simple page presentation to one of running a complete client-server application.
+The introduction of a rich set of features and code execution capabilities providea a broader attack surface. The fact that many features are relatively new and more continue to be developed increases the likelihood of more bugs and therefore more vulnerabilities.
+Many browser features are complex and developers won&#8217;t always pay attention to every detail of the
+specs (see <a href="http://www.quirksmode.org">quirksmode.org</a>). This leads to an environment where certain
+less-common uses of a feature may have bugs or security holes on certain browsers.</p>
+
+<h1 id="websecuritymodel">Web security model</h1>
+
+<p>Traditional software is installed as a single application. The application may use external libraries, but these are linked in by the author and tested. Web apps, on the other hand, dynamically load components from different places. These include fonts, images, scripts, and video as well as embedded iFrames that embed HTML documents within each other. The JavaScript code may issue XMLHttpRequests to download new content or redirect a page to a different site.</p>
+
+<p>One security concern is that of software stability. If you import JavaScript from several different places, will your page still display correctly and work properly in the future as those scripts are updated and web standards change? Do those scripts attempt to do anything malicious? Might they be modified by their authors to do something malicious in the future?</p>
+
+<p>Then there&#8217;s the question of how elements on a page <em>should</em> be allowed to interact. Can analytics code access JavaScript variables that come from a script that was downloaded from jQuery.com on the same web page? The scripts came from different places but the page author selected them for the page, so maybe it&#8217;s ok for them to interact. Should analytics scripts be permitted to interact with event handlers? If the author wanted to measure mouse movements and keystrokes, perhaps it&#8217;s ok for a downloaded script to use the event handler. How about embedded frames? To the user, the content within a frame looks like it is simply part of the rest of the page. Should scripts behave any differently?</p>
+
+<p>These are some of the questions faced when constructing a security model for web apps. Before we get to the model, we need to first understand the concept of frames in a browser.</p>
+
+<h2 id="framesandiframes">Frames and iFrames</h2>
+
+<p>A browser window may contain a collection of documents from different sources. Each document is rendered inside a frame. In the most basic case, there is just one frame: the document window.</p>
+
+<p>A <strong>frame</strong> is a rigid division that is part of a frameset, a collection of frames. Frames are no longer supported in recent versions of the HTML standard but many browsers still implement support for them.</p>
+
+<p>An <strong>iFrame</strong> is a floating inline frame that moves with the surrounding content. iFrames are supported and very widely used. When we talk about frames, we will be referring to the floating frames created with an iFrame tag.</p>
+
+<p>Frames are generally invisible to users and are used to delegate screen area to content that is loaded from another source. Think of a frame as a web page within a web page.</p>
+
+<p>A core goal of browser security is to isolate visits to separate pages in distinct windows or tabs. If you visit <code>a.com</code> and <code>b.com</code> in two separate tabs, the address bar will identify each of them and they will not be able to share information with each other. Alternatively, <code>a.com</code> may have frames defined within its page (e.g., to show ads from other sites) and <code>b.com</code> may be a frame within <code>a.com</code>. Here, too, we would like the browser to provide isolation between <code>a.com</code>
+and <code>b.com</code> even though <code>b.com</code> is not visible as a distinct site to the user. A script running in <code>a.com</code> should not read or manipulate data in <code>b.com</code> and vice versa.</p>
+
+<h2 id="same-originpolicy">Same-origin policy</h2>
+
+<p>The security model used by web browsers is the <strong>same-origin policy</strong>.
+A browser permits scripts loaded from one page to interact <em>only</em> with data that was loaded from the same origin. An <strong>origin</strong> is defined to be the triple comprising the URI scheme (protocol, such as <em>http</em> vs. <em>https</em>), the hostname, and the port number. For example,</p>
+
+<p><code>
+http://www.poopybrain.com/419/test.html
+</code>
+and</p>
+
+<p><code>
+http://www.poopybrain.com/index.html
+</code></p>
+
+<p>Share the same origin because they both use http, both use port 80 (the default http port since no port is specified), and the same hostname (<code>www.poopybrain.com</code>). If any of those components were different, the origin would not be the same. For instance, <code>www.poopybrain.com</code> is <em>not</em> the same hostname as <code>poopybrain.com</code>.</p>
+
+<p>Under the same-origin policy, each origin has access to client-side resources, local to that origin, that include:</p>
+
+<ul>
+<li><p><strong>Cookies</strong>: Key-value data that clients or servers can set. Cookies associated with the origin are sent with each http request.</p></li>
+<li><p><strong>JavaScript</strong> namespace: Any functions and variables defined or downloaded into a frame share that frame&#8217;s origin.</p></li>
+<li><p><strong>DOM tree</strong>: This is the JavaScript definition of the HTML structure of the page.</p></li>
+<li><p><strong>DOM storage</strong>: Local key-value storage.</p></li>
+</ul>
+
+<p>Each browser window, frame, or object gets the origin of the URL that was used to load the object. Web pages will often embed frames as page content (and frames may embed other frames). Each of embed frame will not have the origin of the outer frame but rather the URL of the frame contents. Objects such as images, which may be loaded from other places, get the origin of the URL that was used to load them. Any JavaScript code downloaded into a frame will execute with the authority of its frame&#8217;s origin. For instance, if <code>cnn.com</code> loads JavaScript from <code>jQuery.com</code>, the script runs with the authority of <code>cnn.com</code>, meaning it can access stored cookies, set variables or call JavaScript methods loaded from other servers within the page.</p>
+
+<p><strong>Passive content</strong>, which is non-executable content such as CSS files and images, has no authority. This normally should not matter as passive content does not contain executable code but there have been attacks in the past that had code in passive content and made that passive content turn active.</p>
+
+<h2 id="cross-origincontent">Cross-origin content</h2>
+
+<p>As we saw, it is common for a page to load content from multiple origins. The same-origin policy states that JavaScript code from anywhere runs with the authority of the frame&#8217;s origin. Content from other origins is not readable or writable by JavaScript.</p>
+
+<p>A frame can load images from other origins but cannot inspect that image. However, it can infer the size of the image by examining the changes to surrounding elements after it is rendered.</p>
+
+<p>A frame may embed and use CSS (cascading stylesheets) files from any origin but cannot inspect the CSS content. However, JavaScript in the frame can discover what the stylesheet does by creating new DOM nodes (e.g., a heading tag) and see how the styling changes.</p>
+
+<p>A frame can load JavaScript, which executes with the authority of the frame&#8217;s origin. If the source is downloaded from another origin, it is executable but not readable.However, one can use JavaScript&#8217;s <code>toString</code> method to decompile the function and get a string representation of the function&#8217;s declaration.</p>
+
+<p>These forms of enforcements of the same-origin policy seem somewhat odd since a curious user can download any of that content directly (e.g., via the <code>curl</code> command) and inspect it.</p>
+
+<h2 id="cross-originresourcesharingcors">Cross-Origin Resource Sharing (CORS)</h2>
+
+<p>Even though content may be loaded from different origins, browsers
+restrict cross-origin HTTP requests that are initiated from scripts (e.g., via <em>XMLHttpRequest</em> or <em>Fetch</em>). This can be problematic at times since sites such as <code>poopybrain.com</code> and <code>www.poopybrain.com</code> are treated as distinct origins, as are <code>http://poopybrain.com</code> and <code>https://poopybrain.com</code>.</p>
+
+<p><strong>Cross-Origin Resource Sharing</strong> (<strong>CORS</strong>) was created to allow web servers to specify cross-domain access permission. This will allow scripts on a page to issue HTTP requests to approved sites. It also allows access to Web Fonts, inspectable images, and access to stylesheets. CORS is enabled by an HTTP header from the server that identifies allowable origins. For example, if the server at <code>https://service.example.com</code> sends content with an HTTP header that contains</p>
+
+<p><code>
+Access-Control-Allow-Origin: http://www.example.com
+</code></p>
+
+<p>then the browser will treat the URL <code>http://www.example.com</code> as having the same origin as the frame&#8217;s URL
+(<code>https://service.example.com</code>).</p>
+
+<h2 id="cookies">Cookies</h2>
+
+<p>Cookies are <em>name-value</em> pairs that are designed to maintain state between a web browser and a server. Web browsers send all cookies that are applicable for a particular page with each HTTP request:</p>
+
+<p><code>
+GET /mypage.html HTTP/2.0
+HOST: www.poopybrain.com
+Cookie: username=paul; uid=501
+Cookie: uid=501
+</code></p>
+
+<p>Servers set cookies via an HTTP header as part of an HTTP response. For example, the headers</p>
+
+<p><code>
+Set-Cookie: username=paul
+Set-Cookie: uid=501
+</code></p>
+
+<p>tells the browser to set two cookies: <em>username=paul</em> and <em>uid=501</em>.</p>
+
+<p>Cookies are used for three purposes:</p>
+
+<h4 id="sessionmanagementauthenticationcookies">1. Session management (authentication cookies)</h4>
+
+<p>Cookies used for session management, often referred to as <em>authentication cookies</em> pass identification about a user’s login session.</p>
+
+<p>When a user logs in, the server sends a cookie with a session ID to identify this logged-in user. This cookie is sent with every subsequent request from the browser to the web server so the server can identify the page with that user.</p>
+
+<p>It allows sites such as Amazon, eBay, Facebook, and Instagram to not prompt you for logins whenever you visit their sites.</p>
+
+<p>Cookies used for session management may also pass shopping cart identifiers even if a user isn’t logged in. That identifier identifies a shopping cart in a database and can be associated with the user the user logs in.</p>
+
+<h4 id="personalization">2. Personalization</h4>
+
+<p>Cookies used for personalization can identify various user preferences. These preferences may specify font sizes, or types of content to present. Personalization cookies may also include data that will be pre-filled into web forms.</p>
+
+<h4 id="tracking">3. Tracking</h4>
+
+<p>Tracking cookies are used to monitor a user&#8217;s activity. If a browser doesn’t send a cookie on a page request, the server assumes this is the user&#8217;s first visit to the site so it creates a new cookie with a unique identifier for the user and sends that with the page contents. The server logs the page visit with that user&#8217;s identifier.</p>
+
+<p>This tracking cookie will be sent by the browser every time a page from that web site is requested. The server can now track the requested URL and time of the request with the user ID it assigned to the cookie.</p>
+
+<p>If the user is logged in, logs in later, or creates an account in the future, the server can then associate all the tracked data with that specific user.</p>
+
+<p>Even though we may refer to cookies as <em>authentication cookies</em> or <em>tracking cookies</em>, they all use the same mechanism and syntax. It&#8217;s just a matter of how applications make use of them. Cookies can be one of two <em>types</em>: session or persistent (don&#8217;t confuse a session cookie with a cookie used for session management!).</p>
+
+<p><strong>Session cookies</strong> are stored in memory. They disappear when the browser exits. <strong>Persistent cookies</strong> are stored to disk and continue to exist when the browser restarts.</p>
+
+<p>If a browser gets a <code>Set-Cookie</code> directive from a server and it does not contain an expiration date, then the cookie will be handled as a session cookie. For example:</p>
+
+<p><code>
+Set-Cookie: name=paul
+</code></p>
+
+<p>If the server attaches an expiration date to the <code>Set-Cookie</code> header then the browser treats the cookie as a persistent cookie and saves its contents. For example:</p>
+
+<p><code>
+Set-Cookie: name=paul; expires= Thu, 1 Apr 2021 17:30:00 GMT;
+</code></p>
+
+<p>Websites often present a checkbox on a login screen asking you whether you want to save your login information. If you check the box, the server will simply add the <code>expires</code> option to the cookie.</p>
+
+<p>Now the question is: which cookies should be sent to a server when a browser
+makes an HTTP request?
+Cookies don&#8217;t quite use the same concept of an origin.
+The scope of a cookie is defined by its <strong>domain</strong> and <strong>path</strong>. Unlike origins, the scheme (http or https) is ignored by default, as is the port number.
+Unless otherwise defined by the server, the default domain and path are those of the URL in the request.</p>
+
+<p>A client cannot set cookies for a different domain. A server, however, can specify top-level or deeper domains. Setting a cookie for a domain <code>example.com</code> will cause that cookie to be sent whenever <code>example.com</code> or any domain under <code>example.com</code> is accessed (e.g., <code>www.example.com</code>):</p>
+
+<p><code>
+Set-Cookie: name=paul; domain=example.com
+</code></p>
+
+<p>For the cookie to be accepted by the browser, the domain must include the origin domain of the frame. For instance, if you are on the page <code>www.example.com</code>, your browser will accept a cookie for <code>example.com</code> but will <em>not</em> accept a cookie
+for <code>foo.example.com</code> or for <code>poopybrain.com</code>.</p>
+
+<p>The <em>path</em> is the path under the root URL, which is ignored for determining origins but is used with cookies. The browser does a character-by-character comparison of the path and if the path is a substring of the requested URL then the cookie will be sent. For example
+<code>
+Set-Cookie: name=paul; path=/
+</code>
+will send that cookie for any path under the root of the domain while</p>
+
+<p><code>
+Set-Cookie: name=paul; path=/419
+</code></p>
+
+<p>will send that cookie for any path whose name starts with the string &#8220;<code>/419</code>&#8221;.</p>
+
+<p>Cookies often contain user names, complete authentication information, or shopping cart contents.
+If malicious code running on the web page could access those cookies or if an eavesdropper could see unencrypted cookies on the network, the attacker could
+modify your cart, get your login credentials, or even modify cookies related
+to cloud-based services to access your documents or email. This is a very real problem and two safeguards were put in place:</p>
+
+<p>A server can tag a cookie with an <strong>HttpOnly</strong> flag. This will not allow scripts
+on the page to access the cookie, so it is useful for keeping scripts from modifying or reading user identities or session state.</p>
+
+<p>HTTP messages are sent via TCP and data is not encrypted. An attacker that has
+access to the data stream (e.g., via a man in the middle attack or a packet sniffer) can freely read or even modify cookies. A <strong>Secure</strong> flag was added to cookies to specify that they can be sent <em>only</em> over an HTTPS connection, which uses TLS (Transport Layer Security) to encrypt content.:</p>
+
+<p><code>
+Set-Cookie: username=paul; path=/; HttpOnly; Secure
+</code></p>
+
+<p>If a user is making requests via HTTP, Secure cookies will not be transmitted.</p>
+
+<h2 id="third-partycookies:trackingcookies">Third-party cookies: tracking cookies</h2>
+
+<p>Each cookie in a browser is associated with a domain and a path.
+If the domain of the cookie is the same as the domain of the web page that the user sees (the URL in the title bar), the cookie is a <strong>first-party cookie</strong>. The server hosting the page sets these first party cookies.</p>
+
+<p>Components loaded from other domains, images, scripts or content in iFrames such as ads or social-media plugins, can also set cookies. These are called <strong>third-party cookies</strong>. Third-party cookies are usually used for tracking users and are called <strong>tracking cookies</strong>.</p>
+
+<p>The server that sent the content along with the third-party cookie gets the cookie from your browser every time your browser sends an HTTP request to get content from that server. By assigning a unique ID to each cookie, servers can track your requests across multiple pages and multiple types of content.</p>
+
+<p>For example, a Facebook Like button on <code>rutgers.edu</code> will have a <code>facebook.com</code> origin. When your browser requests this content from <code>facebook.com</code>, the request will contain any cookies it has for the <code>facebook.com</code> domain, which can include your Facebook session cookie and identify you. The Facebook server can track which web sites you visit that has any Facebook content, such as <em>like</em> buttons, images, or ads.</p>
+
+<p>If you don’t have a Facebook account or are not logged in, the server can track you anonymously by creating a cookie with a unique ID for you that your browser will then send on every site you go to that has content from Facebook.</p>
+
+<p>Browsers allow the blocking of third-party cookies but that can cause some components, like social media widgets to not work properly.</p>
+
+<h2 id="mixedhttpandhttpscontent">Mixed HTTP and HTTPS content</h2>
+
+<p>A web page that was served via HTTPS might request content, such
+as a script, via a URL that specifies HTTP:</p>
+
+<p><code>
+&lt;script src=&quot;http://www.mysite.com/script.js&quot;&gt; &lt;/script&gt;
+</code></p>
+
+<p>The browser would follow the protocol (scheme) in the URL and download that content via HTTP rather than over the secure link. An active network attacker has the opportunity to eavesdrop on that session or hijack the session and modify the content. A safer approach is to not specify the scheme for same-source content. This directs the browser to request the content over the same protocol as its embedding frame.</p>
+
+<p><code>
+&lt;script src=&quot;//www.mysite.com/script.js&quot;&gt; &lt;/script&gt;
+</code></p>
+
+<p>Most browsers either disallow or warn of mixed content but users may not be aware of the risks and not have knowledge of what really is going on.</p>
+
+<h1 id="web-basedattacks">Web-based attacks</h1>
+
+<h2 id="maliciousjavascript">Malicious JavaScript</h2>
+
+<p>As the JavaScript environment evolved, various vulnerabilities have been discovered and fixed. As late as August of 2020, for example, a <a href="https://nvd.nist.gov/vuln/detail/CVE-2020-7660">JavaScript vulnerability</a> was found that leads to arbitrary command execution from the browser.</p>
+
+<p>Malicious pages JavaScript code that will perform malicious functions but malicious content can be embedded in content that is served by a legitimate site. For example, an ad might be presented in an iFrame, which acts like an embedded web page. This ad will loads its own JavaScript and other content. An accidental visit to a malicious page is called a <strong>drive-by download</strong>.</p>
+
+<p>A drive-by download will typically run a script to redirect the page to load a new page from a malicious server. This new page will download an exploit kit that will probe the operating system and browser to determine their versions and possible vulnerabilities. The exploit kit then sends a request to its server to download malware payload that is specifically designed to exploit those vulnerabilities.</p>
+
+<p>Malicious JavaScript code will not always try to exploit vulnerabilities. Since Javascript is a complete programming language, the code can run a variety that the user did not expect. For instance, it can present additional ads, mine cryptocurrency, fake clicks on ads, and activate likes for TikTok, Facebook, Instagram, and other social media.</p>
+
+<h2 id="cross-siterequestforgerycsrf">Cross-site request forgery (CSRF)</h2>
+
+<p><strong>Cross-site request forgery</strong> is an attack that gets a victim to send unauthorized requests to web server that for which the user has authentication cookies set.</p>
+
+<p>Let&#8217;s consider an example from back when Netflix rented DVDs.
+You previously logged into Netflix. Because of that, the Netflix server sent an authentication cookie to your browser so will not have to log in the time you visit netflix.com. Now you happen to go to another website that contains a malicious link or JavaScript code to access a URL.
+The URL is:</p>
+
+<p><code>
+http://www.netflix.com/JSON/AddToQueue?movieid=860103
+</code></p>
+
+<p>By hitting this link on this other website, the attacker added
+<a href="https://en.wikipedia.org/wiki/Plan_9_from_Outer_Space">Plan 9 from Outer Space</a> to your movie queue (this attack really worked with Netflix but has been fixed).
+This may be a minor annoyance but the same attack could create more malicious outcomes. If, instead of Netflix, the attack could take place against an e-commerce site that accepted your credentials but allows the attacker to add a different shipping address on the URL. More dangerously, a banking site may use your stored credentials and account number (this was the case with ING bank).
+Getting you to simply click on a link or visit the wrong web page may enable the attacker to request a funds transfer to another account:</p>
+
+<p><code>
+http://www.bank.com/action=transfer*amount=1000000&amp;to_account=417824919
+</code></p>
+
+<p>Note that the attack works because of how cookies work. You visited some website or clicked on a link you got via a text message or email. This directed your browser to another site. Your browser dutifully sends an HTTP GET request to that site to fetch the URL specified in the link and also sends all the cookies
+for that site. The attacker never steals your cookies and does not intercept any traffic.
+This attack is simply the creation of a URL that makes it look like you requested some action.</p>
+
+<p>There are several defenses against Cross-site request forgery:</p>
+
+<ul>
+<li><p>The server can validate the <code>Referer</code> header on the request. This will tell it whether the request
+came via a link or directly from a user (or from a link on a trusted site).</p></li>
+<li><p>The server can require some unique token to be present in the request. For instance, visiting
+netflix.com might cause the Netflix server to return a token that will need to be passed to
+any successive URL. An attacker will not be able to create a static URL on her site that
+will contain this random token.</p></li>
+<li><p>The interaction with the server can use HTTP POST requests instead GET requests, placing all parameters into the body of the request rather than in the URL. State information can
+be passed via hidden input fields instead of cookies.</p></li>
+</ul>
+
+<h3 id="preventingcsrfattacks">Preventing CSRF attacks</h3>
+
+<p>Cross-site request forgery attacks occur because the browser sends authentication cookies to the targeted web server. The victim can avoid these attacks by ensuring these cookies are not present. This case be done through the following actions:
+* Log off sites when you’re done with them. Logging off will delete the authentication cookies.
+* Do not allow browsers to store persistent authentication cookies. This means not selecting the <em>remember me</em> option that is presented on an authentication web page. Authentication cookies will then only be stored as session cookies.</p>
+
+<p>There are several techniques that web server administrators can take to avoid CSRF attacks, including different forms of tokens. A few of these are:</p>
+
+<ul>
+<li>The server can create a unique random token for each session. This token is sent to the server with each page request submitted by the user and verified by the server. The token must be sent through hidden fields or HTTP headers so that it will not be part of a URL.</li>
+<li>If it is possible for the server and browser to negotiate a shared key then each browser request can contain a token that is an HMAC of the request and the timestamp. An attacker cam only create URLs with commands but will not be able to forge an HMAC.</li>
+<li>When you send a URL, an <code>Origin</code> or <code>Referer</code> header identifies the URL of the page that issued the request. The server can validate that the Origin matches the server.</li>
+</ul>
+
+<h2 id="screensharing">Screen sharing</h2>
+
+<p>HTML5 added a screen-sharing API. This was designed with application like video conferencing in mind where you might want to share screen content.
+Normally, no cross-origin communication is permitted between client and server.
+The screen-sharing API violates this security model. If a user grants screen-sharing permission to aframe, the frame can take a screenshot of the entire display (the entire monitor, all windows, and the browser).
+It can also get screenshots of pages hidden by tabs in a browser.</p>
+
+<p>This is not a security hole and there are no exploits (yet) to enable screen sharing without the user&#8217;s explicit opt-in. However, it is a security risk because the user might not be aware of the scope or duration of screen sharing. If you believe that you are sharing one browser window, you may be surprised to discover that the server was examining all your screen content.</p>
+
+<h2 id="clickjacking">Clickjacking</h2>
+
+<p><strong>Clickjacking</strong> is a deception attack where the attacker overlays an image to have the user believe that he is clicking some legitimate link or image but is really requesting something else. For example, a site may present a &#8220;win a free iPad&#8221; image. However, malicious JavaScript in the page can place an <strong>invisible frame</strong> over this image that contains a link. Nothing is displayed to obstruct the &#8220;win a free iPad&#8221; image but when a user clicks on it, the link that is processed is the one in the invisible frame. This malicious link could download malware, change security settings for a browser plug-in, or confirm a bank transfer that was issued via a CSRF attack.</p>
+
+<p>A defense for clickjacking is to use defensive JavaScript in the legitimate code to check that the content is at the topmost layer:</p>
+
+<p><code>
+window.self == window.top
+</code></p>
+
+<p>If it isn&#8217;t then it means the content is obstructed, possibly by an invisible clickjacking attack. Another defense is to have the server send an <code>X-Frame-Options</code> HTTP header to instruct the browser to not allow content from other domains in any frames within that page.</p>
+
+<h2 id="inputsanitizationattacks">Input sanitization attacks</h2>
+
+<p>We saw how user input that becomes a part of database queries or commands can alter those commands and, in many cases, enable an attacker to add arbitrary queries or commands. This was the bases of <em>code injection</em> and <em>command injection</em> attacks.</p>
+
+<p>The same applies to URLs, HTML source, and JavaScript. Any user input needs to be
+parsed carefully before it can be made part of a URL, HTML content, or JavaScript. Consider a script that is generated with some in-line data that came from a malicious user:</p>
+
+<p><code>
+&lt;script&gt; var x = &quot;untrusted_data&quot;; &lt;/script&gt;
+</code></p>
+
+<p>The malicious user might define that untrusted_data to be</p>
+
+<p><code>
+Hi&quot;; &lt;/script&gt; &lt;h1&gt; Hey, some text! &lt;/h1&gt; &lt;script&gt; malicious code... x=&quot;Bye
+</code></p>
+
+<p>The resulting script to set the variable <code>x</code> now becomes</p>
+
+<p><code>
+&lt;script&gt; var x = &quot;Hi&quot;; &lt;/script&gt; &lt;h1&gt; Hey, some text! &lt;/h1&gt; &lt;script&gt; malicious code... x=&quot;Bye&quot;; &lt;/script&gt;
+</code></p>
+
+<p>Injection attacks are rated as the number one browser security risk but the <a href="https://owasp.org/www-project-top-ten/">OWASP foundation</a>.</p>
+
+<h2 id="sqlinjection">SQL injection</h2>
+
+<p>We previously saw that SQL injection is an issue in any software that uses user input as part of the SQL query. Web browsers are quite possibly the dominant software for this attack vector. Many web services have databases behind them and links often contain queries mixed with user input. If input is not properly sanitized, it can alter the SQL query to modify the database, force a user authentication, or return the wrong data.</p>
+
+<p>Suppose a web form collects a user name and password in the HTML variables <code>uname</code> and <code>passwd</code>. Code on the server stores them in the variables <code>username</code> and <code>pwd</code> and then composes an SQL query:</p>
+
+<pre><code>username = getRequestString(&quot;uname&quot;);
+pwd = getRequestString(&quot;passwd&quot;);
+
+ sssquery = 'select * from Users where name = &quot;' + username + '&quot; and pwd = &quot;' + pass + '&quot;'
+</code></pre>
+
+<p>When a user supplies a name and password, a query such as this is created:</p>
+
+<pre><code> select * from Users where name = &quot;ramesh&quot; and pwd = &quot;letmein&quot;
+</code></pre>
+
+<p>The query selects a record from the <em>Users</em> table for a specific name and matching password. But if the user supplies a string such as this:</p>
+
+<pre><code> &quot; or &quot;&quot;=&quot;
+</code></pre>
+
+<p>For the username and password then this somewhat odd-looking query will be composed:</p>
+
+<pre><code>select * from Users where name = &quot;&quot; or &quot;&quot;=&quot;&quot; and pwd = &quot;&quot; or &quot;&quot;=&quot;&quot;
+</code></pre>
+
+<p>The expression <code>or &quot;&quot;=&quot;&quot;</code> will always evaluate to <em>true</em> in SQL, so the query will return all rows from the <em>Users</em> table. If the return data is presented to the user, the user will see data for all users on the return page.</p>
+
+<h2 id="cross-sitescripting">Cross-site scripting</h2>
+
+<p><strong>Cross-site Scripting</strong> (<strong>XSS</strong>) is a code injection attack that allows an attacker to inject client-side scripts into web pages. It can be used to bypass the same-origin policy and other access controls. Cross-site scripting remains one of the most popular browser attacks.</p>
+
+<p>The attack may be carried out in two ways: a URL that a user clicks on and gets back a page with the malicious code and by going to a page that contains user content that may include scripts.</p>
+
+<p>In a <strong>Reflected XSS</strong> attack, all malicious content is in a page request, typically a link that an unsuspecting user will click on.
+The server will accept the request without sanitizing the user input and present a page in response. This page will include that original content. A common example
+is a search page that will display the search string before presenting the results (or a &#8220;not found&#8221; message). Another example is an invalid login request that will return with the name of the user and a &#8220;not found&#8221; message.</p>
+
+<p>Consider a case where the search string or the login name is not just a bunch of characters but text to a script. The server treats it as a string, does the query, cannot find the result, and sends back a page that contains that string, which is now processed as inline JavaScript code.</p>
+
+<pre><code>www.mysite.com/login.asp?user=&lt;script&gt;malicious_code(…) &lt;/script&gt;
+</code></pre>
+
+<p>In a <strong>Persistent XSS</strong> attack, user input is stored at a site and later presented to other users. Consider online forums or comment sections for news postings and blogs. If a user enters inline JavaScript as part of the posting, it will be placed into the page that the server constructs for any future people who view the article. The victim will not even have to click a link to run the malicious payload.</p>
+
+<p>Cross-site scripting is a problem due to improper <strong>input sanitization</strong>. Servers will need to parse input that is expected to be a string to ensure that it does not contain embedded HTML or JavaScript. The problem is more challenging with HTML because of its support for encoded characters. A parser will need to check not only for &#8220;<code>script</code>&#8221; but also for &#8220;<code>%3cscript%3e</code>&#8221;. As we saw earlier, there may be several acceptable Unicode encodings for the
+same character.</p>
+
+<p>With the ability to run arbitrary injected JavaScript code, cross-site scripting may be able to operations such as:</p>
+
+<ul>
+<li>Access cookies belonging to that website.</li>
+<li>Hijack a session with the site, taking advantage of the user&#8217;s authentication cookies.</li>
+<li>Create arbitrary HTTP requests with arbitrary content via <em>XMLHtttpRequest</em>.</li>
+<li>Make arbitrary modifications to the HTML document by changing the DOM structure.</li>
+<li>Install keyloggers to capture user input.</li>
+<li>Download malware &#8211; or run JavaScript ransomware.</li>
+<li>Perform a phishing attack by manipulating the DOM to create a frame with content from the attacker&#8217;s server that asks for login credentials. Users will assume they are interacting with the trusted service.</li>
+</ul>
+
+<p>The main defense against cross-site scripting is to sanitize all input. Some web frameworks do this automatically. For instance, <a href="https://www.djangoproject.com">Django</a> templates allow the author to specify where generated-content is inserted (for example, with syntax such as: <code>&lt;b&gt; hello, {{name}} &lt;/b&gt;</code>) and performs the necessary sanitization to ensure it does not modify the HTML or add JavaScript.</p>
+
+<p>Other defenses against cross-site scripting are:</p>
+
+<ul>
+<li><p>Use a less-expressive markup language for user input, such as <em>markdown</em> if
+you want to give users the ability to enter rich text. However, input sanitization
+is still needed to ensure there are no HTML or JavaScript escapes</p></li>
+<li><p>Employ a form of <strong>privilege separation</strong> by placing untrusted content inside a frame with a different origin. For example, user comments may be placed in a separate domain. This does not stop XSS damage but limits it to the domain.</p></li>
+<li><p>Use the <strong>Content Security Policy</strong> (<strong>CSP</strong>). The<a href="https://developers.google.com/web/fundamentals/security/csp/">content security policy</a>
+was designed to defend agains XSS and clickjacking attacks. It allows website owners to tell clients what content is allowed, whether inline code is permitted, and whether the origin should be redefined to be unique.</p></li>
+</ul>
+
+<h2 id="trackingviahtmlimages">Tracking via HTML images</h2>
+
+<p>We saw that the same-origin policy treats images as static content with no authority. It would seem that images should not cause problems. However, an image tag (<code>IMG</code>) can pass parameters to the server, just like any other URL:</p>
+
+<p><code>
+&lt;img src=&quot;http://evil.com/images/balloons.jpg?extra_information&quot; height=&quot;300&quot; width=&quot;400&quot;/&gt;
+</code></p>
+
+<p>The parameter can be used to notify the server that the image was requested from a specific page. Unlike cookies, which can be disabled, users are not going to block images from loading.</p>
+
+<h2 id="trackingpixels">Tracking pixels</h2>
+
+<p>An image itself can be hidden by setting its size to a single pixel &#8230; and even making it invisible:</p>
+
+<pre><code>&lt;img src=&quot;https://attacker.com/onebyone.png&quot; height=&quot;1&quot; width=&quot;1&quot; /&gt;
+</code></pre>
+
+<p>These images are called <strong>tracking pixels</strong>. </p>
+
+<p>When a browser loads an image:
+- The server that hosts the image is contacted with an <code>HTTP GET</code> request for the content.
+- Any cookies for that server will be sent by the browser.
+- Any extra information that’s part of the image URL will be sent. This information can, for example, identify the website or page that is hosting the content.
+- The server logs the time and IP address that requested the image.
+- The HTTP headers also identify the browser version, operating system, and type of device.</p>
+
+<p>A server can use the image data to identify the specific page and read a cookie to get a unique ID for the user. The ID can be used as a key for an object store or database and store every page a user visited. That enables tracking the user&#8217;s visits across different pages. </p>
+
+<h3 id="adretargeting">Ad Retargeting</h3>
+
+<p>Most commonly, single pixel images are used for <strong>retargeting</strong> or, as Google calls it, <em>remarketing</em>.</p>
+
+<p>Retargeting is a way to make ads follow anonymous customers who viewed a product on a web store but didn’t make a purchase. implemented by adding either a bit of JavaScript code or, more commonly, a pixel to the page. </p>
+
+<p>The download of the pixel allows the retargeting service to find out if you already have a cookie for that service and, if not, create cookie with a unique ID and send that cookie with the response.</p>
+
+<p>Every pixel is associated with a unique ID, so the cookie identifies the browser (user) and the ID in the pixel identifies the specific page that has the pixel. The service doesn’t know who you are but it can identify distinguish you from other users by the unique ID of the cookie.</p>
+
+<p>In the simplest case, the ID in the cookie can be an index into a database that will associate the user with the item they looked at but did not purchase. The database can also create a list of all the pixel IDs you visited on all web sites that use the same pixel tracking service and when you visited them. Now the service tracks what pages you’ve visited across many web sites.</p>
+
+<p>If the goal is to present ads, this data can be used as input to the ad selection server to prioritize ads the service thinks you’d like based on your browsing behavior. </p>
+
+<p>Facebook, for example, advertises their Facebook Pixel service.
+You add a snippet of code into your web page:</p>
+
+<blockquote>
+<p>“It tracks the people and the types of actions they take when they engage with your brand, including any of your Facebook ads they saw before going to your website, the pages of your site they visit and the items they add to their carts.”</p>
+</blockquote>
+
+<p>Outside of web pages, this technique is sometimes done to track messages sent to user and identify when the user opened the message. If you receive HTML-formatted mail that contains a one-pixel image, you will not notice the image but the server that contains the image will be sent the request for the image. If the <code>IMG</code> tag contains a parameter to identify the specific mail message, the server can track when the message was read.</p>
+
+<h3 id="imagesfordeception">Images for deception</h3>
+
+<p>Images can also be used for social engineering: to disguise a site by appropriating logos from well-known brands or adding certification logos. If an attacker&#8217;s page state that they are a &#8220;Microsoft Gold Partner&#8221; or their site is &#8220;100% secure&#8221;, a visitor might assign them some credibility that they do not deserve.</p>
+
+<h2 id="browserstatusbar">Browser status bar</h2>
+
+<p>Most browsers offer an option to display a status bar that shows the URL of a link before you click it.
+This bar is trivial to spoof by adding an onclick attribute to the link that invokes JavaScript to take the page to a different link. In this example, hovering over the PayPal link will show a link to <code>http://www.paypal.com/signin</code>, which appears to be a legitimate PayPal login page. Clicking on that link, however, will take the user to <code>http://www.evil.com</code>.</p>
+
+<pre><code>&lt;a href=&quot;http://www.paypal.com/signin&quot;
+    onclick=&quot;this.href = 'http://www.evil.com/';&quot;&gt;PayPal&lt;/a&gt;
+</code></pre>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><p><a href="https://www.washington.edu/accesscomputing/webd2/student/unit1/module3/html_history.html">Web Design &amp; Development I: A Brief History of HTML</a>, University of Washington, 2020.</p></li>
+<li><p>Sebastian Peyrott, <a href="https://auth0.com/blog/a-brief-history-of-javascript/">A Brief History of JavaScript</a>, auth0.com, January 16, 2017</p></li>
+<li><p><a href="https://webassembly.org">Webassembly</a></p></li>
+<li><p><a href="https://quirksmode.org">Quirksmode</a> — browser compatibility information</p></li>
+<li><p>Andra Zaharia, <a href="https://heimdalsecurity.com/blog/javascript-malware-explained/">JavaScript Malware – a Growing Trend Explained for Everyday Users</a>, Heimdal Security.</p></li>
+<li><p>KirstenS et al., <a href="https://owasp.org/www-community/attacks/csrf">Cross Site Request Forgery (CSRF)</a>, The OWASP Foundation</p></li>
+<li><p>Yuan Tian, Ying Chuan Liu, et al., <a href="https://dl.acm.org/doi/10.1109/SP.2014.10">All Your Screens Are Belong to Us: Attacks Exploiting the HTML5 Screen Sharing API</a>, Proceedings of the 2014 IEEE Symposium on Security and Privacy, pages 34&#8211;48, September 2014. <a href="http://mews.sv.cmu.edu/papers/oakland-14.pdf">full paper</a></p></li>
+<li><p>KirstenS et al., <a href="https://owasp.org/www-community/attacks/xss/">Cross Site Scripting (XSS)</a>, The OWASP Foundation</p></li>
+<li><p><a href="https://www.imperva.com/learn/application-security/cross-site-scripting-xss-attacks/">Cross site scripting (XSS) attacks</a>, Imperva.</p></li>
+<li><p><a href="https://www.adquadrant.com/blog/what-is-a-tracking-pixel">What is a Tracking Pixel?</a>, adQuadrant, October 28, 2020.</p></li>
+<li><p>Michal Wlosik, <a href="https://clearcode.cc/blog/what-is-ad-retargeting/">What is Ad Retargeting and How Does It Work?</a>, Clearcode, October 4, 2017, Updated on November 27, 2020.</p></li>
+<li><p>Aaron Sankin and Surya Mattu, <a href="https://themarkup.org/blacklight/2020/09/22/blacklight-tracking-advertisers-digital-privacy-sensitive-websites">The High Privacy Cost of a “Free” Website</a>, themarkup.org, September 22, 2020</p></li>
+<li><p><a href="https://en.wikipedia.org/wiki/Web_beacon">Web beacon</a>, Wikipedia.</p></li>
+</ul>
+
+							</section>
+							<footer class="main">
+								Last modified December  7, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

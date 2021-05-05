@@ -1,0 +1,169 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Steganography & Watermarking</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Steganography & Watermarking</h1>
+								<h2>Hiding data</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>November 6, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<h1 id="introduction">Introduction</h1>
+
+<p>Cryptography&#8217;s goal is to hide the contents of a message. Steganography&#8217;s goal is to hide the very existence of the message. Classic techniques included the use of invisible ink, writing a message on one’s head and allowing the hair to cover it, microdots, and carefully-clipped newspaper articles that together communicate the message.</p>
+
+<p>A <strong>null cipher</strong> is one where the actual message is
+hidden among irrelevant data. For example, the message may comprise the first letter of each word (or each sentence, or every second letter, etc.). </p>
+
+<p><strong>Chaffing and winnowing</strong> entails the transmission of a bunch of messages, of which only certain ones are
+legitimate. Each message is signed with a key known only to trusted parties (e.g., a MAC). Intruders can see the messages but can’t validate the signatures to distinguish the valid messages from the bogus ones.</p>
+
+<p>Messages can be embedded into images. This is arguably the most common way of using steganography.</p>
+
+<p>There are a three ways of hiding a message in an image:</p>
+
+<ol>
+<li><p>Most image formats support have fields for storing textual metadata in addition to the image. Png files, for instance, have a text field and jpeg, tiff, and raw image formats support Exif (Exchangeable image file format) data fields. This shouldn&#8217;t be considered steganography, however, since these fields are well-known and hidden only in the sense that they are nor part of the image.</p></li>
+<li><p>A straightforward method to hide a message in an image is to use low-order bits of an image, where the user is unlikely to notice slight changes in color.
+An image is a collection of RGB pixels. You can mess around with the least-significant bits and nobody will notice changes in the image, so you can just encode the entire message by spreading the bits of the message among the least-significant bits of the image.</p></li>
+<li><p>You can do a similar thing but apply a frequency domain transformation, like JPEG compression does, by using a Discrete Cosine Transform (DCT). The frequency domain maps the image as a collection ranging from high-frequency areas (e.g., &#8220;noisy&#8221; parts such as leaves, grass, and edges of things) through low-frequency areas (e.g., a clear blue sky). Changes to high frequency areas will mostly be unnoticed by humans: that’s why jpeg compression works. It also means that you can add your message into those areas and then transform it back to the spatial (bitmap) domain. Now your message is spread throughout the higher-frequency parts of the image and can be extracted if you do the DCT again and know where to look for the message.</p></li>
+</ol>
+
+<p>Many laser printers embed a serial number and date
+simply by printing very faint color splotches.</p>
+
+<p><strong>Steganography</strong> is closely related to <strong>watermarking</strong>. and the terms “steganography” and “watermarking” are often used interchangeably.</p>
+
+<p>The primary goal of watermarking is to create an indelible imprint on a message such that an intruder cannot remove or replace the message. It is often used to assert ownership, authenticity, or encode DRM rules. The message may be, but does not have to be, invisible.</p>
+
+<p>The goal of steganography is to allow primarily one-to-one communication while hiding the existence of a message. An intruder &#8211; someone who does not know what to look for &#8211; cannot even detect the message in the data.</p>
+
+							</section>
+							<footer class="main">
+								Last modified November  6, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

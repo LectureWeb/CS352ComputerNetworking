@@ -1,0 +1,218 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Distributed Agreement</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Distributed Agreement</h1>
+								<h2>Mutual Exclusion</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>March 2, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Allow processes to request and be granted exclusive access to named resources. The algorithms should be designed to avoid starvation and ensure that exactly one requesting process gets the resource even if multiple processes make requests concurrently.</p>
+</blockquote>
+
+<p>Mutual exclusion is responsible for making sure that only one process or thread accesses a resource at a time. In non-distributed
+systems, it is accomplished through mechanisms such as semaphores
+and monitors and, at a low level, through instructions such as
+test-and-set locks. For higher-level objects, such as files, the operating system acts like a gatekeeper to disallow access if a file is locked by another process. None of these mechanisms work in processes that are distributed across networks of computers.</p>
+
+<p>We need an algorithm that will allow processes to compete for access to a resource and ensure that at most one process will be granted that access. Such an algorithm needs to ensure that all processes that want a resource will eventually get a chance to get access to it. If this is not the case, <strong>starvation</strong> occurs, where a process will have to wait indefinitely for a resource.</p>
+
+<p>The &#8220;resource&#8221; is an arbitrary name that all processes agree to use.
+It may refer to a critical section of code, a file, a field in a database, a physical device, or some network service. We do not care what the underlying component is but rather that we can get processes to agree on exclusive access to it.</p>
+
+<p>A mutual exclusion algorithm allows a process to request access to this resource and be granted exclusive access to it. This is known as a <strong>lock</strong>. If the lock has a timeout associated with it, then it is known as a <strong>lease</strong>.</p>
+
+<p>Two important properties that we need from a mutual exclusion algorithm (and other algorithms too, of course) are:</p>
+
+<ol>
+<li><p><strong>Safety</strong>: This simply means the algorithm does its job and only one process can hold a resource at a time.</p></li>
+<li><p><strong>Liveness</strong>: The algorithm should make progress and no process should wait forever for a message that will never arrive.</p></li>
+</ol>
+
+<p>We also would like a less tangible property, <strong>fairness</strong>. Not only should the algorithm make progress but every process that wants a resource should get a fair chance to get it. For example, two processes cannot continuously hand the resource back and forth to each other, disallowing a third from being able to get it or having to wait an unduly long time for it.</p>
+
+<p>Distributed algorithms fall into three categories.</p>
+
+<p>A <strong>centralized</strong> approach uses a central coordinator that is responsible for granting access permissions.</p>
+
+<p>A <strong>token-based</strong> approach allows a process to access a resource if it is holding a &#8220;token&#8221;; that is, it received an unsolicited message where ownership of the message allows the process to access the resource. Sending the message (token) means giving up the token and forfeiting access to the resource.</p>
+
+<p>A <strong>contention-based</strong> algorithm is one where all processes coordinate together on deciding who gets access to the resource.</p>
+
+<p>The <strong>centralized algorithm</strong> runs on a single server that accepts <em>REQUEST</em>
+messages for a resource. If nobody is using the resource, it responds with a <em>GRANT</em> message and places the request on a FIFO (first-in, first-out) queue of requests for that resource. If another process is using the resource, then the server does not respond with a <em>GRANT</em> but adds the request to the queue of requests.</p>
+
+<p>When a process is done with a resource, it sends the server a <em>RELEASE</em> message. The server removes the process' ID from the queue and sends a <em>GRANT</em> message to the next process in the queue (if there is one).</p>
+
+<p>The <strong>token ring</strong> algorithm creates a logical communication ring among the processes in the group, where each process communicates with a single neighbor. A message, called a <em>token</em>, is created for each resource. A process is not allowed to access the resource until it has the token. This token is passed from process to process along the ring. If a process receives a token and does not need to access that resource, it simply sends the token to the next process. Otherwise, it will hold on to the token until it is done with the resource.</p>
+
+<p><strong>Lamport&#8217;s mutual exclusion algorithm</strong> requires each process that wants a resource to send a timestamped request for the resource to <em>all</em> processes in the group and processes the message itself (effectively sending it to itself). The message contains the resource ID, the requesting process ID, and a totally-ordered (unique) Lamport timestamp. Receipt of each message is immediately acknowledged with a timestamped <em>Reply</em> message by every process.</p>
+
+<p>Each process, including the sender, places the received message in a local priority queue that is sorted by the Lamport timestamp that is in each message.
+A process decides whether it can access the resource by checking whether its own request is the earliest (first) one in the queue of all requests that have been received. If this is the case, it can access the resource. When done, the process sends a <em>release</em> message to all members. The receipt of a <em>release</em> message causes each process, including the one that sent the message, to remove that process ID from the queue.</p>
+
+<p>If a process now finds itself as the earliest
+process in the queue, it &#8211; and everyone else &#8211; knows that it is now that process' turn to access the resource.</p>
+
+<p><strong>Lamport&#8217;s mutual exclusion algorithm summary:</strong> send a <em>request</em> message to everyone in the group and process the message yourself as well.
+Get a <em>reply</em> from everyone. Each process stores all <em>request</em> messages in
+a priority queue that is sorted by message timestamps. The process ID that finds itself at the head of the queue is allowed to access the resource. When it is done, it sends a <em>release</em> message to everyone, which causes all group members to remove it from the queue.</p>
+
+<p>The <strong>Ricart &amp; Agrawala</strong> algorithm, like Lamport&#8217;s, is also based on using reliable multicasts. A process that wants to access a resource sends a <em>request</em> to <em>all</em> other processes in the group and waits for all of them to respond. As with Lamport&#8217;s mutual exclusion algorithm, the <em>request</em>
+message contains the resource ID, process ID, and a unique Lamport timestamp.</p>
+
+<p>If another process is currently using the resource, that process delays its <em>response_reply</em> until it is done. If process <em>A</em> and process <em>B</em> sent out requests concurrently (i.e., two systems want the same resource at approximately the same time), each of those systems compares the timestamp of the received request with that of its own request. If process <em>A</em> received a request from process <em>B</em> that is older (a lower timestamp) than
+the one it sent, then process <em>A</em> will give process <em>B</em> priority to access the resource by sending a <em>reply</em> message to process <em>B</em> . Otherwise, if process <em>A</em> has the earlier timestamp, it will queue the request from <em>B</em>
+and continue to wait for all replies to come in, sending a response
+to <em>B</em> (and any other processes who wanted the resource) only when it is done using the resource. The key point is that processes <em>A</em> and <em>B</em> will make the same comparison and exactly one will hold back on sending the response.</p>
+
+<p><strong>Ricart &amp; Agrawala&#8217;s algorithm summary:</strong> send a <em>request</em> message to everyone in the group and wait for <em>reply</em> messages from everyone. Any process using the resource will delay sending a <em>reply</em> and queue it for sending after it is done with the critical</p>
+
+<p>The Lamport and Ricart &amp; Agrawala algorithms are similar in that they are both contention-based and truly distributed. Ricart &amp; Agrawala&#8217;s
+requires fewer messages since there is no explicit <em>release</em> message that needs to be sent; acknowledgements are simply delayed. Neither are efficient compared with the centralized algorithm &#8230; but they are distributed.</p>
+
+<p>There are many, many more mutual exclusion algorithms. These illustrated main categories. For instance, the <a href="https://en.wikipedia.org/wiki/Suzuki–Kasami_algorithm">Suzuki-Kasami</a> algorithm adds a token to the Ricart &amp; Agrawala algorithm to improve the performance to that of (N-1) requests and 1 reply for a group of <em>N</em> processes. <a href="http://www.sapub.org/global/showpaperpdf.aspx?doi=10.5923/j.ac.20120204.02">Maekawa</a>&#8217;s algorithm partitions the group into subgroups such that each subgroup has at least one process in common with another subgroup and avoids the need to communicate with all group members. It improves the bandwidth to sending between 3√𝑁 and 6√𝑁 messages.</p>
+
+							</section>
+							<footer class="main">
+								Last modified March  2, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

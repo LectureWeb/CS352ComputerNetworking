@@ -1,0 +1,491 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Network Security</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Network Security</h1>
+								<h2>Core Internet Protocols</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>November 10, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<h1 id="introduction">Introduction</h1>
+
+<p>The Internet was built using a packet switching architecture.
+This means that all data is broken up into chunks called packets. Each packet contains a header that identifies where it came from and where it’s going. </p>
+
+<p>The Internet was designed to support the interconnection of multiple networks, each of which may use different underlying networking hardware and protocols. The <strong>Internet Protocol</strong>, IP, is a logical network built on top of these physical networks. </p>
+
+<p>Individual networks under IP are connected by routers, which are computing elements that are each connected to multiple networks. They receive packets on one network and relay them onto another network to get them toward their destination. A packet from your computer will often flow through dozens networks and routers that you know nothing about on its way to its destination. This poses security concerns since you do not know of the trustworthiness of the routers and networks.</p>
+
+<p>IP assumes that the underlying networks support packet switching but do not provide reliable communication. IP provides best-effort packet delivery; the network tries to get the packet to the destination but guarantees neither reliable delivery nor in-order delivery of messages.
+It is up to higher layers of the IP software stack (either TCP or the application) to detect lost packets.</p>
+
+<p>Networking protocol stacks are usually described using the OSI layered model. For the Internet, the layers are:</p>
+
+<ol>
+<li><p><strong>Physical</strong>. This represents the actual hardware: the cables, connectors, voltage levels, modulation techniques, etc.</p></li>
+<li><p><strong>Data Link</strong>. This layer defines the local area network (LAN). In homes and offices, this is typically Ethernet (802.1) or Wi-Fi (802.11). Ethernet and Wi-Fi use the same addressing scheme and were designed to be bridged together to form a single local area network.</p></li>
+<li><p><strong>Network</strong>. The network layer creates a single logical network and routes packets across physical networks. The Internet Protocol (IP) is responsible for this. There are two versions of this that are currently deployed: IPv4 and IPv6.
+IPv4 was first deployed in 1983. It supports 32-bit addresses and we have already run out of IPv4 addresses that can be allocated. IPv6 was created as a successor and uses 128 bit addresses. It was first deployed in 2012 but has been slow to gain adoption in places where IPv4 is in widespread use, such as the U.S., since systems on an IPv4 network would not be able to communicate directly with systems on an IPv6 network.</p></li>
+<li><p><strong>Transport</strong>. The transport layer is responsible for creating logical software endpoints (<strong>ports</strong>) so that one application can send a stream of data to another via an operating system&#8217;s <strong>sockets</strong> interface. TCP uses sequence numbers, acknowledgement numbers, and retransmission to provide applications with a reliable, connection-oriented, bidirectional communication channel. UDP does not provide reliability and simply sends a packet to a given destination host and port. Higher layers of the protocol stack are handled by applications and the libraries they use.</p></li>
+</ol>
+
+<h1 id="datalinklayer">Data link layer</h1>
+
+<p>In an Ethernet network, the data link layer is handled by Ethernet transceivers and Ethernet switches. Security was not a consideration in the design of this layer and several fundamental attacks exist at this layer. Wi-Fi also operates at the data link layer and added encryption on wireless data between the device and access point. Note that Wi-Fi&#8217;s encryption is not end-to-end, between hosts, but ends at the access point.</p>
+
+<h2 id="switchcamtableoverflow">Switch CAM table overflow</h2>
+
+<p><em>Sniff all data on the local area network (LAN).</em></p>
+
+<p>Ethernet frames<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a> are delivered based on their 48-bit MAC<a href="#fn:2" id="fnref:2" title="see footnote" class="footnote">[2]</a> address. IP address are meaningless to ethernet transceivers and to switches since IP is handled at higher levels of the network stack. Ethernet was originally designed as a bus-based shared network; all devices on the LAN shared the same wire. Any system could see all the traffic on the Ethernet. This resulted in increased congestion as more hosts were added to the local network. </p>
+
+<p>Ethernet switches alleviated this problem by using a dedicated cable between each host and the switch and extra logic within the switch. The switch routes an ethernet frame <em>only</em> to the Ethernet port (the connector on the switch) that is connected to the system that contains the desired destination address. This switched behavior isolates communication streams - other hosts can no longer see the messages flowing on the network that are targeted to other systems.</p>
+
+<p>Unlike routers, switches are not programmed with routes. Instead, they learn which computers are on which switch ports by looking at the source MAC addresses of incoming ethernet frames. An incoming ethernet frame indicates that the system with that source address is connected to that switch port.</p>
+
+<p>To implement this, a switch contains a <strong>switch table</strong> (a MAC address table). This table contains entries for known MAC addresses and their interface (the switch port). The switch then uses <strong>forwarding and filtering</strong>:</p>
+
+<blockquote>
+<p>When a frame arrives for some destination address <em>D</em>, the switch looks up <em>D</em> in the switch table to find its interface. If <em>D</em> is in the table and on a different port than that of the incoming frame, the switch forwards the frame to that interface, queueing it if necessary.</p>
+
+<p>If <em>D</em> is not found in the table, then the switch assumes it has not yet learned what port that address is associated with, so it forwards the frame to <em>ALL</em> interfaces.</p>
+</blockquote>
+
+<p>This procedure makes the switch <strong>self-learning</strong>: the switch table is empty initially and gets populated as the switch inspects source addresses.</p>
+
+<p>A switch has to support extremely rapid lookups in the switch table. For this reason, the table is implemented using <strong>content addressable memory</strong> (<strong>CAM</strong>, also known as associative memory). CAM is expensive and switch tables are fixed-size and not huge. The switch will delete less-frequently used entries if it needs to make room for new ones.</p>
+
+<p>The <strong>CAM table overflow attack</strong> exploits the limited size of this CAM-based switch table. The attacker sends bogus Ethernet frames with random source MAC addresses. Each newly-received address will displace an entry in the switch table, eventually filling up the table. With the CAM table full, legitimate traffic will now be broadcast to all links. A host on any port can now see all traffic.</p>
+
+<p>Countermeasures for CAM table attacks require the use of managed switches that support <strong>port security</strong>. These switches allow you to configure individual switch ports to limit the number of addresses the table will hold for each switch port.</p>
+
+<p>Another option to prevent this attack is to use a switch that supports the <strong>802.1x</strong> protocol. This is a protocol that was created to improve security at the link layer.
+With 802.1x in place, all traffic coming to a switch port is initially considered to be “unauthorized”. The switch redirects the traffic, regardless of its destination address, to an authentication server.</p>
+
+<p>If the user authenticates successfully, the authentication server then configures a rule in the switch that will allow traffic coming from that user’s MAC address to be accepted by the switch. The port becomes “authorized” for that specific address. This is a common technique that is used to allow users to connect to public access wireless networks.</p>
+
+<h2 id="vlanhoppingswitchspoofing">VLAN hopping (switch spoofing)</h2>
+
+<p><em>Sniff all data from connected virtual local area networks.</em></p>
+
+<p>Companies often deploy multiple local area networks in their organization to isolate users into groups on separate networks. This isolates broadcast traffic between groups of systems and allows administrators to set up routers and firewalls that can restrict
+access between these networks. Related users can all be placed on a single LAN. For instance, we might want software developers to be on a physically distinct local area network than the human resources or finance groups. Partitioning different types of employees onto different local area networks is good security practice.</p>
+
+<p>However, users may be relocated within an office and switches may be used inefficiently. <strong>Virtual Local Area Networks</strong> (VLANs) create multiple logical LANs using a single switch. The network administrator can assign each port on a switch to a specific VLAN. Each VLAN is a separate broadcast domain so that each VLAN acts like a truly separate local area network. Users belonging to one VLAN will never see any traffic from the other; it would have to be routed through an IP router.</p>
+
+<p>Switches may be extended by cascading them with other switches: an ethernet cable from one switch simply connects to another switch. With VLANs, the connection between switches forms a <strong>VLAN trunk</strong><a href="#fn:3" id="fnref:3" title="see footnote" class="footnote">[3]</a> and carries traffic from <em>all</em> VLANs to the other switch. To support this behavior, a <strong>VLAN Trunking</strong> protocol was created, called the IEEE <strong>802.1Q</strong> standard &#8211; the <strong>Extended Ethernet frame</strong> format. 802.1Q simply takes a standard ethernet frame and adds a VLAN
+tag that identifies the specific VLAN number from which the frame originated. </p>
+
+<p>A <strong>VLAN hopping attack</strong> employs <strong>switch spoofing</strong>: an attacker&#8217;s computer sends and receives 802.1Q frames and the switch and will believe that the connected computer is another switch and consider it to be a member of all VLANs on the system.</p>
+
+<p>Depending on switch tables and forwarding policies, the attacker might not receive all the traffic but the attacker make that happen by performing a CAM overflow on the switch. The attacker&#8217;s computer will receive all broadcast messages, which often come from services advertising their presence. The attacker can also create and inject ethernet packets onto any VLAN. Recall that all higher-level protocols, such as UDP, are encapsulated within ethernet packets. </p>
+
+<p>Defending against this attack requires a managed switch where an administrator can disable unused ports and associate them with an unused VLAN. Auto-trunking should be disabled on the switch so that each port cannot become a trunk. Instead, trunk ports must be configured explicitly for the ports that have legitimate connections to other switches.</p>
+
+<h2 id="arpcachepoisoning">ARP cache poisoning</h2>
+
+<p><em>Redirect IP packets by changing the IP address to MAC address mapping.</em></p>
+
+<p>Recall that IP is a <em>logical</em> network that sits on top of physical networks. If we are on an Ethernet network and need to send an IP datagram<a href="#fn:4" id="fnref:4" title="see footnote" class="footnote">[4]</a>, that IP datagram needs to be encapsulated within an Ethernet frame. The Ethernet frame has to contain a destination MAC address that corresponds to the destination machine or the MAC address of a router, if the destination address is on a different LAN. Before an operating system can send an IP packet it needs to figure out what MAC address corresponds to that IP address.</p>
+
+<p>There is no relationship between an IP and Ethernet MAC address. To find the MAC address when given an IP address, a system uses the <strong>Address Resolution Protocol</strong>, <strong>ARP</strong>. The sending computer creates an Ethernet frame that contains an ARP message with the IP address it wants to query. This ARP message is then <strong>broadcast</strong>: all network adapters on the LAN receive the message. If a computer receives this message and sees that its own IP address matches the address in the query, it then sends back an <strong>ARP response</strong>. This response identifies the MAC address of the system that owns that IP address.</p>
+
+<p>To avoid the overhead of issuing this query each time the system has to use the IP address, the operating system maintains an <strong>ARP cache</strong> that stores recently used addresses. To further improve performance, hosts cache <em>any</em> ARP replies they see, even if they did not originate them. This is done on the assumption that many systems use the same set of IP addresses and the overhead of making an ARP query is substantial. Along the same lines, a computer can send an ARP response even if nobody sent a request. This is called a <strong>gratuitious ARP</strong> and is often sent by computers when they start up as a way to give other systems on the LAN the IP:MAC address mapping without them having to ask for it at a future time. </p>
+
+<p>Note that there is no way to authenticate that a response is legitimate. The asking host does not have any idea of what MAC address is associated with the IP address. Hence, it cannot tell whether a host that responds really has that IP address or is an imposter.</p>
+
+<p>An <strong>ARP cache poisoning</strong> attack is one where an attacker creates fake ARP replies that contain the attacker’s MAC address but the target’s IP address. This will direct any traffic meant for the target over to the attacker. It enables man-in-the-middle or denial of service attacks since the real host will not be receiving that IP traffic. Because other systems pick up ARP replies, the ARP cache poisoning reply will affect all the systems on the LAN. </p>
+
+<p>There are several defenses against ARP cache poisoning. One defense is to ignore replies that are not associated with requests. However, you need to hope that the reply you get is a legitimate one since an attacker may respond more quickly or perhaps launch a denial of service attack against the legitimate host and then respond.</p>
+
+<p>Another defense is to give up on ARP broadcasts and simply use static ARP entries. This works but can be an administrative nightmare since someone will have to keep the list of IP and MAC address mappings and the addition of new machines to the environment.</p>
+
+<p>Finally, one can enable something called <strong>Dynamic ARP Inspection</strong>. This essentially builds a local ARP table by using DHCP (Dynamic Host Configuration Protocol) Snooping data as well as static ARP entries. Any ARP responses will be validated against DHCP Snooping database information or static ARP entries. The DHCP snooping database is populated whenever systems first get configured onto the network. This assumes that the environment uses DHCP instead of fixed IP address assignments.</p>
+
+<h2 id="dhcpserverspoofing">DHCP server spoofing</h2>
+
+<p><em>Configure new devices on the LAN with your choice of DNS address, router address, etc.</em></p>
+
+<p>When a computer joins a network, it needs to be configured to use the Internet Protocol (IP) on that network. This is most often done automatically via <strong>DHCP</strong>, the <strong>Dynamic Host Configuration Protocol</strong>. It is used in practically every LAN environment and is particularly useful where computers (including phones) join and leave the network regularly, such as Wi-Fi hotspots. Every access point and home gateway provides DHCP server capabilities.</p>
+
+<p>A computer that joins a new network broadcasts a <strong>DHCP Discover</strong> message.
+As with ARP, we have the problem that a computer does not know whom to contact for this informations. It also does not have an IP address, it sends the query as an Ethernet broadcast, hoping that it gets a legitimate response.</p>
+
+<p>A DHCP server on the network picks up this request and sends back a response that contains configuration information for this new computer on the network:</p>
+
+<ul>
+<li>IP address &#8211; the IP address for the system</li>
+<li>Subnet mask &#8211; which bits of the IP address identify the local area network</li>
+<li>Default router &#8211; gateway to which all non-local datagrams will be routed</li>
+<li>DNS servers &#8211; servers that system can query to find IP addresses for a domain name</li>
+<li>Lease time &#8211; how long this configuration is valid</li>
+</ul>
+
+<p>With <strong>DHCP Spoofing</strong>, any system can pretend to be a DHCP server and spoof responses that would normally be sent by a valid DHCP server. This attacker can provide the new system with a legitimate IP address but with a false address for the gateway (the default router). This will cause the computer to route all non-local datagrams to the attacker. </p>
+
+<p>The attacker can provide a false DNS server in the response. This will cause domain name queries to be sent to a server chosen by the attacker, which can give false IP addresses to redirect traffic for chosen domains. </p>
+
+<p>As with ARP cache poisoning, the attacker may launch a denial of service attack against the legitimate DHCP server to keep it from responding or at least delay its responses. If the legitimate server sends its response after the imposter, the new host will simply ignore the response.</p>
+
+<p>There aren&#8217;t many defenses against DHCP spoofing. Some switches (such as those by Cisco and Juniper) support <strong>DHCP snooping</strong>. This allows an administrator to configure specific switch ports as “trusted” or “untrusted.&quot; Only specific machines, those on trusted ports, will be permitted to send DHCP responses. Any other DHCP responses will be dropped. The switch will also use DHCP data to track client behavior to ensure that hosts use only the IP address assigned to them and that hosts do not generate fake ARP responses.</p>
+
+<h1 id="networkiplayer">Network (IP) layer</h1>
+
+<p>The Internet Protocol (IP) layer is responsible for getting datagrams (packets) to their destination. It does not provide any guarantees on message ordering or reliable delivery. Datagrams may take different routes through the network and may be dropped by queue overflows in routers.</p>
+
+<h2 id="sourceipaddressauthentication">Source IP address authentication</h2>
+
+<p><em>Anyone can impersonate an IP datagram.</em></p>
+
+<p>One fundamental problem with IP communication is that there is absolutely no source IP address authentication. Clients are expected to use their own source IP address but anybody can override this if they have administrative privileges on their system by using a raw sockets interface.</p>
+
+<p>This enables one to forge messages to appear that they come from another system. Any software that authenticates requests based on their IP addresses will be at risk.</p>
+
+<h2 id="anonymousdenialofservice">Anonymous denial of service</h2>
+
+<p>The ability to set an arbitrary source address in an IP datagram can be used for <strong>anonymous denial of service attacks</strong>. If a system sends a datagram that generates an error, the error will be sent back to the source address that was forged in the query. For example, a datagram sent with a small time-to-live, or TTL, value will cause a router that is hit when the TTL reaches zero to respond back with an <em>ICMP</em> (Internet Control Message Protocol) <em>Time to Live exceeded</em> message. Error responses will be sent to the forged source IP address and it is possible to send a vast number of such messages from many machines (by assembling a botnet) across many networks, causing the errors to all target a single system.</p>
+
+<h2 id="routers">Routers</h2>
+
+<p>Routers are nothing more than computers with multiple network links and often with special purpose hardware to facilitate the rapid movement of packets across interfaces. They run operating systems and have user interfaces for administration. As with many other devices that people don&#8217;t treat as &#8220;real&#8221; computers, there is a danger that they routers will have simple or even default passwords. For instance, you can go to <a href="cirt.net">cirt.net</a> to get a database of thousands of default passwords for
+different devices.</p>
+
+<p>Moreover, owners of routers may not be nearly as diligent in keeping the operating system and other software updated as they are with their computers.</p>
+
+<p>Routers can be subject to some of the same attacks as computers. Denial of service (DoS) attacks can keep the router from doing its job. One way this is done is by sending a flood of ICMP datagrams. The Internet Control Message Protocol is typically used to send routing error messages and updates and a huge volume of these can overwhelm a router. Routers may also have input validation bugs and not handle certain improper datagrams correctly.</p>
+
+<p><strong>Route table poisoning</strong> is the modification of the router&#8217;s routing table either by breaking into a router or by sending route update datagrams over an unauthenticated protocol.</p>
+
+<h1 id="transportlayerudptcp">Transport layer (UDP, TCP)</h1>
+
+<p>UDP and TCP are transport layer protocols that allow applications to establish communication channels with each other. Each endpoint of a channel is identified by a port number (a 16-bit integer that has nothing to do with Ethernet switch ports). The port number allows the operating system to direct traffic to the proper socket. Hence, both TCP and UDP segments<a href="#fn:5" id="fnref:5" title="see footnote" class="footnote">[5]</a> contain not only source and destination addresses but also source and destination ports.</p>
+
+<p>UDP, the User Datagram Protocol, is stateless, connectionless, and unreliable.</p>
+
+<p>As we saw with IP source address forgery, any system can create and send UDP messages with forged source IP addresses. UDP interactions have no concept of sessions as far as the operating system is concerned and do not use sequence numbers, so attackers can inject messages directly without having to take over some session.</p>
+
+<p>TCP, the Transmission Control Protocol, is stateful, connection-oriented, and reliable. Every packet contains a sequence number (a byte offset) and the operating system assembles received packets into their correct order. The receiver also sends acknowledgements so that any missing packets will be retransmitted.</p>
+
+<p>To handle in-order, reliable communication, TCP needs to establish state at both endpoints. It does this through a connection setup process that comprises a three-way handshake.</p>
+
+<ol>
+<li><p><strong>SYN</strong>: The client sends a SYN segment.<br/>
+The client selects a random <strong>initial sequence number</strong> (<code>client_isn</code>). This is the starting sequence number for the segments it will send.</p></li>
+<li><p><strong>SYN/ACK</strong>: The server responds with a SYN/ACK.<br/>
+The server receives the SYN segment and now knows that a client wants to connect to it. It allocates memory to store the connection state and to store received, possibly out-of-sequence segments. The server also generates an initial sequence number (<code>server_isn</code>) for its side of the data stream. This is also a random number. The response also contains an acknowledgement to the client&#8217;s SYN request with the value <code>client_isn+1</code>.</p></li>
+<li><p><strong>ACK</strong>: The client sends a final acknowledgement.<br/>
+The client acknowledges receipt of the server&#8217;s SYN/ACK message by sending a final ACK message that contains an acknowledgement of <code>server_isn+1</code>.</p></li>
+</ol>
+
+<p>Note that the initial sequence numbers are <strong>random</strong> rather than starting at zero as one might expect. There are two reasons for this.</p>
+
+<p>The primary reason is that message delivery times on an IP network are unpredictable and it is possible that a recently-closed connection may receive delayed messages, confusing the server on the state of that connection. </p>
+
+<p>The security-sensitive reason is that if sequence numbers were predictable then it would be quite easy to launch a <strong>sequence number prediction attack</strong> where an attacker would be able to guess at likely sequence numbers on a connection and send masqueraded packets that will appear to be part of the data stream. Random sequence numbers do not make the problem go away but make it more challenging to launch the attack, particularly if the attacker does not have the ability to see traffic on the network.</p>
+
+<h2 id="synflooding">SYN flooding</h2>
+
+<p>In the second step of the three-way handshake, the server is informed that a client would like to connect and allocates memory to manage this new connection. Given that kernel memory is a finite resource, the operating system will allocate only a finite amount of TCP buffers in its TCP queue. After that, it will refuse to accept any new connections.</p>
+
+<p>In the <strong>SYN flooding</strong> attack, the attacker sends a large number of SYN segments to the target. These SYN messages contain a forged source address of an unreachable host, so the target&#8217;s SYN/ACK responses never get delivered anywhere. The handshake is never completed but the operating system has allocated resources for this connection.
+There is a window of time before the server times out on waiting for a response and cleans up the memory used by these pending connections. Meanwhile, all TCP buffers have been allocated and the operating system refuses to accept any more TCP connections, even if they come from a legitimate source. This window of time can usually be configured. Its default value is 10 seconds on Windows systems.</p>
+
+<p>SYN flooding attacks cannot be prevented completely. One way of lessening impact of these attacks is the use of <strong>SYN cookies</strong>. With SYN cookies, the server does not allocate memory for buffers &amp; TCP state when a SYN segment is received. It responds with a SYN/ACK that contains an initial sequence number created as a hash of several known values:</p>
+
+<pre><code>    hash(src_addr, dest_addr, src_port, dest_port, SECRET)
+</code></pre>
+
+<p>The <em>SECRET</em> is not shared with anyone; it is local to the operating system. When (if) the final ACK comes back from a legitimate client, the server will need to validate the acknowledgement number. Normally this requires comparing the number to the stored server initial sequence number plus 1. We did not allocate space to store this value but we can recompute the number by re-generating the hash, adding one, and comparing it to the acknowledgement number in the message. If it is valid, the kernel believes it was not the victim of a SYN flooding attack and allocate resources necessary for managing the connection.</p>
+
+<h2 id="tcpreset">TCP Reset</h2>
+
+<p>A somewhat simple attack is to send a <strong>RESET</strong> (RST) segment to an open TCP socket. If the server sequence number is correct then the connection will close. Hence, the tricky part is getting the correct sequence number to make it look like the RESET is part of the genuine message stream.</p>
+
+<p>Sequence numbers are 32 bit values. The chance of successfully picking the correct sequence number is tiny: 1 in 2^32, or approximately one in four billion. However, many systems will accept a large range of sequence numbers that are approximately in the correct range to account for the fact that packets may arrive out of orders so they shouldn&#8217;t necessarily be rejected just because the sequence number is not exactly correct. This can reduce the search space tremendously and an attacker can send a flood of RST packets with varying sequence numbers and a forged source address until the connection is broken.</p>
+
+<h1 id="routingprotocols">Routing protocols</h1>
+
+<p>The Internet was designed to connect multiple independently managed networks, each of which may use different hardware. Routers connect local area networks as well as wide area networks. </p>
+
+<p>A collection of consecutive IP addresses (most significant bits, called <strong>prefixes</strong>) as well as the underlying routers and network infrastructure, all managed as one administrative entity, is called an <a href="https://www.cs.rutgers.edu/~pxk/352/notes/autonomous_systems.html">Autonomous System</a> (<strong>AS</strong>). For example, the part of the Internet managed by Comcast is an autonomous system (Comcast actually has 42 of them in different regions). The networks managed by Verizon constitute a few autonomous systems as well. For purposes of our discussion, think of ASes as ISPs or large data centers such as Google or Amazon. Incidentally, Rutgers is an Autonomous System: AS46, owning the range of IP addresses starting with 128.6. This is usually expressed as 128.6.0.0/16, meaning that the first 16 bits of the address identify the range of addresses in the Rutgers network.</p>
+
+<p>Routers that are connected to routers in other ASes use an Exterior Gateway Protocol (EGP) called the <strong>Border Gateway Protocol</strong>, or <strong>BGP</strong>. With BGP, each autonomous system exchanges routing and reachability information with the autonomous systems with which it connects. For example, Comcast can tell Verizon what parts of the Internet it can reach. BGP uses a distance vector routing algorithm to enable the routers to determine the most efficient path to use to send packets that are destined for other networks. Unless an administrator explicitly configures a route, BGP will generally be configured to pick the shortest route.</p>
+
+<h2 id="bgphijacking">BGP Hijacking</h2>
+
+<p>So what are the security problems with BGP? Edge routers in an autonomous system use BGP to send <em>route advertisements</em> to routers of neighboring autonomous systems. An advertisement is a list of IP address prefixes the AS can reach (shorter prefixes mean a bigger range of addresses) and the distance (number of hops) to each group of systems. </p>
+
+<p>These messages are sent over a TCP connection between the routers with no authentication, integrity checks, or encryption. With <strong>BGP hijacking</strong>, a malicious party that has access to the network link or a connected router can inject advertisements for arbitrary routes. The information will propagate throughout the Internet and can cause routers throughout the Internet to send IP datagrams to the attacker, with the belief that is the shortest path to the destination.</p>
+
+<p>A BGP attack can be used for eavesdropping (direct network traffic to a specific network by telling everyone that you&#8217;re offering a really short path) or a denial of service (DoS) attack (make parts of the network unreachable by redirecting traffic and then dropping it). There are currently close to 33,000 autonomous systems and most have multiple administrators. We live in the hope that none of them are malicious, cannot be bribed or blackmailed, and that all routers are properly configured and properly secured.</p>
+
+<p>It is difficult to change BGP since tens of thousands of independent entities use it worldwide. Two partial solutions to this problem emerged. The <strong>Resource Public Key Infrastructure</strong> (<strong>RPKI</strong>) framework simply has each AS get an X.509 digital certificate from a trusted entity (the Regional Internet Registry). Each AS signs its list of route advertisements with its private key and any other AS can validate that list of advertisements using the AS&#8217;s certificate. </p>
+
+<p>An alternate, but related, solution is <strong><a href="https://tools.ietf.org/html/rfc8205">BGPsec</a></strong>, which is an <a href="https://www.ietf.org">IETF</a> standard. Instead of signing an individual AS&#8217;s routes, every BGP message between ASes is signed.</p>
+
+<p>Both solutions require every AS to employ this solution. If some AS is willing to accept untrusted route advertisements and will relay them to other ASes as signed messages then the integrity is meaningless. Moreover, most BGP hijacking incidents took place because legitimate system administrators misconfigured route advertisements either accidentally or on purpose. They were not the actions of attackers that hacked into a router.</p>
+
+<p>A high profile BGP attack occurred against YouTube in 2008. Pakistan Telecom received a censorship order from the Ministry of Information Technology and Telecom to block YouTube traffic to the country. The company sent spoofed BGP messages claiming to offer the best route for the range of IP addresses used by YouTube. It did this by using a longer address prefix than the one advertised by YouTube (longer prefix = fewer addresses). Because a longer prefix is more specific, BGP gives it a higher priority. This logic makes it easy for an AS to offer different routes to small parts of its address space.</p>
+
+<p>YouTube is its own AS and announces their network of computers with a 22-bit prefix. Pakistan Telecom advertised the same set of IP addresses with a 24-bit prefix. A longer prefix means the route supports fewer addresses and thus refers to fewer computers and BGP gave Pakistan Telecom&#8217;s routes a higher routing priority. This way, Pakistan Telecom hijacked those routes.</p>
+
+<p>Within minutes, routers worldwide were directing their YouTube requests to Pakistan Telecom, which would simply drop them. YouTube tried countermeasures, such as advertising more specific networks, such as a /26 network, which advertised blocks of 64 addresses. The AS to which Pakistan telecom was connected was also reconfigured to stop relaying the routes advertised by Pakistan Telecom but it took about two hours before routes were restored.</p>
+
+<h1 id="domainnamesystemdns">Domain Name System (DNS)</h1>
+
+<p>The Domain Name System (DNS) is a tree-structured hierarchical service that maps Internet domain names to IP addresses. A user&#8217;s computer runs the DNS protocol via a program known as a <strong>DNS stub resolver</strong>. It first checks a local file for specific preconfigured name-to-address mappings. Then it checks its cache of previously-found mappings. Finally, it contacts an external DNS resolver, which is usually located at the ISP or is run as a public service, such as Google Public DNS, Cloudflare DNS, or OpenDNS.</p>
+
+<p>We trust that the name-to-address mapping is legitimate. Web browsers, for instance, rely on this to enforce their <em>same-origin</em> policy, which involves validating content based on the domain name it comes from rather than its IP address.</p>
+
+<p>However, DNS queries and responses are sent using UDP with no authentication or integrity checks.
+The only validation is that each DNS query contains a <strong>Query ID</strong> (QID). A DNS response must have a matching QID so that the client can match it with the query it issued. These responses can be intercepted and modified or simply forged. Malicious responses can return a different IP address that will direct IP traffic to different hosts.</p>
+
+<h2 id="pharmingattack">Pharming attack</h2>
+
+<p>A <strong>pharming attack</strong> is an attack on the configuration information maintained by a DNS server &#8211;either modifying the information used by the local DNS resolver or modifying that of a remote DNS server. By changing the name to IP address mapping, an attacker can cause software to send packets to the wrong system.</p>
+
+<p>The most direct form of a pharming attack is to modify the local <code>hosts</code> file. This is the file (<code>/etc/hosts</code> on Linux, BSD, and macOS systems;
+<code>c:\Windows\System32\Drivers\etc\hosts</code> on Windows) that contains mappings between domain names and IP addresses. If an entry is found here, the system will not bother checking a remote DNS server.</p>
+
+<p>Alternatively, malware may modify the DNS server settings on a system so that the system would contact an attacker&#8217;s DNS server, which can then provide the wrong IP address for certain domain names. </p>
+
+<h2 id="dnscachepoisoningdnsspoofingattack">DNS cache poisoning (DNS spoofing attack)</h2>
+
+<p>DNS queries first check the local host&#8217;s DNS cache to see if the results of a past query have been cached. This yields a huge improvement in performance since a network query can be avoided. If the cached name-to-address mapping is not valid, then the wrong IP address is returned to the program that asked for it. </p>
+
+<p>Modifying this cached mapping is called <strong>DNS cache poisoning</strong>, also known as <strong>DNS spoofing</strong>. In the general case, DNS cache poisoning refers to any mechanism where an attacker is able to provide malicious responses to DNS queries. </p>
+
+<p>For instance, if an attacker can install malware that can inspect ethernet packets on the network, the malware can detect DNS queries and issue forged responses. The response&#8217;s source address can even be forged to appear that it&#8217;s coming from a legitimate server. The local DNS resolver will accept the data because there is no way to verify whether it is legitimate or not.</p>
+
+<p>Here is another way that browser-based DNS cache poisoning attack can be performed via JavaScript on a malicious website. The attack takes advantage of the fact that a DNS response for a subdomain, such as <code>a.bank.com</code> can contain information about a new DNS
+server for the entire <code>bank.com</code> domain. The goal of the attacker is to redirect requests for <code>bank.com</code>, even if the IP address for the domain is already cached in the system.</p>
+
+<p>The browser requests access to a legitimate site but with an invalid subdomain. For example, <code>a.bank.com</code>. Because the system will not have the address of <code>a.bank.com</code> cached, it sends a DNS query to an external DNS resolver using the DNS protocol. </p>
+
+<p>The DNS query includes a query ID (QID) x~1. At the same time that the request for <code>a.bank.com</code> is made, JavaScript launches an attacker thread that sends 256 responses with random QIDs (y<code>1</code>, y<code>2</code>, y<code>3</code>, &#8230;}. Each of these DNS responses tells the server that the DNS server for bank.com is at the attacker&#8217;s IP address. </p>
+
+<p>If one of these responses happens to have a matching QUD, the host system will accept it as truth that all future queries for anything at <code>bank.com</code> should be directed to the name server run by the attacker. If the responses don&#8217;t work, the script can try again with a different sub-domain, <code>b.bank.com</code>. The attack might take several minutes, but there is a high likelihood that this attack will eventually succeed.</p>
+
+<p><strong>Summary</strong>: An attacker can run a local DNS server that will attempt to provide spoofed DNS responses to legitimate domain name lookup requests. If the query ID numbers of the fake response match those of a legitimate query (trial and error), the victim will get the wrong IP address, which will redirect legitimate requests to an attacker&#8217;s service.</p>
+
+<h2 id="dnscachepoisoningdefenses">DNS cache poisoning defenses</h2>
+
+<p>Several defenses can prevent this form of attack. The first two we discuss require non-standard actions that will need to be coded into the system. </p>
+
+<h3 id="randomizedsourceport">Randomized source port</h3>
+
+<p>We can randomize the source port number of the query. Since the attacker does not get to see the query, it will not know where to send the bogus responses. There are 2^16 (65,536) possible ports to try. </p>
+
+<h3 id="doublequeries">Double queries</h3>
+
+<p>The second defense is to force all DNS queries to be issued twice. The attacker will have to guess a 16-bit query ID twice in a row and the chances of doing that successfully are infinitesimally small.</p>
+
+<h3 id="dnsovertcp">DNS over TCP</h3>
+
+<p>We can make these attacks far more difficult by using DNS over TCP rather than UDP. Inserting a message into a TCP session is much more difficult than just sending a UDP packet since you need to get the correct sequence numbers as well as source address and port numbers. You also need to have access to a raw sockets interface to create a masqueraded TCP segment.</p>
+
+<p>DNS servers can be configured to user either or both protocols. TCP is often avoided because it creates a much higher latency for processing queries and results in a higher overhead at the DNS server.</p>
+
+<h3 id="dnssec">DNSSEC</h3>
+
+<p>The strongest solution is to use a more secure version of the DNS protocol. <a href="https://www.icann.org/resources/pages/dnssec-what-is-it-why-important-2019-03-05-en">DNSSEC</a>, which stands for Domain Name System Security Extensions, was created to allow a DNS server to provide authenticated, signed responses to queries.</p>
+
+<p>Every response contains a digital signature signed with the domain zone owner’s private key. For instance, Rutgers would have a private key and responses to queries for anything under <code>rutgers.edu</code> would be accompanied with a signature signed with Rutgers&#8217; private key. This authenticates the origin of the data and ensures its integrity – that the data has not been later modified.</p>
+
+<p>The receiver needs to validate the signature with a public key. Public keys are trusted because they are distributed in a manner similar to X.509 certificates. Each public key is signed by the next top-level domain. For example, the public key for Rutgers.edu would be signed with the private key of the owner of <code>.edu</code> domain, <a href="https://net.educause.edu">EDUCAUSE</a>. Everyone would need a root public key to verify this chain of trust.</p>
+
+<p>DNSSEC has been around for since 2008 and is in use but widespread adoption has been really slow. It is difficult to overcome industry inertia and a lack of desire for updating well-used protocols. It also requires agreements between various service providers and vendors. Systems can be reluctant to use it because it’s more compute intensive and results in larger data packets.</p>
+
+<h2 id="dnsrebinding">DNS Rebinding</h2>
+
+<p>Web application security is based on the <em>same-origin policy</em>. This restricts the resources that JavaScript can access. Browser scripts can access cookies and other data on pages only if they share the same origin. The underlying assumption is that resolving a domain name takes you to the correct server. </p>
+
+<p>The <strong>DNS rebinding</strong> attack allows JavaScript code on a malicious web page to access <em>private</em> IP addresses in the victim&#8217;s network. </p>
+
+<p>The attacker configures the DNS entry for a domain name to have a short time-to-live value (TTL). When the victim&#8217;s browser visits the page and downloads JavaScript from that site, that JavaScript code is allowed to interact with the domain thanks to the same origin policy. However, right after the user&#8217;s browser downloads the script, the attacker reconfigures the DNS server so that future queries will return an address in the user&#8217;s internal network. The JavaScript code can then try to request resources from that system since, as far as the browser is concerned, the origin is the same because the name of the domain has not changed. The attacker may have to
+guess but most local addresses start with 192.168 or 10.0. By continuing to use short TTL values, the JavaScript code can continue to issue DNS queries and allow the attacker to try different addresses.</p>
+
+<p><strong>Summary</strong>: short time-to-live values in DNS allow an attacker to change the address of a domain name so that scripts from that domain can now access resources inside the private network.</p>
+
+<!--
+### DNS amplification attack
+
+We have seen how source address spoofing can be used to 
+carry out an anonymous denial of service (DoS) attack. Ideally,
+to overload a system, the attacker  would like to send a small amount of data
+that would create a large response that would be sent to the target.
+This is called **amplification**. An obvious method would be to send
+a URL request over HTTP that will cause the server to respond with 
+a large page reply. However, this does not work as HTTP uses TCP and
+the target would not have the TCP session established. 
+DNS happens to be a UDP-based service. **DNS amplification** uses
+a collection of compromised systems that will carry out the
+attack (a **botnet**). Each system will send a small DNS query
+using a forged source address.
+These systems can contact their
+own ISP's DNS servers since the goal is not to overwhelm any DNS
+server.
+The query asks for "ANY", a request for all known
+information about the DNS zone.
+Each such query will cause the DNS server to send
+back a far larger reply.
+-->
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>At the data link layer, packets are called <em>frames</em>.  <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:2">
+<p>MAC = <em>Media Access Control</em> and refers to the hardware address of the Ethernet device. Bluetooth, Ethernet, and Wi-Fi (802.11) share the same addressing formats. <a href="#fnref:2" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:3">
+<p>a <em>trunk</em> is the term for the connection between two switches. <a href="#fnref:3" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:4">
+<p>At the network layer, a packet is referred to as a <em>datagram</em>. <a href="#fnref:4" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:5">
+<p>at the transport layer, we refer to packets as <em>segments</em>. Don&#8217;t blame me. I don&#8217;t know why we need different words for each layer of the protocol stack. <a href="#fnref:5" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+
+							</section>
+							<footer class="main">
+								Last modified November 12, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

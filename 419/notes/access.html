@@ -1,0 +1,1441 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Access Control</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main-article.css?v=1.3"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Computer Security</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Access Control</h1>
+								<h2>Thinking about Security</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>September 17, 2020</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<h1 id="introduction">Introduction</h1>
+
+<p>Protection is an essential aspect of secure systems. By <strong>protection</strong>, we refer to the mechanism that provides and enforces controlled access of resources to processes. To protect resources, we need to first <strong>authenticate</strong> the user. <strong>Authentication</strong> is the process of getting and validating a user&#8217;s identity. Then we can <strong>authorize</strong> the user&#8217;s access to a desired resource. <strong>Authorization</strong> determines whether an authenticated user is permitted access to a resource. This will be based on some configured <strong>security policy</strong>.</p>
+
+<p>Processes are run by users, so the mechanism enables users to have varying levels of
+access to resources, an ability to run specific programs, and in some cases, run
+programs with privileges other than those of the user running the program.
+A protection <strong>mechanism</strong> enforces security <strong>policies</strong>. The policies are the
+definition of what is or is not permissible in the organization.</p>
+
+<p>At the operating system level, protection encompasses several components:</p>
+
+<ul>
+<li><p>User accounts: Users need to identify themselves and be <strong>authenticated</strong> so the system can have
+assurance of the integrity of the user and apply appropriate policies.</p></li>
+<li><p>User privileges: Each process run by the system or by a user runs with
+specific privileges that define <strong>access rights</strong> &#8211; what resources the
+process can and cannot access. In most cases, these resources are files but
+they can be devices or communication interfaces<a href="#fn:1" id="fnref:1" title="see footnote" class="footnote">[1]</a>.</p></li>
+<li><p>Scheduling: the operating system is responsible for scheduling processes and may give certain users higher priorities than others.</p></li>
+<li><p>Quotas: the system may impose quotas: how much disk space, CPU, or
+network traffic a given process or user is allowed.</p></li>
+</ul>
+
+<p>The very earliest computers did not have a need for access control. They were
+single-user batch-processing systems. Both the program and data were physically
+brought to the computer, usually in the form of punched cards and magnetic or punched paper tape. Once disks came onto the scene, computers had always-available files on them. Now, privacy (confidentiality) and integrity were concerns. You
+may not want somebody else reading your files and you do not want others modifying your files unless you give them explicit permission to do so.
+In short, you want to protect yourself from curious users, malicious users,
+and from their mistakes.</p>
+
+<p>Later, interactive timesharing systems dominated, and we had an environment
+where multiple processes from multiple users ran at the same time, making
+casual inspection of files easier and allowing multiple processes to access
+the same file at the same time. Malicious software, for example, could keep
+a file open and monitor its changes &#8211; or make changes. <strong>Access control</strong>
+was needed. We needed operating system mechanisms that would enforce
+defined <strong>policies</strong> on who could access what.</p>
+
+<p>When PCs took over the world, access control took a back seat for a while. We were back
+to single-user systems: every file is yours. However, we soon realized
+that software became less trusted. You now had to worry about whether that
+game you installed would modify your system files or upload your private
+files to a remote server. It turned out that access control was still
+important. Now we live in a world of PCs, mobile devices, IoT<a href="#fn:2" id="fnref:2" title="see footnote" class="footnote">[2]</a> devices,
+as well as remote servers &#8211; cloud computing &#8211; where we share computers
+and storage. We also have traditional time sharing systems, such as university
+computers and corporate servers. Program isolation and access control is still
+crucial.</p>
+
+<h1 id="accesscontrol">Access control</h1>
+
+<p>Access control is about ensuring that authorized users can do what they are permitted to
+do &#8230; and no more than that. In the real world, we rely on keys, badges, guards,
+and policy rules for enforcing access control.
+In the computer world, we achieve access control through a combination of
+hardware, operating systems, web servers, databases, and other multi-access software,
+and polices.</p>
+
+<h2 id="accesscontrolandtheoperatingsystem">Access control and the operating system</h2>
+
+<p>In its most basic sense, an operating system is responsible for controlling
+access to system resources. These resources include the processor, memory,
+files and devices, and the network. The operating system needs to be protected
+from applications. If not, an operation may, accidentally or maliciously,
+destroy the integrity of the operating system. Applications also need to
+be protected from each other so that one application cannot read another&#8217;s
+memory (enforce <strong>confidentiality</strong>) or modify them (enforce <strong>integrity</strong>).
+We also need to make sure that the operating system always stays in control.
+A process should not be able to take over the computer and keep the operating
+system or other processes from running.</p>
+
+<h3 id="hardwaretimer">Hardware timer</h3>
+
+<p>To make sure the operating system can always regain control, it relies
+on a programmable hardware timer. Traditionally, the operating system
+would request a periodic stream of interrupts, such as 100 per second.
+In an effort to be more power efficient, some operating systems now replace
+the periodic stream of interrupts by setting the timer to go off
+at a specific future interval. In either case, when the timer goes
+off, it generates an interrupt that forces the processor to
+switch execution to preprogrammed location in the kernel. This
+ensures that the operating system can always regain control of the processor and
+a process cannot keep the operating system from doing so. This is
+the basis of <strong>preemptive multitasking</strong>. Some systems in the past,
+such as the earliest versions of Microsoft Windows (before Windows 95), implemented cooperative multitasking,
+where a process had to relinquish control explicitly.</p>
+
+<h3 id="processscheduler">Process scheduler</h3>
+
+<p>The timer forces a periodic change of control to the operating system
+kernel. This allows it to examine processes in execution and make
+scheduling decisions. Specifically, the operating system decides whether
+the currently running process(es) used their fair share of the CPU
+and it is time to give another process the chance to run for a while.
+An important part of the scheduling algorithm is to avoid <strong>starvation</strong>,
+the phenomenon when certain processes never get a chance to run.
+If it were possible for a process to keep others from running, that
+would be an <em>availability</em> attack. The scheduler attempts to prioritize
+threads based on some concept of “fairness”. This priority could be
+based on the user, user-defined priority, interactivity of the process,
+real-time deadlines, or past use of the processor. Often, it is a combination
+of these factors. A “fair” scheduler will provide graceful degradation
+of performance as more processes are run, ensure all get a chance to run,
+and not allow one process to adversely affect the execution of others.</p>
+
+<h3 id="memorymanagementunit">Memory management unit</h3>
+
+<p>The majority of modern processors<a href="#fn:3" id="fnref:3" title="see footnote" class="footnote">[3]</a> have a memory management unit
+(<a href="../../416/notes/09-memory.html">MMU</a>)
+as part of their architecture. This enables the kernel to provide each process
+with <strong>virtual memory</strong>, the illusion of a complete private memory address
+space. A valid memory reference gets translated into a physical address in
+real memory. Because each process has its own address space (defined by
+a per-process <strong>page table</strong>), one process cannot access another process’
+memory. With this mechanism, the operating system can provide complete memory
+isolation between processes. The virtual memory address space is divided into
+equal-size chunks, called <em>pages</em> and the operating system can define access
+rights for each page, such as read-only, read-write, or execute. </p>
+
+<h3 id="kernelmode">Kernel mode</h3>
+
+<p>Clearly there are special operations that the operating system needs to perform.
+These include setting timers, configuring the page table for each process, and
+switching processes. Normal processes should not be permitted to do any of these
+operations. To support this dichotomy, processors support a special mode of
+execution called <strong>kernel mode</strong> (also called <em>privileged</em>, <em>system</em>, or
+<em>supervisor</em> mode).
+This mode called <em>kernel mode</em> because it is used by the operating system
+kernel: processes run in <em>user mode</em>.
+When the processor runs in kernel mode, it can access
+regions of memory that may have been restricted, modify the page tables and
+the processor’s page table register, set timers, define interrupt vectors
+(e.g., direct where CPU execution should go if a timer goes off or an ethernet packet
+is received), and even halt the processor. </p>
+
+<p>Normal processes, even those with elevated privileges,
+should not be allowed to access these special instructions since
+it would allow them to subvert the integrity of the kernel or other processes. They
+run in <strong>user mode</strong>. A process can switch from user mode to kernel mode execution
+in one of three ways:</p>
+
+<ol>
+<li><p>A <strong>trap instruction</strong>, which is also called a software interrupt<a href="#fn:4" id="fnref:4" title="see footnote" class="footnote">[4]</a>.
+This is the technique used to execute system calls.</p></li>
+<li><p>A <strong>program violation</strong>, such as accessing an unmapped are area of memory or
+attempting to execute code from a memory location that does not have execute privileges.</p></li>
+<li><p>A <strong>hardware interrupt</strong>, such as a timer expiration, power button press, or
+the receipt of a packet.</p></li>
+</ol>
+
+<h4 id="ringsofprotection">Rings of protection</h4>
+
+<figure>
+<img src="images/300px-Priv_rings.png" alt="Figure 1. Rings of protection<br/>from https://en.wikipedia.org/wiki/Protection_ring" id="rings-of-protection1" title="Rings of protection" style="width:250px;" />
+<figcaption>Figure 1. Rings of protection<br/>from https://en.wikipedia.org/wiki/Protection_ring</figcaption></figure>
+
+
+
+<p>Today’s operating systems support these two modes of operation: user and kernel.
+Kernel mode has all the privileges while user mode has restricted privileges.
+However, there is no reason that only two modes of privilege need to exist.</p>
+
+<p>When <a href="http://multicians.org">Multics</a>, the predecessor of Unix, was designed,
+it had a ring structure of six<a href="#fn:5" id="fnref:5" title="see footnote" class="footnote">[5]</a> different privilege levels. Each ring was protected
+from higher-numbered rings and the only way code running in a higher-numbered
+ring could access code in a lower-numbered ring was by making a special call
+to cross rings. These calls, with well-defined entry points, are called <strong>call gates</strong>.
+Only the lowest-level, most-secure functions ran in ring 0. The rest of the
+kernel ran in higher rings and user processes ran in even higher rings. </p>
+
+<p>The Intel x86 architecture supports four privilege levels &#8211; four rings.
+However, modern operating systems only use two of them: ring 0 for the kernel and
+ring 3 for user applications.</p>
+
+<h1 id="subjectsandobjects">Subjects and objects</h1>
+
+<p>In order to determine who gets to do what, the first thing that the
+operating system needs is the user&#8217;s identity. Typically, the login
+program establishes that by getting the user&#8217;s <strong>credentials</strong>,
+which usually comprise a login name and password and authenticating them.
+The system then associates a unique user ID with that user and grants
+access to resources based on that ID.</p>
+
+<p>When we look at access control, we talk in terms of <em>subjects</em> and <em>objects</em>.
+A <strong>subject</strong> is the thing that needs to access the resources, or objects.
+Often, the subject is the user. However, the subject can also be a logical
+entity. For example, you might run the <a href="http://www.postfix.org">postfix</a>
+mail server and create a user ID of <em>postfix</em> for that server even if it
+does not correspond to a human user. Having this distinct ID will enable
+you to configure access rights for the postfix server that are distinct
+from other users. You will also likely do this for certain other servers,
+such as a web server.</p>
+
+<p>An <strong>object</strong> is the resource that the subject may access. The resource
+is often a file but may also be a device, communication link, or even another
+subject.</p>
+
+<p><strong>Access control</strong> defines allowable operations of subjects on objects: it
+defines what different <em>subjects</em> are allowed to do
+or defines what can be done to different <em>objects</em>. </p>
+
+<p>Most operating systems define what can be done with different
+objects, meaning that permissions are associated with each object.</p>
+
+<h1 id="theunixposixaccessmodel">The Unix (POSIX) access model</h1>
+
+<p>Access isn&#8217;t an all-or-nothing proposition. You may have access to read a file
+but not to write it, or access to read or execute a file. Each object can
+have different permissions associated with it. We will first look at how
+<a href="https://en.wikipedia.org/wiki/POSIX">POSIX</a> systems
+manage permissions. This includes the set of systems that have been
+derived from or inspired by the original Bell Labs version of
+Unix, including Linux, Oracle Solaris, FreeBSD, NetBSD, OpenBSD, macOS, Android, iOS, and many other lesser-known systems.</p>
+
+<h2 id="accessandsharingfiles">Access and sharing files</h2>
+
+<p>In a shared environment, you&#8217;d like to be able to set access rules
+so that multiple people, say members of a project, can share access
+to the same file. Each file (object) has an <strong>owner</strong> and a <strong>group</strong> associated
+with it. Each user (subject) has a unique <strong>user ID</strong> and may
+belong to one or more groups. </p>
+
+<p>File permissions are expressed as</p>
+
+<pre><code>rwxrwxrwx
+</code></pre>
+
+<p>where the first <code>rwx</code> group represents read, write, and
+execute permissions for the user (owner),
+the second <code>rwx</code> group represents read, write, and
+execute permissions for the group, and
+the last <code>rwx</code> group represents read, write, and
+execute permissions for everyone else. For example, running the <em>ls</em> command
+with the &#8220;long&#8221; flag to inspect /usr/bin/ls (the file containing the <em>ls</em> command) shows:</p>
+
+<pre><code>$ ls -l /bin/ls
+-rwxr-xr-x  1 root  wheel  38624 Dec 10 04:04 /bin/ls
+</code></pre>
+
+<p>This shows that the file is owned by the user <em>root</em> and belongs
+to the group <em>wheel</em>. Access permissions are {read, write, execute}
+for the owner and {read, execute} for the group and for everyone
+else. The leading <code>-</code> is not a permission flag but indicates
+whether the file is a plain file (<code>-</code>),
+directory (<code>d</code>), block device (<code>b</code>),
+character device (<code>c</code>), or named pipe (<code>p</code>).</p>
+
+<p>The kernel processes access permissions <em>only</em> when the file is first
+opened and in the following order:</p>
+
+<pre><code>if you are the owner of the file
+    _only_ the owner permissions apply
+else if you are in the group that the file belongs to
+    _only_ the group permissions apply
+else 
+    the &quot;other&quot; permissions apply
+</code></pre>
+
+<p>Hence, if I have the following file:</p>
+
+<pre><code>----rw----  1 paul  localaccounts  6 Feb  4 19:15 testfile
+</code></pre>
+
+<p>I cannot read it even though I am a member of the <em>localaccounts</em>
+group and that group has read-write access to the file.</p>
+
+<h2 id="executepermission">Execute permission</h2>
+
+<p>Note that execute permission is distinct from <em>read</em> permission.
+For example, you may have execute-only access to a file </p>
+
+<pre><code>$ ls -l secretfile
+-rwx--x--x  1 root  staff  8492 Feb  4 19:22 secretfile
+$ cat secretfile
+cat: secretfile: Permission denied
+</code></pre>
+
+<p>and not be able read it but the operating system will load it
+and execute it if you run it. By losing read access to the file
+you lose the ability to copy it or inspect its contents.</p>
+
+<h2 id="microsoftwindows">Microsoft Windows</h2>
+
+<p>Windows provides the same <em>read</em>, <em>write</em>, and <em>execute</em>
+permissions but also adds specific per-file permissions for
+<em>delete</em>, <em>change permission</em>, and <em>change ownership</em>.
+Moreover, users and resources can be partitioned into <strong>domains</strong>.
+Each domain can have its own administrator. For instance,
+the human resources department may manage users while individual
+departments may manage connected devices, such as printers.
+Trust can be configured to be inherited in one or both
+directions. Department domains may trust the user domain
+but the user domain may choose not to trust the department
+resources domains.</p>
+
+<h2 id="unixdirectories">Unix directories</h2>
+
+<p>Directories are implemented as files. They just happen
+to be files that contain a list of {name, inode number} pairs.
+Recall that an inode number is the data structure in a file
+system that contains all the information about a file except
+for its name<a href="#fn:6" id="fnref:6" title="see footnote" class="footnote">[6]</a>.</p>
+
+<p>However, directory permissions have slightly different meanings:</p>
+
+<ul>
+<li><strong>write permission</strong> means that you have rights to create and delete files in the directory.</li>
+<li><strong>read permission</strong> means that you have rights to list the contents of a directory</li>
+<li><strong>execute permission</strong> means that you have rights to search through the directory.
+This differs from <em>read</em> permission because you cannot see what files are in the directory;
+the operating system is simply willing to access the directory to resolve a pathname.</li>
+</ul>
+
+<p>We can see that directory permissions can give you permission to search through
+the directory when opening files even if you cannot access the contents.
+If you have <em>write</em> access to
+a directory, you can <em>delete</em> any file within that directory, even if you do not
+have write access to the file itself. Conversely, if you do <em>not</em> have <em>write</em>
+access to the directory, you cannot delete any file within it, even if you have
+<em>write</em> access to the file. Your option could be to open the file and destroy
+the contents by overwriting them or truncating the file, but you cannot make the
+file itself go away.</p>
+
+<h2 id="userandgroupids">User and group IDs</h2>
+
+<p>On most POSIX systems<a href="#fn:7" id="fnref:7" title="see footnote" class="footnote">[7]</a>, user ID information, except for the password, is stored
+in the password file, <code>/etc/passwd</code>. This file contains lines of text,
+one line per subject, with each line containing the following fields:</p>
+
+<ul>
+<li>User name</li>
+<li>User ID</li>
+<li>User&#8217;s default group ID</li>
+<li>User&#8217;s full name</li>
+<li>Home directory</li>
+<li>Login shell</li>
+</ul>
+
+<p>For example:</p>
+
+<pre><code>root:*:0:0:System Administrator:/var/root:/bin/sh
+paul:x:1000:1000:Paul Krzyzanowski:/home/paul:/bin/bash
+</code></pre>
+
+<p>Group IDs are stored in a file called <code>/etc/group</code>. Each line contains a group name,
+unique group ID number, and a list of user IDs that belong to that group:</p>
+
+<pre><code>wheel:x:0:root
+certusers:x:29:root,_jabber,_postfix,_cyrus,_calendar,_dovecot
+</code></pre>
+
+<h2 id="changingpermissions">Changing permissions</h2>
+
+<p>The <a href="http://man7.org/linux/man-pages/man1/chmod.1.html">chmod</a>
+command (or the <a href="http://man7.org/linux/man-pages/man2/chmod.2.html">chmod</a>) system call
+allows you to change permissions for a file or directory.
+The command lets you explicitly specify permissions for the user (owner), group, and other.
+For example, you can set permissions:</p>
+
+<pre><code>$ chmod u=rwx,g=rx,o= testfile
+$ ls -l testfile
+-rwxr-x---  1 paul  localaccounts  6 Jan 30 10:37 testfile
+</code></pre>
+
+<p>Add permissions (in this case, we&#8217;re adding <em>write</em> access to group and other):</p>
+
+<pre><code>$ chmod go+w testfile
+$ ls -l testfile
+-rwxrwx-w-  1 paul  localaccounts  6 Jan 30 10:37 testfile
+</code></pre>
+
+<p>or remove permissions (take away <em>write</em> access from other):</p>
+
+<pre><code>$ chmod o-w testfile
+$ ls -l testfile
+-r-xrwx---  1 paul  localaccounts  6 Jan 30 10:37 testfile
+</code></pre>
+
+<p>The earliest versions of the command only accepted a bitmap for the permissions
+you want to set: one octal digit (0&#8211;9) for each of the three three-bit groups.
+The system call
+requires that and the command still accepts it:</p>
+
+<pre><code>$ chmod 754 testfile
+$ ls -l testfile
+-rwxr-xr--  1 paul  localaccounts  6 Jan 30 10:37 testfile
+</code></pre>
+
+<h1 id="accesscontrollists">Access control lists</h1>
+
+<p>Sometimes groups are not enough and we may want to enumerate access permissions
+explicitly over a set of users or groups. This list of access rights for a file
+is called an <strong>access control list</strong>. An access control list comprises a list
+of <strong>access control entries</strong> (<strong>ACE</strong>s). Each ACE identifies a user or group
+along with the access permissions for that user or group. Typically, these permissions
+are <em>read</em>, <em>write</em>, <em>execute</em>, and <em>append</em> for files
+and <em>list</em>, <em>search</em>, <em>read attributes</em>, <em>add file</em>, <em>add sub-directory</em>,
+and <em>delete contents</em> for directories.
+A directory may also have an <strong>inheritance</strong>
+attribute, which specifies that files created within that directory will
+inherit specific access permissions (and directories created underneath that
+directory may inherit another set of access permissions). This helps with the
+problem of having to create many identical access control lists for a collection
+of files. Access control entries often also allow the use of wildcards
+(e.g., &#8220;*&#8221;) to refer to <em>all users</em> or <em>all groups</em>. For example, consider
+the following ACL:</p>
+
+<pre><code> pxk.*         rwx  
+ 419-ta.*      rwx  
+ *.faculty     rx  
+ *.*           x
+</code></pre>
+
+<p>Access control entries are processed in sequential order.
+Users <code>pxk</code> and <code>419-ta</code> have <em>read, write, execute</em> access to the
+file. Anyone in the <code>faculty</code> group has <em>read, execute</em> access and
+everyone else only has <em>execute</em> access.</p>
+
+<p>If the order was changed:</p>
+
+<pre><code> 419-ta.*      rwx  
+ *.faculty     rx  
+ pxk.*         rwx  
+ *.*           x
+</code></pre>
+
+<p>and user pxk belonged to the <code>faculty</code> group, that user would no
+longer have write access to the file because <code>*.faculty</code> has
+precedence over <code>pxk.*</code>.</p>
+
+<p>For an example of setting access controls, see the manual page
+for <a href="https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/chmod.1.html">chmod</a>
+on macOS or <a href="http://linuxcommand.org/man_pages/setfacl1.html">setfacl</a> on Linux.</p>
+
+<p>The reason Unix systems (including Linux) did not originally implement full
+access control lists is because of space. All file attribute data is stored in
+a fixed-length chunk of data in the file system called the inode. The inode
+contains information such as the file&#8217;s owner, group, create time, last modification
+time, last access time, size of file, and the blocks in the file system that
+contain file data. The beauty of the user-group-other mechanism is that it takes
+a small, fixed length of data (two bytes for the user ID, two bytes for the
+group ID, and two bytes for the permissions bit mask).
+To support a true
+access control list, we need to have a variable size list. Most operating
+systems and file systems
+have evolved to support <em>extended attributes</em>: file attributes that
+do not fit into the inode structure (e.g., file download URL). These attributes
+are stored in extra blocks in the file system and are also used to
+store an access control list. </p>
+
+<p>Extended attributes often give permissions beyond basic read, write, and execute.
+On POSIX systems, for example, the include:</p>
+<dl>
+<dt>Operations on all objects:</dt>
+<dd>delete, readattr, writeattr, readextattr, writeextattr, readsecurity, writesecurity, chown</dd>
+
+<dt>Operations on directories:</dt>
+<dd>list, search, add_file, add_subdirectory, delete_child</dd>
+
+<dt>Operations on files:</dt>
+<dd>read, write, append, execute</dd>
+</dl>
+
+
+<p>They also include attributes to control inheritance: to define default
+ACLs for files in subdirectories.</p>
+
+<p>In systems such as Linux, which support both ACLs and the simple user-group-other
+permissions, the following search order applies:</p>
+
+<ol>
+<li>If you are the owner of the file, only owner permissions supply.</li>
+<li>If you are part of a group that the file belongs to, then only group permissions apply.</li>
+<li>Search through the access control list entries to find an applicable entry. The rules of the first matching entry apply.</li>
+<li>Otherwise, &#8220;other&#8221; permissions apply.</li>
+</ol>
+
+<h2 id="initialpermissions">Initial permissions</h2>
+
+<p>On POSIX systems, each process has a <strong>file mode creation mask</strong> associated with it. It is called
+a <strong>umask</strong> and is set to a bit pattern that reflects the <code>rwxrwxrwx</code> permissions.
+In this mask, however, each 1 bit represents a permission that will be disabled from the file. The umask is
+applied prior to creating the file to strip away permissions that might have been set by the
+user program. For example, we might have code to create a file with read-write permissions for everyone
+(<code>rw-rw-rw-</code>):</p>
+
+<pre><code>int f = creat(&quot;testfile&quot;, 0666);
+</code></pre>
+
+<p>If our umask is 022 (binary = 000 010 010 = <code>&#8212; -w- -w-</code>), then the kernel&#8217;s application
+of the umask will strip away write permissions for the group and others, resulting in final file permissions
+of <code> rw-r&#8211;r&#8211;</code>. A process can change the value of the umask via the
+<a href="http://man7.org/linux/man-pages/man2/umask.2.html">umask</a> system call. A user can
+change the value via the shell <strong>umask</strong> command, which will apply that umask to
+all commands executed from the shell.</p>
+
+<h4 id="whyistheumaskimportant">Why is the umask important?</h4>
+
+<p>It provides a some safeguards: if a program is careless about setting access permissions,
+umask ensures that a reasonable default is applied (e.g., no write access for anyone but
+the owner). More importantly, for scripting languages that do not allow us set permissions
+when a file is created (e.g., perl, bash), the umask mechanism gives us a way to
+set defaults. For instance, when you redirect output to a file, you have no way of
+setting permissions on the resulting file except by defining a umask <em>a priori</em>.
+One could argue that you can set permissions after the file is created. For example:</p>
+
+<pre><code>./program &gt; output
+chmod 600 output
+</code></pre>
+
+<p>but that introduces a race condition that can open the file to attackers. If an attacker
+opens the file after it is created but before its permission bits are changed, she has
+access to the file even if access permissions change. Access rights are checked only when
+the file is opened.</p>
+
+<h2 id="changingfileownership">Changing file ownership</h2>
+
+<p>User and group identities are not fixed. A user can give a file away via the <strong>chown</strong>
+command (or <a href="http://man7.org/linux/man-pages/man2/chown.2.html">chown</a> system call):</p>
+
+<pre><code>chown alice testfile
+</code></pre>
+
+<p>Similarly, the group of a file may be changed as well:</p>
+
+<pre><code>chgrp accounting testfile
+</code></pre>
+
+<p>The <em>chown</em> system call is also used for changing groups from within a program.</p>
+
+<h2 id="changinguserandgroupids">Changing user and group IDs</h2>
+
+<p>When a POSIX (e.g., Linux) system boots up, the first process<a href="#fn:8" id="fnref:8" title="see footnote" class="footnote">[8]</a>
+runs with <em>root</em> privileges. Root is a special user (user ID = 0)
+that has administrator privileges. File access permissions do not apply to root,
+who can read, write, or delete files even if access permissions do not grant
+that privilege. Root users also have access to certain restricted system calls.</p>
+
+<p>How do processes start with other
+IDs? For example, how does your shell run with your user ID and your group ID?
+A process running as root can change its user ID or group ID to that of another
+user/group with the <a href="http://man7.org/linux/man-pages/man2/setuid.2.html">setuid</a>
+and <a href="http://man7.org/linux/man-pages/man2/setgid.2.html">setgid</a> system calls.
+A login process, for example, runs as root and:</p>
+
+<ol>
+<li>Requests your credentials: your user name and password</li>
+<li>Validates those credentials to authenticate you</li>
+<li>Once you&#8217;re authenticated, the login program reads your user ID, group ID, home directory, and login program (login shell) from the <code>/etc/passwd</code> file.</li>
+<li>The the login program now changes ownership and launches the shell:
+
+<ol>
+<li>Change to the user&#8217;s home directory: <strong><code>chdir(user_home_directory);</code></strong></li>
+<li>Change to the user&#8217;s group ID: <strong><code>setgid(user_group_id);</code></strong></li>
+<li>Change to the user&#8217;s user ID: <strong><code>setuid(user_id);</code></strong></li>
+<li>Execute the user&#8217;s login program (usually a shell). On POSIX systems, execution does not spawn a new process (<em>fork</em> does that) but overwrites the code in the current process: <strong><code>execve(user_shell, argv, envp);</strong></li>
+</ol></li>
+</ol>
+
+<h2 id="useridchangeonprogramexecution">User ID change on program execution</h2>
+
+<p>When a user runs a program, the program runs with that user&#8217;s user ID and
+hence with the privileges of that user.
+Sometimes, however, a program may need special access to files, devices, or system calls that the
+user of the program should not be allowed to access. For instance, a database program
+reads and writes files that store the underlying data but it is not a good idea to
+allow users of the database to be able to access those files directly. On some systems,
+network programs such as <a href="https://en.wikipedia.org/wiki/Ping_(networking_utility)">ping</a>
+may need to create raw sockets yet normal users are restricted from doing so. </p>
+
+<p>To address these needs, executable files can have a special permission
+bit set called <strong>setuid</strong>. When set, the executable file will run with the
+user ID set to the owner of the file rather than the user that is invoking the program.
+This user ID becomes the <strong>effective user ID</strong> of the process. </p>
+
+<p>The <strong>setuid bit</strong> can also be used on directories. If a directory has its setuid
+bit set, all files and sub-directories created within it will be owned by
+the directory owner rather than the user who created them.</p>
+
+<p>A related access permission bit, called the <strong>setgid</strong> bit causes programs
+to run with the effective group ID set to the group ID of the file.</p>
+
+<p>Setuid programs are particularly attractive targets because they
+allow an intruder to gain privileges of another user, usually the
+administrator. If a setuid program can be co-opted to execute some
+other code or access a file that the intruder wants, it may provide
+a way for the intruder to run arbitrary administrative commands on
+the system or access arbitrary data.</p>
+
+<h1 id="principleofleastprivilege">Principle of Least Privilege</h1>
+
+<p>An important design principle when building secure systems is the
+<strong>principle of least privilege</strong>, which state that</p>
+
+<blockquote>
+<p>At each abstraction layer, every element should have access <em>only</em> to the resources necessary to perform its task</p>
+</blockquote>
+
+<p>An <em>element</em> refers to either a user, process, or a function. It means that even
+if an element is compromised (and must be paranoid and assume that is possible),
+the scope of damage will be limited. Some examples of the principle in action are:</p>
+
+<ul>
+<li><p>You have the right to kill processes, but only your own. If intruders gains your identity, they will not be able to destroy processes throughout the system.</p></li>
+<li><p>You can read the <code>/etc/hosts</code> file, which contains system overrides for name to IP address mappings but you cannot write it.</p></li>
+<li><p>When you write a program, private member functions are not accessible outside the class. A poorly written program cannot casually invoke these functions. </p></li>
+</ul>
+
+<p>Some examples that violate the principle are:</p>
+
+<ul>
+<li><p>A <em>ping</em> program runs as setuid to root since it needs to access raw sockets. Because of this, if it is compromised, a user can do anything on the system.</p></li>
+<li><p>A program uses global variables even through only one function ever touches these variables. It creates
+the risk that other functions may improperly access those variables.</p></li>
+<li><p>Default permissions on a file set to read-write for all introduces the risk that people who have no business touching the file will modify it.</p></li>
+<li><p>A mail server running with root privileges because it needs to listen on port 25<a href="#fn:9" id="fnref:9" title="see footnote" class="footnote">[9]</a> but that gives it access to all other files and devices on the system as well as to privileged system calls.</p></li>
+</ul>
+
+<h2 id="privilegeseparation">Privilege separation</h2>
+
+<p>Least privilege can be tricky to implement since it requires a thorough understanding of how
+a program behaves. Moreover, running a process as root is sometimes necessary but imbues an application
+with incredible power that can be abused. To get around this issue, we can
+use <strong>privilege separation</strong>. The principle of privilege separation is to break the program
+into multiple parts. Each part runs with only the privileges it needs to perform its task.
+If one part becomes compromised, potential damage is limited to only that component. More importantly,
+there are usually a small operations that need to be done with high privilege levels, so
+those components can have a small amount of code, can be audited more easily, and are likely
+to have fewer potential vulnerabilities. </p>
+
+<p>Privilege separation can be achieved by starting distinct processes, each running under
+a distinct user ID, that communicate with each other over mechanisms such as named pipes
+or local sockets.
+One straightforward way to achieve privilege separation is to run a single process and then
+split it into two components, one running at an elevated privilege level. Each process has
+assigned to it a <strong>real</strong> and an <strong>effective</strong> user ID. The operating system determines
+privileges based on the effective user ID. Most of the time, they are equivalent.
+However, if an executable file is tagged with a <em>setuid</em> permission bit, it runs
+with the file owner&#8217;s user ID. In this case, the effective user ID (<strong>euid</strong>) is that of the file owner
+while the user ID remains that of the user. The operating system remembers who the user
+is for a process even for setuid programs. POSIX systems provide a system call called
+<a href="http://man7.org/linux/man-pages/man2/seteuid.2.html">seteuid</a> that allows a process to
+change the effective user ID. Unprivileged processes may only set the effective user ID
+to the real user ID while privileged processes can set it to any user ID.</p>
+
+<p>We can achieve privilege separation between two components by setting a program with
+<em>setuid</em> privileges to the highest privilege level needed. When the program starts, it:</p>
+
+<ol>
+<li><p>Creates a communication link to itself using, pipes, named pipes, local sockets, shared
+memory or whatever other mechanisms the operating system provides.</p></li>
+<li><p>Use the <em>fork</em> system call to create a child process. Fork simply replicates the
+process, so the parent and child are running the same program. The only different is
+the return value from <em>fork</em> (the child gets back 0 while the parent gets the
+child&#8217;s process ID). </p></li>
+<li><p>The child will lower its privilege to that of the user by setting the effective user ID to
+the real user ID: <strong><code>seteuid(getuid)</code></strong></p></li>
+<li><p>The parent will now call a function that only handles the high-privilege needs of the
+application. The child handles everything else.</p></li>
+<li><p>The parent and child communicate via the inter-process link the established in step 1.</p></li>
+</ol>
+
+<p>There are variations of this. If you don&#8217;t want the risk of having even unused code
+resident in the high-privilege portion of the service, the parent can simply call
+<a href="http://man7.org/linux/man-pages/man2/execve.2.html">execve</a> to run a totally separate program
+to handle high privilege tasks. Even more simply, if a process can do its privileged
+operations early on, such as opening a restricted file, in can then drop its privilege
+by changing to another user ID without having to create or communicate with another process.</p>
+
+<h1 id="modelingprotection:theaccesscontrolmatrix">Modeling protection: the access control matrix</h1>
+
+<figure>
+<img src="images/access_control_matrix.png" alt="Figure 2. Access control matrix" id="access_control_matrix" title="Access Control Matrix" style="width:250px;" />
+<figcaption>Figure 2. Access control matrix</figcaption></figure>
+
+
+
+<p>The primary generic abstraction for representing access control is an <strong>access control matrix</strong>. In this
+structure, each row represents a &#8220;domain&#8221;, which is a subject or a group of subjects.
+Typically, these are users and groups. Each column represents an object. Typically these
+are files and devices. The intersection of each object and subject contains the access
+rights that user has on the object. For example, a user in domain <em>D<sub>2</sub></em> has read-execute
+access for file <em>F<sub>0</sub></em>. </p>
+
+<p>We can formalize the the changing state of the system as a sequence of commands.
+Each <strong>command</strong> contains an optional condition followed by one or more <strong>primitive operations</strong>
+that define operations on objects, subjects, and rights. Primitive operations
+include:</p>
+
+<ul>
+<li>Create subject</li>
+<li>Create object</li>
+<li>Enter right <em>r</em> into the access control matrix <em>a</em> at <em>a[s, o]</em></li>
+<li>Delete right <em>r</em> from the access control matrix <em>a</em> at <em>a[s, o]</em></li>
+<li>Destroy a subject <em>s</em></li>
+<li>Destroy an object <em>r</em></li>
+</ul>
+
+<p>For example, a Linux process <em>p</em> that creates the file <em>f</em> with owner
+read-write permissions can have its access control operations represented as:</p>
+
+<pre><code>command createfile(euid(p), f)
+create object f
+enter &quot;own&quot; into a[euid(p), f]
+enter &quot;read&quot; into a[euid(p), f]
+enter &quot;write&quot; into a[euid(p), f]
+</code></pre>
+
+<figure>
+<img src="images/domain-transfer.png" alt="Figure 3. Domain transfers" id="domain-transfer" title="Domain Transfers" style="width:400px;" />
+<figcaption>Figure 3. Domain transfers</figcaption></figure>
+
+
+
+<p>POSIX systems limit us to a setuid mechanism via files but otherwise only the root
+user can change the user ID. In the general case, however, the
+right to switch from one domain to another domain can be a configurable policy.
+We simply need to extend our list of object to include domains (subjects) as well.
+The <strong>switch</strong> attribute at the intersection of two domains specifies that the
+domain in the Domains row has the ability to switch to the domain in the column.
+Figure 3 shows that domain <em>D<sub>0</sub></em> has the right to switch to <em>D<sub>1</sub></em>.
+Once switched, however, domain <em>D<sub>1</sub></em> does <em>not</em> have the right to switch to <em>D<sub>0</sub></em>.</p>
+
+<p><strong>Owner</strong> attributes may be assigned to the matrix to specify that a specific
+domain is the owner of a specific object. Ownership gives the owner the right to add
+and remove any right for that object; they allow control of a rights in a <em>column</em>.
+For example, if <em>D<sub>0</sub></em> is the owner of
+<em>F<sub>0</sub></em>, it can add <em>write</em> access for <em>F<sub>0</sub></em> to domain <em>D<sub>2</sub></em></p>
+
+<figure>
+<img src="images/row-controls.png" alt="Figure 4. Row-based control" id="row-control" title="Row-based control" style="width:400px;" />
+<figcaption>Figure 4. Row-based control</figcaption></figure>
+
+
+
+<p>We can also enable controls across a row. If the access right <em>a[i, j]</em> contains
+a <strong>control</strong> right (Figure 4) then a process executing in domain <em>i</em> can
+change access rights of any objects for domain <em>j</em>.</p>
+
+<p>Note that these features are generally not available in any one system but
+are, in theory, possible and the access control matrix provides a framework
+to express and visualize these operations. </p>
+
+<h2 id="accesscontrollists">Access control lists</h2>
+
+<figure>
+<img src="images/acl.png" alt="Figure 5. Access control list" id="acl" title="Access control list" style="width:400px;" />
+<figcaption>Figure 5. Access control list</figcaption></figure>
+
+
+
+<p>In practice, implementing an
+access control matrix in a system is not practical. Given that most systems
+will have tens or hundreds of thousands of files, shared servers may have
+hundreds of users, and many files are created and deleted, it is an
+unwieldy structure to manage. For this reason, systems most often use
+an <strong>access control list</strong>, which we just examined. It associates a column
+of the access control matrix with each object. When the operating system accesses the
+object, it also accesses the list of access permissions for that object.
+Adding new permissions is done on an object-by-object basis.</p>
+
+<h2 id="capabilitylists">Capability lists</h2>
+
+<figure>
+<img src="images/capability.png" alt="Figure 6. Capability list" id="capability" title="Capability list" style="width:400px;" />
+<figcaption>Figure 6. Capability list</figcaption></figure>
+
+
+
+<p>An access control list associates column with each object. That is,
+each object stores a list of access permissions for all the domains (subjects).
+Another way of breaking up the access control matrix is by rows.
+We can associate a row of the table with each domain (subject).
+This is called a <strong>capability list</strong>. A capability** is the set of
+operations that the subject is allowed to perform on a specific object.
+Each subject now has a complete list of capabilities. </p>
+
+<p>Before the operating system performs a request on an object, it
+will check the subjects capability list and see if the requested
+access is allowed for that object. A process, of course, cannot freely
+modify its capability list unless it has a control attribute for
+all objects in the domain or is the owned of a specific object.</p>
+
+<p>Capability lists have the advantage that, because they are associated
+with a subject, the system does not have to read any additional data
+to check access rights each time an object is accessed, as it has to
+do to read an access control list. It is also very easy to delegate
+rights from one user to another user: simply copy the capability list.
+If a user must be deleted, it is also easy to handle that: simply delete
+the capability associated with that user; there is no need to go
+through the access control list of every file in the file system.</p>
+
+<p>In practical use, the disadvantages of capability lists outweigh its
+advantages. It is incredibly difficult to change a file&#8217;s access permissions
+on a global level: you have to go through ever user&#8217;s capability list
+and modify it. There is no easy way to find all users that have access
+to a resource short of checking every user&#8217;s capability list. Capability
+lists have generally failed to attain mainstream use. They were deployed
+in IBM&#8217;s AS/400 system and in a research system from Cambridge University
+called CAP. Beyond that, access control lists (either full ones or the
+truncated Unix versions) won out.</p>
+
+<p>However, the idea of a capability list is useful with networked
+services. You often connect to servers that do not know you and where
+you do not have an account. In such cases, authorization and single sign-on
+services such as OAuth and Kerberos can provide an unmodifiable message stating
+who a user is and what operations they are allowed to perform.</p>
+
+<p>Microsoft incorporated a form of capabilities into Windows (since Windows 2000).
+The primary access control mechanism on Windows is Access Control Lists (referred to as
+<em>Discretionary Access Control Lists</em>, or <em>DACL</em>). However, systems need to be
+able to support centralized account management and and authentication via Active Directory
+servers. Authentication is a sign-in process that returns a <em>Security Identifier</em>
+(<em>SID</em>) for a user as well as a list of SIDs for the groups of which the
+User is a.member. This information is then used to create a single access token,
+Which is attached to every thread and process that executes on the user&#8217;s behalf.
+Whenever the thread needs to access an object or perform any system task
+That requires user rights, the operating system checks that access token.</p>
+
+<p>Capabilities did find their way into a mainstream operating system:
+Microsoft added support for capabilities since Windows 2000.
+The access control mechanism dominates but capabilities can override
+or complement access control lists. One can create profiles
+that permit whitelisting or blacklisting users. Access rights are
+defined for groups (called <em>Group Policy</em>) and are associated with
+either a single server or can span domains or organizations.</p>
+
+<h1 id="mandatoryaccesscontrolmac">Mandatory Access Control (MAC)</h1>
+
+<p>With access control lists, subjects are in control: they
+set access permissions to their objects
+This is called <strong>Discretionary Access Control</strong>, or <strong>DAC</strong>.
+A user can set access rights to give access to a file to
+<em>any</em> other subject. For instance a user may run the command</p>
+
+<pre><code>chmod o+rw secret.docx
+</code></pre>
+
+<p>and give read-write access for the file to everyone.
+Access control lists were designed to work this way.
+However, this model does not work in environments where management
+needs to enforce its policies and define access permissions.
+Also, when access rights are associated with objects, it becomes
+difficult to turn off access for a specific subject except by
+locking the the user (e.g., disabling their account). The alternative
+is to go though each object in the system, check if the user
+is in the ACL for that object, and remove the user from the ACL.</p>
+
+<p><strong>Mandatory Access Control</strong> (<strong>MAC</strong>) is a form of
+access control where policy is centrally enforced and users cannot
+override the policy. With MAC, administrators are in charge of
+access permissions.</p>
+
+<h2 id="mls:multilevelsecuritysystems">MLS: Multilevel Security Systems</h2>
+
+<figure>
+<img src="images/bell-lapadula.png" alt="Figure 7. Bell-Lapadula MLS access model" id="bell-lapadula" title="Bell-Lapadula MLS access model" style="width:150px;" />
+<figcaption>Figure 7. Bell-Lapadula MLS access model</figcaption></figure>
+
+
+
+<p>Multilevel security systems were designed to handle multiple levels of
+classified data in one system. The <strong>Bell-LaPadula model</strong> is
+the best known of these systems. It was originally designed for the U.S. Navy
+to enable users with different classification levels to use a single, shared
+computer system. The military uses four classification levels:
+unclassified, confidential, secret, and top secret. You do not have
+access to information above your clearance and you cannot create information
+below your clearance.</p>
+
+<p>With the Bell-LaPadula model, every object is assigned one of those
+four sensitivity levels. Every user is also associated with a clearance
+at one of those levels.
+If you have confidential clearance, you can read confidential
+and unclassified data but you cannot read anything of a higher clearance level:
+secret and top secret. You can create data at confidential, secret, and
+top-secret levels (yes, you can create files that you will not be allowed to read)
+but you cannot create unclassified data. The motivation for this model
+is <strong>confidentiality</strong> &#8211; the prevention of information leakage. If a piece
+of software is hacked or a user account is compromised, it will not be able
+to leak data from higher classification levels.</p>
+
+<p>Bell-LaPadula is summarized as <strong>_no read up; no write down</strong>. You cannot read
+from a higher clearance level or write to a lower clearance level.
+More formally, the Bell-LaPadula model has three properties:</p>
+<dl>
+<dt>1. <strong>The Simple Security Property</strong></dt>
+<dd>A subject cannot read from a higher security level (<em>no read up</em>, <em>NRU</em>)</dd>
+
+<dt>2. <strong>The *-Property (Star Property)</strong></dt>
+<dd>A subject cannot write to a lower security level (<em>no write down</em>, <em>NWD</em>)</dd>
+
+<dt>3. <strong>The Discretionary Security Property</strong></dt>
+<dd>Discretionary access control (e.g., access control lists) can be used with the model <em>after</em>
+mandatory access controls are enforced. This means that you can, for example,
+block read-write access to your files and users who would have clearance to
+access those files will be disallowed access.</dd>
+</dl>
+
+
+<p>The ability to write data to higher classification levels brings
+up the possibility that someone can overwrite a file at a higher classification
+level. Overwriting the contents of the file would be an attack on availability.
+To avoid this, systems usually allow overwriting a file only if the
+process&#8217; (subject&#8217;s) and file&#8217;s security labels match exactly and
+discretionary access controls permit the write. For example, a user
+with <em>confidential clearance</em> can only overwrite a file at the
+<em>confidential</em> level.</p>
+
+<p>The Bell-LaPadula model has a <strong>tranquility principle</strong> that states that
+security labels never change during operation. This means objects and subjects
+always remain at the same classification levels. In practice, systems
+implement a <strong>weak tranquility principle</strong>, where security labels may
+change but only in a way that does not violate security policy.
+This is done to implement the principle of least privilege.
+If a user has <em>top secret</em> clearance, a program will run at the lowest
+clearance level and get upgraded only when, and if, it needs to access
+data at a higher classification level.</p>
+
+<p>The Bell-LaPadula model was designed to fit the way the government treats
+classified data. However, in practice, it became a complicated model to
+implement and enforce. For instance, the model does not provide a way to
+declassify files (lower their clearance level). This can only be done via
+a special &#8220;trusted subject&#8221;, who has such authority. The model is also
+difficult to use in that it makes collaborative work among people of
+different classification levels essentially impossible. Finally,
+the use of shared servers, databases, and networking makes the model
+challenging. Can a database store data of varying security levels?
+If so, that is outside of the visibility of the operating system and
+has to be implemented within the database software. How about email?
+A user should only be able to send messages to users at the same
+classification level or higher. But users at a higher classification
+level would not be permitted to respond. The very concept of
+classification levels works for the military but does not map
+well to civilian business practices.</p>
+
+<h2 id="bibaintegritymodel">Biba Integrity Model</h2>
+
+<p>The Bell-LaPadula model was designed strictly to address confidentiality.
+The <strong>Biba model</strong> is a similar multilevel security model that is designed to
+address <strong>data integrity</strong>. With confidentiality, we were primarily interested
+with who could <em>read</em> the data and ensuring that nobody at a lower classification
+level was able to access the data. With integrity, we are primarily
+concerned with imposing constraints on who can <em>write</em> data and ensuring
+that a lower-integrity subject cannot write or modify higher-integrity data.</p>
+
+<p>The properties of the Biba model are:</p>
+<dl>
+<dt>1. <strong>The Simple Integrity Property</strong></dt>
+<dd>A subject cannot read an object from a lower integrity level. This ensures
+that subjects will not be corrupted with information from objects at a lower
+integrity level. For example,
+a process will not read a system configuration file created by a lower-integrity-level process.</dd>
+
+<dt>2. <strong>The *-property (Star Property)</strong></dt>
+<dd>A subject cannot write to an object of a higher integrity level.
+This means that lower-integrity subjects will not corrupt objects at
+a higher integrity level. For example, A web browser may not write a system configuration file.</dd>
+</dl>
+
+
+<p>The Biba model is essentially the opposite of the Bell-LaPadula model.
+The Bell-LaPadula model was summarized as <em>no read up, no write down</em>.
+The Biba model is <em>no read down, no write up</em>.</p>
+
+<p>Microsoft implemented support for the Biba model in Windows with their Mandatory Integrity Control.
+File objects are marked with an integrity level:</p>
+
+<ul>
+<li>Critical files: System</li>
+<li>Regular users and objects: Medium</li>
+<li>Elevated users: High</li>
+<li>Internet Explorer: Low</li>
+</ul>
+
+<p>A new process gets the <em>minimum</em> of the user&#8217;s integrity level and the file&#8217;s integrity level.
+The default policy is the Biba model&#8217;s <em>NoWrite_Up</em>. </p>
+
+<p>The goal of this policy is to limit
+potential damage from malware:
+anything downloaded with Internet Explorer would be able to read files but would not be able to write them since
+IE runs at the lowest integrity level and all objects it creates will be at that level &#8230; even if the user&#8217;s integrity level was a higher value.</p>
+
+<p>As with the Bell-LaPadula model, in practice, Biba also rarely fits the way things work
+in the real world. Even with Microsoft&#8217;s IE, there were far too many times when downloaded
+content needed to be brought to a higher integrity level (otherwise it was mostly useless).
+Trusted subjects could overwrite the security model and do this. Since it happened
+so often, users just got used to (although annoyed by) pop-up dialog boxes asking for
+permission. Microsoft dropped the <em>NoReadDown</em> restriction to make the system more
+usable but, in doing so, did not end up protecting the system from malicious content.</p>
+
+<h2 id="typeenforcementtemodel">Type Enforcement (TE) Model</h2>
+
+<p>The Type Enforcement (TE) model is a mandatory access control
+system that simply implements an access control matrix that
+gives mandatory access control priority over existing
+discretionary access control mechanisms..</p>
+
+<p>The model defines <strong>domains</strong> and <strong>types</strong>. Subjects (users and processes)
+are assigned to domains. Multiple users may be part of the same domain. Objects
+(files, sockets, devices) are assigned to types. Multiple files can be assigned the same type.</p>
+
+<p>Type Enforcement is enabled by creating a matrix that defines
+permitted <strong>domain-domain</strong> and <strong>domain-type</strong> interactions.
+Basically, it allows an administrator to specify that a certain
+class of users has specific access to a class of files. If
+the TE model denies access, discretionary access control rules do not matter; the user may not access the file. If the TE
+model permits access, the system then checks the access control
+list for the object to see whether access to the file was granted by the user.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Security-Enhanced_Linux">SE Linux</a>,
+a Security Enhanced version of the Linux kernel, provides support for an extended Type Enforcement model. Domains and types share the same implementation: they are labels that are associated with a user or a file, enabling collections of users or collections of objects.
+Every object is labeled with a <em>type</em>. All objects are
+an instance of a particular class that has a set of
+operations (e.g., data type). An <em>operation set</em> is a
+subset of all the allowable operations in that class.</p>
+
+<p>A <strong>permission</strong> associates a type, class, and an operation set.
+Hence, a set of objects can be assigned a specific set of
+access rights. Subjects (also types) are associated with
+permissions via <strong>allow</strong> statements. In essence,
+SELinux creates an access matrix between subject-object pairs
+and specifies their allowable operations.</p>
+
+<h2 id="role-basedaccesscontrolrbacmodel">Role-Based Access Control (RBAC) Model</h2>
+
+<p>The Role-Based Access Control model was created with business
+processes in mind. It is designed to be more general than
+multilevel models such as Bell-LaPadula (which didn&#8217;t
+map well onto civilian life) and is designed to enforce both
+MAC and DAC properties.</p>
+
+<p>Access decisions are not based on user IDs but are based
+on <strong>roles</strong>. Administrators define roles for various
+job functions. Each role has associated with it permissions to
+perform certain operations. Users are then assigned to one or more
+roles.</p>
+
+<p>A role can be thought of as a set of transactions or operations that
+a user or set of users can perform within the context of an organization.
+Note that roles relate to job functions, not specific access
+permissions. For instance <em>&#8220;update customer information&#8221;</em> is a role
+while <em>&#8220;write to the database&#8221;</em> is not a role. RBAC enables
+fine-grained access since roles can be defined in application-specific
+ways: <em>transfer funds</em> instead of <em>read/write accounts</em>.</p>
+
+<p>Unlike access control lists, RBAC assigns permissions to roles rather than
+users. This creates an extra level of indirection between the subject and
+the object. The mapping between users and roles can change dynamically.
+For example, if a substitute worker comes in or a new employee joins a
+group, she can be added to the appropriate role (or roles) and have
+access rights necessary to perform her job. Similarly, the mapping between
+roles and objects can also change dynamically. If developers for a
+certain project no longer needs access to a specific source code
+repository, that access can be removed from the role and affect all
+developers on the project. Objects no longer need to have access rules
+that identify individual subjects.</p>
+
+<p>RBAC requires the following conditions:</p>
+
+<ol>
+<li><p><strong>Role assignment</strong>. A subject can execute an operation only if the subject has
+been assigned a role. </p></li>
+<li><p><strong>Role authorization</strong>.
+A subject’s active role must be authorized for that subject. This ensures
+that users can only take on roles for which they have been authorized.</p></li>
+<li><p><strong>Transaction authorization</strong>.
+A subject can execute a transaction only if the transaction is authorized
+through the subject’s role membership.</p></li>
+</ol>
+
+<p>A role is conceptually <em>almost</em> similar to a group. However
+a group just a collection of users whereas a role is a collection
+of permissions. </p>
+
+<p>In SELinux, RBAC is built on top of its Type Enforcement (TE) model. Users
+are mapped to roles at login time. Roles are authorized for domains and domains
+are given permissions to types.</p>
+
+<p>RBAC is the dominant MAC model in larger corporations.
+It makes it easy to manage the movement and reassignment of employees.
+However, it may
+require application awareness for proper implementation. For example, databases
+may need to restrict specific operations based on roles:</p>
+
+<ul>
+<li><em>Role A:</em> cannot add or delete users to/from the table</li>
+<li><em>Role B:</em> can delete users but cannot change the salary of a user</li>
+<li><em>Role C:</em> can change the salary of a user but not add or delete users</li>
+</ul>
+
+<h2 id="multilateralsecurity">Multilateral security</h2>
+
+<p>The Bell-LaPadula and Biba models are classic cases of multilevel security. Subjects
+and objects are assigned classification labels (or integrity labels in the case of Biba)
+and rules control what you can read or write.</p>
+
+<p>The Bell-LaPadula model, however, doesn&#8217;t exactly implement how the military
+deals with classified data. In addition to the four classification tiers
+(unclassified, confidential, secret, top secret), each security level can also
+be divided into compartments. This is usually done at the top secret level but
+can be done at any level. In the government, this is referred to as TS/SCI &#8211;
+Top Secret / Special Compartmentalized Intelligence. Even if you have
+top secret clearance, you must be explicitly granted access to each
+compartment and are not allowed access to data in other compartments.
+This is a formalized implementation of the &#8220;need to know&#8221; principle.</p>
+
+<p>Objects in a multilateral security model are not only identified by their
+clearance level but are further tagged with zero or more security labels
+(compartments). If you do not have clearance for a specific label then
+you cannot access the data regardless of your clearance level.
+For example, {Top Secret, UFO} data cannot be read by someone with only
+{Top Secret} clearance. Someone with {Secret, UFO} clearance also cannot
+read the data: they have the right label (compartment) but a lower
+clearance level. Conversely, someone with {Top Secret} clearance
+cannot read {Secret, UFO} data. Even though they possess a higher clearance
+level, they lack the compartmental clearance: the UFO label.</p>
+
+<h3 id="lattice-basedaccesscontrol">Lattice-based Access Control</h3>
+
+<figure>
+<img src="images/lattice.png" alt="Figure 8. Lattice model" id="lattice" title="Lattice model" style="width:350px;" />
+<figcaption>Figure 8. Lattice model</figcaption></figure>
+
+
+
+<p><strong>Lattice-based Access Control</strong> (<strong>LBAC</strong>) is a way of representing access rights in a multilevel,
+multilateral security environment. Each node is a set containing a
+security classification level and zero or more compartment labels (see Figure 8).
+A directed edge between a pair of nodes identifies read access.
+For example:</p>
+
+<ul>
+<li>Someone with {Top Secret, UFO, Elvis} labels can read {Top Secret, UFO} objects.</li>
+<li>Someone with {Top Secret, UFO} labels <strong>cannot</strong> read {Top Secret, Elvis} objects.</li>
+<li>Someone with {Top Secret, UFO} labels can read {Top Secret} objects.</li>
+</ul>
+
+<p>The relations are transitive: because {Top Secret, UFO} can read {Top Secret}
+and {Top Secret} can read {Secret}, that means {Top Secret, UFO} can read {Secret}.</p>
+
+<p>A problem with compartmentalization is that it creates more data isolation.
+Data from two compartments, for example {Top Secret, Elvis} and {Top Secret, UFO}
+creates a third compartment, {Top Secret, Elvis, UFO}. Real organizations
+often have thousands of compartment labels, which can create a combinatoric
+explosion of distinct compartments and does not help with data sharing when
+it might be useful. One option to limit the compartmentalization somewhat
+is to change the rules and allow a subject at a higher classification read
+access to <em>all</em> lower levels. Thus, someone with {Top Secret} clearance
+would be able to read {Secret, UFO} and {Secret, Elvis} data even without
+having UFO or Elvis Special Compartmentalized Intelligence.</p>
+
+<h2 id="chinesewallmodel">Chinese Wall model</h2>
+
+<p>A <strong>Chinese Wall</strong> is a set of rules that are designed to prevent conflicts of
+interest. It is commonly used in the financial industry but is also common in
+law firms and advertising agencies. For example, banks have corporate advisory
+groups that work with companies on mergers and acquisitions, debt financing,
+and IPOs. Banks also have a brokerage group that handles investments. It
+would be a conflict of interest &#8211; and illegal &#8211; for an advisory group member
+to tell someone in the brokerage group about a pending acquisition that will
+likely affect the stock price of a company. Hence, a Chinese wall is erected
+between these divisions.</p>
+
+<p>The Chinese Wall model can also implement a
+<strong>separation of duty</strong>. To avoid fraud, for example, a person may be
+permitted to perform just one of several necessary transactions but
+is explicitly disallowed from performing more than one.</p>
+
+<p>There are three layers of abstraction in implementing a Chinese wall:</p>
+
+<ol>
+<li><p><strong>Objects</strong>. These are files that contain resources about one company.</p></li>
+<li><p><strong>Company groups</strong>. These are the set of files that belong to one company.</p></li>
+<li><p><strong>Conflict classes</strong>. These identify groups of competing company groups.
+For example {Coca-Cola, Pepsi} could be conflict classes. So can
+{ American Airlines, United, Delta, Alaska Air } or
+{ AT&amp;T, Verizon, T-Mobile, Sprint }.</p></li>
+</ol>
+
+<p>The basic rule of the Chinese Wall is that a
+subject can access objects from a company as long as it never accessed objects from competing companies.</p>
+
+<p>More formally, the Chinese Wall model has two properties:</p>
+<dl>
+<dt>1. <strong>The Simple Security Property</strong></dt>
+<dd>A subject <em>s</em> can be granted access to an object <em>o</em> only if the object
+is in the same company group as objects already accessed by <em>s</em>
+or
+<em>o</em> belongs to a different conflict class</dd>
+
+<dt>2. <strong>The *-Property (Star Property)</strong></dt>
+<dd>Write access is allowed only if
+access is permitted by the simple security property
+<strong>and</strong>
+no object can be read which is in a different company dataset than the one for which write access is requested
+and contains unsanitized information.</dd>
+</dl>
+
+
+<p>The term &#8220;unsanitized information&#8221; refers to data where the company&#8217;s identity is known.
+In some cases, data may be &#8220;sanitized&#8221;, meaning that the company&#8217;s identity is disguised
+to allow generation of bulk analytics or comparisons (e.g., average profit margins among
+competitors).</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Even if access control mechanisms work perfectly, policies may fail.
+With DAC, you are trusting the users to set everything up correctly and
+likely trusting a system administrator to set up correct defaults (e.g., umask)
+and access controls for system services.
+With MAC models, user or role assignment may be done incorrectly.
+For multilevel models, collaboration needs must be considered.
+Models such as Bell-LaPadula and Bida require overrides to be useable.</p>
+
+<p>There is still the concern of attacks on the operating system and system
+configuration files.This is an attack on the Trusted Computing Base and
+these attacks may change the definition of roles or the mapping of users to roles,
+subverting security.</p>
+
+<p>Users are also a perennial concern. People are subject to social engineering
+attacks or may download dangerous software inadvertently. Most malware is installed willingly.
+Users thus are all too happy to give it privileges of &#8211; at least &#8211; those of normal applications,
+if not higher (e.g., you think you&#8217;re downloading a virus checker).
+As far as the operating system is concerned, it continues to do
+the right thing and is enforcing the defined policy.</p>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><p>Ross J. Anderson, <a href="https://www.cl.cam.ac.uk/~rja14/book.html">Security Engineering: A Guide to Building Dependable Distributed Systems</a>, 2nd edition, Wiley pub. 2008</p></li>
+<li><p>Steven M. Bellovin, <a href="http://amzn.to/2iLqdjb">Thinking Security: Stopping Next Year&#8217;s Hackers</a>, 1st edition, Addison-Wesley pub., 2015</p></li>
+<li><p>Matt Bishop, <a href="http://amzn.to/2kEM5Oy">Introduction to Computer Security</a>, 1st edition, Addison-Wesley pub., 2004</p></li>
+<li><p>Bruce Schneier, <a href="http://amzn.to/2jNudRQ">Secrets and Lies: Digital Security in a Networked World</a>, 1st edition, Wiley pub., 2004</p></li>
+<li><p><a href="http://www.intel.com/Assets/en_US/PDF/manual/253668.pdf">Intel&reg; 64 and IA&#8211;32 Architectures Software Developer’s Manual</a>, Volume 3A: System Programming Guide, Part 1</p></li>
+<li><p>Red Hat Enterprise Linux 3: System Administration Guide, <a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/3/html/System_Administration_Guide/s1-acls-setting.html">8.2 Setting ACLs</a></p></li>
+<li><p>Trent Jaeger, <a href="https://www.usenix.org/legacy/publications/library/proceedings/sec03/tech/full_papers/jaeger/jaeger_html/node3.html">SELinux Policy Model</a>, Usenix.org, November 5, 2003.</p></li>
+<li><p><a href="https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/access-control">Access Control Overview</a>, Microsoft / Windows / Security / Identity and access protection, July 17, 2017.</p></li>
+<li><p><a href="https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/dynamic-access-control">Dynamic Access Control Overview</a>, Microsoft Windows Server 2016, April 18, 2017.</p></li>
+<li><p><a href="https://docs.microsoft.com/en-us/windows-server/identity/solution-guides/dynamic-access-control--scenario-overview">Dynamic Access Control: Scenario Overview</a>, Microsoft Windows Server / Identity and Access / Solutions and Scenario Guides.</p></li>
+<li><p><a href="https://www.samba.org/samba/docs/old/Samba3-HOWTO/AccessControls.html">Chapter 16. File, Directory, and Share Access Controls</a>, The Official Samba 3.5.x HOWTO and Reference Guide, Part III. Advanced Configuration</p></li>
+</ul>
+
+<p>This is an updated version of a document created on February 3, 2017.</p>
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>On Unix-derived systems (Linux, BSD, macOS, Android), most
+devices present themselves as files. <a href="#fnref:1" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:2">
+<p><em>Internet of Things</em>, a trendy way of referring to network-connected
+computers that we don&#8217;t think of as computers, such as TV sets, DVRs, routers,
+security cameras, cars, and controllable lights. <a href="#fnref:2" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:3">
+<p>Most 8- and 16-bit processors designed for embedded
+systems do not support an MMU. Some simpler 32-bit processors designed for
+embedded systems, Such as the Arm Cortex-M0, also do not support an MMU. <a href="#fnref:3" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:4">
+<p>Examples of trap instructions are the Intel <em>INT</em> (“interrupt”) instruction or the ARM <em>SWI</em> (“software interrupt”) instruction. <a href="#fnref:4" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:5">
+<p>The original design of Multics called for 64 rings. <a href="#fnref:5" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:6">
+<p>hard links (the <em>ln</em> command or the <em>link</em> system call) allow you to create multiple file names that all refer to the same file. <a href="#fnref:6" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:7">
+<p>It&#8217;s more complex on macOS. They still have the /etc/passwd file, probably
+for some legacy programs that expect to read it but really store user identities under the
+<code>/private/var/db/dslocal/nodes/Default/users</code> directory, with a separate XML plist file for each user.
+It&#8217;s messy. <a href="#fnref:7" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:8">
+<p>The first process in Unix was <em>init</em>, which in turn spawns a set of
+programs that start other processes. In Linux, the first non-kernel process is <em>init_task</em>,
+which is compiled into the kernel and has a process ID of 0. It spawns the <em>init</em>
+process, which has a process ID of 1 and is responsible for starting all the other
+processes necessary to get the system running. <a href="#fnref:8" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+<li id="fn:9">
+<p>Ports in the range 0..1023 are known as <a href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Well-known_ports">well-known ports</a> and require root privileges to access. <a href="#fnref:9" title="return to article" class="reversefootnote">&#160;&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+
+							</section>
+							<footer class="main">
+								Last modified November 25, 2020.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="../hw/index.html">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+		<li><a href="../grades.html">Grading info</a></li>
+		<li><a href="https://canvas.rutgers.edu">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>

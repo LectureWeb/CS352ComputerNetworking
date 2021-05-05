@@ -1,0 +1,1828 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title> Synchronization </title>
+<link href="../../css/layout.css" rel="stylesheet" type="text/css" />
+<link href="../../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../../css/print.css" rel="stylesheet" type="text/css" media="print" />
+<link href="../../css/main-print.css" rel="stylesheet" type="text/css" media="print" />
+<style type="text/css">
+
+#main table.doclist {
+	width: 80%;
+}
+#main .doclist .date, #main .doclist .item {
+        vertical-align: baseline; /* for opera */
+}
+#main .doclist tr {
+        vertical-align: baseline;
+}
+#main .doclist th.item {
+        text-align: left;
+}
+#main .doclist td.item {
+        text-align: left;
+}
+#main a.linksign:link, #main a.linksign:visited, #main a.linksign a:hover {
+        text-decoration: none;
+}
+
+</style>
+</head>
+<body id="s_ru416">
+<div id="wrapper">
+<!-- _______________________________________ BANNER _______________________________________ -->
+<div id="banner">
+  <div id="logo">
+  <img src="../../css/images/pk-org-pencil.png" alt="pk.org" name="logo" width="122" height="45"/>
+  </div>
+  <div id="title"> Operating Systems </div>
+  <div id="search">
+  <form method="get" action="http://www.google.com/search">
+	<div style="border:none ;padding:2px;width:25em;">
+	<input type="text" name="q" size="25" maxlength="255" value="" />
+	<input type="submit" value="Search" />
+	<input type="hidden"  name="sitesearch" value="www.pk.org" checked />
+	</div>
+  </form>
+  </div>
+  <ul>
+    <li class="separator"><a href="../../about/index.html">About</a></li>
+    <li class="separator"><a href="../../about/contact.html">Contact</a></li>
+    <li><a href="../../sitemap.html">Site map</a></li>
+  </ul>
+</div>
+
+<!-- _______________________________________ MAIN NAV _______________________________________ -->
+<div id="navbar">
+	<ul>
+	<li class="homelink"><a href="../../index.html">Home</a></li>
+<!--
+	<li class="aboutlink"><a href="../../about/index.html">About</a></li>
+-->
+	<li class="ru"><a href="../../rutgers/index.html">Rutgers</a></li>
+	<li class="ru352"><a href="../../352/index.html">Internet Technology [352]</a></li>
+	<li class="ru416"><a href="../../416/index.html">Operating Systems [416]</a></li>
+	<li class="ru417"><a href="../../417/index.html">Distributed Systems [417]</a></li>
+	<li class="cslink"><a href="../../cs/index.html">Computing</a></li>
+	<li class="photolink"><a href="../../photo/index.html">Photography</a></li>
+<!--
+	<li class="funlink"><a href="#">Coming</a></li>
+	<li class="funlink"><a href="#">Soon</a></li>
+-->
+	</ul>
+</div>
+
+<div id="subnav">
+You are in:
+</p>
+<ul>
+        <li class="first"> <a href="<\$=home>index.html"> Home </a>
+        <li> <a href="../../rutgers/index.html"> Rutgers </a>
+        <li> <a href="../index.html"> CS 416 </a>
+        <li> <a href="../notes/index.html"> Documents </a>
+        <li> <a href="../notes/06-sync.html"> Synchronization </a>
+</ul>
+</div>
+<div id="content-wrapper">
+<div id="main">
+<div id="headline">
+<h1> Synchronization </h1>
+<h2> Keeping out of each other's way </h2>
+<p class="author"> Paul Krzyzanowski </p>
+<p class="date"> February 9, 2015 </p>
+</div>
+<h1 id="introduction:concurrency">Introduction: concurrency</h1>
+
+<p>Let&#8217;s start off with some definitions. In this discussion, we will
+use the terms <em>processes</em> and <em>threads</em> interchangeably.
+In all cases, we refer to threads of execution and it
+does not matter whether they are multiple threads of the same
+process or multiple processes.
+The underlying assumption is that the processes or threads have
+access to the same shared regions of memory. This sharing is automatic
+for threads but is also possible with processes on most operating
+systems if they explicitly create a shared memory segment.</p>
+
+<p>A set of threads is <strong>concurrent</strong> if the threads exist at the same
+time. These threads may be running at the same time in multiprocessing
+environments or their execution may be interleaved through preemption
+via the scheduler.
+The execution of these threads may be interleaved <em>in any order</em>,
+as long as each thread of execution follows the order dictated by
+the program.</p>
+
+<p>Threads are <strong>asynchronous</strong> if they require occasional synchronization
+and communication among themselves. For the most part, the execution
+of one thread neither speeds up nor slows down the execution of
+another.</p>
+
+<p>Threads are <strong>independent</strong> if they have no reliance on one another.
+This means that they never communicate and that one thread does not
+generate any side effects that impact another thread.</p>
+
+<p><strong>Synchronous</strong> threads are threads that are kept synchronized
+with each other such that the order of execution among them is
+guaranteed. One thread may keep another thread from
+making progress just to ensure that their progress is synchronized.</p>
+
+<p><strong>Parallel</strong> threads run at the same time on separate processors.</p>
+
+<p>In this section we examine the reasons for thread synchronization
+and how it can be realized.</p>
+
+<h1 id="theraceison">The race is on!</h1>
+
+<p>Suppose two or more asynchronous processes or threads access to a common,
+shared piece of data.
+Any process can be preempted at any time. What problems can arise?</p>
+
+<h2 id="example1">Example 1</h2>
+
+<p>Let&#8217;s look at an example where you have a system-wide global variable called
+<em>characters</em> that counts all the characters received from all
+terminal devices connected to a computer. Suppose also that each process that
+reads <em>characters</em> uses the following code to count them:</p>
+
+<pre><code>characters = characters + 1;
+</code></pre>
+
+<p>and that the compiler generates the following machine instructions for this code:</p>
+
+<pre><code>read characters into register r1
+increment r1
+write register r1 to characters
+</code></pre>
+
+<p>As a concrete example, the x86&#8211;64 code generated by the gcc compiler for that
+one line of code is:</p>
+
+<pre><code>movl    _characters(%rip), %eax
+addl    $1, %eax
+movl    %eax, _characters(%rip)
+</code></pre>
+
+<p>Where <code>eax</code> is a CPU register and <code>_characters(%rip)</code>
+is used to create a position-independent reference to the memory
+location of the integer <code>characters</code>. When the code is loaded linked,
+<code>_characters(%rip)</code> gets replaced by a byte offset from
+the current instruction. <code>RIP</code> is the 64-bit instruction pointer and
+the operand is a RIP-relative address, an offset value.</p>
+
+<p>Let&#8217;s assume that <em>characters</em> is 137. Process <em>A</em> executes the first
+two instructions and is then preempted by process <em>B</em>. Process <em>B</em> now reads
+<em>characters</em>, which is still 137 because <em>A</em> did not get around to
+writing its result. Process <em>B</em> adds 1 and writes out the result: 138.
+Some time later, process
+<em>A</em> gets a chance to run again. The operating system restores
+<em>A</em>&#8217;s state (CPU registers, program counter, stack pointer, and flags)
+from the point where it was preempted and allows it to continue execution.
+It already added 1 to 138 and and has the result in a register, so
+all it does is write the contents of register, 138, out to memory.
+We now lost count of a character!</p>
+
+<h2 id="example2">Example 2</h2>
+
+<p>Let us suppose that your current checking account balance is $1,000. You withdraw
+$500 from an ATM machine while, unbeknownst to you, a direct deposit for $5,000
+was coming in. We have these two concurrent actions:</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Withdrawal</th>
+	<th style="text-align:left;">Deposit</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">1. Read account balance</td>
+	<td style="text-align:left;">1. Read account balance</td>
+</tr>
+<tr>
+	<td style="text-align:left;">2. Subtract 500.00</td>
+	<td style="text-align:left;">2. Add 5,000.00</td>
+</tr>
+<tr>
+	<td style="text-align:left;">3. Write account balance</td>
+	<td style="text-align:left;">3. Write account balance</td>
+</tr>
+</tbody>
+</table>
+<p>Consider the possible outcomes:</p>
+<dl>
+<dt>$5500</dt>
+<dd>The proper outcome, of course, is that your checking account will have $5,500 after both
+ operations are finished. Either the <em>Deposit</em> sequence of operations takes place
+ first or the <em>Withdrawal</em> sequence does. Either way, the answer is
+ the same.</dd>
+
+<dt>$500</dt>
+<dd>Suppose that the system just completed step 1 of the <em>Withdrawal</em> operation. At that time,
+ the thread gets preempted and the <em>Deposit</em> thread gets to run. It goes
+ through its steps: reads the account balance ($1,000), adds $5000 ($6,000), and writes
+ the result ($6,000). Then the <em>Withdrawal</em> thread is allowed to resume running. It already completed step 1,
+ where it read $1,000 (not knowing that the value has been modified!), so it resumes operation
+ with step 2 and subtracts $500 from $1,000, storing $500 in step 3. Your account balance is now
+ $500. The actions of <em>Deposit</em> have effectively vanished.</dd>
+
+<dt>$6,000</dt>
+<dd>Now suppose that the operations are now scheduled in a slightly different order. The <em>Deposit</em>
+ thread runs first, reads the account balance ($1,000) and adds $5,000 (giving $6,000). At this time,
+ the thread is preempted and the <em>Withdrawal</em> thread is scheduled to run. In step 1, it
+ reads the balance ($1,000, since the new balance was not yet written), subtracts $500, and
+ stores the result, $500. When the <em>Deposit</em> thread is now given a chance to run, all it has
+ left to do is step 3: store its result, $6,000. The effects of the <em>Withdrawal</em> thread have been
+ obliterated.</dd>
+</dl>
+
+
+<h2 id="example3">Example 3</h2>
+
+<p>As a final example, let&#8217;s consider a linked list. Multiple threads are running concurrently
+and add items to the list by adding a new node to the head of the list:</p>
+
+<pre><code>1. stuff = new Item;
+2. stuff-&gt;item = whatever; /* new item contents */
+3. stuff-&gt;next = head;  /* the new node points to the current head of the list */
+4. head = stuff;    /* the new node becomes the head of the list */
+</code></pre>
+
+<p>Currently, we have two items on the list; see Figure 1.</p>
+
+<figure>
+<img src="images/06-q1.png" alt="Figure 1. Current queue" id="q1" title="Current queue" style="height:89px;width:400px;" />
+<figcaption>Figure 1. Current queue</figcaption></figure>
+
+
+
+<p>Thread A now needs to add a new element to the list: <em>Item 3</em>. At more or less the
+same time, thread B also needs to add a new element to the list, <em>Item 4</em>. Thread A is currently
+running and executes the first three instructions. The head of the list has not yet been set to
+point to the new element.
+Figure 2 shows how things look at this point in time:</p>
+
+<figure>
+<img src="images/06-q2.png" alt="Figure 2. Adding Item 3" id="q2" title="Adding Item 3" style="height:89;width:400;" />
+<figcaption>Figure 2. Adding Item 3</figcaption></figure>
+
+
+
+<p>All is well so far. Now the operating system preempts thread A and gives thread B a chance to run.
+Thread B executes the same instructions and runs the entire sequence 1&#8211;4. It allocates
+a new list cell, sets its <em>next</em> pointer to the current head of the list, and then changes
+the global list head to point to this new cell. Fgure 3 shows what we have now.</p>
+
+<figure>
+<img src="images/06-q3.png" alt="Figure 3. Adding Item 4" id="q3" title="Adding Item 4" style="height:89;width:400;" />
+<figcaption>Figure 3. Adding Item 4</figcaption></figure>
+
+
+
+<p>Thread B may go on to do other things and is eventually preempted so that thread A can run.
+Thread A continues where it left off, at step 4. It sets the global list head to point to the
+new cell that it added to the list. Figure 4 shows us how the list looks now. Item 4 is effectively
+gone from the list since <em>head</em> does not point to it.</p>
+
+<figure>
+<img src="images/06-q4.png" alt="Figure 4. Messed up list" id="q4" title="Messed up List" style="height:89;width:400;" />
+<figcaption>Figure 4. Messed up list</figcaption></figure>
+
+
+
+<p>What happened is that thread A was oblivious to the fact that thread B snuck in and added a list element.
+Thread A overwrote the head of the list without taking into account the fact that thread B modified it.</p>
+
+<h2 id="raceconditions">Race conditions</h2>
+
+<p>The above examples illustrate how bad things can happen when multiple
+threads or processes access shared data. These bugs result from
+race conditions. A <strong>race condition</strong> is a bug where the outcome
+of concurrent threads is dependent on the precise sequence of the
+execution of one relative to the other.
+<strong>Thread (or process) synchronization</strong> deals with developing
+techniques to avoid race conditions.</p>
+
+<p>We&#8217;ll use <em>threads</em> and <em>processes</em> almost interchangeably in our discussion
+and the principles apply equally to both.
+Processes or threads on different processes, since they generally
+do not share the same memory with other processes, have to rely on
+<strong>interprocess communication mechanisms</strong> (<strong>IPC</strong>), such as
+explicitly setting up regions of shared memory, to share data and
+communicate. Threads within the same process, of course, share the
+same address space and hence the same static data and heap (all dynamically allocated
+memory that is not stack-based). This increases the likelihood that
+race conditions may arise.</p>
+
+<h1 id="mutualexclusion">Mutual exclusion</h1>
+
+<p>The above problems can be resolved by not allowing other threads or processes
+to run while a process that is manipulating shared data is active.
+This is a drastic approach and not a good one. First, it&#8217;s not particularly fair.
+Because one process is running, others won&#8217;t get a chance to run. Secondly, it is
+overbearing: it is possible, even likely, that
+this or other processes have a lot more useful
+work to do outside of touching shared data. Thirdly, it may not even be feasible. It
+is possible that the processes require communication with each other to accomplish
+their result.</p>
+
+<p>What we can do instead is to identify the regions in a program that access shared memory
+(or other shared resources) and may cause
+race conditions to arise. These regions are called <strong>critical sections</strong>.
+A critical section is a sequence of code that reads shared
+data, uses and modifies it, and then writes it back out.</p>
+
+<p>To avoid race conditions, only one thread should be allowed to
+access a shared resource at a time. Enforcing this condition
+is known as <strong>mutual exclusion</strong>.
+If a thread is in its critical section, any other thread that
+wants to access the shared resource must wait (be blocked).</p>
+
+<p>When we introduce mutual exclusion into the system, we have to be careful that
+a thread will not be perpetually blocked because of a circular dependency. An example
+of this is if one thread in a critical section <em>R</em> but also needs to enter critical
+section <em>S</em>. However, another thread is in critical section <em>S</em> and needs
+to access critical section <em>R</em>. This is a circular dependency and the condition is known
+as <strong>deadlock</strong>. The two threads are deadlocked, each waiting for the other to free
+up a resource (i.e., let go of a critical section).</p>
+
+<p>A related problem is <strong>livelock</strong>.
+Here, there is no strict circular dependency but threads may be communicating and constantly
+changing state yet not making any progress. In some ways, this is more insidious than deadlock
+because it is more difficult to detect as no thread is in a waiting state.</p>
+
+<p><strong>Starvation</strong> is the case where the scheduler never gives a thread a chance to
+run. One reason that a scheduler may do this is because the thread&#8217;s priority is lower than
+that of other threads that are ready to run. Never getting a chance to run is bad. It&#8217;s even
+worse when the thread is in a critical section since, by not running, it will not get a chance to release
+the critical section.</p>
+
+<h2 id="locking">Locking</h2>
+
+<p>The logical approach for a programmer to deal with critical section is via <strong>locks</strong>:
+you <strong>acquire</strong> a lock before you enter a critical section and then <strong>release</strong>
+it when you exit the critical section. This ensures that only one thread
+can be in the critical section at the same time.
+Here is a representation of the withdrawal/deposit scenario with
+locks around the critical sections. We define a critical section that we
+lock with a lock variable that we call <em>transfer_lock</em>.
+To enter it, we call an <em>acquire</em>
+function. If any thread is already in the critical section, then we block
+until that thread releases it via <em>release</em>. This ensures that
+only one thread at a time can be in the code following <em>acquire</em>.</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Withdrawal</th>
+	<th style="text-align:left;">Deposit</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">1. <strong>Acquire(transfer_lock)</strong></td>
+	<td style="text-align:left;">1. <strong>Acquire(transfer_lock)</strong></td>
+</tr>
+<tr>
+	<td style="text-align:left;">2. Read account balance</td>
+	<td style="text-align:left;">2. Read account balance</td>
+</tr>
+<tr>
+	<td style="text-align:left;">3. Subtract 500.00</td>
+	<td style="text-align:left;">3. Add 5000.00</td>
+</tr>
+<tr>
+	<td style="text-align:left;">4. Write account balance</td>
+	<td style="text-align:left;">4. Write account balance</td>
+</tr>
+<tr>
+	<td style="text-align:left;">5. <strong>Release(transfer_lock)</strong></td>
+	<td style="text-align:left;">5. <strong>Release(transfer_lock)</strong> </td>
+</tr>
+</tbody>
+</table>
+<p>A solution for managing critical sections requires the following conditions to hold.</p>
+
+<ol>
+<li><em>Mutual exclusion</em>. No threads may be inside the same
+ critical sections simultaneously.</li>
+<li><em>Progress</em>. If no thread is executing in its critical
+ section and some thread or threads want to enter the
+ critical section, the selection of a thread that can
+ do so cannot be delayed indefinitely. Specifically,
+ if only one thread wants to enter, it should be permitted
+ to do so. If more than one wants to enter, only one of them
+ should be allowed to.</li>
+<li>Bounded waiting: No thread should wait forever to enter a critical section.</li>
+<li>No thread running outside its critical section may block others
+from entering a critical section.</li>
+</ol>
+
+<p>A good solution for managing critical sections should also ensure that</p>
+
+<ul>
+<li>No assumptions are made on the number of processors. The solution
+ should work even if threads are executing at the same time on different
+ processors.</li>
+<li>No assumptions are made on the number of threads or processes. The
+ solution should not be designed to only support, for example,
+ two threads.</li>
+<li>No assumptions are made on the relative speed of each thread.
+ We cannot assume any knowledge of when or if a thread will request
+ a critical section again. It will be undesirable to have
+ an algorithm where a thread has to wait unnecessarily for another
+ thread.</li>
+</ul>
+
+<h1 id="achievingmutualexclusion">Achieving mutual exclusion</h1>
+
+<p>Let&#8217;s examine a few approaches that we may implement to try to achieve mutual exclusion
+among a number of concurrent threads.</p>
+
+<h2 id="proposedsolution1:disableinterrupts">Proposed solution #1: disable interrupts</h2>
+
+<p>Have each thread disable all interrupts just before entering its
+critical section and re-enable them when leaving. This ensures that the operating system
+will not get a timer interrupt and have its scheduler preempt
+the thread while it is in the critical section.</p>
+
+<h4 id="disadvantage">Disadvantage</h4>
+
+<p>This gives the thread too much control over the system.
+Moreover, it is something that can only be done if the thread
+is executing in kernel mode; user processes are disallowed from
+disabling interrupts.
+Consider what happens if the logic in the critical section is incorrect and
+interrupts are never enabled? The operating system will not get its
+timer interrupt and will not be able to preempt the thread and let
+any other process run. The
+system will have to be rebooted.
+Even if the thread
+does re-enable interrupts after the critical section, what happens
+if the critical section itself has a dependency on some other interrupt,
+thread, or system call? For example, the logic in the critical section
+may need to read data from a file on a disk but the operating system
+will not get the disk interrupt that tells it that data is ready.
+Finally, if you&#8217;re on a multiprocessor system, disabling interrupts will only
+disable them on one processor, so the technique does even work on
+these systems.</p>
+
+<h4 id="advantage">Advantage</h4>
+
+<p>This is a simple approach and, on a uniprocessor system, is guaranteed to work.
+It is very tempting to use within the kernel for code that modifies shared data.</p>
+
+<p>In short, this is clearly not a good idea for the general welfare of the operating
+environment. However, because of its extreme simplicity, this was a common
+approach to mutual exclusion in operating system kernels, at least before
+multiprocessors spoiled the fun.</p>
+
+<h2 id="proposedsolution2:testsetlocks">Proposed solution #2: test &amp; set locks</h2>
+
+<p>We can keep a shared lock variable and set it to 1 if a process is
+in a critical section and 0 otherwise. When a process wants to enter
+its critical section, it first reads the lock. If the lock variable
+is 0, the process
+sets the lock to 1 and executes its critical section. If the lock
+is 1, the process waits until it becomes 0.</p>
+
+<p>Here&#8217;s a sample snippet of code that uses a global variable called <em>locked</em>:</p>
+
+<pre><code>while (locked) ;    /* loop, waiting for locked == 0 */
+locked = 1;     /* set the lock */
+/* do critical section */
+locked = 0;     /* release the lock */
+</code></pre>
+
+<h4 id="disadvantage">Disadvantage</h4>
+
+<p>The really big problem with this approach is that
+a race condition exists for reading and setting the lock.
+Here&#8217;s why. After the <em>while</em> loop sees that <em>locked</em>
+is zero, the thread could be preempted. Another thread that is waiting for
+the critical section will also see
+that <em>locked</em> is zero and will also exit its <em>while</em> loop
+and enter the critical section. When the first thread is given a chance
+to continue running, it is already out of the <em>while</em> loop and simply
+sets <em>locked&nbsp;=&nbsp;1</em>, unaware that somebody else
+already entered the critical section and set <em>locked</em> to 1.</p>
+
+<h4 id="advantage">Advantage</h4>
+
+<p>This solution is extremely simple to understand, implement, and trace.
+Unfortunately, it is a buggy, and hence invalid, solution.
+It&#8217;s been used
+for operations such as locking a mailbox file to prevent another
+mail reading program from modifying the file. The insidious nature of
+race conditions is that the bugs may not present themselves even after a lot
+of intensive testing, so buggy solutions might appear to be flawless.</p>
+
+<h2 id="proposedsolution3:lockstepsynchronization">Proposed solution #3: lockstep synchronization</h2>
+
+<p>This attempt at a solution involves keeping a shared variable (<em>turn</em>)
+that tells you which thread&#8217;s turn it is to execute a critical section.
+Each thread that may want to access the critical section is given a
+unique number and the <em>turn</em> variable cycles through these
+numbers. In the simple case of only two threads, we can use the
+numbers 0 and 1.
+For instance, thread 0 gets to run its critical section when <em>turn</em>
+is 0 and thread 1 gets to run its critical section when <em>turn</em> is
+1.</p>
+
+<pre><code>int turn = 0;    /* 0 if thread 0's turn; 1 if thread 1's turn */
+</code></pre>
+
+<p><strong>Thread 0</strong></p>
+
+<pre><code>for (;;) {   /* forever */
+    while (turn != 0) ;     /* wait for my turn */
+    critical_section();     /* run critical section */
+    turn = 1;               /* let Thread 1 run */
+    other_stuff();
+}
+</code></pre>
+
+<p><strong>Thread 1</strong></p>
+
+<pre><code>for (;;) {   /* forever */
+    while (turn != 1) ;     /* wait for my turn */
+    critical_section();     /* run critical section */
+    turn = 0;               /* let Thread 0 run */
+    other_stuff();
+}
+</code></pre>
+
+<p>This solution works in avoiding race conditions but has a major
+disadvantage: it forces strict alternation between the threads.
+As soon as thread 0 finishes its critical section,
+it sets <em>turn</em> to 1, forcing the next entry into the critical section
+has to be by thread 1. If thread 0 happens to be faster than thread 1 or just needs
+to access the critical section more frequently, this scheme forces thread 0
+to slow down (by waiting for its turn)
+to the same rate of critical section access as thread 1. It turns asynchronous
+threads into synchronous threads.</p>
+
+<h2 id="softwaresolutions">Software solutions</h2>
+
+<p>There have been a number of pure software solutions proposed to handle reliable
+entry into critical sections.
+We&#8217;ll provide a brief overview of one of them, known as <strong>Peterson&#8217;s algorithm</strong>,
+for the simple case of a two-thread system.</p>
+
+<p>The algorithm relies on a shared array (one element per thread) and a shared variable.
+The array, <em>wants</em>, identifies which threads want to enter a critical section.
+The variable, <em>turn</em>, indicates whose turn it is. Everything is initialized to zero initially.</p>
+
+<p>A thread calls a function, <em>acquire</em>, before running
+its critical section.
+This function sets an array element in the shared array (<em>wants</em>)
+that corresponds to its position (e.g., thread 0 sets element 0)
+to show that the thread wants to enter the critical section.
+It sets the shared variable (<em>turn</em>) to
+the thread number. Then it spins in a busy wait loop if it&#8217;s the thread&#8217;s turn but
+the other thread wants the critical section. Upon completing the
+critical section, the thread calls <em>release</em>.</p>
+
+<pre><code>acquire(int thread_id) {
+    int other_thread = 1-thread_id;
+    wants[thread_id] = 1;    /* we want the critical section */
+    turn = thread_id;
+    while (turn == thread_id &amp;&amp; wants[other_thread]) ; /* wait */
+}
+
+release(int thread_id) {
+    wants[thread_id] = 0;
+}
+</code></pre>
+
+<p>Let’s see how this works. Suppose that Thread 0 is calling <em>acquire</em> and Thread 1 is not. Here&#8217;s what
+happens in <em>acquire</em> when Thread 0 calls it:</p>
+
+<pre><code>wants[0(thread)] = 1;
+turn = 0(thread);
+while (0(turn) == 0(thread) &amp;&amp; 0(wants[other_thread, value=1])) ;
+</code></pre>
+
+<p>The while loop tells us that thread 1 does not want the critical section (<em>wants[1]</em> is 0),
+so we can continue into the critical section. Now suppose that Thread 1 wants to enter the critical section
+and calls <em>acquire</em>:</p>
+
+<pre><code>wants[1((thread))] = 1;
+turn = 1(thread);
+while (1(turn) == 1(thread) &amp;&amp; 1(wants[other_thread, value=0])) ;
+</code></pre>
+
+<p>Thread 1 is now kept waiting because Thread 0 set its <em>wants</em> entry to 1 (true).
+When Thread 0 is done with its critical section, it sets <em>wants[0]</em> to 0 (false)
+and Thread 1 will jump out of the while loop.</p>
+
+<p>Now let&#8217;s see if race conditions can develop by examining the case
+when both threads try to enter the critical section at the same
+time. It doesn&#8217;t matter which thread gets to set <em>wants</em> first because,
+even though it&#8217;s a shared array, only one thread ever sets a
+particular entry; there is no contention to write to the same location.
+The variable <em>turn</em>, on the other hand, can be set
+by either thread. Suppose Thread 0 gets to set turn to its thread
+number (0) first.</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Thread 0</th>
+	<th style="text-align:left;">Thread 1</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;"><code>wants[0] = 1;</code></td>
+	<td style="text-align:left;"><code>wants[1] = 1;</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>turn = 0;</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"></td>
+	<td style="text-align:left;"><code>turn = 1;</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>while (turn==0 &amp;&amp; wants[0]);</code></td>
+	<td style="text-align:left;"><code>while (turn==1 &amp;&amp; wants[0]);</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><em>test</em> <code>(1==0 &amp;&amp; 1)</code></td>
+	<td style="text-align:left;"><em>test</em> <code>(1==1 &amp;&amp; 1)</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><em>proceed</em></td>
+	<td style="text-align:left;"><em>busy wait</em></td>
+</tr>
+</tbody>
+</table>
+<p>Now if Thread 0 gets to set <em>turn</em> first, the following happens:</p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">Thread 0</th>
+	<th style="text-align:left;">Thread 1</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;"><code>wants[0] = 1;</code></td>
+	<td style="text-align:left;"><code>wants[1] = 1;</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"></td>
+	<td style="text-align:left;"><code>turn = 1;</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>turn = 0;</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>while (turn==0 &amp;&amp; wants[1]);</code></td>
+	<td style="text-align:left;"><code>while (turn==1 &amp;&amp; wants[0]);</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><em>test</em> <code>(0==0 &amp;&amp; 1)</code></td>
+	<td style="text-align:left;"><em>test</em> <code>(1==1 &amp;&amp; 1)</code></td>
+</tr>
+<tr>
+	<td style="text-align:left;"><em>busy wait</em></td>
+	<td style="text-align:left;"><em>proceed</em></td>
+</tr>
+</tbody>
+</table>
+<p>We see that the algorithm works by disallowing the last thread that
+set <em>turn</em> to proceed unless nobody else wants to enter the
+critical section.</p>
+
+<p>The disadvantage with this and other algorithmic techniques is that
+they can be tricky to implement correctly, especially when
+there are more than two threads involved. The example presented only
+works for two threads.
+With higher-level
+languages such as C or C++, you need to rely on the <em>volatile</em>
+data type to ensure that reads and writes actually reach main memory
+and that the compiler does not optimize the code to use registers or
+delay writing to memory.</p>
+
+<h1 id="helpfromtheprocessor">Help from the processor</h1>
+
+<div class="right-sidetext">
+<h1> What about Intel? </h1>
+<p>
+The Intel IA-32 and x64 instruction sets offer a
+CMPXCHG (compare-and-exchange) instruction, 
+which is the same as _compare-and-swap_. The operation
+is guaranteed to be atomic. However, on multiprocessor
+systems, it is important to ensure that other processors
+do not access that memory location until the instruction
+completes.
+</p>
+<p>
+To support multiprocessor architectures, a LOCK instruction modified is supported.
+This asserts the LOCK# signal on the CPU to ensure that the processor has exclusive use of any shared memory while the signal is asserted. 
+Several instructions (ADC, ADD,
+AND, BT, BTS, BTR, BTC, OR, SBB, SUB, XOR, XCHG, DEC, INC, NEG,
+NOT) can be augmented with this LOCK directive.
+</p>
+<p>
+Intel IA-32 and x64 processors offer a couple of flavors of the "compare and exchange
+bytes" instruction.
+The CMPXCHG8B instruction operates on 64-bit values and
+the CMPXCHG16B instruction operates on 128-bit values.
+</p>
+</div>
+
+<p>Most processors have specific instructions that aid in programming critical
+sections.
+The key to these instructions is that the operations that they perform
+are <strong>atomic</strong>, meaning that they are indivisible. A system
+interrupt cannot come in and preempt the instruction after the first part
+of its operations finished, which was the problem with a solution such
+as a our pure software test &amp; set solution.</p>
+
+<p>Different processors offer different instructions that help with
+critical sections.
+We will look at three variations of these atomic instructions:</p>
+
+<ul>
+<li>Test-and-set</li>
+<li>Compare-and-swap</li>
+<li>Fetch-and-increment</li>
+</ul>
+
+<h2 id="testandset">Test and set</h2>
+
+<p>A test-and-set instruction reads the contents of a memory word into
+a register, writes a value of 1 into that location, and
+returns the previous contents of the memory. The
+crucial item here is that this operation is guaranteed to be atomic:
+indivisible and non-interruptible. This is what it does (indivisibly):</p>
+
+<pre><code>int test_and_set(int *x) {
+    last_value = *x;
+    *x = 1;
+    return last_value;
+}
+</code></pre>
+
+<p>Test-and-set always sets a lock but it lets you know if it was already set at the
+time that you executed the instruction. If the lock was already set when you
+ran test-and-set then somebody simply got the lock before you did; you don&#8217;t
+have it. If the lock was not set when you ran the instruction (i.e., the
+instruction returned a zero), then it is now set and you have the lock.
+Managing a critical section can look like this:</p>
+
+<pre><code>while (test_and_set(&amp;lock)) ; /* wait for the lock */
+/* do critical section */
+lock = 0;   /* release the lock */
+</code></pre>
+
+<h2 id="compareandswap">Compare and swap</h2>
+
+<p>The compare-and-swap instruction compares the value of a memory
+location with an &#8220;old&#8221; value that is given to it. If the two values
+match then the &#8220;new&#8221; value is written into that memory
+location. This is the sequence of operations:</p>
+
+<pre><code>int compare_and_swap(int *x, int old, int new) {
+    int save = *x;    /* current contents of the memory */
+    if (save == old)
+        *x = new;
+    return save;    /* tell the caller what was read */
+}
+</code></pre>
+
+<p>Think of <em>compare_and_swap(int *x, int A, int B)</em> as having the function of
+<em>set x to B only if x is currently set to A and return the value that
+x really contained.</em></p>
+
+<p>Remember our attempt at a software-only test-and-set lock? We&#8217;d loop while a memory
+location, <em>locked</em>, was not zero and then set it to one? The problem was that
+we had a race condition between those two operations: somebody else could come in
+and set the value of <em>locked</em> to 1 after we tested it.
+With compare-and-swap, we&#8217;re telling it the value we last read from that memory location
+and what we&#8217;d like to set it to <em>provided that</em> somebody did not change the
+contents since we last read it. If they did, our new value will not be set since
+our idea of the old value was not correct.
+The return value tells us what the contents of the memory location were
+when the compare-and-swap
+instruction was executed. An example of how we control entry to and exit from a critical
+section using compare-and-swap is:</p>
+
+<pre><code>while (compare_and_swap(&amp;locked, 0, 1) != 0) ; /* spin until locked == 0 */
+/* if we got here, locked got set to 1 and we have it */
+/* do critical section */
+locked = 0; /* release the lock */
+</code></pre>
+
+<p>Here, we spin on compare_and_swap and keep trying to set
+<em>locked</em> to 1 (last argument) if <em>lock</em>&#8217;s
+current value is 0.
+Let&#8217;s consider a few cases:</p>
+
+<ul>
+<li><p>If nobody has the region locked, then <em>locked</em> is 0. We execute
+ compare_and_swap and tell it to set <em>locked</em> to 1 if the current
+ value is 0. The instruction does this and returns the old value
+ (0) to us so we break out of the while loop.</p></li>
+<li><p>If somebody has the region locked, then <em>locked</em> is 1. We execute
+ compare_and_swap and tell it to set <em>locked</em> to 1 if the old value
+ was 0. But the old (current) value is 1, so compare_and_swap does
+ not set it (it wouldn&#8217;t matter) and returns the value that was
+ already in <em>locked</em>, 1. Hence, we stay in the loop.</p></li>
+<li><p>Let&#8217;s consider the potential race condition when two threads try
+ to grab a lock at the same time. Thread 1 gets to run <em>compare_and_swap</em>
+ first, so the instruction sets <em>locked</em> to 1 and returns the previous
+ value of 0. When Thread 2 runs the instruction, <em>locked</em> is already
+ set to 1 so the instruction returns 1 to the thread, causing it to
+ keep looping.</p></li>
+</ul>
+
+<p>In summary, we&#8217;re telling the <em>compare_and_swap</em> instruction
+to set the contents of <em>locked</em> to 1 <em>only if</em> <em>locked</em> is still set to 0. If
+another thread came in and set the value of <em>locked</em> to non-zero, then the instruction will
+see that the contents do not match 0 (<em>old</em>) and therefore will not set the contents to <em>new</em>.</p>
+
+<h2 id="fetchandincrement">Fetch and increment</h2>
+
+<figure>
+<img src="images/06-take_a_number-med.jpg" alt="Ticket" id="take_a_number" title="Take a number" style="height:230;width:144;" />
+<figcaption>Ticket</figcaption></figure>
+
+
+
+<figure>
+<img src="images/06-now_serving.jpg" alt="Turn" id="now_serving" style="height:78;width:100;" />
+<figcaption>Turn</figcaption></figure>
+
+
+
+
+<p>The final atomic instruction that we&#8217;ll look at is fetch-and-increment. This instruction simply increments
+a memory location but returns the previous value of that memory location. This allows you to &#8220;take a ticket&#8221;
+and then wait until it&#8217;s your turn to use the critical section. This technique is known as
+a <strong>ticket lock</strong>.
+Think of fetch-and-increment as one of those take-a-number machines at the deli counter in a supermarket:</p>
+
+<pre><code>int fetch_and_increment(int *x) {
+    last_value = *x;
+    *x = *x + 1;
+    return last_value;
+}
+</code></pre>
+
+<p>The return value, <em>last_value</em> corresponds to the number on your ticket while the machine is now
+ready to generate the next higher number. To implement a critical section, we grab a ticket (<em>myturn</em>) and wait
+our turn. Our turn arrives when the <a href="http://www.checkpointsystems.com/EUR/products-services/Meto-Solutions/Turnomatic%20-%20Customer%20Service%20Enhancement/Turn-O-Matic-Systems.aspx" class="external">turn-o-matic machine</a> shows our number and the
+deli clerk calls it (<em>turn == myturn</em>):</p>
+
+<pre><code>ticket = 0;
+turn = 0;
+...
+myturn = fetch_and_increment(&amp;ticket);
+while (turn != myturn) ;  /* busy wait */
+/* do critical section */
+fetch_and_increment(&amp;turn);
+</code></pre>
+
+<p>The variable <em>ticket</em> represents the ticket number in the machine.
+The variable <em>myturn</em> represents your ticket number and <em>turn</em> represents the number that is
+currently being served. Each time somebody takes a ticket via <em>fetch_and_increment</em>,
+the value of <em>ticket</em> is incremented. Each time somebody is done with their
+critical section and is ready for the next thread to get served, they
+increment <em>turn</em>.</p>
+
+<h1 id="spinlocksandpriorityinversion">Spin locks and priority inversion</h1>
+
+<p>One problem with any of the above solutions is that we
+end up with code that sits in a <em>while</em> loop (spins), waiting for
+conditions to allow it entry into the critical section. This
+constant checking is called <strong>busy waiting</strong> or a <strong>spinlock</strong>.
+The process is always busy running but it is really just waiting since
+it is making no process in execution.
+From a resource utilization point of view, this is not efficient.
+To an operating system, the thread is in a <em>ready</em> state and gets
+scheduled to run (use the CPU)
+even though it will not make any progress. It is a waste of CPU time.</p>
+
+<p>What makes this situation even worse is that it is possible that the process
+that is currently holding the lock may not even be allowed to run
+or may be significantly delayed. Suppose we have a priority-based
+scheduler and a lower-priority process has obtained a lock and is
+in the critical section. Now suppose that a higher-priority process
+wants to get access to the critical section and is sitting in a spin
+lock. As far as the operating system is concerned, that higher-priority
+process is always ready to run and will be scheduled instead
+of the process that is in the critical section (the scheduler simply
+picks the higher priority thread or process). This situation is
+known as <strong>priority inversion</strong>. What really needs to happen for
+the higher priority process to make progress (i.e., to get the lock
+and get into the critical section) is for the lower priority process
+to get to run so that it can get out of the critical section and
+relinquish its lock.</p>
+
+<p>One technique that may be used to avoid priority inversion is to
+increase the priority of any process in a critical section to
+the maximum priority level of any of the processes that are
+waiting for the lock. Once the process releases its lock, its
+priority goes back to its normal level. This approach is known
+as <strong>priority inheritance</strong>. The challenge with implementing this
+is that you need to ensure that there is some way for the operating
+system to know about whether a process is in a critical section,
+looping on a spinlock for that same critical section, or doing
+something completely unrelated.</p>
+
+<p>Spin locks
+are a fundamental problem with pure software solutions. Without
+having a way for a thread to ask the operating system to suspend itself,
+all that a thread
+can do to stop itself from making progress is to loop while waiting
+for some condition to change.
+Ideally, we&#8217;d like to create
+operating system constructs for mutual exclusion that will let us block
+the process instead of having it spin.</p>
+
+<h1 id="osmechanismsforsynchronization">OS mechanisms for synchronization</h1>
+
+<p>All of the above solutions to accessing a critical section have the
+drawback of busy waiting: if a thread
+cannot enter its critical section, it sits in a loop waiting until
+it can do so. This has two problems. First, it wastes CPU time since the
+thread is always ready to run and the operating system scheduler
+will schedule it to do so periodically.
+Secondly, and more seriously, is that cases can arise when a thread
+that has the lock is not allowed to run. Suppose the operating system
+uses a thread scheduler that always favors higher-priority threads.
+If a lower priority thread obtained a lock on a critical section,
+the higher priority thread can do nothing but loop and wait for
+the other thread to give up the lock. However, because this higher
+priority thread is always ready to run, the lower priority thread
+never gets a chance to run and give up its critical section. This
+situation is known as <strong>priority inversion</strong>.</p>
+
+<p>It would greatly help us if we can get some support from the operating
+system to put a thread to sleep (block it) when it cannot enter a
+critical section and then wake it up when it is finally allowed access to the critical section.</p>
+
+<p>We will now look at a few mechanisms that operating systems give us.</p>
+
+<h2 id="semaphores">Semaphores</h2>
+
+<div class="right-sidetext">
+<h1> Semaphore names </h1>
+<p>
+When Dutch computer scientist Edsger W. Dijkstra came up with the concept of 
+semaphores, he named them <strong>P</strong> and <strong>V</strong>.
+These are Dutch abbreviations. 
+<em>P</em> stands for  <em>Probeer</em>, which means <em>try</em>, and
+<em>V</em> stands for <em>Verhoog</em>, which means <em>increment</em>.
+Since these abbreviations are not intuitive for non-Dutch speakers,
+different names have been used for them. Some of the more commonly used names
+are <strong>down</strong> and <strong>up</strong>
+(for <em>P</em> and <em>V</em>, respectively),
+<strong>wait</strong> and <strong>post</strong>,
+and 
+<strong>wait</strong> and <strong>signal</strong> 
+(also for <em>P</em> and <em>V</em>, respectively).
+I will use <em>down</em> and <em>up</em> since they directly
+correspond to the increment and decrement operations that
+the functions perform.
+</p>
+</div>
+
+<p>In 1963, <a href="http://en.wikipedia.org/wiki/Edsger_W._Dijkstra" title="Edsger Dijkstra" class="external">Edsger W. Dijkstra</a> created a special variable type called a <strong>semaphore</strong>
+that allows one to manage access to critical sections <a href="http://www.cs.utexas.edu/~EWD/ewd01xx/EWD123.PDF" title="Edsger W. Dijkstra's original lecture notes on semaphores" class="external">EWD123</a>.
+A semaphore is an integer variable with two associated operations:
+<strong>down</strong> (also known as <em>p</em> or <em>wait</em>) and
+<strong>up</strong> (known as <em>v</em> or <em>signal</em>).</p>
+
+<p>The following actions take place for up and down,
+all <em>indivisible</em>.</p>
+
+<pre><code>down(sem s) {
+    if (s &gt; 0)
+        s = s - 1;
+    else
+        /* put the thread to sleep on event s */
+}
+
+up (sem s) {
+    if (one or more threads are waiting on s)
+        /* wake up one of the threads sleeping on s  */
+    else
+        s = s + 1;
+}
+</code></pre>
+
+<p>The indivisibility of these operations is ensured by the operating
+system&#8217;s implementation of semaphores and may involve lower-level
+mutual exclusion operations, such as spinlocks. While we discussed
+spinlocks as a bad thing, they serve a purpose within the kernel for
+acquiring mutual exclusion locks for <em>small</em> sections of code. We
+just want to avoid them for potentially long-term operations.</p>
+
+<p>Whenever a thread calls <em>down</em> on a semaphore, the semaphore&#8217;s
+value is decremented and the thread can continue running.
+The value of a semaphore, however, cannot go below zero. If the value
+of a semaphore is zero and a thread calls <em>down</em> on that semaphore,
+the kernel will put that thread to sleep. Specifically, that thread will
+be in a <em>blocked</em> state and the thread ID will be placed on a list of
+any other threads that are blocked on that semaphore.</p>
+
+<p>Whenever a thread calls <em>up</em> on a semaphore, the kernel checks to
+see whether there are any threads in the list of threads that are
+blocked on that semaphore. If so, one of the threads is moved to
+the <em>ready</em> state and can continue execution. The value of the
+semaphore does not change. If there are no threads blocked on the
+semaphore, the value of that semaphore is simply incremented.
+The <em>up</em> operation never blocks a thread.</p>
+
+<p>One way to look at semaphores is to think of a semaphore as counting
+the number of threads that are allowed to be in a section of code at the same time.
+Each time a thread enters
+the section, it performs a <em>down</em>, allowing one fewer access
+(threads that will be allowed entry). When
+there are no more accesses allowed, any thread requesting access
+is forced to block. When a thread is done with its section, it
+performs an <em>up</em>, which allows a waiting thread to enter or, if none
+are waiting, increments the count of threads that are allowed to
+enter.</p>
+
+<p>Semaphores are often initialized to 1 and are used by two or more
+threads to ensure that only one of them can enter a critical
+section. Such semaphores are known as <strong>binary semaphores</strong>. Here is
+an example of accessing a critical section using a binary semaphore:</p>
+
+<pre><code>sem mutex = 1;  /* initialize semaphore */
+...
+down(&amp;mutex);
+/* do critical section */
+up(&amp;mutex);
+</code></pre>
+
+<h3 id="producer-consumerexample">Producer-consumer example</h3>
+
+<p>Let us suppose that there are two processes: a <em>producer</em> that generates
+items that go into a buffer and a <em>consumer</em> that takes things out of
+the buffer. The buffer has a maximum capacity of <em>N</em> items. If a producer
+produces faster than the consumer consumes then it will have to go to sleep
+until there&#8217;s enough room in the buffer. Similarly, if the consumer consumes
+faster than the producer produces, the consumer will go to sleep until there
+is something for it to consume. This scenario is formally known as
+the <strong>Bounded-Buffer Problem</strong>.</p>
+
+<p>As we saw in our discussion on race conditions,
+we need to avoid race conditions to properly keep track of the items in the buffer
+in case we produce and consume something at the same time.
+To handle this, we&#8217;ll use a binary semaphore that we&#8217;ll call <em>mutex</em> (for
+mutual exclusion). We&#8217;ll initialize it to 1 so that we can use it
+to guarantee mutual exclusion whenever we add or remove something from the buffer.</p>
+
+<p>We want the producer to go to sleep when there is no more room in
+the buffer and for it to wake up again when there is free room in
+the buffer. To do this, we will create a semaphore called <em>empty</em> and
+initialize it to <em>N</em>, the number of free slots in the buffer. When
+we execute <em>down(&amp;empty)</em>, the operation will decrement <em>empty</em> and return to
+the thread until <em>empty</em> is 0 (no more slots). At that point, any successive calls to
+<em>down(&amp;empty)</em> will cause the producer to go to sleep.</p>
+
+<p>When the consumer consumes something, it will
+execute <em>up(&amp;empty)</em>, which will wake up the producer if it is sleeping on
+the semaphore and allow it to add one more item to the buffer.
+If the producer was not sleeping because there there is still room in the buffer,
+<em>up(&amp;empty)</em> will simply increment empty to indicate that there is one more space
+in the buffer.</p>
+
+<p>The <em>empty</em> semaphore was used to allow the producer to go to sleep when
+there was no more room in the buffer and wake up when there were free slots.
+Now we have to consider the consumer. We want the consumer to go to sleep
+when the producer has not generated anything for the consumer
+to consume.
+To put the consumer to sleep, we will create
+yet another semaphore called <em>full</em> and have it count the number of
+items in the buffer. Since there are no items in the buffer initially,
+we will initialize <em>full</em> to 0. Initially, when the consumer starts
+running, it will run <em>down(&amp;full)</em>, which will put it to sleep. When
+the producer produces something, it calls <em>up(&amp;full)</em>, which will cause
+the consumer to wake up. If the producer works faster than the
+consumer, successive calls to <em>up(&amp;full)</em> will cause <em>full</em> to get
+incremented each time. When the consumer gets to consuming, successive
+calls to <em>down(&amp;full)</em> will just cause <em>full</em> to get decremented until
+<em>full</em> reaches 0 (no more items to consume), at which point the consumer
+will go to sleep again.</p>
+
+<pre><code>    sem mutex=1;    /* for mutual exclusion */
+    sem empty=N;    /* keep producer from over-producing */
+    sem full=0;     /* keep consumer sleeping if nothing to consume */
+
+    producer() {
+        for (;;) {
+            produce_item(&amp;item);    /* produce something */
+            down(&amp;empty);           /* decrement empty count */
+            down(&amp;mutex);           /* start critical section */
+            enter_item(&amp;item);       /* put item in buffer */
+            up(&amp;mutex);             /* end critical section */
+            up(&amp;full);              /* +1 full slot */
+        }
+    }
+    consumer() {
+        for (;;) {
+            down(&amp;full);            /* one less item */
+            down(&amp;mutex);           /* start critical section */
+            remove_item(&amp;item);      /* get the item from the buffer */
+            up(&amp;mutex);             /* end critical section */
+            up(&amp;empty);             /* one more empty slot */
+            consume_item(&amp;item);     /* consume it */
+        }
+    }
+</code></pre>
+
+<h3 id="readers-writersexample">Readers-writers example</h3>
+
+<p>Now we will look at a <strong>Readers-Writers</strong> example. Here, we have a shared data store, such
+as a database. Multiple processes may try to access it at the same time. We can allow
+multiple processes to read the data concurrently since reading does not change the value
+of the data. However, we can allow at most one process at a time to modify the data to
+ensure that there is no risk of inconsistencies arising from concurrent modifications.
+Moreover, if a process is modifying the data, there can be no readers reading it until
+the modifications are complete.</p>
+
+<p>To implement this, we use a semaphore (<em>canwrite</em>) to control mutual exclusion between a writer
+or a reader. This is a simple binary semaphore that will allow just one process access
+to the critical section. Used this way, it would only allow one of anything at a time: one
+writer or one reader. Now we need a hack to allow multiple readers. What we do is
+to allow other readers access to the critical section by bypassing requesting a lock
+if we have at least one reader that
+has the lock and is in the critical section. To keep track of readers, we keep
+a count (<em>readcount</em>). If there are no readers, the first reader gets a lock.
+After that point, <em>readcount</em> is 1. When the last reader exits the critical section
+(<em>readcount</em> goes to 0), that reader releases the lock.</p>
+
+<p>We also use a second semaphore, <em>mutex</em>, to protect the region where we change <em>readcount</em>
+and then test it.</p>
+
+<pre><code>sem mutex=1;        /* critical sections used only by the reader */
+sem canwrite=1;     /* critical section for N readers vs. 1 writer */
+int readcount = 0;  /* number of concurrent readers */
+
+writer() {
+   for (;;) {
+      down(&amp;canwrite);    /* block if we cannot write */
+      // write data ...
+      up(&amp;canwrite);      /* end critical section */
+   }
+}
+
+reader() {
+   for (;;) {
+      down(&amp;mutex);
+      readcount++;
+      if (readcount == 1)
+         down(canwrite);      /* sleep or disallow the writer from writing */
+      up(&amp;mutex);
+      // do the read
+      down(&amp;mutex);
+      readcount--;
+      if (readcount == 0)
+         up(writer);          /* no more readers! Allow the writer access */
+      up(&amp;mutex);
+      // other stuff
+   }
+}
+</code></pre>
+
+<p>The point of the <em>mutex</em> semaphore is to make sure that only one thread ever runs the
+chunk of code that it protects at any time.
+We have two chunks protected by the <em>mutex</em> semaphore. </p>
+
+<p>Chunk1: </p>
+
+<pre><code>      readcount++;
+      if (readcount == 1)
+         down(&amp;canwrite);      /* sleep or disallow the writer from writing */
+</code></pre>
+
+<p>Chunk 2:</p>
+
+<pre><code>      readcount--;
+      if (readcount == 0)
+         up(&amp;canwrite);          /* no more readers! Allow the writer access */
+</code></pre>
+
+<p>The <em>mutex</em> keeps us from having two threads update the value of
+<em>readcount</em> or check its value at the same time. The <em>if</em>
+statements in the above chunks simply check if we already have a
+reader inside the thread. If we do, then we don&#8217;t touch the <em>canwrite</em> semaphore.</p>
+
+<p>If we&#8217;re the first reader, then we do a down(&amp;canwrite) so that
+another thread will get blocked if it calls <em>writer()</em> since that
+function does a <em>down(&amp;canwrite)</em> as well. Alternatively, we may end
+up blocking if another thread is currently active <em>inside writer()</em>.
+If a thread calls <em>reader()</em>, then we bypass the <em>down()</em> because
+<em>readcount &gt; 1</em>. At the end, we check if we were the last reader. If
+so, then we <em>up()</em> the <em>canwrite</em> semaphore. This will now allow any
+thread that is blocked in <em>writer()</em> to proceed.</p>
+
+<h2 id="eventcounters">Event counters</h2>
+
+<p>An <strong>event counter</strong> is
+a special data type that contains an
+integer value that can only be incremented. Three operations are
+defined for event counters:</p>
+
+<ul>
+<li><strong>read(E)</strong>: return the current value of event counter <em>E</em></li>
+<li><strong>advance(E)</strong>: increment <em>E</em> (this is an atomic operation)</li>
+<li><strong>await(E,v)</strong>: wait until <em>E</em> has a value greater than or equal to <em>v</em></li>
+</ul>
+
+<p>Here is an example of the producer-consumer problem implemented
+with event counters. Both the consumer and producer maintain a
+sequence number locally. Think of the sequence number as the serial
+number of each item that the producer produces. From the consumer&#8217;s
+point, think of the sequence number as the serial number of the
+next item that the consumer will consume.</p>
+
+<p>The event counter <em>in</em> is the number of the latest item that was
+added to the buffer. The event counter <em>out</em> is the serial number
+of the latest item that has been removed from the buffer.</p>
+
+<p>The producer needs to ensure that there&#8217;s a free slot in the buffer
+and will wait (sleep) until the difference between
+the sequence number and <em>out</em> (the last item consumed) is less
+than the buffer size. The consumer needs to wait (sleep) until
+there is at least one item in the buffer; that is, <em>in</em> is
+greater than or equal to the next sequence number that it
+needs to consume.</p>
+
+<pre><code>#define N 4    /* four slots in the buffer */
+event_counter in=0;    /* number of items inserted into buffer */
+event_counter out=0;    /* number of items removed from buffer */
+
+producer() {
+    int sequence=0;
+    for (;;) {
+        produce_item(&amp;item);     /* produce something */
+        sequence++;              /* item # of item produced */
+        await(out, sequence-N);  /* wait until there’s room */
+        enter_item(&amp;item);       /* put item in buffer */
+        advance(&amp;in);            /* let consumer know there’s one more item */
+    }
+}
+consumer() {
+    int sequence=0;
+    for (;;) {
+        sequence++;            /* item # we want to consume */
+        await(in, sequence);   /* wait until that item is present */
+        remove_item(&amp;item);    /* get the item from the buffer */
+        advance(&amp;out);         /* let producer know item’s gone */
+        consume_item(&amp;item);   /* consume it */
+    }
+}
+</code></pre>
+
+<p>The producer&#8217;s sequence number mirrors the value of <em>in</em> and the
+consumer&#8217;s sequence number mirrors the value of <em>out</em>.
+We can simplify the code a bit by getting rid of sequence numbers.
+The producer needs to ensure that there&#8217;s a free slot in the buffer
+and will wait (sleep) until the difference between <em>in</em> and <em>out</em>
+is less than the buffer size. The consumer sleeps until
+there is at least one item ready (<em>in</em> &gt; <em>out</em>).
+Here is the slightly simplified ode.</p>
+
+<pre><code>#define N 4    /* four slots in the buffer */
+event_counter in=0;    /* number of items inserted into buffer */
+event_counter out=0;   /* number of items removed from buffer */
+
+producer() {
+    for (;;) {
+        produce_item(&amp;item);    /* produce something */
+        await(out, in-(N-1));   /* wait until there’s room: (in-out) &lt; N, or out &gt;= in-N-1 */
+        enter_item(item);       /* put item in buffer */
+        advance(&amp;in);           /* let consumer know there’s one more item */
+}
+}
+consumer() {
+    for (;;) {
+        await(in, out+1);     /* wait until an item is present (in &gt; out) */
+        remove_item(item);    /* get the item from the buffer */
+        advance(&amp;out);        /* let producer know item’s gone */
+        consume_item(item);   /* consume it */
+    }
+}
+</code></pre>
+
+<p>Note that there is no mutual exclusion protection around <em>enter_item</em>
+and <em>remove_item</em> as we had with semaphores. This is because the way
+the code is written, the consumer waits until the buffer is full
+and the producer waits until the buffer is empty.</p>
+
+<h2 id="conditionvariablesmonitors">Condition variables (monitors)</h2>
+
+<p>Controlling critical sections reliably (without deadlocking) is
+often difficult and error-prone. A <strong>monitor</strong> is an attempt to create
+a higher level synchronization primitive to make it easier to synchronize events.
+A monitor is a collection of procedures and data with the
+following characteristics:</p>
+
+<ul>
+<li>Processes may call the functions in a monitor but may not access
+ the monitor&#8217;s internal data structures.</li>
+<li>Only one process may be active in a monitor at any instant. Any
+ other process that tries to access an active monitor will be
+ suspended.</li>
+</ul>
+
+<p>A monitor is a <strong>programming construct</strong>: part of the programming
+language rather than the operating system. The compiler has to understand how to compile code to
+implement monitors (for example, it may implement the monitor
+constructs using the operating system&#8217;s semaphores).
+Two operations are supported by monitors:</p>
+<dl>
+<dt><strong>wait(condition_variable)</strong></dt>
+<dd>Blocks until condition_variable is &#8220;signaled.&#8221; Another thread is
+ allowed to run.</dd>
+
+<dt><strong>signal(condition_variable)</strong></dt>
+<dd>Wakes up one thread that is waiting on the condition variable.
+ This function is often called <strong>notify</strong> (e.g., in Java).</dd>
+</dl>
+
+
+<p>A separate condition variable has to exist for each reason that a process might need to wait.</p>
+
+<h3 id="resourceallocationwithmonitors">Resource allocation with monitors</h3>
+
+<p>Here&#8217;s a small example of how a monitor may be used to allow a
+process to grab exclusive access to some resource and then relinquish
+it when it&#8217;s done:</p>
+
+<pre><code>monitor resource_allocator {
+    condition is_free;
+    int in_use = 0;
+
+    get_resource() {
+        if (in_use)
+            wait(is_free);    /* block until free */
+        in_use = 1;
+    }
+    return_resource() {
+        in_use = 0;
+        signal(is_free);    /* wake up a waiting process */
+    }
+}
+</code></pre>
+
+<p>If these were normal functions, we would have to worry about a race
+condition developing in <em>get_resource</em> between the time we check
+<em>in_use</em> and set it (another thread might be switched in at
+that point and try to get a resource). Because this is a monitor,
+we are assured that mutual exclusion holds for the entire monitor,
+so these problems do not arise.</p>
+
+<h4 id="advantage">Advantage</h4>
+
+<p>Monitors have the advantage of making
+parallel programming easier and less error prone than using techniques
+such as semaphores.</p>
+
+<h4 id="disadvantage">Disadvantage</h4>
+
+<p>The major drawback of monitors is that they have to be implemented
+as part of the programming language. The compiler must generate
+code for them. This gives the compiler the additional burden of
+having to know what operating system facilities are available to
+control access to critical sections in concurrent processes. Since
+few languages have any understanding of concurrency, many languages
+do not support monitors.
+Some languages that do support monitors are
+Java, C#, Visual Basic, Ada, and Concurrent Euclid. </p>
+
+<h3 id="producer-consumerexamplewithjava">Producer-consumer example with Java</h3>
+
+<p>This illustrates a Java example of the producer-consumer problem.
+The <em>synchronized</em> keyword for the <em>consume_item</em> method
+ensures that the method is a critical section.</p>
+
+<pre><code>class producer_consumer {
+    private boolean item_ready = false;
+
+    public synchronized int produce_item() {
+        while (item_ready == true) {
+            try {
+                wait();    // block until signaled (notify)
+            } catch (InterruptedException e) { } // ignore
+        }
+        item_ready = true;
+        // generate the item
+        notify();    // signal the monitor
+        return item;
+    }
+
+    public synchronized void consume_item(int item) {
+        while (item_ready == false) {
+            try {
+                wait();    // block until notified
+            } catch (Interrupted Exception e) { } // ignore
+        }
+        // consume the item
+        item_ready = false;
+        notify();    // signal the monitor
+    }
+}
+</code></pre>
+
+<h1 id="interprocesscommunication">Interprocess communication</h1>
+
+<p>One drawback of monitors, semaphores, and global data structures
+to control mutual exclusion is that they assume that all concurrent
+threads or processors have access to common memory and share the same
+operating system kernel (which is responsible for putting processes
+to sleep and waking them up).
+Asynchronous processes do two things: they synchronize (e.g., wait
+on one another) and they exchange data.</p>
+
+<p>While this is a fine assumption for threads and processes,
+these solutions don&#8217;t work on distributed systems where each system
+has its own local memory and its own operating system
+since none of these primitives provide for the exchange of information
+between machines. Messages don&#8217;t have this restriction. They allow us
+to synchronize processes (by waiting for messages) and exchange data
+among processes. Moreover, they can work across different threads and
+processes on the same as well as different machines.</p>
+
+<h2 id="messagepassing">Message passing</h2>
+
+<p>Message passing is a form of interprocess communication that uses two primitives:</p>
+<dl>
+<dt><strong>send</strong>(<em>destination, message</em>)</dt>
+<dd>Sends a message to a given destination.</dd>
+
+<dt><strong>receive</strong>(<em>source, &amp;message</em>)</dt>
+<dd>Receives a message from a source. This call could block if there is no message.</dd>
+</dl>
+
+
+<p>When we use a network, we should be aware of certain issues:</p>
+
+<ul>
+<li><p>Networks may be unreliable. What if a message gets lost?
+We can try to make communications reliable via acknowledgements and
+retransmissions. A receiver can be asked to send an acknowledgement message when it
+receives a message. If a sender doesn&#8217;t receive the acknowledgement
+in a certain amount of time, then it will retransmit the message.
+However, if the acknowledgement gets lost, then the sender will send two
+messages. We may consider tagging each message with a sequence number and have
+the operating system keep track of missing, redundant, or out-of-order messages.</p></li>
+<li><p>Processes and machines need to be named unambiguously. How
+do you identify a process on a different machine?</li></p></li>
+<li><p>We trust our operating system to do the right thing and provide
+a protection structure to keep our data private when we want it to
+be private. With a network, things get more complicated. Can you
+trust other operating systems on the network? How can you ensure
+that the message you received really came from where you thought
+it did? </p></li>
+</ul>
+
+<h3 id="produced-consumerexamplewithmessagepassing">Produced-consumer example with message passing</h3>
+
+<p>The producer-consumer example uses a messaging channel as a queue between
+producer and consumer threads/processes. That on its own would give us no
+way to control the size of the buffer since the producer could just keep
+sending more and more messages even if the consumer is slow to consume them.
+What we use instead is a bi-directional message channel. A producer can
+add an item <em>only</em> in response to receiving an empty message from the
+consumer. Each received empty message represents a slot in the buffer.
+The producer receives one such message whenever it has to add another item
+to the buffer. If there isn&#8217;t an empty message available then the producer
+blocks on <em>receive</em> and waits until the consumer consumes an
+item from the buffer and responds with an empty message.</p>
+
+<pre><code>#define N 4        /* number of slots in the buffer */
+
+producer() {
+    int item;
+    message m;
+
+    for (;;) {
+        produce_item(&amp;item);        /* produce something */
+        receive(consumer, &amp;m);      /* wait for an empty message */
+        build_message(&amp;m, item);    /* construct the message */
+        send(consumer, &amp;m);         /* send it off */
+    }
+}
+consumer() {
+    int item, I;
+    message m;
+
+    for (i=0; i&lt;N; ++i)
+        send(producer, &amp;m);         /* send N empty messages */
+    for (;;) {
+        receive(producer, &amp;m)       /* get a message with the item */
+        extract_item(&amp;m, &amp;item)     /* take item out of message */
+        send(producer, &amp;m);         /* send an empty reply */
+        consume_item(item);         /* consume it */
+    }
+}
+</code></pre>
+
+<h4 id="advantagesofmessages">Advantages of messages</h4>
+
+<p>The concept of messages is scalable from a single processor environment
+to a networked system of multiple processors, each with its own
+memory.</p>
+
+<h4 id="disadvantagesofmessages">Disadvantages of messages</h4>
+
+<p>Even on a single processor system, it is possible that message
+passing may be slower than other methods due to the overhead of
+copying the message. Some systems, however, make local message
+passing efficient.</p>
+
+<h2 id="messages:rendezvous">Messages: Rendezvous</h2>
+
+<p>The example we just looked at assumed that the receiver blocked
+whenever a message was not ready for it and that the sender could
+just send a message and not be blocked;
+the message would get sent out and buffered by the operating
+system (of the receiving process if we&#8217;re going across a network).</p>
+
+<p>A <strong>rendezvous</strong> is a variant of message passing that
+uses no message buffering. A sender blocks until a receiver reads the message.
+If a <em>send</em> is done before a <em>receive</em>, the sending process is blocked until a <em>receive</em>
+occurs. In an SMP (symmetric multiprocessor) environment, as opposed to
+a multi-computer environment,
+the message can be copied directly with no intermediate
+buffering. If a <em>receive</em> is done first, it blocks until a <em>send</em> occurs.</p>
+
+<h4 id="advantageofrendezvous">Advantage of rendezvous</h4>
+
+<p>It is easy and efficient to implement.</p>
+
+<h4 id="disadvantageofrendezvous">Disadvantage of rendezvous</h4>
+
+<p>It forces the sender and receiver to be tightly synchronized at these
+send/receive junctures.</p>
+
+<h2 id="messages:mailboxes">Messages: Mailboxes</h2>
+
+<figure>
+<img src="images/06-mailbox-1s1r-s.png" alt="Mailbox: Single sender, single reader" id="mailbox-1s1r" title="Single sender, single receiver" style="height:35;width:200;" />
+<figcaption>Mailbox: Single sender, single reader</figcaption></figure>
+
+
+
+<figure>
+<img src="images/06-mailbox-1sNr-s.png" alt="Mailbox: Single sender, multiple readers" id="mailbox-1snr" title="Single sender, multiple receivers" style="height:110;width:200;" />
+<figcaption>Mailbox: Single sender, multiple readers</figcaption></figure>
+
+
+
+
+<figure>
+<img src="images/06-mailbox-Ns1r-s.png" alt="Mailbox: Multiple senders, single reader" id="mailbox-ns1r" title="Multiple senders, single receiver" style="height:110;width:200;" />
+<figcaption>Mailbox: Multiple senders, single reader</figcaption></figure>
+
+
+
+
+
+<figure>
+<img src="images/06-mailbox-NsNr-s.png" alt="Mailbox: Multiple senders, multiple readers" id="mailbox-nsnr" title="Multiple senders, multiple receivers" style="height:110;width:200;" />
+<figcaption>Mailbox: Multiple senders, multiple readers</figcaption></figure>
+
+
+
+
+
+
+<p>Messages and rendezvous require the use of <strong>direct addressing</strong>,
+where the sending process must identify the receiving process. The
+receiving process can either specify the sender or may receive its
+identification as an incoming parameter from the <em>receive</em> operation.
+This messaging mechanism makes it easy to support a single sender/single
+receiver or multiple senders/single receiver models.
+If we want to support multiple receivers, say multiple processes
+on multiple computers that all want to grab messages for processing,
+things get complicated since the sending processes will have to
+have some way of figuring out which of several recipients should receive
+a given message.</p>
+
+<p>A <strong>mailbox</strong> is an intermediate entity that is applied to messaging: a set of FIFO queues
+two which senders can send messages and from which readers can receive messages. It is an
+example of <strong>indirect addressing</strong> since neither the sender nor
+reader correspond directly with each other. Mailboxes make it easy to support
+multiple readers since they can all contact the same mailbox and extract items from the queue.</p>
+
+<p>A process sends a message to a mailbox rather than to a specific other
+process and another process (or processes) reads messages from that mailbox.
+If the mailbox is full, a sending process is be suspended until
+a message is removed.</p>
+
+<h4 id="advantageofmailboxes">Advantage of mailboxes</h4>
+
+<p>They give us the flexibility of having multiple senders and/or receivers.
+Moreover, they do not require the sender to know how to identify any
+specific receiver. Senders and receivers just need to coordinate on
+a mailbox identifier.</p>
+
+<h4 id="disadvantageofmailboxes">Disadvantage of mailboxes</h4>
+
+<p>They may incur an extra level of data copying since data has to
+be first copied to the mailbox queue and then copied to the
+receiver. In the case of networked system, there is the question
+of where the mailbox should reside. Since senders and receivers
+can all be different computers, the mailbox becomes a distinct
+destination on the network: messages get sent to a mailbox and
+then retrieved from a mailbox. This act imposes an extra hop
+over the network for each message.</p>
+
+<h1 id="deadlocks">Deadlocks</h1>
+
+<p>Whenever we create an environment where threads compete for exclusive access
+to resources, we run the risk of deadlock.</p>
+
+<figure>
+<img src="images/06-assignment_edge-s.png" alt="Assignment edge" id="assignment_edge" style="height:43;width:100;" />
+<figcaption>Assignment edge</figcaption></figure>
+
+
+
+<figure>
+<img src="images/06-request_edge-s.png" alt="Request edge" id="request_edge" style="height:43;width:100;" />
+<figcaption>Request edge</figcaption></figure>
+
+
+
+
+<figure>
+<img src="images/06-deadlock-s.png" alt="Resource allocation graph: deadlock!" id="deadlock" style="height:185;width:200;" />
+<figcaption>Resource allocation graph: deadlock!</figcaption></figure>
+
+
+
+
+
+<p>A <strong>deadlock</strong> is a condition in a system where a process cannot proceed
+because it needs to obtain a resource held by another process but
+it itself is holding a resource that the other process needs. More
+formally, four conditions have to be met for a deadlock to occur
+in a system:</p>
+
+<ol>
+<li><strong>Mutual exclusion</strong>: a resource can be held by at most one process.</li>
+<li><strong>Hold and wait</strong>: processes that already hold resources can wait for another resource.</li>
+<li><strong>Non-preemption</strong>: a resource, once granted, cannot be taken away.</li>
+<li><strong>Circular wait</strong>: two or more processes are waiting for resources held by one of the other processes.</li>
+</ol>
+
+<p>We can express resource holds and requests via a <strong>resource allocation graph</strong>.
+An <strong>assignment edge</strong> means that a resource R1 is allocated to process P1. Since
+resources are exclusive, this means that P1 has a lock on the resource.
+A <strong>request edge</strong> means that a resource R1 is being requested by process P1. If
+process P1 cannot be granted access to the resource R1, it will have to wait.
+Deadlock is present when the graph has cycles.</p>
+
+<p>We can consider a few strategies for dealing with deadlock.</p>
+<dl>
+<dt>Deadlock prevention</dt>
+<dd>Ensure that at least one of the necessary conditions for deadlock cannot hold.
+ This approach is sometimes used for transactional systems. Every transaction
+ (process) is assigned a timestamp. For example, a transaction that wants to use a resource that
+ an older process is holding will kill itself and restart later.
+ This ensures that the resource allocation graph always flows from
+ older to younger processes and cycles are impossible. It works for
+ transactional systems since transactions, by their nature, are designed to
+ be restartable (with rollback of system state when they abort). It is not
+ a practical approach for general purpose processes.</dd>
+
+<dt>Deadlock avoidance</dt>
+<dd>Provide advance information to the operating system on which resources a process will request throughout its lifetime.
+ The operating system can then decide if the process should be allowed to wait for resources or not and may be
+ able to coordinate the scheduling of processes to ensure that deadlock does not occur. This is an impractical
+ approach. A process is likely not to know ahead of time what resources it will be using and coordinating the
+ scheduling of processes based on this information may not always be possible.</dd>
+
+<dt>Deadlock detection</dt>
+<dd>We allow deadlocks to occur but then rely on the operating system
+ to detect the deadlock and deal with it. This requires that an operating
+ system gets enough information to build a resource allocation graph.
+ For instance, while an operating system will know which processes are blocked
+ on a semaphore, it does not keep track of those that are not.
+ After that, the operating system will need to decide what action to take.
+ Do you kill any random process that is in the cycle? The youngest one?
+ The oldest one? Or do you just warn the user? Operating systems avoid
+ dealing with this.</dd>
+
+<dt>Ignore the problem</dt>
+<dd>By far the most common approach is simply to let the user deal any potential
+ deadlock.</dd>
+</dl>
+
+
+<h1 id="references">References</h1>
+
+<ul>
+<li>Edsger W. Dijkstra, <a href="http://www.cs.utexas.edu/~EWD/ewd01xx/EWD123.PDF" title="Edsger W. Dijkstra's original lecture notes on semaphores" class="external">Cooperating sequential processes</a>. Edsger W. Dijkstra&#8217;s lecture notes on the mutual exclusion problem and semaphores.</li>
+<li>Abraham Silberschatz, Peter B. Galvin, &amp; Greg Gagne, <a href="http://www.amazon.com/dp/0470889209/pkorg" title="Amazon link: OS Concepts Essentials" class="external">Operating System Concepts Essentials</a>, Wiley, 1st edition, 2010</li>
+<li>Abraham Silberschatz, Peter B. Galvin, &amp; Greg Gagne, <a href="http://www.amazon.com/dp/0470128720/pkorg" title="Amazon link: OS Concepts" class="external">Operating System Concepts</a>, Wiley, 8th edition, 2008</li>
+<li>Andrew S. Tanenbaum, <a href="http://www.amazon.com/dp/0136006639/pkorg" title="Modern Operating Systems" class="external">Modern Operating Systems</a>, Prentice Hall, 3rd edition, 2007</li>
+<li>Intel Corporation, <a href="http://flint.cs.yale.edu/cs422/doc/24547012.pdf" title="IA-32 Architecture" class="external">IA&#8211;32 Intel Architecture Software Developer&#8217;s Manual</a>, 2003</li>
+<li>Wikipedia. <a href="http://en.wikipedia.org/wiki/X86-64" class="external">x86&#8211;64</a></li>
+<li>Michael Chynoweth &amp; Mary R. LeeIntel Corporation, <a href="http://software.intel.com/en-us/articles/implementing-scalable-atomic-locks-for-multi-core-intel-em64t-and-ia32-architectures/" class="external">Implementing Scalable Atomic Locks for Multi-Core Intel EM64T and IA32 Architectures</a>. Intel Corporation, November 2009</li>
+</ul>
+
+<p>This is an updated version of the original document, which was written on September 21, 2010.</p>
+</div>
+<div id="footer">
+<hr/>
+<style type="text/css">  
+span.codedirection { unicode-bidi:bidi-override; direction: rtl; }  
+</style>  
+
+<p> &copy; 2003-2015 Paul Krzyzanowski. All rights reserved.</p>
+<p>For questions or comments about this site, contact Paul Krzyzanowski, 
+<span class="codedirection">gro.kp@ofnibew</span></p>
+<p>The entire contents of this site are protected by copyright under national and international law.
+No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form,
+or by any means whether electronic, mechanical or otherwise without the prior written
+consent of the copyright holder.
+If there is something on this page that you want to use, please let me know.
+</p>
+<p>Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not
+even reflect mine own.  </p>
+<p> Last updated: February  9, 2015 </p>
+<img class="stamp" src="../..//css/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" />
+</div> <!-- footer -->
+<div id="tear">
+</div>
+
+
+<div id="sidebar1">
+<h1 class="first">Contents </h1>
+	<h2> CS 416 </h2>
+	<ul>
+	<li> <a href="../index.html"> Main course page </a> </li>
+	<li> <a href="../news.html"> News </a> </li>
+	<li> <a href="../syllabus.html"> Syllabus </a> </li>
+	<li> <a href="../hw/index.html"> Homework </a> </li>
+	<li> <a href="../notes/index.html"> Documents </a> </li>
+	<li> <a href="../exam/index.html"> Exam info </a> </li>
+	<li> <a href="../grades/index.html"> Check your grades </a> </li>
+	<li> <a href="https://sakai.rutgers.edu/portal"> Sakai </a> </li>
+	</ul>
+
+	<h2> CS 416 background </h2>
+	<ul>
+	<li> <a href="../about.html"> About the course </a> </li>
+	<li> <a href="../prereq.html"> Prerequisites </a> </li>
+	<li> <a href="../things.html"> Things you need </a> </li>
+	<li> <a href="../policy.html"> Policy  </a> </li>
+	</ul>
+</div>
+
+<div id="sidebar2">
+<!--
+<h1 class="first"> Free junk </h1>
+<p>
+Tedst
+</p>
+<hr/>
+<ul>
+<li> List item
+</ul>
+-->
+</div>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE HTML>
+<!--
+	Paul Krzyzanowski pk.org
+	Derived from Editorial by HTML5 UP html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Kafka</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/main.css?v=1.1"/> <link rel="stylesheet" href="../../assets/css/ru-info.css?v=1.0" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<a href="../index.html" class="logo"><strong>Distributed Systems</strong>: Paul Krzyzanowski</a>
+<!--
+								<ul class="icons noprint">
+									<li><a href="http://www.twitter.com/@p_k" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="https://www.facebook.com/paul.krzyzanowski" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+									<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+								</ul>
+-->
+							</header>
+
+							<!-- Content -->
+							<section>
+								<header class="main">
+								<h1>Kafka</h1>
+								<h2>Distributed Streaming platform</h2>
+
+								<p>Paul Krzyzanowski</p>
+								<p>April 15, 2021</p>
+								</header>
+							</section>
+							
+							<section id="bodytext">
+								<blockquote>
+<p><strong>Goal</strong>: Create a distributed messaging system to handle large-scale streams of messages.</p>
+</blockquote>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>How can a cluster of computers handle the influx of never-ending streams of data, coming from multiple sources? This data may come from industrial sensors, IoT devices scattered around the world, or log files from tens of thousands of systems in a data center.</p>
+
+<p>It&#8217;s easy enough to say that we can divide the work among multiple computers but how would we exactly do that?</p>
+
+<figure>
+<img src="images/k-messages.jpg" alt="Messaging" />
+<figcaption>Messaging</figcaption>
+</figure>
+
+<h1 id="kafka">Kafka</h1>
+
+<p>Kafka is an open-source high-performance, distributed, durable, fault-tolerant, publish-subscribe messaging system. We will cover every one of these points as we explore this system.</p>
+
+<p>Kafka was created at LinkedIn around 2010 to track various events, such as page views, messages from the messaging system, and logs from various services.</p>
+
+<p>It is used for moving messages streams around. These include data pipelines, alerts, logs, and various activities. With Kafka, one can collect these data streams for processing by frameworks such as Spark Streaming.</p>
+
+<h1 id="publish-subscribemessaging">Publish-Subscribe Messaging</h1>
+
+<p>In a <em>publish-subscribe</em> messaging system, systems called <strong>publishers</strong> send streams of messages. These are the <strong>producers</strong>, since they produce messages. Another set of systems, called <strong>subscribers</strong>, read those messages. These are the <strong>consumers</strong>, since they consume the messages.</p>
+
+<p>A messaging system, known as a <strong>message broker</strong>, is used to move data streams between applications. It provides a <strong>loose coupling</strong> between publishers and subscribers, or producers and consumers of data.</p>
+
+<figure>
+<img src="images/k-pub-sub.png" alt="Publish-subscribe model" />
+<figcaption>Publish-subscribe model</figcaption>
+</figure>
+
+<p>The message broker stores published messages in a queue and subscribers read them from the queue. Hence, subscribers and publishers do not have to be synchronized. This loose coupling allows subscribers and publishers to read and write at different rates.</p>
+
+<p>The ability of the messaging system to store messages provides fault tolerance so messages don&#8217;t get lost between the time they are produced and the time they are consumed.</p>
+
+<h2 id="topics">Topics</h2>
+
+<p>We can have many different message streams in our environment. For instance, system logs serve different purposes than temperature reports, which are likely to be processed by different software than the software that handles analytics data. Each stream is identified by a <strong>topic</strong>. Consumers subscribe to topics to receive messages produced for that topic.</p>
+
+<p>A topic can be thought of as a feed of related data.
+Each message is associated with a topic. A topic can have zero, one, or many subscribers (consumers) that read data from it.</p>
+
+<figure>
+<img src="images/k-topics.png" alt="Publish-subscribe model" />
+<figcaption>Publish-subscribe model</figcaption>
+</figure>
+
+<p>Kafka runs as a cluster on one or more servers. Each server in Kafka is called a <strong>broker</strong><a href="#fn:1" id="fnref:1" title="see footnote" class="footnote"><sup>1</sup></a>. A Kafka environment may have anywhere from one to thousands of brokers.</p>
+
+<p>Kafka supports a publish-subscribe model that handles multiple message streams. These message streams are stored as a first-in-first-out (FIFO) queue in a fault-tolerant manner. Processes can read messages from streams at any time.</p>
+
+<p>Kafka can be used as a component to feed data into <strong>real-time systems</strong> such as Spark Streaming or for <strong>batch processing</strong> by storing data into Amazon S3 or HDFS files for future data analysis by platforms like MapReduce or Spark.</p>
+
+<h2 id="partitions">Partitions</h2>
+
+<p>Each topic is managed as a <strong>partitioned log</strong>. It enables Kafka to scale.</p>
+
+<p>In Kafka, a log is an ordered queue of message records. A partitioned log is a log that is broken up into multiple smaller logs, each of which is called a <strong>partition</strong>.</p>
+
+<p>A <strong>partition</strong> is an ordered, immutable sequence of messages that is continually appended to. Each message contains a sequential ID number called the <strong>offset</strong> that uniquely identifies the message in the partition.</p>
+
+<figure>
+<img src="images/k-partitions.png" alt="Publish-subscribe model" />
+<figcaption>Publish-subscribe model</figcaption>
+</figure>
+
+<p>Partitions allow the log to <strong>scale</strong> beyond a single server. Each partition must fit on one of the servers that hosts it &#8230; but a topic can have multiple partitions and therefore handle an arbitrary amount of data. Each server manages a set of partitions belonging to different topics.</p>
+
+<h2 id="faulttolerance">Fault tolerance</h2>
+
+<p>All messages in the log are durable, meaning they are written to disk. The messages persist for a configurable time period. After that time, they are discarded. Partitions can be replicated onto multiple servers for fault tolerance.</p>
+
+<p>Each partition has one server that is elected to be the <strong>leader</strong> for that partition. There can be zero or more other servers that are followers for that partition. The amount of replication is a configurable parameter. The leader handles all read/write requests for the partition and is responsible for replicating messages to its followers. Only the leader communicates with clients.
+If the leader fails, one of the followers gets elected to be the new leader.</p>
+
+<figure>
+<img src="images/k-replication.png" alt="Publish-subscribe model" />
+<figcaption>Publish-subscribe model</figcaption>
+</figure>
+
+<p>We need to consider the situation where a leader receives a message but dies before it is replicated to followers. In this case we have the danger of losing a message.</p>
+
+<p>In a manner similar to Amazon Dynamo (although Dynamo is somewhat more flexible), a producer can choose the behavior: whether to receive an acknowledgement immediately once the broker receives the message or to wait until the message is replicated to all followers.</p>
+
+<p>For load balancing, the Kafka framework tries to distribute leaders for different partitions among the available servers, so each server will be a leader for some partitions and a follower for others.</p>
+
+<h2 id="scale">Scale</h2>
+
+<p>Kafka is designed to be highly scalable. This means:</p>
+
+<ul>
+<li>Being able to handle an increase in the volume of incoming messages from producers.</li>
+<li>Allowing consumers to grow to handle an increase in the volume or the processing complexity of messages.</li>
+<li>Being able to store large queues of messages.</li>
+</ul>
+
+<p>The last of these, the ability to handle queues is addressed by breaking a topic into multiple partitions. A partition is limited to a single broker but many partitions can be managed my many systems.</p>
+
+<h3 id="scaling-producers">Scaling - producers</h3>
+
+<p>Producers publish data to topics of their choice. Each publisher process is responsible for choosing which message goes to which partition. The simple algorithm is a round-robin distribution to balance the message load uniformly. Alternatively, programmers have the option to define their own partitioning function if they want to direct specific data within a topic to a certain partition.</p>
+
+<p>More partitions in a topic allows a message stream to be distributed among more severs, enabling the cluster to sustain a heavier load of incoming data.</p>
+
+<p>However, note that messages are only ordered on a per-partition basis. If message order is important, we can use a custom partitioning function or even force the use of just a single partition.</p>
+
+<h3 id="scaling-consumers">Scaling - consumers</h3>
+
+<p>A consumer process is part of a <strong>consumer group</strong>. A consumer group may have one or more consumers within it.</p>
+
+<p>This allows you to distribute the processing of messages among multiple consumers. Each member of the consumer group gets a fair share of partitions for its subscribed topic.</p>
+
+<h2 id="queuingvs.publish-subscribe">Queuing vs. publish-subscribe</h2>
+
+<p>There are two common ways to handle messages: queuing and publish-subscribe.</p>
+
+<p>With the <strong>queuing model</strong>, you have a pool of consumers that grab messages from a shared queue. Once a consumer grabs a message, it is out of the queue and the next consumer will get the next message.</p>
+
+<p>This is a great model for distributing message processing among multiple consumers so that consumer load can be balanced.</p>
+
+<figure>
+<img src="images/k-queue-model.png" alt="Publish-subscribe model" />
+<figcaption>Publish-subscribe model</figcaption>
+</figure>
+
+<p>The <strong>publish-subscribe</strong> model is one where all consumers that subscribe to a topic will get every message for that topic. This model allows multiple clients to get the same data but does not scale well.</p>
+
+<figure>
+<img src="images/k-ps-model.png" alt="Publish-subscribe model" />
+<figcaption>Publish-subscribe model</figcaption>
+</figure>
+
+<p>Kafka offers both of these models. By creating <em>consumer groups</em>, consumers can distribute their processing among a collection of processes. Each consumer group provides a publish-subscribe model, so consumers can join separate groups if they each need to receive the same set of messages for a topic.</p>
+
+<h2 id="zookeeper">Zookeeper</h2>
+
+<p>Kafka relies on Apache Zookeeper, which is Apache&#8217;s implementation of Chubby. Kafka uses zookeeper for getting heartbeats from brokers, leader election, replication settings, and tracking the members of the cluster. Producers contact Zookeeper to find partitions. Consumers contact Zookeeper to track the current index number of the next message in each partition.</p>
+
+<h2 id="disks">Disks</h2>
+
+<p>Kafka writes its messages to the local disk on a partition server. Disks storage is important for durability - that the messages will not disappear if the system dies and restarts.</p>
+
+<p>Disks are generally considered to be slow. We saw how Spark made a point of trying to keep RDDs cached in memory. However, there is a huge difference in disk performance between random block access and sequential access. The sequential nature of writing or reading logs enables disk operations can be thousands of times faster than random access.</p>
+
+<p>For example, one measurement shows a RAID-5 disk can handle streaming writes at a rate of about 600 MB/s while random writes &#8211; those that involve seeking &#8211; perform at around 100 KB/s, over 6,000x slower. Kafka is carefully tuned to maximize streaming disk operations.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>Kafka solved the problem of dealing with huge continuous streams of data.</p>
+
+<p>Kafka solves the scaling problem of a messaging system by splitting a topic into multiple partitions across many systems. The basic abstraction of Kafka is a partitioned log.</p>
+
+<p>It supports a single queue model with multiple readers by enabling consumer groups.</p>
+
+<p>It supports a publish-subscribe model by allowing consumers to subscribe to topics for which they want to receive messages.</p>
+
+<p>Message ordering is preserved only on a per-partition basis.</p>
+
+<p>Kafka has proven itself in many places. It was initially created at LinkedIn as an open source project. It is commercially supported by Confluent and is now used by over 100,000 organizations. Some of these include:</p>
+
+<ul>
+<li>Activision: for gameplay events, diagnostics, and player experience improvements</li>
+<li>AirBnB: uses multiple Kafka clusters for analytics, change data capture and inter-service communication</li>
+<li>Tinder: for notifications, recommendations, analytics</li>
+<li>Pinterest: every click, resin, or photo enlargement results in messages through Kafka; also real-time ad budget calculations</li>
+<li>Uber: for matching drivers and customers, sending ETA calculations, and audit data</li>
+<li>Netflix: handles over 1.4 trillion of messages per day</li>
+<li>LinkedIn: handles 7 trillion messages per day over 100,000 topics across 7 million partitions stored on over 4,000 brokers (servers).</li>
+</ul>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li><p><a href="https://kafka.apache.org/intro">Apache Kafka</a>, kafka.apache.org.</p></li>
+<li><p>Have Klaskowski, <a href="https://jaceklaskowski.gitbooks.io/apache-kafka/kafka-partition-leader-election.html">The Internals of Apache Kafka</a>, GitBook, February 2020.</p></li>
+<li><p>Daniel Gutierrez, <a href="https://insidebigdata.com/2016/04/28/a-brief-history-of-kafka-linkedins-messaging-platform/">A Brief History of Kafka, LinkedIn’s Messaging Platform</a>, inside BIGDATA, April 28, 2016.</p></li>
+<li><p>Jean-Paul Azar, <a href="https://dzone.com/articles/what-is-kafka">What is Kafka? Everything You Need to Know</a>, DZone, August 9, 2017.</p></li>
+<li><p><a href="http://cloudurable.com/blog/what-is-kafka/index.html">What is Apache Kafka?</a>, May 10, 2017.</p></li>
+<li><p>Maria Wachal, <a href="https://blog.softwaremill.com/what-is-apache-kafka-and-what-are-kafka-use-cases-871666dd4eed">What is Apache Kafka and what are Kafka use cases?</a>, Medium, January 15, 2020.</p></li>
+<li><p>Michael Matloka, <a href="https://blog.softwaremill.com/who-and-why-uses-apache-kafka-10fd8c781f4d">Who and why uses Apache Kafka?</a>, January 8, 2020.</p></li>
+<li><p>Jon Lee, <a href="https://engineering.linkedin.com/blog/2019/apache-kafka-trillion-messages">How LinkedIn customizes Apache Kafka for 7 trillion messages per da</a>, October 8, 2019</p></li>
+<li><p><a href="http://cloudurable.com/blog/kafka-architecture/index.html">Kafka Architecture</a>, Cloudurable blog.</p></li>
+<li><p>Yaroslav Tkachenko, <a href="https://www.buzzsprout.com/186154/2555848-streaming-call-of-duty-at-activision-with-apache-kafka-ft-yaroslav-tkachenko">Streaming Audio: a Confluent podcast about Apache Kafka</a>, Confluent podcast, January 27, 2020.</p></li>
+</ul>
+
+<div class="footnotes">
+<hr />
+<ol>
+
+<li id="fn:1">
+<p>Note that in most messaging systems, the entire system is referred to as a broker. In Kafka, it refers to a single server that manages one or more partitions. <a href="#fnref:1" title="return to body" class="reversefootnote">&#160;&#8617;&#xfe0e;</a></p>
+</li>
+
+</ol>
+</div>
+
+							</section>
+							<footer class="main">
+								Last modified April 16, 2021.
+								<hr/>
+								<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+								</p>
+
+								<p class="copyright">
+								For questions or comments about this site, contact Paul Krzyzanowski, 
+								<span class="codedirection">gro.kp@ofnibew</span>
+								</p>
+
+		<img src="../../assets/images/recycled_pixels_logo.png" alt="recycled pixels" height="80" width="80" class="noprint" />
+
+								<p class="copyright">
+		The entire contents of this site are protected by copyright under national and international law. No part of this site may be copied, reproduced, stored in a retrieval system, or transmitted, in any form, or by any means whether electronic, mechanical or otherwise without the prior written consent of the copyright holder. If there is something on this page that you want to use, please let me know.
+		
+		Any opinions expressed on this page do not necessarily reflect the opinions of my employers and may not even reflect my own.
+								</p>
+								<p class="copyright noprint">
+								Page design derived from: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+						</div>
+					</div>
+
+		<!-- Sidebar -->
+			<div id="sidebar" class="noprint">
+				<div class="inner">
+
+					<!-- Menu -->
+<nav id="menu">
+	<header class="major">
+		<h2>Menu</h2>
+	</header>
+	<ul>
+		<li><a href="../../index.html">Homepage</a></li>
+		<li><a href="../index.html">Main course page</a></li>
+		<li><a href="../syllabus.html">Syllabus</a></li>
+		<li><a href="../news.html">Announcements</a></li>
+		<li><a href="https://rutgers.instructure.com/courses/104885/assignments">Homework</a></li>
+		<li><a href="../notes/index.html">Documents</a></li>
+<!--
+		<li>
+			<span class="opener"> <a href="../exam/index.html">Exam info</a> </span>
+			<ul>
+				<li><a href="../exam/index.html">About</a></li>
+				<li><a href="../exam/guide-1.html">Study guide 1</a></li>
+				<li><a href="../exam/guide-2.html">Study guide 2</a></li>
+				<li><a href="../exam/guide-3.html">Study guide 3</a></li>
+				<li><a href="../exam/old/index.html">Old exams</a></li>
+			</ul>
+		</li>
+		<li><a href="../grades.html">Grading info</a></li>
+-->
+		<li><a href="https://rutgers.instructure.com/courses/104885">Canvas</a></li>
+		<li>
+			<span class="opener">Course info</span>
+			<ul>
+				<li><a href="../about.html">About the course</a></li>
+				<li><a href="../prereq.html">Prerequisistes</a></li>
+				<li><a href="../things.html">Things you need</a></li>
+				<li><a href="../policy.html">Class rules</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+					<!-- Section -->
+						<section>
+							<header class="major">
+								<h2>Get in touch</h2>
+							</header>
+							<p> For questions or comments about this site, contact Paul Krzyzanowski: </p>
+							<ul class="contact">
+								<li class="icon solid fa-envelope"><a href="#">
+									<style type="text/css"> span.codedirection { unicode-bidi:bidi-override; direction: rtl; } </style>
+									<a href="mailto:webinfo@pk@@org" onmouseover="this.href=this.href.replace('@@','.')">
+										<span class="codedirection">gro.kp@ofnibew</span>
+									</a>
+								</li>
+							</ul>
+						</section>
+
+					<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; Paul Krzyzanowski. All rights reserved.
+						</p>
+
+
+					</footer>
+
+				</div>
+			</div>
+	</div>
+
+<!-- Scripts -->
+	<script src="../../assets/js/jquery.min.js"></script>
+	<script src="../../assets/js/browser.min.js"></script>
+	<script src="../../assets/js/breakpoints.min.js"></script>
+	<script src="../../assets/js/util.js"></script>
+	<script src="../../assets/js/main.js"></script>
+	</body>
+</html>
